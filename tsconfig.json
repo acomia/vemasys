@@ -13,6 +13,7 @@
       "@bluecentury/components": ["./src/components"],
       "@bluecentury/constants": ["./src/constants"],
       "@bluecentury/navigation": ["./src/navigation"],
+      "@bluecentury/screens": ["./src/screens"],
       "@bluecentury/stores": ["./src/stores"],
       "@bluecentury/styles": ["./src/styles"],
     },
