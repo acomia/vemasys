@@ -1,13 +1,12 @@
 import React from 'react';
-import {Text, View} from 'react-native';
-import {Button} from '@bluecentury/components';
+import {AppContainer} from '@bluecentury/components';
+import {MainNavigator} from '@bluecentury/navigation';
 
 const App = () => {
   return (
-    <View>
-      <Text>Test</Text>
-      <Button />
-    </View>
+    <AppContainer>
+      <MainNavigator />
+    </AppContainer>
   );
 };
 
