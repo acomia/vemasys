@@ -1,9 +1,9 @@
 import {create, ResponseTransform} from 'apisauce';
-import Config from 'react-native-dotenv';
 import camelCaseKeys from 'camelcase-keys';
+import {API_URL} from '@bluecentury/env';
 
 export const API = create({
-  baseURL: Config.API_URL,
+  baseURL: API_URL,
 });
 
 const dataToCamelCase: ResponseTransform = response => {
