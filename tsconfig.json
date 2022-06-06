@@ -8,7 +8,7 @@
     "moduleResolution": "node",
     "baseUrl": ".",
     "paths": {
-      "@bluecentury/api": ["./src/api"],
+      "@bluecentury/api/*": ["./src/api/*"],
       "@bluecentury/assets": ["./src/assets"],
       "@bluecentury/components": ["./src/components"],
       "@bluecentury/constants": ["./src/constants"],
