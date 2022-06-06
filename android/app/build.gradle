@@ -230,6 +230,12 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            storeFile file('./../keystores/bluecentury-release-key.jks')
+            storePassword 'UEqdisfme6zTLaedUMp96GTDvqkgFXby'
+            keyPassword 'UEqdisfme6zTLaedUMp96GTDvqkgFXby'
+            keyAlias = 'bluecentury-release-key'
+        }
     }
     buildTypes {
         debug {
@@ -238,7 +244,7 @@ android {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.relese
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
