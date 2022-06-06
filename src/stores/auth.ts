@@ -1,7 +1,8 @@
 import create from 'zustand';
 import {persist} from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {API, TCredentials} from '@bluecentury/api';
+import {API} from '@bluecentury/api/apiService';
+import {TCredentials} from '@bluecentury/api/models';
 
 type AuthState = {
   token: string | undefined;
