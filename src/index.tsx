@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import * as Sentry from '@sentry/react-native';
 import {SENTRY_DSN} from '@bluecentury/env';
 import {AppContainer} from '@bluecentury/components';
@@ -10,9 +10,6 @@ Sentry.init({
 });
 
 const App = () => {
-  useEffect(() => {
-    throw new Error('My first Sentry error!');
-  }, []);
   return (
     <AppContainer>
       <MainNavigator />
