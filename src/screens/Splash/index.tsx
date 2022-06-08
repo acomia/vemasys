@@ -1,12 +1,25 @@
 import React, {useEffect} from 'react';
 import {Text, View, Button} from 'native-base';
-import {useNavigation} from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {useAuth} from '@bluecentury/stores';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {CommonActions} from '@react-navigation/native';
 
-export default function Splash() {
-  const navigation = useNavigation();
+type Props = NativeStackScreenProps<RootStackParamList, 'Splash'>;
+
+export default function Splash({navigation}: Props) {
+  const {token, logout} = useAuth();
+  // uncomment below to logout user
   useEffect(() => {
-    setTimeout(() => navigation.navigate('Login'), 2000);
+    logout();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    if (token) {
+      navigation.dispatch(CommonActions.navigate({name: 'Main'}));
+    } else {
+      navigation.dispatch(CommonActions.navigate({name: 'Login'}));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <View>

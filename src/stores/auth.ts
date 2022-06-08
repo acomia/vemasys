@@ -13,6 +13,7 @@ type AuthState = {
 
 type AuthActions = {
   authenticate: (credentials: TCredentials) => void;
+  logout: () => void;
 };
 
 type AuthStore = AuthState & AuthActions;
@@ -35,14 +36,12 @@ export const useAuth = create(
 
         try {
           const response = await API.login(credentials);
-          console.log(response);
-
-          // set({
-          //   token: response.token,
-          //   refreshToken: response.refreshToken,
-          //   isAuthenticatingUser: false,
-          //   hasAuthenticationError: false,
-          // });
+          set({
+            token: response.token,
+            refreshToken: response.refreshToken,
+            isAuthenticatingUser: false,
+            hasAuthenticationError: false,
+          });
         } catch (error) {
           set({
             token: undefined,
@@ -51,6 +50,14 @@ export const useAuth = create(
             hasAuthenticationError: true,
           });
         }
+      },
+      logout: async () => {
+        set({
+          token: undefined,
+          refreshToken: undefined,
+          isAuthenticatingUser: false,
+          hasAuthenticationError: false,
+        });
       },
     }),
     {
