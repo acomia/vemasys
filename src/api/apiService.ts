@@ -3,7 +3,11 @@ import camelCaseKeys from 'camelcase-keys';
 import {API_URL, PROD_URL} from '@bluecentury/env';
 
 export const API = create({
-  baseURL: PROD_URL,
+  baseURL: API_URL,
+  headers: {
+    Accept: 'application/json',
+    'content-type': 'application/json',
+  },
 });
 
 const dataToCamelCase: ResponseTransform = response => {
