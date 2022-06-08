@@ -11,7 +11,8 @@ module.exports = {
         'no-shadow': 'off',
         'no-undef': 'off',
         semi: 'off',
-        'comma-dangle': 'off'
+        'comma-dangle': 'off',
+        'react-hooks/exhaustive-deps': 'warn'
       }
     }
   ]
