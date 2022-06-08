@@ -2,7 +2,7 @@ import {API} from '../../apiService';
 import {TCredentials, TUser} from '@bluecentury/api/models';
 
 const login = (userCredentials: TCredentials) => {
-  return API.post<any>('login_check', userCredentials)
+  return API.post<TUser>('login_check', userCredentials)
     .then(response => {
       if (response.data) {
         // Set future request Authorization

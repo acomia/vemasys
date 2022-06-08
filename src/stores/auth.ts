@@ -32,10 +32,11 @@ export const useAuth = create(
           isAuthenticatingUser: true,
           hasAuthenticationError: false,
         });
-        console.log(JSON.stringify(credentials));
 
         try {
           const response = await API.login(credentials);
+          console.log(response);
+
           set({
             token: response.token,
             refreshToken: response.refreshToken,

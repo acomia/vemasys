@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, StyleSheet} from 'react-native';
+import {ActivityIndicator, StyleSheet, TouchableOpacity} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {
@@ -26,7 +26,7 @@ export default function Login({navigation}: Props) {
   const {authenticate, isAuthenticatingUser, token} = useAuth();
   useEffect(() => {
     if (token) {
-      navigation.navigate('Main');
+      navigation.navigate('SelectEntity');
     }
   }, [navigation, token]);
 
@@ -54,12 +54,14 @@ export default function Login({navigation}: Props) {
   return (
     <SafeAreaView style={loginStyles.container}>
       <View style={loginStyles.content}>
-        <Image
-          alt="Company Logo"
-          source={Images.logo}
-          resizeMode="contain"
-          style={loginStyles.logo}
-        />
+        <TouchableOpacity activeOpacity={1}>
+          <Image
+            alt="Company Logo"
+            source={Images.logo}
+            resizeMode="contain"
+            style={loginStyles.logo}
+          />
+        </TouchableOpacity>
         <Text style={loginStyles.loginLabel}>Login to your Account</Text>
         <FormControl isInvalid={isUsernameEmpty} mb="5" mt="5">
           <Input
