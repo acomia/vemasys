@@ -2,7 +2,7 @@ import {API} from '../../apiService';
 import {TCredentials, TUser} from '@bluecentury/api/models';
 
 const login = (userCredentials: TCredentials) => {
-  return API.post<TUser>('./login', userCredentials)
+  return API.post<any>(`login_check`, userCredentials)
     .then(response => {
       if (response.data) {
         return response.data;
@@ -16,7 +16,7 @@ const login = (userCredentials: TCredentials) => {
 };
 
 const logout = (userCredentials: TCredentials) => {
-  return API.post<TUser>('./login', userCredentials)
+  return API.post<TUser>('login', userCredentials)
     .then(response => {
       if (response.data) {
         return response.data;
