@@ -1,5 +1,4 @@
 export type TUser = {
-  firstName: string;
-  lastName: string;
-  email: string;
+  refreshToken: string;
+  token: string;
 };
