@@ -1,12 +1,11 @@
 import React from 'react';
 import {View, Text} from 'react-native';
-import {IconButton} from 'native-base';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import {DrawerActions, useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import {Notification} from '@bluecentury/screens';
-import {Drawer} from '@bluecentury/components';
+import {Notification, Entity, Map} from '@bluecentury/screens';
+import {Drawer, IconButton} from '@bluecentury/components';
 import {icons} from '@bluecentury/assets';
 
 const {Navigator, Screen} = createDrawerNavigator();
@@ -25,30 +24,32 @@ export default function MainNavigator() {
         },
         headerTitleAlign: 'left',
         headerStyle: {backgroundColor: '#F0F0F0'},
-        // headerRight: () => (
-        //   <View
-        //     style={{
-        //       flexDirection: 'row',
-        //       alignItems: 'center',
-        //       marginRight: 10,
-        //     }}
-        //   >
-        //     <IconButton
-        //       source={icons.qr}
-        //       btnStyle={{ marginRight: 10 }}
-        //       onPress={() => navigation.navigate('QRScanner')}
-        //     />
-        //     <IconButton
-        //       source={icons.gps}
-        //       iconStyle={{ width: 35, height: 35 }}
-        //       onPress={() => navigation.navigate('QRScanner')}
-        //     />
-        //   </View>
-        // ),
+        headerShadowVisible: false,
+        headerRight: () => (
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginRight: 10,
+            }}>
+            <IconButton
+              source={icons.qr}
+              btnStyle={{marginRight: 10}}
+              onPress={() => {}}
+            />
+            <IconButton
+              source={icons.gps}
+              iconStyle={{width: 35, height: 35}}
+              onPress={() => {}}
+            />
+          </View>
+        ),
         headerLeft: () => (
           <IconButton
-            icon={<Icon name="menu" size={24} color="#23475C" />}
+            source={icons.menu}
+            btnStyle={{marginLeft: 10}}
             onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
+            iconStyle={{width: 22, height: 22}}
           />
         ),
       }}
@@ -60,6 +61,25 @@ export default function MainNavigator() {
           drawerIcon: ({color, size}) => (
             <Icon name="bell-outline" size={size} color={color} />
           ),
+        }}
+      />
+      {/* <Screen
+        name="Map"
+        component={Map}
+        options={{
+          drawerIcon: ({color, size}) => (
+            <Icon name="map" size={size} color={color} />
+          ),
+        }}
+      /> */}
+      <Screen
+        name="Change role"
+        component={Entity}
+        options={{
+          drawerIcon: ({color, size}) => (
+            <Icon name="account-circle-outline" size={size} color={color} />
+          ),
+          headerTitle: 'Select your role',
         }}
       />
     </Navigator>
