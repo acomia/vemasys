@@ -1,0 +1,6 @@
+{
+  "login": "Login",
+  "usernamePasswordRequired": "Please fill in all required fields.",
+  "passwordRequired": "A password is required.",
+  "usernameRequired": "A username is required."
+}
