@@ -13,8 +13,6 @@ function RootNavigator() {
 
   let timeout = useRef<any>()
   useEffect(() => {
-    console.log('token ', token)
-
     if (token) {
       timeout.current = setTimeout(() => {
         navigation.dispatch(
@@ -36,7 +34,7 @@ function RootNavigator() {
     }
     return () => clearTimeout(timeout.current)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [token])
 
   return (
     <Navigator

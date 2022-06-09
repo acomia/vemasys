@@ -18,18 +18,14 @@ import {Colors} from '@bluecentury/styles'
 import {TCredentials} from '@bluecentury/api/models'
 import {Images} from '@bluecentury/assets'
 import {_t} from '@bluecentury/constants'
-import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {useAuth} from '@bluecentury/stores'
-import {CommonActions} from '@react-navigation/native'
-
-type Props = NativeStackScreenProps<RootStackParamList, 'Login'>
 
 const usernameRequired = _t('usernameRequired')
 const passwordRequired = _t('passwordRequired')
 const usernamePasswordRequired = _t('usernamePasswordRequired')
 const login = _t('login')
 
-function Login({navigation}: Props) {
+function Login() {
   const {isAuthenticatingUser, authenticate} = useAuth()
   const [user, setUser] = useState<TCredentials>({username: '', password: ''})
   const [isShowPassword, setIsShowPassword] = useState(false)
@@ -49,14 +45,7 @@ function Login({navigation}: Props) {
       return setIsPasswordEmpty(true)
     }
 
-    authenticate(user, () => {
-      navigation.dispatch(
-        CommonActions.reset({
-          index: 0,
-          routes: [{name: 'Main'}]
-        })
-      )
-    })
+    authenticate(user)
   }
 
   return (

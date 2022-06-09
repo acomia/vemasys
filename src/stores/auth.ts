@@ -12,53 +12,58 @@ type AuthState = {
 }
 
 type AuthActions = {
-  authenticate: (credentials: TCredentials, callback: () => any) => void
+  authenticate: (credentials: TCredentials) => void
   logout: () => void
 }
 
 type AuthStore = AuthState & AuthActions
 
-export const useAuth = create<AuthStore>(set => ({
-  token: undefined,
-  refreshToken: undefined,
-  isAuthenticatingUser: false,
-  hasAuthenticationError: false,
-  authenticate: async (credentials, callback) => {
-    set({
+export const useAuth = create(
+  persist<AuthStore>(
+    set => ({
       token: undefined,
       refreshToken: undefined,
-      isAuthenticatingUser: true,
-      hasAuthenticationError: false
-    })
-    try {
-      const response = await API.login(credentials)
-      set({
-        token: response?.token,
-        refreshToken: response?.refreshToken,
-        isAuthenticatingUser: false,
-        hasAuthenticationError: false
-      })
-      if (callback && typeof callback === 'function') {
-        callback()
-      }
-    } catch (error) {
-      set({
-        token: undefined,
-        refreshToken: undefined,
-        isAuthenticatingUser: false,
-        hasAuthenticationError: true
-      })
-    }
-  },
-  logout: async () => {
-    set(
-      {
-        token: undefined,
-        refreshToken: undefined,
-        isAuthenticatingUser: false,
-        hasAuthenticationError: false
+      isAuthenticatingUser: false,
+      hasAuthenticationError: false,
+      authenticate: async credentials => {
+        set({
+          token: undefined,
+          refreshToken: undefined,
+          isAuthenticatingUser: true,
+          hasAuthenticationError: false
+        })
+        try {
+          const response = await API.login(credentials)
+          set({
+            token: response?.token,
+            refreshToken: response?.refreshToken,
+            isAuthenticatingUser: false,
+            hasAuthenticationError: false
+          })
+        } catch (error) {
+          set({
+            token: undefined,
+            refreshToken: undefined,
+            isAuthenticatingUser: false,
+            hasAuthenticationError: true
+          })
+        }
       },
-      true
-    )
-  }
-}))
+      logout: async () => {
+        set(
+          {
+            token: undefined,
+            refreshToken: undefined,
+            isAuthenticatingUser: false,
+            hasAuthenticationError: false
+          },
+          true
+        )
+      }
+    }),
+    {
+      name: 'auth-storage',
+      getStorage: () => AsyncStorage
+    }
+  )
+)
