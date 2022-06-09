@@ -2,7 +2,7 @@ import React from 'react';
 import * as Sentry from '@sentry/react-native';
 import {SENTRY_DSN} from '@bluecentury/env';
 import {AppContainer} from '@bluecentury/components';
-import {MainNavigator} from '@bluecentury/navigation';
+import {RootNavigator} from '@bluecentury/navigation';
 
 Sentry.init({
   dsn: SENTRY_DSN,
@@ -12,7 +12,7 @@ Sentry.init({
 const App = () => {
   return (
     <AppContainer>
-      <MainNavigator />
+      <RootNavigator />
     </AppContainer>
   );
 };
