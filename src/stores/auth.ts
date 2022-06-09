@@ -35,8 +35,6 @@ export const useAuth = create(
 
         try {
           const response = await API.login(credentials);
-          console.log(response);
-
           set({
             token: response.token,
             refreshToken: response.refreshToken,
