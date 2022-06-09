@@ -1,21 +1,22 @@
-import create from 'zustand';
-import {persist} from 'zustand/middleware';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {API} from '@bluecentury/api/apiService';
-import {TCredentials} from '@bluecentury/api/models';
+import create from 'zustand'
+import {persist} from 'zustand/middleware'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import * as API from '@bluecentury/api/vemasys'
+import {TCredentials} from '@bluecentury/api/models'
 
 type AuthState = {
-  token: string | undefined;
-  refreshToken: string | undefined;
-  isAuthenticatingUser: boolean;
-  hasAuthenticationError: boolean;
-};
+  token: string | undefined
+  refreshToken: string | undefined
+  isAuthenticatingUser: boolean
+  hasAuthenticationError: boolean
+}
 
 type AuthActions = {
-  authenticate: (credentials: TCredentials) => void;
-};
+  authenticate: (credentials: TCredentials) => void
+  logout: () => void
+}
 
-type AuthStore = AuthState & AuthActions;
+type AuthStore = AuthState & AuthActions
 
 export const useAuth = create(
   persist<AuthStore>(
@@ -24,34 +25,45 @@ export const useAuth = create(
       refreshToken: undefined,
       isAuthenticatingUser: false,
       hasAuthenticationError: false,
-      authenticate: async (credentials: TCredentials) => {
+      authenticate: async credentials => {
         set({
           token: undefined,
           refreshToken: undefined,
           isAuthenticatingUser: true,
-          hasAuthenticationError: false,
-        });
+          hasAuthenticationError: false
+        })
         try {
-          const response = await API.requestAccesstoken(credentials);
+          const response = await API.login(credentials)
           set({
-            token: response.token,
-            refreshToken: response.refreshToken,
+            token: response?.token,
+            refreshToken: response?.refreshToken,
             isAuthenticatingUser: false,
-            hasAuthenticationError: false,
-          });
+            hasAuthenticationError: false
+          })
         } catch (error) {
           set({
             token: undefined,
             refreshToken: undefined,
             isAuthenticatingUser: false,
-            hasAuthenticationError: true,
-          });
+            hasAuthenticationError: true
+          })
         }
       },
+      logout: async () => {
+        set(
+          {
+            token: undefined,
+            refreshToken: undefined,
+            isAuthenticatingUser: false,
+            hasAuthenticationError: false
+          },
+          true
+        )
+      }
     }),
     {
       name: 'auth-storage',
-      getStorage: () => AsyncStorage,
-    },
-  ),
-);
+      getStorage: () => AsyncStorage
+    }
+  )
+)
