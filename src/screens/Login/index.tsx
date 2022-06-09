@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react'
 import {ActivityIndicator} from 'react-native'
-import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {
   Box,
   VStack,
@@ -14,28 +13,24 @@ import {
   Center
 } from 'native-base'
 import Ionicons from 'react-native-vector-icons/Ionicons'
-import {CommonActions} from '@react-navigation/native'
 import {ms} from 'react-native-size-matters'
 import {Colors} from '@bluecentury/styles'
-import {useAuth} from '@bluecentury/stores'
 import {TCredentials} from '@bluecentury/api/models'
 import {Images} from '@bluecentury/assets'
 import {_t} from '@bluecentury/constants'
+import {NativeStackScreenProps} from '@react-navigation/native-stack'
+import {useAuth} from '@bluecentury/stores'
+import {CommonActions} from '@react-navigation/native'
 
-type Props = NativeStackScreenProps<RootStackParamList>
+type Props = NativeStackScreenProps<RootStackParamList, 'Login'>
+
+const usernameRequired = _t('usernameRequired')
+const passwordRequired = _t('passwordRequired')
+const usernamePasswordRequired = _t('usernamePasswordRequired')
+const login = _t('login')
 
 function Login({navigation}: Props) {
-  const {authenticate, isAuthenticatingUser, token} = useAuth()
-  useEffect(() => {
-    if (token) {
-      navigation.dispatch(
-        CommonActions.reset({
-          routes: [{name: 'Main'}]
-        })
-      )
-    }
-  }, [navigation, token])
-
+  const {isAuthenticatingUser, authenticate} = useAuth()
   const [user, setUser] = useState<TCredentials>({username: '', password: ''})
   const [isShowPassword, setIsShowPassword] = useState(false)
   const [isUsernameEmpty, setIsUsernameEmpty] = useState(false)
@@ -54,7 +49,14 @@ function Login({navigation}: Props) {
       return setIsPasswordEmpty(true)
     }
 
-    authenticate(user)
+    authenticate(user, () => {
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{name: 'Main'}]
+        })
+      )
+    })
   }
 
   return (
@@ -89,7 +91,8 @@ function Login({navigation}: Props) {
             />
             <FormControl.ErrorMessage
               leftIcon={<WarningOutlineIcon size="xs" />}>
-              {_t('usernameRequired')}
+              {/* {_t(language, 'usernameRequired')} */}
+              {usernameRequired}
             </FormControl.ErrorMessage>
           </FormControl>
           <FormControl isInvalid={isPasswordEmpty}>
@@ -129,20 +132,21 @@ function Login({navigation}: Props) {
             <FormControl.ErrorMessage
               leftIcon={<WarningOutlineIcon size="xs" />}>
               {user.username === '' && user.password === ''
-                ? _t('usernamePasswordRequired')
-                : _t('passwordRequired')}
+                ? usernamePasswordRequired
+                : passwordRequired}
             </FormControl.ErrorMessage>
           </FormControl>
         </VStack>
         <Button
           colorScheme="azure"
           onPress={onUserLogin}
+          isDisabled={isAuthenticatingUser}
           isLoading={isAuthenticatingUser}
           _loading={<ActivityIndicator size="small" />}
           _text={{
             textTransform: 'uppercase'
           }}>
-          {_t('login')}
+          {login}
         </Button>
       </VStack>
     </Box>

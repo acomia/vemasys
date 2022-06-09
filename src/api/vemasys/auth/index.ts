@@ -5,8 +5,12 @@ const login = (userCredentials: TCredentials) => {
   return API.post<TUser>('login_check', userCredentials)
     .then(response => {
       // Set future request Authorization
-      API.setHeader('Authorization', `Bearer ${response.data.token}`)
-      return response.data
+      if (response.data) {
+        API.setHeader('Authorization', `Bearer ${response.data.token}`)
+        return response.data
+      } else {
+        throw new Error('Authentication failed.')
+      }
     })
     .catch(error => {
       console.error('Error: API Login ', error)
@@ -19,7 +23,7 @@ const logout = (userCredentials: TCredentials) => {
       if (response.data) {
         return response.data
       } else {
-        throw Error('Request Failed')
+        throw new Error('Request Failed')
       }
     })
     .catch(error => {
@@ -33,7 +37,7 @@ const resetToken = (userCredentials: TCredentials) => {
       if (response.data) {
         return response.data
       } else {
-        throw Error('Request Failed')
+        throw new Error('Request Failed')
       }
     })
     .catch(error => {
