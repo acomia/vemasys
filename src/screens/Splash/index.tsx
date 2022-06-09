@@ -21,5 +21,9 @@ export default function Splash({navigation}: Props) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  return <View>{/* <Text>{API_URL}</Text> */}</View>;
+  return (
+    <View>
+      <Text>test</Text>
+    </View>
+  );
 }
