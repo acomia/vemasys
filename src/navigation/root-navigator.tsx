@@ -1,6 +1,6 @@
 import React, {useEffect, useRef} from 'react'
 import {createNativeStackNavigator} from '@react-navigation/native-stack'
-import {Login, Splash} from '@bluecentury/screens'
+import {Login, Splash, Entity} from '@bluecentury/screens'
 import MainNavigator from './main-navigator'
 import {useAuth} from '@bluecentury/stores'
 import {CommonActions, useNavigation} from '@react-navigation/native'
@@ -40,7 +40,8 @@ function RootNavigator() {
     <Navigator
       initialRouteName="Splash"
       screenOptions={{
-        headerShown: false
+        headerShown: false,
+        headerShadowVisible: false
       }}>
       <Screen name="Splash" component={Splash} />
       <Screen
@@ -50,7 +51,19 @@ function RootNavigator() {
           headerShown: false
         }}
       />
-      <Screen name="Main" component={MainNavigator} />
+      <Screen
+        name="SelectEntity"
+        component={Entity}
+        options={{
+          title: 'Select your role',
+          headerStyle: {backgroundColor: '#F0F0F0'}
+        }}
+      />
+      <Screen
+        name="Main"
+        component={MainNavigator}
+        options={{headerShown: false}}
+      />
     </Navigator>
   )
 }
