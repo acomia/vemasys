@@ -1,27 +1,26 @@
-import React from 'react';
-import {View, Text} from 'react-native';
-import {IconButton} from 'native-base';
-import {createDrawerNavigator} from '@react-navigation/drawer';
-import {DrawerActions, useNavigation} from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import React from 'react'
+import {IconButton, Icon} from 'native-base'
+import {createDrawerNavigator} from '@react-navigation/drawer'
+import {DrawerActions} from '@react-navigation/native'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import {Notification} from '@bluecentury/screens'
+import {Sidebar} from '@bluecentury/components'
+import {ms} from 'react-native-size-matters'
+import {NativeStackScreenProps} from '@react-navigation/native-stack'
 
-import {Notification} from '@bluecentury/screens';
-import {Drawer} from '@bluecentury/components';
-import {icons} from '@bluecentury/assets';
+const {Navigator, Screen} = createDrawerNavigator<MainStackParamList>()
 
-const {Navigator, Screen} = createDrawerNavigator();
+type Props = NativeStackScreenProps<RootStackParamList, 'Main'>
 
-export default function MainNavigator() {
-  const navigation = useNavigation();
+export default function MainNavigator({navigation}: Props) {
   return (
     <Navigator
-      drawerContent={(props: any) => <Drawer {...props} />}
       screenOptions={{
         drawerActiveBackgroundColor: '#44A7B9',
         drawerActiveTintColor: '#fff',
         drawerInactiveTintColor: '#333',
         drawerLabelStyle: {
-          fontSize: 15,
+          fontSize: 15
         },
         headerTitleAlign: 'left',
         headerStyle: {backgroundColor: '#F0F0F0'},
@@ -47,21 +46,32 @@ export default function MainNavigator() {
         // ),
         headerLeft: () => (
           <IconButton
-            icon={<Icon name="menu" size={24} color="#23475C" />}
+            icon={
+              <Icon
+                as={<MaterialCommunityIcons name="menu" />}
+                size={ms(24)}
+                color="#23475C"
+              />
+            }
             onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
           />
-        ),
+        )
       }}
-      initialRouteName="Notification">
+      initialRouteName="Notification"
+      drawerContent={props => <Sidebar {...props} />}>
       <Screen
         name="Notification"
         component={Notification}
         options={{
           drawerIcon: ({color, size}) => (
-            <Icon name="bell-outline" size={size} color={color} />
-          ),
+            <Icon
+              as={<MaterialCommunityIcons name="bell-outline" />}
+              size={ms(size)}
+              color={color}
+            />
+          )
         }}
       />
     </Navigator>
-  );
+  )
 }

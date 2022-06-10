@@ -1,38 +1,36 @@
-import React from 'react';
-import {View, Text, Image, StyleSheet} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import React from 'react'
+import {Box, Text, Image, Center, VStack} from 'native-base'
 import {
+  DrawerContentComponentProps,
   DrawerContentScrollView,
-  DrawerItemList,
-} from '@react-navigation/drawer';
+  DrawerItemList
+} from '@react-navigation/drawer'
+import {Colors} from '@bluecentury/styles'
+import {Images} from '@bluecentury/assets'
+import {ms} from 'react-native-size-matters'
 
-import app from '../../../app.json';
-
-export const Drawer = (props: any) => {
+const Drawer: React.FC<DrawerContentComponentProps> = props => {
   return (
-    <SafeAreaView style={drawerStyles.container}>
+    <Box flex="1" safeArea>
       <DrawerContentScrollView {...props}>
-        <Image
-          source={require('../../assets/images/logo.png')}
-          resizeMode="contain"
-          style={drawerStyles.logo}
-        />
-        <View style={drawerStyles.content}>
+        <VStack>
+          <Center my={ms(20)}>
+            <Image
+              alt="Company Logo"
+              source={Images.logo}
+              resizeMode="contain"
+              w={ms(200)}
+              h={ms(60)}
+            />
+          </Center>
           <DrawerItemList {...props} />
-        </View>
+        </VStack>
       </DrawerContentScrollView>
-      <View style={drawerStyles.versionLabel}>
-        <Text style={{color: '#ADADAD'}}>Version: {app.version}</Text>
-      </View>
-    </SafeAreaView>
-  );
-};
+      <Center p="5">
+        <Text color={Colors.disabled}>Version: 1.0</Text>
+      </Center>
+    </Box>
+  )
+}
 
-const drawerStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {flex: 1, backgroundColor: '#fff', padding: 10},
-  logo: {width: 200, height: 60, alignSelf: 'center', marginVertical: 20},
-  versionLabel: {padding: 10, alignItems: 'center'},
-});
+export default Drawer
