@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from 'react'
+import React, {useRef, useEffect} from 'react'
 import {createNativeStackNavigator} from '@react-navigation/native-stack'
 import {Login, Splash, Entity} from '@bluecentury/screens'
 import MainNavigator from './main-navigator'

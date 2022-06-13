@@ -1,14 +1,17 @@
 import React from 'react'
-import {View} from 'react-native'
+import {View, Icon} from 'native-base'
 import {createDrawerNavigator} from '@react-navigation/drawer'
 import {DrawerActions} from '@react-navigation/native'
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
-import {Entity} from '@bluecentury/screens'
-import {icons} from '@bluecentury/assets'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import {Notification, Entity} from '@bluecentury/screens'
 import {Sidebar, IconButton} from '@bluecentury/components'
+import {icons} from '@bluecentury/assets'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
+import {Screens} from '@bluecentury/constants'
+import {ms} from 'react-native-size-matters'
 
 const {Navigator, Screen} = createDrawerNavigator<MainStackParamList>()
+
 type Props = NativeStackScreenProps<RootStackParamList, 'Main'>
 
 export default function MainNavigator({navigation}: Props) {
@@ -52,10 +55,10 @@ export default function MainNavigator({navigation}: Props) {
           />
         )
       }}
-      initialRouteName="Notification"
+      initialRouteName={Screens.Notifications}
       drawerContent={props => <Sidebar {...props} />}>
-      {/* <Screen
-        name="Notification"
+      <Screen
+        name={Screens.Notifications}
         component={Notification}
         options={{
           drawerIcon: ({color, size}) => (
@@ -66,7 +69,7 @@ export default function MainNavigator({navigation}: Props) {
             />
           )
         }}
-      /> */}
+      />
       {/* <Screen
         name="Map"
         component={Map}
@@ -77,13 +80,18 @@ export default function MainNavigator({navigation}: Props) {
         }}
       /> */}
       <Screen
-        name="ChangeRole"
+        name={Screens.ChangeRole}
         component={Entity}
         options={{
           drawerIcon: ({color, size}) => (
-            <Icon name="account-circle-outline" size={size} color={color} />
+            <Icon
+              as={<MaterialCommunityIcons name="account-circle-outline" />}
+              size={ms(size)}
+              color={color}
+            />
           ),
-          headerTitle: 'Select your role'
+          headerTitle: 'Select your role',
+          drawerLabel: 'Change Role'
         }}
       />
     </Navigator>
