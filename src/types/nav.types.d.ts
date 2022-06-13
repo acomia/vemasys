@@ -6,4 +6,5 @@ type RootStackParamList = {
 
 type MainStackParamList = {
   Notification: undefined
+  Map: undefined
 }

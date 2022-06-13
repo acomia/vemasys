@@ -3,7 +3,7 @@ import {IconButton, Icon} from 'native-base'
 import {createDrawerNavigator} from '@react-navigation/drawer'
 import {DrawerActions} from '@react-navigation/native'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
-import {Notification} from '@bluecentury/screens'
+import {Map, Notification} from '@bluecentury/screens'
 import {Sidebar} from '@bluecentury/components'
 import {ms} from 'react-native-size-matters'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
@@ -57,7 +57,7 @@ export default function MainNavigator({navigation}: Props) {
           />
         )
       }}
-      initialRouteName="Notification"
+      initialRouteName="Map"
       drawerContent={props => <Sidebar {...props} />}>
       <Screen
         name="Notification"
@@ -66,6 +66,19 @@ export default function MainNavigator({navigation}: Props) {
           drawerIcon: ({color, size}) => (
             <Icon
               as={<MaterialCommunityIcons name="bell-outline" />}
+              size={ms(size)}
+              color={color}
+            />
+          )
+        }}
+      />
+      <Screen
+        name="Map"
+        component={Map}
+        options={{
+          drawerIcon: ({color, size}) => (
+            <Icon
+              as={<MaterialCommunityIcons name="map" />}
               size={ms(size)}
               color={color}
             />
