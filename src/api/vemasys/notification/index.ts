@@ -1,5 +1,18 @@
-import {API} from '@bluecentury/api/apiService';
+import {API} from '../../apiService'
+import {TNotification} from '@bluecentury/api/models'
 
-const getNotification = () => {};
+const getNotifications = () => {
+  return API.get<TNotification>('v3/notifications')
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Notification failed.')
+      }
+    })
+    .catch(error => {
+      console.error('Error: Notification fetching data', error)
+    })
+}
 
-export {getNotification};
+export {getNotifications}
