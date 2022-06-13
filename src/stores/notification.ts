@@ -1,45 +1,46 @@
-import create from 'zustand';
-import {persist} from 'zustand/middleware';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as API from '@bluecentury/api/vemasys';
+import create from 'zustand'
+import {persist} from 'zustand/middleware'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
-type NotificationState = {
-  notifications: [];
-  isLoadingNotification: boolean;
-};
+import * as API from '@bluecentury/api/vemasys'
+import {TNotification} from '@bluecentury/api/models'
 
-type NotificationActions = {
-  getNotifications: () => void;
-};
+type NotifState = {
+  notifications: TNotification[]
+  isLoadingNotification: boolean
+}
 
-type NotificationStore = NotificationState & NotificationActions;
+type NotifActions = {
+  getAllNotifications: () => void
+}
 
-export const useNotification = create(
-  persist<NotificationStore>(
+type NotifStore = NotifState & NotifActions
+
+export const useNotif = create(
+  persist<NotifStore>(
     set => ({
-      notifications: [],
       isLoadingNotification: false,
-      getNotifications: async () => {
+      notifications: [],
+      getAllNotifications: async () => {
         set({
-          isLoadingNotification: true,
-        });
+          isLoadingNotification: true
+        })
         try {
-          const response = API.getNotification();
-          console.log(response);
+          const response = await API.getNotifications()
           set({
-            notifications: response,
             isLoadingNotification: false,
-          });
+            notifications: response
+          })
         } catch (error) {
           set({
-            isLoadingNotification: false,
-          });
+            isLoadingNotification: false
+          })
         }
-      },
+      }
     }),
     {
-      name: 'notification-storage',
-      getStorage: () => AsyncStorage,
-    },
-  ),
-);
+      name: 'notif-storage',
+      getStorage: () => AsyncStorage
+    }
+  )
+)
