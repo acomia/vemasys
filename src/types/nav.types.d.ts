@@ -6,6 +6,7 @@ type RootStackParamList = {
 }
 
 type MainStackParamList = {
+  ChangeRole: undefined
   Notification: undefined
   ChangeRole: undefined
 }
