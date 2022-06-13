@@ -7,6 +7,7 @@ import {Notification, Entity} from '@bluecentury/screens'
 import {Sidebar, IconButton} from '@bluecentury/components'
 import {icons} from '@bluecentury/assets'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
+import {Screens} from '@bluecentury/constants'
 
 const {Navigator, Screen} = createDrawerNavigator<MainStackParamList>()
 type Props = NativeStackScreenProps<RootStackParamList, 'Main'>
@@ -52,10 +53,10 @@ export default function MainNavigator({navigation}: Props) {
           />
         )
       }}
-      initialRouteName="Notification"
+      initialRouteName={Screens.Notifications}
       drawerContent={props => <Sidebar {...props} />}>
-      <Screen
-        name="Notification"
+      {/* <Screen
+        name={Screens.Notifications}
         component={Notification}
         options={{
           drawerIcon: ({color, size}) => (
@@ -66,7 +67,7 @@ export default function MainNavigator({navigation}: Props) {
             />
           )
         }}
-      />
+      /> */}
       {/* <Screen
         name="Map"
         component={Map}
@@ -77,13 +78,14 @@ export default function MainNavigator({navigation}: Props) {
         }}
       /> */}
       <Screen
-        name="Change role"
+        name={Screens.ChangeRole}
         component={Entity}
         options={{
           drawerIcon: ({color, size}) => (
             <Icon name="account-circle-outline" size={size} color={color} />
           ),
-          headerTitle: 'Select your role'
+          headerTitle: 'Select your role',
+          drawerLabel: 'Change Role'
         }}
       />
     </Navigator>
