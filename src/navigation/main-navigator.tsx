@@ -56,7 +56,7 @@ export default function MainNavigator({navigation}: Props) {
       }}
       initialRouteName={Screens.Notifications}
       drawerContent={props => <Sidebar {...props} />}>
-      {/* <Screen
+      <Screen
         name={Screens.Notifications}
         component={Notification}
         options={{
@@ -68,7 +68,7 @@ export default function MainNavigator({navigation}: Props) {
             />
           )
         }}
-      /> */}
+      />
       {/* <Screen
         name="Map"
         component={Map}
