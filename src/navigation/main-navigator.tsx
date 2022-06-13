@@ -8,6 +8,7 @@ import {Sidebar, IconButton} from '@bluecentury/components'
 import {icons} from '@bluecentury/assets'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {Screens} from '@bluecentury/constants'
+import {ms} from 'react-native-size-matters'
 
 const {Navigator, Screen} = createDrawerNavigator<MainStackParamList>()
 type Props = NativeStackScreenProps<RootStackParamList, 'Main'>
@@ -82,7 +83,11 @@ export default function MainNavigator({navigation}: Props) {
         component={Entity}
         options={{
           drawerIcon: ({color, size}) => (
-            <Icon name="account-circle-outline" size={size} color={color} />
+            <Icon
+              as={<MaterialCommunityIcons name="account-circle-outline" />}
+              size={ms(size)}
+              color={color}
+            />
           ),
           headerTitle: 'Select your role',
           drawerLabel: 'Change Role'
