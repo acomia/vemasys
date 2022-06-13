@@ -1,14 +1,15 @@
 import React from 'react'
-import {View} from 'react-native'
+import {View, Icon} from 'native-base'
 import {createDrawerNavigator} from '@react-navigation/drawer'
 import {DrawerActions} from '@react-navigation/native'
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
-import {Entity} from '@bluecentury/screens'
-import {icons} from '@bluecentury/assets'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import {Notification, Entity} from '@bluecentury/screens'
 import {Sidebar, IconButton} from '@bluecentury/components'
+import {icons} from '@bluecentury/assets'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 
 const {Navigator, Screen} = createDrawerNavigator<MainStackParamList>()
+
 type Props = NativeStackScreenProps<RootStackParamList, 'Main'>
 
 export default function MainNavigator({navigation}: Props) {
