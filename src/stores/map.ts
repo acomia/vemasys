@@ -12,8 +12,8 @@ type MapState = {
 
 type MapActions = {
   getPreviousNavigationLogs: (vesselId: string) => void
-  // getPlannedNavigationLogs: (vesselId: string) => void
-  // getCurrentNavigationLogs: (vesselId: string) => void
+  getPlannedNavigationLogs: (vesselId: string) => void
+  getCurrentNavigationLogs: (vesselId: string) => void
 }
 
 type MapStore = MapState & MapActions
@@ -31,8 +31,6 @@ export const useMap = create(
         })
         try {
           const response = await API.getPreviousNavLog(vesselId)
-          console.log('prevnavlog', response)
-
           set({
             isLoadingMap: false,
             prevNavLogs: response
@@ -42,8 +40,41 @@ export const useMap = create(
             isLoadingMap: false
           })
         }
+      },
+      getPlannedNavigationLogs: async (vesselId: string) => {
+        set({
+          isLoadingMap: true
+        })
+        try {
+          const response = await API.getPlannedNavLog(vesselId)
+          set({
+            isLoadingMap: false,
+            plannedNavLogs: response
+          })
+        } catch (error) {
+          set({
+            isLoadingMap: false
+          })
+        }
+      },
+      getCurrentNavigationLogs: async (vesselId: string) => {
+        set({
+          isLoadingMap: true
+        })
+        try {
+          const response = await API.getCurrentNavLog(vesselId)
+          set({
+            isLoadingMap: false,
+            currentNavLogs: response
+          })
+        } catch (error) {
+          set({
+            isLoadingMap: false
+          })
+        }
       }
     }),
+
     {
       name: 'map-storage',
       getStorage: () => AsyncStorage
