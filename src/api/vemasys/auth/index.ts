@@ -6,10 +6,8 @@ const login = (userCredentials: TCredentials) => {
     .then(response => {
       // Set future request Authorization
       if (response.data) {
-        API.setHeaders({
-          'Jwt-Auth': `Bearer ${response.data.token}`,
-          'X-active-entity-user-id': '2806'
-        })
+        // Set future request Authorization
+        API.setHeader('Jwt-Auth', `Bearer ${response.data.token}`)
         return response.data
       } else {
         throw new Error('Authentication failed.')
