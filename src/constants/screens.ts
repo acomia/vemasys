@@ -5,5 +5,5 @@ export enum Screens {
   Main = 'Main',
   ChangeRole = 'ChangeRole',
   Notifications = 'Notification',
-  Map = 'Map'
+  MapView = 'MapView'
 }
