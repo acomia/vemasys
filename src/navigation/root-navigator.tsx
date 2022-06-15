@@ -17,7 +17,7 @@ function RootNavigator() {
         navigation.dispatch(
           CommonActions.reset({
             index: 0,
-            routes: [{name: 'Main'}]
+            routes: [{name: 'SelectEntity'}]
           })
         )
       }, 1500)

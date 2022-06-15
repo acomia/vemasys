@@ -9,7 +9,7 @@ import {useMap} from '@bluecentury/stores'
 
 export const PlannedNavLogInfo = () => {
   const {plannedNavLogs} = useMap()
-  const navigationLog = plannedNavLogs?.find(nav => nav?.plannedETA !== null)
+  const navigationLog = plannedNavLogs?.filter(e => e && e.plannedETA !== null)
 
   function formatLocationLabel(location: GeographicPoint) {
     if (location.locationName) {
@@ -30,11 +30,13 @@ export const PlannedNavLogInfo = () => {
         ) : (
           <>
             <Text fontWeight="700">
-              To: {formatLocationLabel(navigationLog?.location)}
+              To: {formatLocationLabel(navigationLog[0]?.location)}
             </Text>
             <Text color="#ADADAD">
               Planned:{' '}
-              {moment(navigationLog?.plannedETA).format('DD MMM YYYY | HH:mm')}
+              {moment(navigationLog[0]?.plannedETA).format(
+                'DD MMM YYYY | HH:mm'
+              )}
             </Text>
           </>
         )}

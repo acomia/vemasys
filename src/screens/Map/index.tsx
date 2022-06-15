@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useEffect, useLayoutEffect, useRef, useState} from 'react'
 import {
   View,
   StyleSheet,
@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   Dimensions
 } from 'react-native'
-import {Box, Flex, Text, Button} from 'native-base'
+import {Box, Flex, Text, Button, HStack} from 'native-base'
 import MapView, {
   PROVIDER_GOOGLE,
   Marker,
@@ -15,34 +15,43 @@ import MapView, {
 } from 'react-native-maps'
 import BottomSheet from 'reanimated-bottom-sheet'
 import {ms} from 'react-native-size-matters'
+import moment from 'moment'
 
 import {
   PreviousNavLogInfo,
   PlannedNavLogInfo,
-  CurrentNavLogInfo
+  CurrentNavLogInfo,
+  LoadingIndicator
 } from '@bluecentury/components'
-import {icons} from '@bluecentury/assets'
+import {icons, Images} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
-import {useMap, useAuth} from '@bluecentury/stores'
+import {useMap, useAuth, useEntity} from '@bluecentury/stores'
 
 const {width, height} = Dimensions.get('window')
 const ASPECT_RATIO = width / height
 const LATITUDE_DELTA = 0.0922
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO
+const DEFAULT_PADDING = {top: 45, right: 45, bottom: 45, left: 45}
+
 export default function Map() {
   const {
+    isLoadingMap,
     getPreviousNavigationLogs,
     getPlannedNavigationLogs,
     getCurrentNavigationLogs,
+    getLastCompleteNavigationLogs,
     prevNavLogs,
     plannedNavLogs,
-    currentNavLogs
-  } = useMap()
+    currentNavLogs,
+    lastCompleteNavLogs
+  }: any = useMap()
   const {logout} = useAuth()
+  const {vesselId, selectedVessel} = useEntity()
 
   const LATITUDE = 50.503887
   const LONGITUDE = 4.469936
   const sheetRef = useRef(null)
+  const mapRef = useRef(null)
   const [snapStatus, setSnapStatus] = useState(0)
   const [region, setRegion] = useState({
     latitude: LATITUDE,
@@ -51,12 +60,23 @@ export default function Map() {
     longitudeDelta: LONGITUDE_DELTA
   })
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     // logout()
-    getPreviousNavigationLogs('118')
-    getPlannedNavigationLogs('118')
-    getCurrentNavigationLogs('118')
+    getPreviousNavigationLogs(vesselId)
+    getPlannedNavigationLogs(vesselId)
+    getCurrentNavigationLogs(vesselId)
   }, [])
+
+  useEffect(() => {
+    setRegion({
+      ...region,
+      latitude: currentNavLogs[0]?.location?.latitude,
+      longitude: currentNavLogs[0]?.location?.longitude
+    })
+    getLastCompleteNavigationLogs(plannedNavLogs[0]?.id)
+
+    fitToAllMarkers()
+  }, [currentNavLogs])
 
   const renderBottomContent = () => (
     <Box backgroundColor="#fff" height={ms(440)} px={ms(30)} py={ms(20)}>
@@ -76,7 +96,7 @@ export default function Map() {
         fontWeight="700"
         textAlign="center"
         color={Colors.azure}>
-        Vessel Name Here
+        {selectedVessel?.alias}
       </Text>
       {snapStatus === 1 && <PreviousNavLogInfo />}
       <CurrentNavLogInfo />
@@ -88,19 +108,19 @@ export default function Map() {
   )
 
   function renderMarkerFrom() {
-    const previousLocation = Array.isArray(prevNavLogs)
-      ? prevNavLogs?.find(nav => nav?.plannedETA !== null)
-      : {}
+    const previousLocation: any = prevNavLogs?.filter(
+      (e: any) => e && e.plannedETA !== null
+    )
     return (
       <Marker
-        key={previousLocation?.location?.id}
+        key={previousLocation[0]?.location?.id}
         pinColor={'#6BBF87'}
         coordinate={{
-          latitude: previousLocation?.location?.latitude,
-          longitude: previousLocation?.location?.longitude
+          latitude: previousLocation[0]?.location?.latitude,
+          longitude: previousLocation[0]?.location?.longitude
         }}
-        title={`From: ${previousLocation?.location?.name}`}
-        description="Sample Description"
+        title={`From: ${previousLocation[0]?.location?.name}`}
+        style={{zIndex: 1}}
       />
     )
   }
@@ -113,56 +133,113 @@ export default function Map() {
           latitude: currentNavLogs[0]?.location?.latitude,
           longitude: currentNavLogs[0]?.location?.longitude
         }}
-        title="Sample Marker"
-        description="Sample Description"
+        image={Images.anchor}
+        style={{zIndex: 1}}
       />
     )
   }
 
   function renderMarkerTo() {
-    const nextLocation = Array.isArray(plannedNavLogs)
-      ? plannedNavLogs?.find(nav => nav?.plannedETA !== null)
-      : {}
+    const nextLocation: any = plannedNavLogs?.filter(
+      (e: any) => e && e.plannedETA !== null
+    )
     return (
       <Marker
-        key={nextLocation?.location?.id}
+        key={nextLocation[0]?.location?.id}
         pinColor={'#29B7EF'}
         coordinate={{
-          latitude: nextLocation?.location?.latitude,
-          longitude: nextLocation?.location?.longitude
+          latitude: nextLocation[0]?.location?.latitude,
+          longitude: nextLocation[0]?.location?.longitude
         }}
-        title={`To: ${nextLocation?.location?.name}`}
-        description="Sample Description"
+        title={`To: ${nextLocation[0]?.location?.name}`}
+        style={{zIndex: 1}}
       />
     )
+  }
+
+  function renderLastCompleteNavLogs(log: any) {
+    return (
+      <Marker
+        key={log.location?.id}
+        pinColor={'#F0f0f0'}
+        coordinate={{
+          latitude: log.location?.latitude,
+          longitude: log.location?.longitude
+        }}
+        style={{zIndex: 0}}>
+        <HStack style={{zIndex: 0}}>
+          <Box
+            backgroundColor={
+              log?.navigationLog?.arrivalDatetime ? '#44A7B9' : '#F0F0F0'
+            }
+            width={ms(20)}
+            height={ms(20)}
+            borderRadius={ms(20)}
+            borderColor={'#fff'}
+            borderWidth={ms(2)}
+            mr={ms(5)}
+            style={{zIndex: 0}}
+          />
+          <Box
+            backgroundColor="#fff"
+            borderRadius={ms(5)}
+            padding={ms(2)}
+            style={{zIndex: 0}}>
+            <Text fontWeight="medium">
+              {moment(
+                log?.navigationLog?.arrivalDatetime
+                  ? log?.navigationLog?.arrivalDatetime
+                  : log?.navigationLog?.plannedETA
+              ).format('DD MMM YYYY | HH:mm')}
+            </Text>
+          </Box>
+        </HStack>
+      </Marker>
+    )
+  }
+
+  function fitToAllMarkers() {
+    const previousLocation: any = prevNavLogs?.filter(
+      (e: any) => e && e.plannedETA !== null
+    )
+    const nextLocation: any = plannedNavLogs?.filter(
+      (e: any) => e && e.plannedETA !== null
+    )
+    const markers = [
+      {
+        latitude: previousLocation[0]?.location?.latitude,
+        longitude: previousLocation[0]?.location?.longitude
+      },
+      {
+        latitude: currentNavLogs[0]?.location?.latitude,
+        longitude: currentNavLogs[0]?.location?.longitude
+      },
+      {
+        latitude: nextLocation[0]?.location?.latitude,
+        longitude: nextLocation[0]?.location?.longitude
+      }
+    ]
+    mapRef?.current?.fitToCoordinates(markers, {
+      edgePadding: DEFAULT_PADDING,
+      animated: true
+    })
   }
 
   return (
     <Flex flex={1}>
       <MapView
+        ref={mapRef}
         provider={PROVIDER_GOOGLE} // remove if not using Google Maps
         style={styles.map}
-        initialRegion={region}
-        // initialCamera={{
-        //   center: {
-        //     latitude: currentNavLogs[0]?.location?.latitude,
-        //     longitude: currentNavLogs[0]?.location?.longitude
-        //   },
-        //   pitch: 45,
-        //   heading: 90,
-        //   altitude: 1000,
-        //   zoom: 10
-        // }}
-        // region={{
-        //   latitude: currentNavLogs[0]?.location?.latitude,
-        //   longitude: currentNavLogs[0]?.location?.longitude,
-        //   latitudeDelta: 0.015,
-        //   longitudeDelta: 0.0121
-        // }}
-      >
+        initialRegion={region}>
         {prevNavLogs?.length > 0 ? renderMarkerFrom() : null}
         {currentNavLogs?.length > 0 ? renderMarkerVesel() : null}
         {plannedNavLogs?.length > 0 ? renderMarkerTo() : null}
+        {plannedNavLogs?.length > 0 && lastCompleteNavLogs
+          ? lastCompleteNavLogs?.routes[0]?.waypoints?.map((log: any) =>
+              renderLastCompleteNavLogs(log)
+            )
+          : null}
       </MapView>
       <BottomSheet
         ref={sheetRef}
@@ -173,6 +250,19 @@ export default function Map() {
         onOpenEnd={() => setSnapStatus(1)}
         onCloseEnd={() => setSnapStatus(0)}
       />
+      {isLoadingMap ? (
+        <Box
+          position="absolute"
+          top="0"
+          bottom="0"
+          left="0"
+          right="0"
+          justifyContent="center"
+          backgroundColor="rgba(0,0,0,0.5)"
+          zIndex={999}>
+          <LoadingIndicator width={200} height={200} />
+        </Box>
+      ) : null}
     </Flex>
   )
 }

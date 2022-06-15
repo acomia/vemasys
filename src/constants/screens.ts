@@ -4,5 +4,6 @@ export enum Screens {
   SelectEntity = 'SelectEntity',
   Main = 'Main',
   ChangeRole = 'ChangeRole',
-  Notifications = 'Notification'
+  Notifications = 'Notification',
+  Map = 'Map'
 }

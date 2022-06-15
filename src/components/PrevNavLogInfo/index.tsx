@@ -10,7 +10,7 @@ import {Colors} from '@bluecentury/styles'
 
 export const PreviousNavLogInfo = () => {
   const {prevNavLogs} = useMap()
-  const navigationLog = prevNavLogs?.find(nav => nav?.plannedETA !== null)
+  const navigationLog = prevNavLogs?.filter(e => e && e.plannedETA !== null)
 
   function formatLocationLabel(location: GeographicPoint) {
     if (location.locationName) {
@@ -31,17 +31,17 @@ export const PreviousNavLogInfo = () => {
         ) : (
           <>
             <Text fontWeight="700">
-              From: {formatLocationLabel(navigationLog?.location)}
+              From: {formatLocationLabel(navigationLog[0]?.location)}
             </Text>
             <Text color="#ADADAD">
               Arrived:{' '}
-              {moment(navigationLog?.arrivalDatetime).format(
+              {moment(navigationLog[0]?.arrivalDatetime).format(
                 'DD MMM YYYY | HH:mm'
               )}
             </Text>
             <Text color="#ADADAD" fontSize={ms(11)}>
               Departure date:{' '}
-              {moment(navigationLog?.departureDatetime).format(
+              {moment(navigationLog[0]?.departureDatetime).format(
                 'DD MMM YYYY | HH:mm'
               )}
             </Text>

@@ -54,10 +54,10 @@ export default function MainNavigator({navigation}: Props) {
           />
         )
       }}
-      initialRouteName="Map"
+      initialRouteName={Screens.Map}
       drawerContent={props => <Sidebar {...props} />}>
       <Screen
-        name="Notification"
+        name={Screens.Notifications}
         component={Notification}
         options={{
           drawerIcon: ({color, size}) => (
@@ -70,11 +70,15 @@ export default function MainNavigator({navigation}: Props) {
         }}
       />
       <Screen
-        name="Map"
+        name={Screens.Map}
         component={Map}
         options={{
           drawerIcon: ({color, size}) => (
-            <Icon name="map" size={size} color={color} />
+            <Icon
+              as={<MaterialCommunityIcons name="map" />}
+              size={ms(size)}
+              color={color}
+            />
           )
         }}
       />

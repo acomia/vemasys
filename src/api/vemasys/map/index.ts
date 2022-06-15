@@ -48,4 +48,25 @@ const getCurrentNavLog = async (vesselId: string) => {
     })
 }
 
-export {getPreviousNavLog, getPlannedNavLog, getCurrentNavLog}
+const getLastCompleteNavLogs = async (navLogId: string) => {
+  return API.get(`v3/navigation_logs/${navLogId}/routes`)
+    .then(response => {
+      console.log('last', response)
+
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Current navigation logs failed.')
+      }
+    })
+    .catch(error => {
+      console.error('Error: Current navigation logs', error)
+    })
+}
+
+export {
+  getPreviousNavLog,
+  getPlannedNavLog,
+  getCurrentNavLog,
+  getLastCompleteNavLogs
+}
