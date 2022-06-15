@@ -8,6 +8,15 @@ type RootStackParamList = {
 
 type MainStackParamList = {
   Notification: undefined
-  Map: undefined
+  MapView: undefined
+  Planning: undefined
+  Charters: undefined
+  Tehcnical: undefined
+  Financial: undefined
+  Information: undefined
+  ToDo: undefined
+  Crew: undefined
+  QSHE: undefined
   ChangeRole: undefined
+  Settings: undefined
 }

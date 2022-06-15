@@ -1,9 +1,12 @@
 export const Colors = {
-  white: '#fff',
+  white: '#FFFFFF',
   disabled: '#ADADAD',
   azure: '#23475C',
   primary: '#44A7B9',
   secondary: '#6BBF87',
   danger: '#FA5555',
-  black: '#000'
+  black: '#000',
+
+  // text color
+  text: '#23272F'
 }

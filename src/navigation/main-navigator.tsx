@@ -1,8 +1,7 @@
 import React from 'react'
-import {View, Icon} from 'native-base'
+import {View} from 'native-base'
 import {createDrawerNavigator} from '@react-navigation/drawer'
 import {DrawerActions} from '@react-navigation/native'
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import {Notification, Entity, Map} from '@bluecentury/screens'
 import {Sidebar, IconButton} from '@bluecentury/components'
 import {icons} from '@bluecentury/assets'
@@ -17,11 +16,8 @@ export default function MainNavigator({navigation}: Props) {
   return (
     <Navigator
       screenOptions={{
-        drawerActiveBackgroundColor: '#44A7B9',
-        drawerActiveTintColor: '#fff',
-        drawerInactiveTintColor: '#333',
-        drawerLabelStyle: {
-          fontSize: 15
+        drawerStyle: {
+          width: ms(220)
         },
         headerTitleAlign: 'left',
         headerStyle: {backgroundColor: '#F0F0F0'},
@@ -32,7 +28,8 @@ export default function MainNavigator({navigation}: Props) {
               flexDirection: 'row',
               alignItems: 'center',
               marginRight: 10
-            }}>
+            }}
+          >
             <IconButton
               source={icons.qr}
               btnStyle={{marginRight: 10}}
@@ -54,47 +51,16 @@ export default function MainNavigator({navigation}: Props) {
           />
         )
       }}
-      initialRouteName={Screens.Map}
-      drawerContent={props => <Sidebar {...props} />}>
-      <Screen
-        name={Screens.Notifications}
-        component={Notification}
-        options={{
-          drawerIcon: ({color, size}) => (
-            <Icon
-              as={<MaterialCommunityIcons name="bell-outline" />}
-              size={ms(size)}
-              color={color}
-            />
-          )
-        }}
-      />
-      <Screen
-        name={Screens.Map}
-        component={Map}
-        options={{
-          drawerIcon: ({color, size}) => (
-            <Icon
-              as={<MaterialCommunityIcons name="map" />}
-              size={ms(size)}
-              color={color}
-            />
-          )
-        }}
-      />
+      initialRouteName={Screens.Notifications}
+      drawerContent={props => <Sidebar {...props} />}
+    >
+      <Screen name={Screens.Notifications} component={Notification} />
+      <Screen name={Screens.MapView} component={Map} />
       <Screen
         name={Screens.ChangeRole}
         component={Entity}
         options={{
-          drawerIcon: ({color, size}) => (
-            <Icon
-              as={<MaterialCommunityIcons name="account-circle-outline" />}
-              size={ms(size)}
-              color={color}
-            />
-          ),
-          headerTitle: 'Select your role',
-          drawerLabel: 'Change Role'
+          headerTitle: 'Select your role'
         }}
       />
     </Navigator>
