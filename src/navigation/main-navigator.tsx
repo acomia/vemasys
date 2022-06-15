@@ -36,7 +36,7 @@ export default function MainNavigator({navigation}: Props) {
             <IconButton
               source={icons.qr}
               btnStyle={{marginRight: 10}}
-              onPress={() => {}}
+              onPress={() => navigation.navigate('QRScanner')}
             />
             <IconButton
               source={icons.gps}

@@ -26,6 +26,8 @@
     "native-base": "^3.4.5",
     "react": "17.0.2",
     "react-native": "0.68.2",
+    "react-native-barcode-mask": "^1.2.4",
+    "react-native-camera": "^4.2.1",
     "react-native-code-push": "^7.0.4",
     "react-native-config": "^1.4.5",
     "react-native-dotenv": "^3.3.1",

@@ -3,6 +3,7 @@ type RootStackParamList = {
   Login: undefined
   SelectEntity: undefined
   Main: undefined
+  QRScanner: undefined
 }
 
 type MainStackParamList = {

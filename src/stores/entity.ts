@@ -42,7 +42,6 @@ type EntityState = {
 type EntityActions = {
   getUserInfo: () => void
   getEntityUsers: () => void
-  getUserVessels: (userId: string) => void
   selectEntityUser: (entity: any) => void
 }
 
@@ -50,7 +49,7 @@ type EntityStore = EntityState & EntityActions
 
 export const useEntity = create(
   persist<EntityStore>(
-    set => ({
+    (set, get) => ({
       isLoadingEntityUsers: false,
       user: [],
       userVessels: [],
@@ -111,20 +110,8 @@ export const useEntity = create(
           })
         }
       },
-      getUserVessels: async (userId: string) => {
-        try {
-          const response = await API.reloadUserVessels(userId)
-          console.log('UserVessels', response)
-          set({
-            userVessels: response
-          })
-        } catch (error) {
-          set({
-            isLoadingEntityUsers: false
-          })
-        }
-      },
       selectEntityUser: async (entity: any) => {
+        console.log('Entity', entity.entity)
         const entityRole = entity.role.title
         const entityType = entity.entity.type.title
         const physicalVesselId =
@@ -145,9 +132,19 @@ export const useEntity = create(
               : entity.entity.exploitationGroup.exploitationVessels[0].id,
           selectedVessel: entity.entity
         })
+        const user = get().user
         try {
           API.selectEntityUser(entity.id)
-        } catch (error) {}
+          const response = await API.reloadUserVessels(user.id)
+          console.log('UserVessels', response)
+          set({
+            userVessels: response
+          })
+        } catch (error) {
+          set({
+            isLoadingEntityUsers: false
+          })
+        }
       }
     }),
     {
