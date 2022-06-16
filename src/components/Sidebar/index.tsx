@@ -33,7 +33,7 @@ const Sidebar = (props: DrawerContentComponentProps) => {
         </MenuButton>
         <MenuButton
           active={currentRoute === 'MapView'}
-          onPress={() => handlePressMenu('Notifications')}
+          onPress={() => handlePressMenu('MapView')}
           iconSource={icons.map}
         >
           Map View

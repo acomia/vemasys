@@ -46,7 +46,7 @@ export default function Map() {
     lastCompleteNavLogs
   }: any = useMap()
   const {logout} = useAuth()
-  const {vesselId, selectedVessel} = useEntity()
+  const {vesselId, selectedVessel, vesselDetails} = useEntity()
 
   const LATITUDE = 50.503887
   const LONGITUDE = 4.469936
@@ -95,7 +95,8 @@ export default function Map() {
         my={ms(10)}
         fontWeight="700"
         textAlign="center"
-        color={Colors.azure}>
+        color={Colors.azure}
+      >
         {selectedVessel?.alias}
       </Text>
       {snapStatus === 1 && <PreviousNavLogInfo />}
@@ -108,6 +109,8 @@ export default function Map() {
   )
 
   function renderMarkerFrom() {
+    console.log('prev', prevNavLogs)
+
     const previousLocation: any = prevNavLogs?.filter(
       (e: any) => e && e.plannedETA !== null
     )
@@ -133,7 +136,11 @@ export default function Map() {
           latitude: currentNavLogs[0]?.location?.latitude,
           longitude: currentNavLogs[0]?.location?.longitude
         }}
-        image={Images.anchor}
+        image={
+          vesselDetails?.lastGeolocation?.speed > 0
+            ? Images.vessel_navigating
+            : Images.anchor
+        }
         style={{zIndex: 1}}
       />
     )
@@ -143,6 +150,7 @@ export default function Map() {
     const nextLocation: any = plannedNavLogs?.filter(
       (e: any) => e && e.plannedETA !== null
     )
+    console.log('next', plannedNavLogs)
     return (
       <Marker
         key={nextLocation[0]?.location?.id}
@@ -166,7 +174,8 @@ export default function Map() {
           latitude: log.location?.latitude,
           longitude: log.location?.longitude
         }}
-        style={{zIndex: 0}}>
+        style={{zIndex: 0}}
+      >
         <HStack style={{zIndex: 0}}>
           <Box
             backgroundColor={
@@ -184,7 +193,8 @@ export default function Map() {
             backgroundColor="#fff"
             borderRadius={ms(5)}
             padding={ms(2)}
-            style={{zIndex: 0}}>
+            style={{zIndex: 0}}
+          >
             <Text fontWeight="medium">
               {moment(
                 log?.navigationLog?.arrivalDatetime
@@ -231,7 +241,8 @@ export default function Map() {
         ref={mapRef}
         provider={PROVIDER_GOOGLE} // remove if not using Google Maps
         style={styles.map}
-        initialRegion={region}>
+        initialRegion={region}
+      >
         {prevNavLogs?.length > 0 ? renderMarkerFrom() : null}
         {currentNavLogs?.length > 0 ? renderMarkerVesel() : null}
         {plannedNavLogs?.length > 0 ? renderMarkerTo() : null}
@@ -244,7 +255,7 @@ export default function Map() {
       <BottomSheet
         ref={sheetRef}
         initialSnap={1}
-        snapPoints={[ms(440), ms(180)]}
+        snapPoints={[ms(420), ms(160)]}
         borderRadius={20}
         renderContent={renderBottomContent}
         onOpenEnd={() => setSnapStatus(1)}
@@ -259,7 +270,8 @@ export default function Map() {
           right="0"
           justifyContent="center"
           backgroundColor="rgba(0,0,0,0.5)"
-          zIndex={999}>
+          zIndex={999}
+        >
           <LoadingIndicator width={200} height={200} />
         </Box>
       ) : null}

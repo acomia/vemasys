@@ -28,11 +28,8 @@ const reloadEntityUsers = async () => {
     })
 }
 
-const reloadUserVessels = async (userId: string) => {
-  const entityTypeId = 3
-  return API.get<any>(
-    `entity_users?user.id=${userId}&entity.type.id=${entityTypeId}&endDate[exists]=0`
-  )
+const getVesselNavigationDetails = async (vesselId: string) => {
+  return API.get<any>(`exploitation_vessels/${vesselId}`)
     .then(response => {
       if (response.data) {
         return response.data
@@ -41,7 +38,7 @@ const reloadUserVessels = async (userId: string) => {
       }
     })
     .catch(error => {
-      console.error('Error: API User ', error)
+      console.error('Error: Vessel details ', error)
     })
 }
 
@@ -49,4 +46,9 @@ const selectEntityUser = (entityId: string) => {
   return API.setHeader('X-active-entity-user-id', `${entityId}`)
 }
 
-export {reloadUser, reloadEntityUsers, reloadUserVessels, selectEntityUser}
+export {
+  reloadUser,
+  reloadEntityUsers,
+  getVesselNavigationDetails,
+  selectEntityUser
+}

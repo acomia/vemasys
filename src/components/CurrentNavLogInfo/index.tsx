@@ -5,17 +5,26 @@ import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 
 import {Animated} from '@bluecentury/assets'
-import {useMap} from '@bluecentury/stores'
+import {useEntity, useMap} from '@bluecentury/stores'
 
 export const CurrentNavLogInfo = () => {
   const {currentNavLogs, prevNavLogs} = useMap()
+  const {vesselDetails} = useEntity()
 
   return (
     <TouchableOpacity
       style={styles.container}
-      onPress={() => console.log('Current')}>
+      onPress={() => console.log('Current')}
+    >
       <Box ml={ms(15)}>
-        {currentNavLogs?.length !== 0 ? (
+        {vesselDetails?.lastGeolocation?.speed > 0 ? (
+          <Text fontWeight="700">
+            Navigating at{' '}
+            <Text color="#29B7EF">
+              {vesselDetails?.lastGeolocation?.speed} xx km/h
+            </Text>
+          </Text>
+        ) : currentNavLogs?.length !== 0 ? (
           <>
             <Text fontWeight="700">{currentNavLogs[0]?.location?.name}</Text>
             <Text color="#ADADAD">
@@ -36,9 +45,6 @@ export const CurrentNavLogInfo = () => {
             </Text>
           </>
         )}
-        {/* <Text fontWeight="700">
-          Navigating at <Text color="#29B7EF">xx km/h</Text>
-        </Text> */}
       </Box>
 
       <Box
@@ -49,7 +55,8 @@ export const CurrentNavLogInfo = () => {
         borderRadius={ms(20)}
         backgroundColor="#F0F0F0"
         alignItems="center"
-        justifyContent="center">
+        justifyContent="center"
+      >
         <Image
           alt="current-nav-log-img"
           source={Animated.nav_navigating}

@@ -14,6 +14,7 @@ type EntityState = {
   entityRole: string
   entityUserId: string
   vesselId: string
+  vesselDetails: {}
   selectedVessel: {}
   physicalVesselId: string
   navigationLog: any
@@ -59,6 +60,7 @@ export const useEntity = create(
       entityRole: '',
       entityUserId: '',
       vesselId: '',
+      vesselDetails: {},
       selectedVessel: {},
       physicalVesselId: '',
       navigationLog: null,
@@ -111,7 +113,6 @@ export const useEntity = create(
         }
       },
       selectEntityUser: async (entity: any) => {
-        console.log('Entity', entity.entity)
         const entityRole = entity.role.title
         const entityType = entity.entity.type.title
         const physicalVesselId =
@@ -132,13 +133,15 @@ export const useEntity = create(
               : entity.entity.exploitationGroup.exploitationVessels[0].id,
           selectedVessel: entity.entity
         })
-        const user = get().user
         try {
           API.selectEntityUser(entity.id)
-          const response = await API.reloadUserVessels(user.id)
-          console.log('UserVessels', response)
+          const response = await API.getVesselNavigationDetails(
+            entity.entity.exploitationVessel.id
+          )
+          console.log('vessel', response)
+
           set({
-            userVessels: response
+            vesselDetails: response
           })
         } catch (error) {
           set({

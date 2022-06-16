@@ -4,11 +4,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as API from '@bluecentury/api/vemasys'
 
 type MapState = {
-  prevNavLogs: [] | undefined
-  plannedNavLogs: [] | undefined
-  currentNavLogs: [] | undefined
-  lastCompleteNavLogs: [] | {}
   isLoadingMap: boolean
+  prevNavLogs: [] | {} | undefined
+  plannedNavLogs: [] | {} | undefined
+  currentNavLogs: [] | {} | undefined
+  lastCompleteNavLogs: [] | {} | undefined
+  activeFormations: [] | {} | undefined
 }
 
 type MapActions = {
@@ -16,6 +17,8 @@ type MapActions = {
   getPlannedNavigationLogs: (vesselId: string) => void
   getCurrentNavigationLogs: (vesselId: string) => void
   getLastCompleteNavigationLogs: (navLogId: string) => void
+  getActiveFormations: () => void
+  verifyTrackingDeviceToken: (id: string, token: string, method: string) => void
 }
 
 type MapStore = MapState & MapActions
@@ -23,11 +26,12 @@ type MapStore = MapState & MapActions
 export const useMap = create(
   persist<MapStore>(
     set => ({
+      isLoadingMap: false,
       prevNavLogs: [],
       plannedNavLogs: [],
       currentNavLogs: [],
       lastCompleteNavLogs: [],
-      isLoadingMap: false,
+      activeFormations: [],
       getPreviousNavigationLogs: async (vesselId: string) => {
         set({
           isLoadingMap: true
@@ -91,6 +95,35 @@ export const useMap = create(
           set({
             isLoadingMap: false
           })
+        }
+      },
+      getActiveFormations: async () => {
+        try {
+          const response: any = await API.getActiveFormations()
+          console.log('formation', response)
+          set({
+            activeFormations: response
+          })
+        } catch (error) {}
+      },
+      verifyTrackingDeviceToken: async (
+        id: string,
+        token: string,
+        method: string
+      ) => {
+        // set({isLoadingMap: true})
+        try {
+          const response: any = await API.verifyTrackingDeviceToken(
+            id,
+            token,
+            method
+          )
+          console.log('verify', response[0].entity)
+          if (response) {
+            set({isLoadingMap: false})
+          }
+        } catch (error) {
+          set({isLoadingMap: false})
         }
       }
     }),

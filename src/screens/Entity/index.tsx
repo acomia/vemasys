@@ -43,14 +43,7 @@ export default function Entity({navigation}: Props) {
     navigation.setOptions({
       headerBackVisible: false
     })
-    // if (!token) {
-    //   navigation.dispatch(
-    //     CommonActions.reset({
-    //       index: 0,
-    //       routes: [{name: 'Login'}]
-    //     })
-    //   )
-    // }
+
     // logout()
     if (entityUsers.length === 0) {
       getUserInfo()
@@ -82,7 +75,8 @@ export default function Entity({navigation}: Props) {
         p="15px"
         backgroundColor="#fff"
         borderTopRightRadius={15}
-        borderTopLeftRadius={15}>
+        borderTopLeftRadius={15}
+      >
         <Heading fontSize="xl" pb="2">
           Roles
         </Heading>
@@ -115,7 +109,8 @@ export default function Entity({navigation}: Props) {
         right={ms(0)}
         backgroundColor="#fff"
         justifyContent="center"
-        padding={ms(15)}>
+        padding={ms(15)}
+      >
         <Button
           mb={'10px'}
           size={'md'}
@@ -128,7 +123,8 @@ export default function Entity({navigation}: Props) {
               style={{width: 20, height: 20}}
             />
           }
-          onPress={onUserLogout}>
+          onPress={onUserLogout}
+        >
           Log out
         </Button>
       </Box>

@@ -64,9 +64,129 @@ const getLastCompleteNavLogs = async (navLogId: string) => {
     })
 }
 
+const getActiveFormations = async () => {
+  return API.get(`formations?exists[endedAt]=false`)
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Active formations failed.')
+      }
+    })
+    .catch(error => {
+      console.error('Error: Active formations', error)
+    })
+}
+
+const verifyTrackingDeviceToken = async (
+  id: string,
+  token: string,
+  method: string
+) => {
+  return API.get(`tracking_device/by-token?static_authenticator_token=${token}`)
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Active formations failed.')
+      }
+    })
+    .catch(error => {
+      console.error('Error: Active formations', error)
+    })
+}
+
+const createVesselFormations = async (id: string, token: string) => {
+  return API.post(`formations`, {
+    masterExploitationVessel: `/api/exploitation_vessels/${id}`
+  })
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Create formations failed.')
+      }
+    })
+    .catch(error => {
+      console.error('Error: Create formations', error)
+    })
+}
+
+const addVesselToFormations = async (id: string, token: string) => {
+  return API.put(`formations/${id}/add-vessel`, {
+    staticAuthenticatorToken: token
+  })
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Add Vessel formations failed.')
+      }
+    })
+    .catch(error => {
+      console.error('Error: Add Vessel formations', error)
+    })
+}
+
+const removeVesselToFormations = async (
+  formationId: string,
+  vesselId: string
+) => {
+  return API.put(`formations/${formationId}/remove-vessel`, {
+    exploitationVessel: `/api/exploitation_vessels/${vesselId}`
+  })
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Remove Vessel formations failed.')
+      }
+    })
+    .catch(error => {
+      console.error('Error: Remove Vessel formations', error)
+    })
+}
+
+const endVesselFormations = async (formationId: string, vesselId: string) => {
+  return API.put(`formations/${formationId}/end`, {
+    masterExploitationVessel: `/api/exploitation_vessels/${vesselId}`
+  })
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('End formations failed.')
+      }
+    })
+    .catch(error => {
+      console.error('Error: End formations', error)
+    })
+}
+
+const getCurrentTrackerSource = async (vesselId: string) => {
+  return API.get(`exploitation_vessels/${vesselId}`)
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Tracking source failed.')
+      }
+    })
+    .catch(error => {
+      console.error('Error: Tracking source', error)
+    })
+}
+
 export {
   getPreviousNavLog,
   getPlannedNavLog,
   getCurrentNavLog,
-  getLastCompleteNavLogs
+  getLastCompleteNavLogs,
+  getActiveFormations,
+  verifyTrackingDeviceToken,
+  createVesselFormations,
+  addVesselToFormations,
+  removeVesselToFormations,
+  endVesselFormations,
+  getCurrentTrackerSource
 }
