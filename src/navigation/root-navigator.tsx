@@ -1,6 +1,6 @@
 import React, {useRef, useEffect} from 'react'
 import {createNativeStackNavigator} from '@react-navigation/native-stack'
-import {Login, Splash, Entity} from '@bluecentury/screens'
+import {Login, Splash, Entity, QRScanner} from '@bluecentury/screens'
 import MainNavigator from './main-navigator'
 import {useAuth} from '@bluecentury/stores'
 import {CommonActions, useNavigation} from '@react-navigation/native'
@@ -18,7 +18,7 @@ function RootNavigator() {
         navigation.dispatch(
           CommonActions.reset({
             index: 0,
-            routes: [{name: 'Main'}]
+            routes: [{name: 'SelectEntity'}]
           })
         )
       }, 1500)
@@ -62,6 +62,11 @@ function RootNavigator() {
       <Screen
         name="Main"
         component={MainNavigator}
+        options={{headerShown: false}}
+      />
+      <Screen
+        name="QRScanner"
+        component={QRScanner}
         options={{headerShown: false}}
       />
     </Navigator>

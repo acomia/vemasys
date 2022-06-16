@@ -50,15 +50,12 @@ export const useAuth = create(
         }
       },
       logout: async () => {
-        set(
-          {
-            token: undefined,
-            refreshToken: undefined,
-            isAuthenticatingUser: false,
-            hasAuthenticationError: false
-          },
-          true
-        )
+        set({
+          token: undefined,
+          refreshToken: undefined,
+          isAuthenticatingUser: false,
+          hasAuthenticationError: false
+        })
       }
     }),
     {
