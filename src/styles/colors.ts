@@ -1,5 +1,6 @@
 export const Colors = {
   white: '#FFFFFF',
+  light: '#F0F0F0',
   disabled: '#ADADAD',
   azure: '#23475C',
   primary: '#44A7B9',

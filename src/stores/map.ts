@@ -1,6 +1,8 @@
 import create from 'zustand'
 import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import {GeoPosition} from 'react-native-geolocation-service'
+
 import * as API from '@bluecentury/api/vemasys'
 
 type MapState = {
@@ -19,6 +21,7 @@ type MapActions = {
   getLastCompleteNavigationLogs: (navLogId: string) => void
   getActiveFormations: () => void
   verifyTrackingDeviceToken: (id: string, token: string, method: string) => void
+  sendCurrentPosition: (position: GeoPosition) => void
 }
 
 type MapStore = MapState & MapActions
@@ -125,9 +128,19 @@ export const useMap = create(
         } catch (error) {
           set({isLoadingMap: false})
         }
+      },
+      sendCurrentPosition: async (position: GeoPosition) => {
+        try {
+          set({isLoadingMap: true})
+          const response: any = await API.sendCurrentPosition(position)
+          if (response) {
+            set({isLoadingMap: false})
+          }
+        } catch (error) {
+          set({isLoadingMap: false})
+        }
       }
     }),
-
     {
       name: 'map-storage',
       getStorage: () => AsyncStorage

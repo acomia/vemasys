@@ -4,6 +4,7 @@ type RootStackParamList = {
   SelectEntity: undefined
   Main: undefined
   QRScanner: undefined
+  GPSTracker: undefined
 }
 
 type MainStackParamList = {
