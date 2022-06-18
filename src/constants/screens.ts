@@ -3,6 +3,16 @@ export enum Screens {
   Login = 'Login',
   SelectEntity = 'SelectEntity',
   Main = 'Main',
-  ChangeRole = 'ChangeRole',
-  Notifications = 'Notification'
+  Notifications = 'Notification',
+  MapView = 'MapView',
+  Planning = 'Planning',
+  Charters = 'Charters',
+  Technical = 'Technical',
+  Financial = 'Financial',
+  Information = 'Information',
+  ToDo = 'ToDo',
+  Crew = 'Crew',
+  QSHE = 'QSHE',
+  Settings = 'Settings',
+  ChangeRole = 'ChangeRole'
 }
