@@ -4,9 +4,10 @@ import {Login, Splash, Entity} from '@bluecentury/screens'
 import MainNavigator from './main-navigator'
 import {useAuth} from '@bluecentury/stores'
 import {CommonActions, useNavigation} from '@react-navigation/native'
+
 const {Navigator, Screen} = createNativeStackNavigator<RootStackParamList>()
 
-function RootNavigator() {
+export default function RootNavigator() {
   const navigation = useNavigation()
   const {token} = useAuth()
 
@@ -41,7 +42,8 @@ function RootNavigator() {
       screenOptions={{
         headerShown: false,
         headerShadowVisible: false
-      }}>
+      }}
+    >
       <Screen name="Splash" component={Splash} />
       <Screen
         name="Login"
@@ -66,5 +68,3 @@ function RootNavigator() {
     </Navigator>
   )
 }
-
-export default RootNavigator
