@@ -4,6 +4,7 @@ import {DrawerContentComponentProps} from '@react-navigation/drawer'
 import {icons, Images} from '@bluecentury/assets'
 import {ms} from 'react-native-size-matters'
 import MenuButton from '../MenuButton'
+import {Screens} from '@bluecentury/constants'
 
 const Sidebar = (props: DrawerContentComponentProps) => {
   const {state, navigation} = props
@@ -26,70 +27,70 @@ const Sidebar = (props: DrawerContentComponentProps) => {
         />
         <MenuButton
           active={currentRoute === 'Notification'}
-          onPress={() => handlePressMenu('Notifications')}
+          onPress={() => handlePressMenu(Screens.Notifications)}
           iconSource={icons.notification}
         >
           Notifications
         </MenuButton>
         <MenuButton
           active={currentRoute === 'MapView'}
-          onPress={() => handlePressMenu('MapView')}
+          onPress={() => handlePressMenu(Screens.MapView)}
           iconSource={icons.map}
         >
           Map View
         </MenuButton>
         <MenuButton
           active={currentRoute === ''}
-          onPress={() => handlePressMenu('Notifications')}
+          onPress={() => handlePressMenu(Screens.Planning)}
           iconSource={icons.calendar}
         >
           Planning
         </MenuButton>
         <MenuButton
           active={currentRoute === ''}
-          onPress={() => handlePressMenu('Notifications')}
+          onPress={() => handlePressMenu(Screens.Charters)}
           iconSource={icons.fileContract}
         >
           Charters
         </MenuButton>
         <MenuButton
           active={currentRoute === ''}
-          onPress={() => handlePressMenu('Notifications')}
+          onPress={() => handlePressMenu(Screens.Technical)}
           iconSource={icons.tools}
         >
           Technical
         </MenuButton>
         <MenuButton
           active={currentRoute === ''}
-          onPress={() => handlePressMenu('Notifications')}
+          onPress={() => handlePressMenu(Screens.Financial)}
           iconSource={icons.card}
         >
           Financial
         </MenuButton>
         <MenuButton
           active={currentRoute === ''}
-          onPress={() => handlePressMenu('Notifications')}
+          onPress={() => handlePressMenu(Screens.Information)}
           iconSource={icons.infoCircle}
         >
           Information
         </MenuButton>
         <MenuButton
-          active={currentRoute === ''}
-          onPress={() => handlePressMenu('Notifications')}
+          active={currentRoute === Screens.ToDo}
+          onPress={() => handlePressMenu(Screens.ToDo)}
           iconSource={icons.clipboardCheck}
         >
           To Do
         </MenuButton>
         <MenuButton
-          active={currentRoute === ''}
-          onPress={() => handlePressMenu('Notifications')}
+          active={currentRoute === Screens.Crew}
+          onPress={() => handlePressMenu(Screens.Crew)}
           iconSource={icons.userHardHat}
         >
           Crew
         </MenuButton>
         <MenuButton
-          active={currentRoute === ''}
-          onPress={() => handlePressMenu('Notifications')}
+          active={currentRoute === Screens.QSHE}
+          onPress={() => handlePressMenu(Screens.QSHE)}
           iconSource={icons.hardHat}
         >
           QSHE
@@ -99,16 +100,16 @@ const Sidebar = (props: DrawerContentComponentProps) => {
       <Divider />
       <VStack>
         <MenuButton
-          active={currentRoute === 'ChangeRole'}
-          onPress={() => handlePressMenu('ChangeRole')}
+          active={currentRoute === Screens.ChangeRole}
+          onPress={() => handlePressMenu(Screens.ChangeRole)}
           iconSource={icons.userCircle}
         >
           Change role
         </MenuButton>
 
         <MenuButton
-          active={currentRoute === 'ChangeRole'}
-          onPress={() => handlePressMenu('ChangeRole')}
+          active={currentRoute === Screens.Settings}
+          onPress={() => handlePressMenu(Screens.Settings)}
           iconSource={icons.cog}
         >
           Settings
