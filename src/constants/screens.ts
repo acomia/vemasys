@@ -14,5 +14,7 @@ export enum Screens {
   Crew = 'Crew',
   QSHE = 'QSHE',
   Settings = 'Settings',
-  ChangeRole = 'ChangeRole'
+  ChangeRole = 'ChangeRole',
+  QRScanner = 'QRScanner',
+  Formations = 'Formations'
 }

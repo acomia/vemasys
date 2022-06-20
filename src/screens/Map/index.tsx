@@ -1,12 +1,6 @@
 import React, {useEffect, useLayoutEffect, useRef, useState} from 'react'
-import {
-  View,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  Dimensions
-} from 'react-native'
-import {Box, Flex, Text, Button, HStack} from 'native-base'
+import {StyleSheet, TouchableOpacity, Dimensions} from 'react-native'
+import {Box, Flex, Text, Button, HStack, Modal} from 'native-base'
 import MapView, {
   PROVIDER_GOOGLE,
   Marker,
@@ -75,7 +69,7 @@ export default function Map() {
     })
     getLastCompleteNavigationLogs(plannedNavLogs[0]?.id)
 
-    fitToAllMarkers()
+    // fitToAllMarkers()
   }, [currentNavLogs])
 
   const renderBottomContent = () => (
@@ -243,16 +237,16 @@ export default function Map() {
         style={styles.map}
         initialRegion={region}
       >
-        {prevNavLogs?.length > 0 ? renderMarkerFrom() : null}
+        {/* {prevNavLogs?.length > 0 ? renderMarkerFrom() : null}
         {currentNavLogs?.length > 0 ? renderMarkerVesel() : null}
         {plannedNavLogs?.length > 0 ? renderMarkerTo() : null}
         {plannedNavLogs?.length > 0 && lastCompleteNavLogs
           ? lastCompleteNavLogs?.routes[0]?.waypoints?.map((log: any) =>
               renderLastCompleteNavLogs(log)
             )
-          : null}
+          : null} */}
       </MapView>
-      <BottomSheet
+      {/* <BottomSheet
         ref={sheetRef}
         initialSnap={1}
         snapPoints={[ms(420), ms(160)]}
@@ -260,7 +254,7 @@ export default function Map() {
         renderContent={renderBottomContent}
         onOpenEnd={() => setSnapStatus(1)}
         onCloseEnd={() => setSnapStatus(0)}
-      />
+      /> */}
       {isLoadingMap ? (
         <Box
           position="absolute"
