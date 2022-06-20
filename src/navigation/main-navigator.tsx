@@ -39,7 +39,7 @@ export default function MainNavigator({navigation}: Props) {
             <IconButton
               source={icons.gps}
               iconStyle={{width: 35, height: 35}}
-              onPress={() => {}}
+              onPress={() => navigation.navigate('GPSTracker')}
             />
           </View>
         ),

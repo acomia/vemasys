@@ -1,3 +1,4 @@
+import {GeoPosition} from 'react-native-geolocation-service'
 import {API} from '@bluecentury/api/apiService'
 
 const getPreviousNavLog = async (vesselId: string) => {
@@ -177,6 +178,25 @@ const getCurrentTrackerSource = async (vesselId: string) => {
     })
 }
 
+const sendCurrentPosition = async (position: GeoPosition) => {
+  return API.post(`tracking_device/ingest_events/api_tracker`, {
+    latitude: position?.coords?.latitude,
+    longitude: position?.coords?.longitude,
+    heading: position?.coords?.heading < 0 ? 1 : position?.coords?.heading,
+    speed: position?.coords?.speed < 0 ? 1 : position?.coords?.speed
+  })
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Tracking source failed.')
+      }
+    })
+    .catch(error => {
+      console.error('Error: Tracking source', error)
+    })
+}
+
 export {
   getPreviousNavLog,
   getPlannedNavLog,
@@ -188,5 +208,6 @@ export {
   addVesselToFormations,
   removeVesselToFormations,
   endVesselFormations,
-  getCurrentTrackerSource
+  getCurrentTrackerSource,
+  sendCurrentPosition
 }

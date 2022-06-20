@@ -1,6 +1,8 @@
 import create from 'zustand'
 import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import {GeoPosition} from 'react-native-geolocation-service'
+
 import * as API from '@bluecentury/api/vemasys'
 
 type MapState = {
@@ -10,6 +12,7 @@ type MapState = {
   currentNavLogs: [] | {} | undefined
   lastCompleteNavLogs: [] | {} | undefined
   activeFormations: [] | {} | undefined
+  tokenHasConnectedToShip: boolean
 }
 
 type MapActions = {
@@ -19,6 +22,7 @@ type MapActions = {
   getLastCompleteNavigationLogs: (navLogId: string) => void
   getActiveFormations: () => void
   verifyTrackingDeviceToken: (id: string, token: string, method: string) => void
+  sendCurrentPosition: (position: GeoPosition) => void
 }
 
 type MapStore = MapState & MapActions
@@ -32,6 +36,7 @@ export const useMap = create(
       currentNavLogs: [],
       lastCompleteNavLogs: [],
       activeFormations: [],
+      tokenHasConnectedToShip: false,
       getPreviousNavigationLogs: async (vesselId: string) => {
         set({
           isLoadingMap: true
@@ -111,7 +116,7 @@ export const useMap = create(
         token: string,
         method: string
       ) => {
-        // set({isLoadingMap: true})
+        set({isLoadingMap: true})
         try {
           const response: any = await API.verifyTrackingDeviceToken(
             id,
@@ -119,6 +124,32 @@ export const useMap = create(
             method
           )
           console.log('verify', response[0].entity)
+          if (response[0].entity == null) {
+            set({isLoadingMap: false, tokenHasConnectedToShip: false})
+          } else {
+            set({tokenHasConnectedToShip: true})
+            if (method === 'create') {
+              const response = await API.createVesselFormations(id, token)
+              console.log('create', response)
+              if (response) {
+                set({isLoadingMap: false})
+              }
+            } else {
+              const response = await API.addVesselToFormations(id, token)
+              console.log('add', response)
+              if (response) {
+                set({isLoadingMap: false})
+              }
+            }
+          }
+        } catch (error) {
+          set({isLoadingMap: false})
+        }
+      },
+      sendCurrentPosition: async (position: GeoPosition) => {
+        try {
+          set({isLoadingMap: true})
+          const response: any = await API.sendCurrentPosition(position)
           if (response) {
             set({isLoadingMap: false})
           }
@@ -127,7 +158,6 @@ export const useMap = create(
         }
       }
     }),
-
     {
       name: 'map-storage',
       getStorage: () => AsyncStorage

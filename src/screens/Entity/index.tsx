@@ -33,7 +33,6 @@ export default function Entity({navigation}: Props) {
     isLoadingEntityUsers,
     getUserInfo,
     getEntityUsers,
-    getUserVessels,
     selectEntityUser
   } = useEntity()
   const {logout, token} = useAuth()
@@ -53,16 +52,12 @@ export default function Entity({navigation}: Props) {
 
   const onSelectEntityUser = (entity: any) => {
     selectEntityUser(entity)
-    if (routeName === 'SelectEntity') {
-      navigation.navigate('Main')
-    } else {
-      navigation.dispatch(
-        CommonActions.reset({
-          index: 0,
-          routes: [{name: 'Main'}]
-        })
-      )
-    }
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{name: 'Main'}]
+      })
+    )
   }
 
   const onUserLogout = () => {
