@@ -2,7 +2,13 @@ import React from 'react'
 import {View} from 'native-base'
 import {createDrawerNavigator} from '@react-navigation/drawer'
 import {DrawerActions} from '@react-navigation/native'
-import {Notification, Entity, Map} from '@bluecentury/screens'
+import {
+  Notification,
+  Entity,
+  Map,
+  Formations,
+  QRScanner
+} from '@bluecentury/screens'
 import {Sidebar, IconButton} from '@bluecentury/components'
 import {icons} from '@bluecentury/assets'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'

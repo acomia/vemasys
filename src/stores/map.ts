@@ -12,6 +12,7 @@ type MapState = {
   currentNavLogs: [] | {} | undefined
   lastCompleteNavLogs: [] | {} | undefined
   activeFormations: [] | {} | undefined
+  tokenHasConnectedToShip: boolean
 }
 
 type MapActions = {
@@ -35,6 +36,7 @@ export const useMap = create(
       currentNavLogs: [],
       lastCompleteNavLogs: [],
       activeFormations: [],
+      tokenHasConnectedToShip: false,
       getPreviousNavigationLogs: async (vesselId: string) => {
         set({
           isLoadingMap: true
@@ -114,7 +116,7 @@ export const useMap = create(
         token: string,
         method: string
       ) => {
-        // set({isLoadingMap: true})
+        set({isLoadingMap: true})
         try {
           const response: any = await API.verifyTrackingDeviceToken(
             id,
@@ -122,8 +124,23 @@ export const useMap = create(
             method
           )
           console.log('verify', response[0].entity)
-          if (response) {
-            set({isLoadingMap: false})
+          if (response[0].entity == null) {
+            set({isLoadingMap: false, tokenHasConnectedToShip: false})
+          } else {
+            set({tokenHasConnectedToShip: true})
+            if (method === 'create') {
+              const response = await API.createVesselFormations(id, token)
+              console.log('create', response)
+              if (response) {
+                set({isLoadingMap: false})
+              }
+            } else {
+              const response = await API.addVesselToFormations(id, token)
+              console.log('add', response)
+              if (response) {
+                set({isLoadingMap: false})
+              }
+            }
           }
         } catch (error) {
           set({isLoadingMap: false})

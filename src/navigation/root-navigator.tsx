@@ -5,7 +5,15 @@ import {CommonActions, useNavigation} from '@react-navigation/native'
 import MainNavigator from './main-navigator'
 import {GPSTracker} from '@bluecentury/components'
 import {useAuth} from '@bluecentury/stores'
-import {Login, Splash, Entity, QRScanner} from '@bluecentury/screens'
+import {
+  Login,
+  Splash,
+  Entity,
+  QRScanner,
+  Formations
+} from '@bluecentury/screens'
+import {icons} from '@bluecentury/assets'
+import {Colors} from '@bluecentury/styles'
 
 const {Navigator, Screen, Group} =
   createNativeStackNavigator<RootStackParamList>()
@@ -45,7 +53,8 @@ function RootNavigator() {
       initialRouteName="Splash"
       screenOptions={{
         headerShown: false,
-        headerShadowVisible: false
+        headerShadowVisible: false,
+        headerStyle: {backgroundColor: Colors.light}
       }}
     >
       <Group>
@@ -74,6 +83,14 @@ function RootNavigator() {
           name="QRScanner"
           component={QRScanner}
           options={{headerShown: false}}
+        />
+        <Screen
+          name="Formations"
+          component={Formations}
+          options={{
+            title: 'Active Formations',
+            headerShown: true
+          }}
         />
       </Group>
       <Group>
