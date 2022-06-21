@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react'
-import {View, SectionList, Dimensions} from 'react-native'
+import {View, SectionList, Dimensions, RefreshControl} from 'react-native'
 import {
   Box,
   Image,
@@ -24,9 +24,7 @@ export default function Notification() {
   const {logout} = useAuth()
 
   useEffect(() => {
-    if (notifications.length == 0) {
-      getAllNotifications()
-    }
+    getAllNotifications()
   }, [])
 
   let groupByDate = Object.values(
@@ -82,7 +80,8 @@ export default function Notification() {
         borderRadius={ms(5)}
         borderColor={!item.read ? '#BEE3F8' : '#E0E0E0'}
         bg="#fff"
-        shadow={'1'}>
+        shadow={'1'}
+      >
         {/* <Image
         alt="notif-img"
         source={icons.completed}
@@ -131,6 +130,10 @@ export default function Notification() {
     </VStack>
   )
 
+  const onPullToReload = () => {
+    getAllNotifications()
+  }
+
   if (isLoadingNotification) {
     return (
       <Center>
@@ -152,8 +155,15 @@ export default function Notification() {
         backgroundColor={'#fff'}
         borderTopLeftRadius={ms(15)}
         borderTopRightRadius={ms(15)}
-        p={ms(14)}>
+        p={ms(14)}
+      >
         <SectionList
+          refreshControl={
+            <RefreshControl
+              onRefresh={onPullToReload}
+              refreshing={isLoadingNotification}
+            />
+          }
           sections={groupByDate}
           keyExtractor={(item, index) => item + index}
           renderItem={({item}) => <Item item={item} />}

@@ -27,10 +27,17 @@ export const useNotif = create(
         })
         try {
           const response = await API.getNotifications()
-          set({
-            isLoadingNotification: false,
-            notifications: response
-          })
+          if (Array.isArray(response)) {
+            set({
+              isLoadingNotification: false,
+              notifications: response
+            })
+          } else {
+            set({
+              isLoadingNotification: false,
+              notifications: []
+            })
+          }
         } catch (error) {
           set({
             isLoadingNotification: false
