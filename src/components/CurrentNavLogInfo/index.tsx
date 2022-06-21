@@ -8,8 +8,8 @@ import {Animated} from '@bluecentury/assets'
 import {useEntity, useMap} from '@bluecentury/stores'
 
 export const CurrentNavLogInfo = () => {
-  const {currentNavLogs, prevNavLogs} = useMap()
-  const {vesselDetails} = useEntity()
+  const {currentNavLogs, prevNavLogs}: any = useMap()
+  const {vesselDetails}: any = useEntity()
 
   return (
     <TouchableOpacity
