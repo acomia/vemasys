@@ -16,5 +16,6 @@ export const icons = {
   completed: require('./completed.png'),
   logout: require('./logout.png'),
   qr: require('./qr.png'),
-  gps: require('./gps.png')
+  gps: require('./gps.png'),
+  unloading: require('./unloading.png')
 }

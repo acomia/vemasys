@@ -1,234 +1,179 @@
-import React from 'react';
+import React, {useEffect} from 'react'
+import {View, SectionList, Dimensions, RefreshControl} from 'react-native'
 import {
-  View,
-  Text,
-  SectionList,
+  Box,
   Image,
-  Dimensions,
-  StyleSheet,
-} from 'react-native';
-import {Divider} from 'native-base';
-import moment from 'moment';
+  Divider,
+  Flex,
+  HStack,
+  Text,
+  VStack,
+  Center
+} from 'native-base'
+import {ms} from 'react-native-size-matters'
+import moment from 'moment'
+import Icon from 'react-native-vector-icons/FontAwesome5'
 
-import {icons} from '@bluecentury/assets';
+import {icons, Animated} from '@bluecentury/assets'
+import {useNotif, useAuth} from '@bluecentury/stores'
 
-const screenWidth = Dimensions.get('screen').width;
+const screenWidth = Dimensions.get('screen').width
 
 export default function Notification() {
-  const dummy = [
-    {
-      id: 1,
-      vessel: 'AZZURRO',
-      description:
-        ' has departed from Pannerdsche Kop ( Waal - Pannerdsch kanaal )',
-      date: new Date(),
-      read: false,
-    },
-    {
-      id: 2,
-      vessel: 'AZZURRO',
-      description:
-        ' has departed from Pannerdsche Kop ( Waal - Pannerdsch kanaal )',
-      date: new Date(),
-      read: false,
-    },
-    {
-      id: 3,
-      vessel: 'AZZURRO',
-      description:
-        ' has departed from Pannerdsche Kop ( Waal - Pannerdsch kanaal )',
-      date: new Date(),
-      read: false,
-    },
-    {
-      id: 4,
-      vessel: 'AZZURRO',
-      description:
-        ' has departed from Pannerdsche Kop ( Waal - Pannerdsch kanaal )',
-      date: new Date('2021-01-01'),
-      read: false,
-    },
-    {
-      id: 5,
-      vessel: 'AZZURRO',
-      description:
-        ' has departed from Pannerdsche Kop ( Waal - Pannerdsch kanaal )',
-      date: new Date('2021-01-01'),
-      read: true,
-    },
-    {
-      id: 6,
-      vessel: 'AZZURRO',
-      description:
-        ' has departed from Pannerdsche Kop Lorem qewuf sk ( Waal - Pannerdsch kanaal )',
-      date: new Date('2021-01-01'),
-      read: true,
-    },
-    {
-      id: 7,
-      vessel: 'AZZURRO',
-      description:
-        ' has departed from Pannerdsche Kop ( Waal - Pannerdsch kanaal )',
-      date: new Date('2021-01-01'),
-      read: true,
-    },
-    {
-      id: 8,
-      vessel: 'AZZURRO',
-      description:
-        ' has departed from Pannerdsche Kop ( Waal - Pannerdsch kanaal )',
-      date: new Date('2021-01-01'),
-      read: true,
-    },
-    {
-      id: 9,
-      vessel: 'AZZURRO',
-      description:
-        ' has departed from Pannerdsche Kop ( Waal - Pannerdsch kanaal )',
-      date: new Date('2021-01-01'),
-      read: true,
-    },
-    {
-      id: 10,
-      vessel: 'AZZURRO',
-      description:
-        ' has departed from Pannerdsche Kop ( Waal - Pannerdsch kanaal )',
-      date: new Date('2021-01-01'),
-      read: true,
-    },
-  ];
+  const {isLoadingNotification, notifications, getAllNotifications} = useNotif()
+  const {logout} = useAuth()
+
+  useEffect(() => {
+    getAllNotifications()
+  }, [])
 
   let groupByDate = Object.values(
-    dummy.reduce((acc, item) => {
-      if (!acc[item.date])
-        acc[item.date] = {
-          date: item.date,
-          data: [],
-        };
-      acc[item.date].data.push(item);
-      return acc;
-    }, {}),
-  );
+    notifications.reduce((acc: any, item) => {
+      const date = item.createdAt.split('T')[0]
+      if (!acc[date])
+        acc[date] = {
+          date: date,
+          data: []
+        }
+      acc[date].data.push(item)
+      return acc
+    }, {})
+  )
 
-  const Item = ({item}: any) => (
-    <View
-      style={[
-        notificationStyles.itemContainer,
-        {borderColor: !item.read ? '#BEE3F8' : '#E0E0E0'},
-      ]}>
-      <Image
+  const sanitizedIcon = (icon: string) => {
+    return icon.replace('fas fa-', '')
+  }
+
+  const sanitizedHTML = (labelHTML: string) => {
+    let subject =
+      labelHTML.match(/<a\/?[^>](.*?)<\/a>/g) == null
+        ? ''
+        : labelHTML.match(/<a\/?[^>](.*?)<\/a>/g).map(function (str) {
+            return str.replace(/<\/?[^>]+(>|$)/g, '')
+          })
+
+    let notification = labelHTML.replace(/<\/?[^>]+(>|$)/g, '')
+    notification = notification.replace(subject, ':::')
+    notification = notification.split(':::')
+
+    return (
+      <Text>
+        {notification[0] ? notification[0] : ''}
+        <Text fontWeight="bold" color="#29B7EF">
+          {subject}
+        </Text>
+        {notification[1] ? notification[1] : ''}
+      </Text>
+    )
+  }
+
+  const Item = ({item}: any) => {
+    const date = item.createdAt.split('T')[0]
+    return (
+      <HStack
+        alignItems="center"
+        backgroundColor="#fff"
+        px={ms(16)}
+        py={ms(10)}
+        my={ms(8)}
+        borderWidth={ms(1)}
+        borderRadius={ms(5)}
+        borderColor={!item.read ? '#BEE3F8' : '#E0E0E0'}
+        bg="#fff"
+        shadow={'1'}
+      >
+        {/* <Image
+        alt="notif-img"
         source={icons.completed}
-        style={notificationStyles.itemIcon}
+        width={ms(32)}
+        height={ms(32)}
         resizeMode="contain"
-      />
-      <View style={{paddingLeft: 10}}>
-        <Text style={notificationStyles.description}>
-          <Text style={notificationStyles.descriptionHighlighted}>
-            {item.vessel}
+      /> */}
+        <Icon
+          name={sanitizedIcon(item.icon)}
+          color="#23475C"
+          size={24}
+          style={{marginHorizontal: 5}}
+        />
+        <VStack pl="10px">
+          <Text maxWidth={screenWidth - 100}>{sanitizedHTML(item.label)}</Text>
+          <Text fontSize={ms(12)} color="#ADADAD">
+            {moment(new Date()).isSame(moment(new Date(date)))
+              ? `Today | ${moment(date).format('HH:mm')}`
+              : moment(date).format('MMM DD, YYYY HH:mm')}
           </Text>
-          {item.description}
-        </Text>
-        <Text style={notificationStyles.notificationDate}>
-          {moment(new Date().toLocaleDateString()).isSame(
-            moment(new Date(item.date).toLocaleDateString()),
-          )
-            ? `Today | ${moment(item.date).format('LT')}`
-            : moment(item.date).format('lll')}
-        </Text>
-      </View>
-      {!item.read && <View style={notificationStyles.unreadIndicator} />}
-    </View>
-  );
+        </VStack>
+        {!item.read && (
+          <Box
+            position={'absolute'}
+            backgroundColor="#00A3FF"
+            top="0"
+            bottom="0"
+            left="0"
+            width="8px"
+            borderTopLeftRadius={ms(5)}
+            borderBottomLeftRadius={ms(5)}
+          />
+        )}
+      </HStack>
+    )
+  }
 
   const HeaderSection = ({title}: any) => (
-    <View style={notificationStyles.headerContainer}>
-      <Text style={notificationStyles.header}>
-        {moment(new Date().toLocaleDateString()).isSame(
-          moment(new Date(title).toLocaleDateString()),
-        )
+    <VStack backgroundColor="#fff">
+      <Text fontSize={ms(15)} fontWeight="600" color="#23475C" my="10px">
+        {moment(new Date()).isSame(moment(new Date(title)))
           ? `Today`
-          : moment(title).format('ll')}
+          : moment(title).format('MMM DD, YYYY')}
       </Text>
-      <Divider my="2" />
-    </View>
-  );
+      <Divider mb={2} />
+    </VStack>
+  )
+
+  const onPullToReload = () => {
+    getAllNotifications()
+  }
+
+  if (isLoadingNotification) {
+    return (
+      <Center>
+        <Image
+          alt="loading"
+          source={Animated.vemasys_loading}
+          width={ms(150)}
+          height={ms(150)}
+          resizeMode="contain"
+        />
+      </Center>
+    )
+  }
 
   return (
-    <View style={notificationStyles.container}>
-      <View style={notificationStyles.content}>
+    <Flex flex={1}>
+      <Box
+        flex={1}
+        backgroundColor={'#fff'}
+        borderTopLeftRadius={ms(15)}
+        borderTopRightRadius={ms(15)}
+        p={ms(14)}
+      >
         <SectionList
+          refreshControl={
+            <RefreshControl
+              onRefresh={onPullToReload}
+              refreshing={isLoadingNotification}
+            />
+          }
           sections={groupByDate}
           keyExtractor={(item, index) => item + index}
           renderItem={({item}) => <Item item={item} />}
-          renderSectionHeader={({section: {date}}) => (
+          renderSectionHeader={({section: {date}}: any) => (
             <HeaderSection title={date} />
           )}
-          contentContainerStyle={{paddingBottom: 20}}
           stickySectionHeadersEnabled
           showsVerticalScrollIndicator={false}
         />
-      </View>
-    </View>
-  );
+      </Box>
+    </Flex>
+  )
 }
-
-const notificationStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-    borderTopRightRadius: 15,
-    borderTopLeftRadius: 15,
-    backgroundColor: '#fff',
-    padding: 14,
-  },
-  itemContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    marginVertical: 8,
-    borderWidth: 1,
-    borderRadius: 5,
-
-    //shadow
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  headerContainer: {backgroundColor: '#fff'},
-  header: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#23475C',
-    marginVertical: 10,
-  },
-  descriptionHighlighted: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#29B7EF',
-  },
-  description: {
-    fontSize: 15,
-    maxWidth: screenWidth - 100,
-  },
-  itemIcon: {width: 35, height: 35},
-  unreadIndicator: {
-    position: 'absolute',
-    backgroundColor: '#00A3FF',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    width: 8,
-    borderTopLeftRadius: 5,
-    borderBottomLeftRadius: 5,
-  },
-  notificationDate: {fontSize: 13, color: '#ADADAD', marginTop: 5},
-});

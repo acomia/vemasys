@@ -2,7 +2,7 @@ import React from 'react'
 import {View} from 'native-base'
 import {createDrawerNavigator} from '@react-navigation/drawer'
 import {DrawerActions} from '@react-navigation/native'
-import {Notification, Entity, Map} from '@bluecentury/screens'
+import {Notification, Entity, Map, Planning} from '@bluecentury/screens'
 import {Sidebar, IconButton} from '@bluecentury/components'
 import {icons} from '@bluecentury/assets'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
@@ -10,6 +10,7 @@ import {Screens} from '@bluecentury/constants'
 import {ms} from 'react-native-size-matters'
 
 const {Navigator, Screen} = createDrawerNavigator<MainStackParamList>()
+
 type Props = NativeStackScreenProps<RootStackParamList, 'Main'>
 
 export default function MainNavigator({navigation}: Props) {
@@ -33,12 +34,12 @@ export default function MainNavigator({navigation}: Props) {
             <IconButton
               source={icons.qr}
               btnStyle={{marginRight: 10}}
-              onPress={() => {}}
+              onPress={() => navigation.navigate('QRScanner')}
             />
             <IconButton
               source={icons.gps}
               iconStyle={{width: 35, height: 35}}
-              onPress={() => {}}
+              onPress={() => navigation.navigate('GPSTracker')}
             />
           </View>
         ),
@@ -51,11 +52,12 @@ export default function MainNavigator({navigation}: Props) {
           />
         )
       }}
-      initialRouteName={Screens.Notifications}
+      initialRouteName={Screens.MapView}
       drawerContent={props => <Sidebar {...props} />}
     >
       <Screen name={Screens.Notifications} component={Notification} />
-      <Screen name="MapView" component={Map} />
+      <Screen name={Screens.MapView} component={Map} />
+      <Screen name={Screens.Planning} component={Planning} />
       <Screen
         name={Screens.ChangeRole}
         component={Entity}

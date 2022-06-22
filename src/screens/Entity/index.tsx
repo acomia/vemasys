@@ -1,138 +1,92 @@
-import React, {useEffect} from 'react';
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  ActivityIndicator,
-} from 'react-native';
-import {
-  Box,
-  FlatList,
-  Heading,
-  Avatar,
-  HStack,
-  VStack,
-  Text,
-  Spacer,
-  Divider,
-  Button,
-  Image,
-} from 'native-base';
-import {CommonActions, useRoute} from '@react-navigation/native';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {ms} from 'react-native-size-matters';
+import React, {useEffect} from 'react'
+import {RefreshControl} from 'react-native'
+import {Box, FlatList, Heading, Divider, Button, Image, Flex} from 'native-base'
+import {CommonActions, useRoute} from '@react-navigation/native'
+import {NativeStackScreenProps} from '@react-navigation/native-stack'
+import {ms} from 'react-native-size-matters'
 
-import {useEntity, useAuth} from '@bluecentury/stores';
-import {icons} from '@bluecentury/assets';
-import {Colors} from '@bluecentury/styles';
-import {PROD_URL} from '@bluecentury/env';
+import {useEntity, useAuth} from '@bluecentury/stores'
+import {icons} from '@bluecentury/assets'
+import {Colors} from '@bluecentury/styles'
+import {PROD_URL} from '@bluecentury/env'
+import {EntityCard, LoadingIndicator} from '@bluecentury/components'
 
-type Props = NativeStackScreenProps<RootStackParamList>;
+type Props = NativeStackScreenProps<RootStackParamList>
 
 export default function Entity({navigation}: Props) {
   const {
     entityUsers,
     entityUserId,
     isLoadingEntityUsers,
+    getUserInfo,
     getEntityUsers,
-    selectEntityUser,
-  } = useEntity();
-  const {logout, token} = useAuth();
-  const routeName = useRoute().name;
+    selectEntityUser
+  } = useEntity()
+  const {logout, token} = useAuth()
+  const routeName = useRoute().name
 
   useEffect(() => {
     navigation.setOptions({
-      headerBackVisible: false,
-    });
-    if (!token) {
-      navigation.dispatch(
-        CommonActions.reset({
-          index: 1,
-          routes: [{name: 'Login'}],
-        }),
-      );
-    }
+      headerBackVisible: false
+    })
 
-    getEntityUsers();
-  }, [navigation, token]);
+    // logout()
+
+    getUserInfo()
+    getEntityUsers()
+  }, [navigation])
 
   const onSelectEntityUser = (entity: any) => {
-    selectEntityUser(entity);
-    if (routeName === 'SelectEntity') {
-      navigation.navigate('Main');
-    } else {
-      navigation.goBack();
-    }
-  };
+    selectEntityUser(entity)
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{name: 'Main'}]
+      })
+    )
+  }
+
+  const onPullToReload = () => {
+    getUserInfo()
+    getEntityUsers()
+  }
 
   const onUserLogout = () => {
-    logout();
-  };
+    logout()
+  }
 
   return (
-    <View style={styles.container}>
+    <Flex flex={1} backgroundColor="#F0F0F0">
       <Box
         p="15px"
         backgroundColor="#fff"
         borderTopRightRadius={15}
-        borderTopLeftRadius={15}>
+        borderTopLeftRadius={15}
+      >
         <Heading fontSize="xl" pb="2">
           Roles
         </Heading>
         <Divider mb="5" />
         {isLoadingEntityUsers ? (
-          <ActivityIndicator size={'large'} />
+          <LoadingIndicator />
         ) : (
           <FlatList
+            refreshControl={
+              <RefreshControl
+                onRefresh={onPullToReload}
+                refreshing={isLoadingEntityUsers}
+              />
+            }
             data={entityUsers}
             renderItem={({item}: any) => {
-              let selected = entityUserId && item?.id === entityUserId;
+              let selected = entityUserId && item?.id === entityUserId
               return (
-                <Box
-                  key={item?.id}
-                  pl="4"
-                  pr="5"
-                  py="2"
-                  my="1.5"
-                  bg="#fff"
-                  shadow={'1'}
-                  borderColor="#F0F0F0"
-                  borderWidth="1"
-                  borderRadius="md">
-                  <TouchableOpacity
-                    activeOpacity={0.7}
-                    onPress={() => onSelectEntityUser(item)}>
-                    <HStack space={3} justifyContent="space-between">
-                      <Avatar
-                        size="48px"
-                        source={{
-                          uri: item?.entity?.icon
-                            ? `${PROD_URL}/upload/documents/${item?.entity?.icon?.path}`
-                            : '',
-                        }}
-                      />
-                      <VStack>
-                        <Text bold>{item?.entity?.alias}</Text>
-                        <Text color={Colors.primary}>{item?.role?.title}</Text>
-                      </VStack>
-                      <Spacer />
-                      {selected ? (
-                        <Button
-                          size="xs"
-                          h={ms(24)}
-                          py="1"
-                          alignSelf="center"
-                          textAlign="center"
-                          backgroundColor={Colors.secondary}>
-                          <Text fontSize={ms(12)} color="#fff" bold>
-                            active
-                          </Text>
-                        </Button>
-                      ) : null}
-                    </HStack>
-                  </TouchableOpacity>
-                </Box>
-              );
+                <EntityCard
+                  item={item}
+                  selected={selected}
+                  onPress={() => onSelectEntityUser(item)}
+                />
+              )
             }}
             keyExtractor={(item: any) => `Entity-${item?.id}`}
             contentContainerStyle={{paddingBottom: 120}}
@@ -140,16 +94,15 @@ export default function Entity({navigation}: Props) {
           />
         )}
       </Box>
-      <View
-        style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          backgroundColor: '#fff',
-          justifyContent: 'center',
-          padding: 15,
-        }}>
+      <Box
+        position="absolute"
+        bottom={ms(0)}
+        left={ms(0)}
+        right={ms(0)}
+        backgroundColor="#fff"
+        justifyContent="center"
+        padding={ms(15)}
+      >
         <Button
           mb={'10px'}
           size={'md'}
@@ -162,23 +115,11 @@ export default function Entity({navigation}: Props) {
               style={{width: 20, height: 20}}
             />
           }
-          onPress={onUserLogout}>
+          onPress={onUserLogout}
+        >
           Log out
         </Button>
-      </View>
-    </View>
-  );
+      </Box>
+    </Flex>
+  )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F0F0F0',
-  },
-  loadingContainer: {
-    flex: 1,
-    padding: 15,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});

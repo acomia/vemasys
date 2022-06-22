@@ -3,9 +3,13 @@ type RootStackParamList = {
   Login: undefined
   SelectEntity: undefined
   Main: undefined
+  QRScanner: undefined
+  Formations: undefined
+  GPSTracker: undefined
 }
 
 type MainStackParamList = {
+  ChangeRole: undefined
   Notification: undefined
   MapView: undefined
   Planning: undefined
