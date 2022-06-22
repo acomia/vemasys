@@ -14,10 +14,20 @@ import {useEntity, useMap} from '@bluecentury/stores'
 type Props = NativeStackScreenProps<RootStackParamList>
 
 export default function Formations({navigation}: Props) {
-  const {activeFormations, getActiveFormations} = useMap()
+  const {
+    activeFormations,
+    getActiveFormations,
+    endVesselFormations,
+    removeVesselFromFormations
+  } = useMap()
   const {vesselId} = useEntity()
   const [dropOffModal, setDropOffModal] = useState(false)
-  const [selectedBarge, setSelectedBarge] = useState(null)
+  const [selectedBarge, setSelectedBarge] = useState<any>(null)
+
+  const bargeName =
+    selectedBarge?.entity?.alias !== null
+      ? selectedBarge?.entity?.alias
+      : selectedBarge?.entity?.name
 
   useEffect(() => {
     navigation.setOptions({
@@ -57,15 +67,32 @@ export default function Formations({navigation}: Props) {
   }
 
   const onUnlinkPress = (barge: any) => {
-    console.log(barge)
     setDropOffModal(true)
-    setSelectedBarge(item)
+    setSelectedBarge(barge)
   }
 
-  const bargeName =
-    selectedBarge?.entity?.alias !== null
-      ? selectedBarge?.entity?.alias
-      : selectedBarge?.entity?.name
+  const onDropOffPress = () => {
+    try {
+      if (activeFormations[0].exploitationVessels.length === 1) {
+        // End Formations
+        endVesselFormations(activeFormations[0].id, selectedBarge?.id)
+        setTimeout(() => {
+          setSelectedBarge(null)
+          setDropOffModal(false)
+          getActiveFormations()
+        }, 1000)
+      } else {
+        // Remove Vessel from the Formations
+        removeVesselFromFormations(activeFormations[0].id, selectedBarge?.id)
+        setTimeout(() => {
+          setSelectedBarge(null)
+          setDropOffModal(false)
+          getActiveFormations()
+        }, 1000)
+      }
+    } catch (error) {}
+  }
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <FlatList
@@ -86,30 +113,50 @@ export default function Formations({navigation}: Props) {
           borderTopLeftRadius: 15,
           borderTopRightRadius: 15
         }}
+        ListEmptyComponent={() => (
+          <Text
+            fontSize={ms(16)}
+            fontWeight="bold"
+            textAlign="center"
+            color={Colors.azure}
+            mt={ms(20)}
+          >
+            No Active Formations
+          </Text>
+        )}
       />
-      <Modal isOpen={true}>
+      <Modal isOpen={dropOffModal}>
         <Modal.Content width="95%" px={ms(10)}>
           <Modal.Header>Drop off</Modal.Header>
-          <Modal.Body>
-            Would you like to drop off{' '}
-            <Text fontWeight="medium" color={Colors.primary}>
-              {bargeName}
-            </Text>{' '}
+          <Modal.Body py={ms(20)}>
+            <Text>
+              Would you like to drop off{' '}
+              <Text fontWeight="medium" color={Colors.primary}>
+                {bargeName}
+              </Text>
+            </Text>
           </Modal.Body>
-          <Modal.Footer>
-            <HStack flex={1} justifyContent="space-between">
-              <Button
-                flex={1}
-                backgroundColor={Colors.light}
-                onPress={() => setDropOffModal(false)}
-              >
-                Cancel
-              </Button>
-              <Spacer />
-              <Button flex={1} backgroundColor={Colors.primary}>
-                Drop off
-              </Button>
-            </HStack>
+          <Modal.Footer
+            justifyContent="space-between"
+            flexDirection="row"
+            px={ms(0)}
+          >
+            <Button
+              flex={1}
+              backgroundColor={Colors.light}
+              mr={ms(5)}
+              onPress={() => setDropOffModal(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              flex={1}
+              backgroundColor={Colors.primary}
+              ml={ms(5)}
+              onPress={onDropOffPress}
+            >
+              Drop off
+            </Button>
           </Modal.Footer>
         </Modal.Content>
       </Modal>

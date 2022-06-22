@@ -46,9 +46,8 @@ export default function QRScanner({navigation}: Props) {
           myString.length,
           scanResult.data.length
         )
-
         try {
-          if (activeFormations.length == 0) {
+          if (activeFormations.length === 0) {
             verifyTrackingDeviceToken(vesselId, staticToken, 'create')
           } else {
             verifyTrackingDeviceToken(vesselId, staticToken, 'add')
@@ -107,7 +106,7 @@ export default function QRScanner({navigation}: Props) {
       </Text>
       <TouchableOpacity
         testID="qrcode-back-button"
-        onPress={() => onBarCodeRead()}
+        onPress={() => navigation.goBack()}
         style={{position: 'absolute', left: 10, top: 20}}
       >
         <Icon name="arrow-left" size={24} color="#fff" />

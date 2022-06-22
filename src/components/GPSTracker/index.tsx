@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {
   Linking,
   Alert,
@@ -13,6 +13,7 @@ import {ms} from 'react-native-size-matters'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import Geolocation, {GeoPosition} from 'react-native-geolocation-service'
 import {useNetInfo} from '@react-native-community/netinfo'
+import BackgroundTimer from 'react-native-background-timer'
 import moment from 'moment'
 
 import {Colors} from '@bluecentury/styles'
@@ -21,14 +22,23 @@ import {useEntity, useMap} from '@bluecentury/stores'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 export const GPSTracker = ({navigation}: Props) => {
-  const {isLoadingMap, sendCurrentPosition} = useMap()
+  const {
+    isLoadingMap,
+    isMobileTrackingEnable,
+    sendCurrentPosition,
+    enableMobileTracking
+  } = useMap()
   const {vesselDetails} = useEntity()
   const [position, setPosition] = useState<GeoPosition>(undefined)
-  const [mobileTracker, setMobileTracker] = useState(false)
+  const [isMobileTracking, setIsMobileTracking] = useState(false)
   const netInfo = useNetInfo()
 
   useEffect(() => {
-    if (mobileTracker) {
+    setIsMobileTracking(isMobileTrackingEnable)
+  }, [])
+
+  useEffect(() => {
+    if (isMobileTracking) {
       Geolocation.getCurrentPosition(
         position => {
           setPosition(position)
@@ -48,8 +58,13 @@ export const GPSTracker = ({navigation}: Props) => {
           distanceFilter: 0
         }
       )
+      BackgroundTimer.runBackgroundTimer(() => {
+        onBackgroundSendCurrentPosition()
+      }, 60000)
+    } else {
+      BackgroundTimer.stopBackgroundTimer()
     }
-  }, [mobileTracker])
+  }, [isMobileTracking])
 
   const hasPermissionIOS = async () => {
     const openSetting = () => {
@@ -128,7 +143,30 @@ export const GPSTracker = ({navigation}: Props) => {
     if (!hasPermission) {
       return
     }
-    setMobileTracker(!mobileTracker)
+    setIsMobileTracking(!isMobileTracking)
+    enableMobileTracking()
+  }
+
+  const onBackgroundSendCurrentPosition = () => {
+    Geolocation.getCurrentPosition(
+      position => {
+        setPosition(position)
+        sendCurrentPosition(position)
+      },
+      error => {
+        Alert.alert(`Code ${error.code}`, error.message)
+      },
+      {
+        accuracy: {
+          android: 'high',
+          ios: 'best'
+        },
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 10000,
+        distanceFilter: 0
+      }
+    )
   }
 
   const renderTrackerSource = (sourceData: string) => {
@@ -177,7 +215,7 @@ export const GPSTracker = ({navigation}: Props) => {
             justifyContent="center"
           >
             <Text fontWeight="medium" ml={ms(15)}>
-              {!mobileTracker
+              {!isMobileTracking
                 ? moment(vesselDetails?.lastGeolocation?.locationTime).fromNow()
                 : moment(position?.timestamp).fromNow()}
             </Text>
@@ -206,7 +244,7 @@ export const GPSTracker = ({navigation}: Props) => {
           >
             <RNImage
               source={
-                mobileTracker
+                isMobileTracking
                   ? Images.mobile_tracker
                   : renderTrackerSource(
                       vesselDetails?.lastGeolocation?.sourceOfData
@@ -215,7 +253,7 @@ export const GPSTracker = ({navigation}: Props) => {
               style={{tintColor: '#44A7B9', marginLeft: 20}}
             />
             <Text ml={ms(10)}>
-              {!mobileTracker
+              {!isMobileTracking
                 ? vesselDetails?.lastGeolocation?.sourceOfData
                 : 'Mobile phone'}
             </Text>
@@ -245,7 +283,7 @@ export const GPSTracker = ({navigation}: Props) => {
           </Text>
           <Switch
             size="md"
-            value={mobileTracker}
+            value={isMobileTracking}
             onValueChange={onSendCurrentPosition}
           />
         </HStack>
@@ -302,7 +340,7 @@ export const GPSTracker = ({navigation}: Props) => {
             justifyContent="center"
           >
             <Text fontWeight="medium" ml={ms(15)}>
-              {!mobileTracker
+              {!isMobileTracking
                 ? `${vesselDetails?.lastGeolocation?.latitude} | ${vesselDetails?.lastGeolocation?.longitude}`
                 : isLoadingMap
                 ? 'Loading...'

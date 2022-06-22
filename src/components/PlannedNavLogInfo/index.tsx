@@ -6,22 +6,19 @@ import moment from 'moment'
 
 import {Animated} from '@bluecentury/assets'
 import {useMap} from '@bluecentury/stores'
+import {formatLocationLabel} from '@bluecentury/constants'
 
 export const PlannedNavLogInfo = () => {
-  const {plannedNavLogs} = useMap()
-  const navigationLog = plannedNavLogs?.filter(e => e && e.plannedETA !== null)
-
-  function formatLocationLabel(location: GeographicPoint) {
-    if (location.locationName) {
-      return `[${location.locationName}] ${location.name}`
-    }
-    return location.name
-  }
+  const {plannedNavLogs}: any = useMap()
+  const navigationLog = plannedNavLogs?.find(
+    (plan: any) => plan.plannedETA !== null
+  )
 
   return (
     <TouchableOpacity
       style={styles.container}
-      onPress={() => console.log('Planned')}>
+      onPress={() => console.log('Planned')}
+    >
       <Box ml={ms(15)}>
         {navigationLog === undefined ? (
           <Text fontWeight="700" color="#ADADAD">
@@ -30,13 +27,11 @@ export const PlannedNavLogInfo = () => {
         ) : (
           <>
             <Text fontWeight="700">
-              To: {formatLocationLabel(navigationLog[0]?.location)}
+              To: {formatLocationLabel(navigationLog?.location)}
             </Text>
             <Text color="#ADADAD">
               Planned:{' '}
-              {moment(navigationLog[0]?.plannedETA).format(
-                'DD MMM YYYY | HH:mm'
-              )}
+              {moment(navigationLog?.plannedETA).format('DD MMM YYYY | HH:mm')}
             </Text>
           </>
         )}
@@ -52,7 +47,8 @@ export const PlannedNavLogInfo = () => {
             backgroundColor="#F0F0F0"
             alignItems="center"
             justifyContent="center"
-            zIndex={1}>
+            zIndex={1}
+          >
             <Image
               alt="planned-nav-log-img"
               source={Animated.nav_unloading}
