@@ -39,7 +39,7 @@ export default function MainNavigator({navigation}: Props) {
             <IconButton
               source={icons.gps}
               iconStyle={{width: 35, height: 35}}
-              onPress={() => {}}
+              onPress={() => navigation.navigate('GPSTracker')}
             />
           </View>
         ),
@@ -52,7 +52,7 @@ export default function MainNavigator({navigation}: Props) {
           />
         )
       }}
-      initialRouteName={Screens.Notifications}
+      initialRouteName={Screens.MapView}
       drawerContent={props => <Sidebar {...props} />}
     >
       <Screen name={Screens.Notifications} component={Notification} />

@@ -1,8 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.vemasysv2">
+  package="com.vemasysreactnativeapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />  
+    
     <application
       android:name=".MainApplication"
       android:label="@string/app_name"
@@ -22,8 +25,8 @@
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
       </activity>
-      <!-- <meta-data
+      <meta-data
         android:name="com.google.android.geo.API_KEY"
-        android:value="AIzaSyA82pm9wxBLRa9eELZiN6giho9CfIsSHdE"/> -->
+        android:value="AIzaSyA82pm9wxBLRa9eELZiN6giho9CfIsSHdE"/>
     </application>
 </manifest>

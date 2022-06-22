@@ -7,22 +7,19 @@ import moment from 'moment'
 import {icons} from '@bluecentury/assets'
 import {useMap} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
+import {formatLocationLabel} from '@bluecentury/constants'
 
 export const PreviousNavLogInfo = () => {
-  const {prevNavLogs} = useMap()
-  const navigationLog = prevNavLogs?.filter(e => e && e.plannedETA !== null)
-
-  function formatLocationLabel(location: GeographicPoint) {
-    if (location.locationName) {
-      return `[${location.locationName}] ${location.name}`
-    }
-    return location.name
-  }
+  const {prevNavLogs}: any = useMap()
+  const navigationLog = prevNavLogs?.find(
+    (prev: any) => prev.plannedETA !== null
+  )
 
   return (
     <TouchableOpacity
       style={styles.container}
-      onPress={() => console.log('Previous')}>
+      onPress={() => console.log('Previous')}
+    >
       <Box ml={ms(15)}>
         {navigationLog === undefined ? (
           <Text fontWeight="700" color="#ADADAD">
@@ -31,17 +28,17 @@ export const PreviousNavLogInfo = () => {
         ) : (
           <>
             <Text fontWeight="700">
-              From: {formatLocationLabel(navigationLog[0]?.location)}
+              From: {formatLocationLabel(navigationLog?.location)}
             </Text>
             <Text color="#ADADAD">
               Arrived:{' '}
-              {moment(navigationLog[0]?.arrivalDatetime).format(
+              {moment(navigationLog?.arrivalDatetime).format(
                 'DD MMM YYYY | HH:mm'
               )}
             </Text>
             <Text color="#ADADAD" fontSize={ms(11)}>
               Departure date:{' '}
-              {moment(navigationLog[0]?.departureDatetime).format(
+              {moment(navigationLog?.departureDatetime).format(
                 'DD MMM YYYY | HH:mm'
               )}
             </Text>
@@ -59,7 +56,8 @@ export const PreviousNavLogInfo = () => {
             backgroundColor="#F0F0F0"
             alignItems="center"
             justifyContent="center"
-            zIndex={1}>
+            zIndex={1}
+          >
             <Image
               alt="prev-nav-log-img"
               source={icons.completed}

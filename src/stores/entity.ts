@@ -102,10 +102,17 @@ export const useEntity = create(
       getEntityUsers: async () => {
         try {
           const response = await API.reloadEntityUsers()
-          set({
-            entityUsers: response,
-            isLoadingEntityUsers: false
-          })
+          if (Array.isArray(response)) {
+            set({
+              entityUsers: response,
+              isLoadingEntityUsers: false
+            })
+          } else {
+            set({
+              entityUsers: [],
+              isLoadingEntityUsers: false
+            })
+          }
         } catch (error) {
           set({
             isLoadingEntityUsers: false
@@ -138,8 +145,6 @@ export const useEntity = create(
           const response = await API.getVesselNavigationDetails(
             entity.entity.exploitationVessel.id
           )
-          console.log('vessel', response)
-
           set({
             vesselDetails: response
           })

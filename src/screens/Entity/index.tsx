@@ -1,19 +1,6 @@
 import React, {useEffect} from 'react'
-import {TouchableOpacity, ActivityIndicator} from 'react-native'
-import {
-  Box,
-  FlatList,
-  Heading,
-  Avatar,
-  HStack,
-  VStack,
-  Text,
-  Spacer,
-  Divider,
-  Button,
-  Image,
-  Flex
-} from 'native-base'
+import {RefreshControl} from 'react-native'
+import {Box, FlatList, Heading, Divider, Button, Image, Flex} from 'native-base'
 import {CommonActions, useRoute} from '@react-navigation/native'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {ms} from 'react-native-size-matters'
@@ -22,7 +9,7 @@ import {useEntity, useAuth} from '@bluecentury/stores'
 import {icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
 import {PROD_URL} from '@bluecentury/env'
-import {EntityCard} from '@bluecentury/components'
+import {EntityCard, LoadingIndicator} from '@bluecentury/components'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 
@@ -33,7 +20,6 @@ export default function Entity({navigation}: Props) {
     isLoadingEntityUsers,
     getUserInfo,
     getEntityUsers,
-    getUserVessels,
     selectEntityUser
   } = useEntity()
   const {logout, token} = useAuth()
@@ -45,24 +31,24 @@ export default function Entity({navigation}: Props) {
     })
 
     // logout()
-    if (entityUsers.length === 0) {
-      getUserInfo()
-      getEntityUsers()
-    }
+
+    getUserInfo()
+    getEntityUsers()
   }, [navigation])
 
   const onSelectEntityUser = (entity: any) => {
     selectEntityUser(entity)
-    if (routeName === 'SelectEntity') {
-      navigation.navigate('Main')
-    } else {
-      navigation.dispatch(
-        CommonActions.reset({
-          index: 0,
-          routes: [{name: 'Main'}]
-        })
-      )
-    }
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{name: 'Main'}]
+      })
+    )
+  }
+
+  const onPullToReload = () => {
+    getUserInfo()
+    getEntityUsers()
   }
 
   const onUserLogout = () => {
@@ -82,9 +68,15 @@ export default function Entity({navigation}: Props) {
         </Heading>
         <Divider mb="5" />
         {isLoadingEntityUsers ? (
-          <ActivityIndicator size={'large'} />
+          <LoadingIndicator />
         ) : (
           <FlatList
+            refreshControl={
+              <RefreshControl
+                onRefresh={onPullToReload}
+                refreshing={isLoadingEntityUsers}
+              />
+            }
             data={entityUsers}
             renderItem={({item}: any) => {
               let selected = entityUserId && item?.id === entityUserId
