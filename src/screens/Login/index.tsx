@@ -79,7 +79,8 @@ function Login() {
               size="lg"
             />
             <FormControl.ErrorMessage
-              leftIcon={<WarningOutlineIcon size="xs" />}>
+              leftIcon={<WarningOutlineIcon size="xs" />}
+            >
               {/* {_t(language, 'usernameRequired')} */}
               {usernameRequired}
             </FormControl.ErrorMessage>
@@ -119,7 +120,8 @@ function Login() {
               size="lg"
             />
             <FormControl.ErrorMessage
-              leftIcon={<WarningOutlineIcon size="xs" />}>
+              leftIcon={<WarningOutlineIcon size="xs" />}
+            >
               {user.username === '' && user.password === ''
                 ? usernamePasswordRequired
                 : passwordRequired}
@@ -128,13 +130,16 @@ function Login() {
         </VStack>
         <Button
           colorScheme="azure"
-          onPress={onUserLogin}
-          isDisabled={isAuthenticatingUser}
+          isLoadingText="Logging in"
           isLoading={isAuthenticatingUser}
-          _loading={<ActivityIndicator size="small" />}
+          _spinner={{
+            color: Colors.white
+          }}
           _text={{
             textTransform: 'uppercase'
-          }}>
+          }}
+          onPress={onUserLogin}
+        >
           {login}
         </Button>
       </VStack>
