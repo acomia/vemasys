@@ -8,6 +8,7 @@ import {useEntity, useAuth} from '@bluecentury/stores'
 import {icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
 import {EntityCard, LoadingIndicator} from '@bluecentury/components'
+import {Shadow} from 'react-native-shadow-2'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 
@@ -43,7 +44,7 @@ export default function Entity({navigation}: Props) {
     logout()
   }
   return (
-    <Box flex={1} bgColor="red" safeArea>
+    <Box flex={1} bg={Colors.white} safeArea>
       <Box
         flex={1}
         pt={ms(20)}
@@ -78,41 +79,53 @@ export default function Entity({navigation}: Props) {
               )
             }}
             keyExtractor={(item: any) => `Entity-${item?.id}`}
-            // contentContainerStyle={{paddingBottom: 120}}
+            // eslint-disable-next-line react-native/no-inline-styles
+            contentContainerStyle={{paddingBottom: 150}}
             showsVerticalScrollIndicator={false}
           />
         )}
       </Box>
-      <Box bg={Colors.white}>
-        <Divider />
-        <Button
-          m={ms(20)}
-          bg={Colors.danger}
-          isLoading={isLoggingOut}
-          _loading={{
-            opacity: 0.5,
-            bg: Colors.danger,
-            _text: {
-              bold: true
-            }
+      <Box bg={Colors.white} position="absolute" left={0} right={0} bottom={0}>
+        <Shadow
+          distance={25}
+          // eslint-disable-next-line react-native/no-inline-styles
+          viewStyle={{
+            width: '100%'
           }}
-          _spinner={{
-            size: ms(20),
-            color: Colors.white
-          }}
-          isLoadingText="Logging out"
-          leftIcon={
-            <Image
-              alt="logout-img"
-              source={icons.logout}
-              resizeMode="contain"
-              size={ms(20)}
-            />
-          }
-          onPress={handleOnPressLogout}
         >
-          Log out
-        </Button>
+          <Box>
+            <Button
+              m={ms(20)}
+              bg={Colors.danger}
+              _light={{
+                _pressed: {
+                  bg: Colors.danger
+                }
+              }}
+              isLoading={isLoggingOut}
+              _loading={{
+                opacity: 0.5,
+                bg: Colors.danger
+              }}
+              _spinner={{
+                size: ms(20),
+                color: Colors.white
+              }}
+              isLoadingText="Logging out"
+              leftIcon={
+                <Image
+                  alt="logout-img"
+                  source={icons.logout}
+                  resizeMode="contain"
+                  size={ms(20)}
+                />
+              }
+              onPress={handleOnPressLogout}
+            >
+              Log out
+            </Button>
+          </Box>
+        </Shadow>
       </Box>
     </Box>
   )
