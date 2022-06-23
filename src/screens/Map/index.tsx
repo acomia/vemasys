@@ -321,53 +321,55 @@ export default function Map() {
   }
 
   return (
-    <Flex flex={1}>
-      <MapView
-        ref={mapRef}
-        provider={PROVIDER_GOOGLE} // remove if not using Google Maps
-        style={styles.map}
-        initialRegion={region}
-        onRegionChange={region => handleRegionChange(region)}
-      >
-        {prevNavLogs?.length > 0 ? renderMarkerFrom() : null}
-        {currentNavLogs?.length > 0 ? renderMarkerVesel() : null}
-        {plannedNavLogs?.length > 0 ? renderMarkerTo() : null}
-        {lastCompleteNavLogs && lastCompleteNavLogs.length > 0
-          ? lastCompleteNavLogs[0]?.waypoints?.map((log: any) =>
-              renderLastCompleteNavLogs(log)
-            )
-          : null}
-      </MapView>
-      <IconButton
-        source={Images.current_location}
-        btnStyle={{alignSelf: 'flex-end'}}
-        iconStyle={{width: 80, height: 80}}
-        onPress={centerMapToCurrentLocation}
-      />
-      <BottomSheet
-        ref={sheetRef}
-        initialSnap={1}
-        snapPoints={[ms(410), ms(150)]}
-        borderRadius={20}
-        renderContent={renderBottomContent}
-        onOpenEnd={() => setSnapStatus(1)}
-        onCloseEnd={() => setSnapStatus(0)}
-      />
-      {isLoadingMap ? (
-        <Box
-          position="absolute"
-          top="0"
-          bottom="0"
-          left="0"
-          right="0"
-          justifyContent="center"
-          backgroundColor="rgba(0,0,0,0.5)"
-          zIndex={999}
+    <Box flex={1} bg={Colors.light} safeArea>
+      <Box flex={1} bg={Colors.white} borderRadius="3xl" overflow="hidden">
+        <MapView
+          ref={mapRef}
+          provider={PROVIDER_GOOGLE} // remove if not using Google Maps
+          style={styles.map}
+          initialRegion={region}
+          onRegionChange={region => handleRegionChange(region)}
         >
-          <LoadingIndicator width={200} height={200} />
-        </Box>
-      ) : null}
-    </Flex>
+          {prevNavLogs?.length > 0 ? renderMarkerFrom() : null}
+          {currentNavLogs?.length > 0 ? renderMarkerVesel() : null}
+          {plannedNavLogs?.length > 0 ? renderMarkerTo() : null}
+          {lastCompleteNavLogs && lastCompleteNavLogs.length > 0
+            ? lastCompleteNavLogs[0]?.waypoints?.map((log: any) =>
+                renderLastCompleteNavLogs(log)
+              )
+            : null}
+        </MapView>
+        <IconButton
+          source={Images.current_location}
+          btnStyle={{alignSelf: 'flex-end'}}
+          iconStyle={{width: 80, height: 80}}
+          onPress={centerMapToCurrentLocation}
+        />
+        <BottomSheet
+          ref={sheetRef}
+          initialSnap={1}
+          snapPoints={[ms(410), ms(150)]}
+          borderRadius={20}
+          renderContent={renderBottomContent}
+          onOpenEnd={() => setSnapStatus(1)}
+          onCloseEnd={() => setSnapStatus(0)}
+        />
+        {isLoadingMap ? (
+          <Box
+            position="absolute"
+            top="0"
+            bottom="0"
+            left="0"
+            right="0"
+            justifyContent="center"
+            backgroundColor="rgba(0,0,0,0.5)"
+            zIndex={999}
+          >
+            <LoadingIndicator width={200} height={200} />
+          </Box>
+        ) : null}
+      </Box>
+    </Box>
   )
 }
 
