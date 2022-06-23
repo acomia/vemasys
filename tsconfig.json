@@ -12,6 +12,7 @@
       "@bluecentury/assets": ["./src/assets"],
       "@bluecentury/components": ["./src/components"],
       "@bluecentury/constants": ["./src/constants"],
+      "@bluecentury/hooks": ["./src/hooks"],
       "@bluecentury/navigation": ["./src/navigation"],
       "@bluecentury/screens": ["./src/screens"],
       "@bluecentury/stores": ["./src/stores"],

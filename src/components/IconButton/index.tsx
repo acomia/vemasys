@@ -1,49 +1,36 @@
 import React, {FC} from 'react'
-import {
-  StyleProp,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  ViewStyle,
-  ImageSourcePropType,
-  ImageStyle
-} from 'react-native'
+import {ImageSourcePropType} from 'react-native'
+import {IconButton as ButtonIcon, Image} from 'native-base'
+import {ms} from 'react-native-size-matters'
 
 interface IProps {
   source: ImageSourcePropType
   onPress: () => void
-  btnStyle?: StyleProp<ViewStyle>
-  iconStyle?: StyleProp<ImageStyle>
   disabled?: boolean
+  size?: number
 }
 
-export const IconButton: FC<IProps> = props => {
-  const {source, onPress, btnStyle, iconStyle, disabled} = props
-  return (
-    <TouchableOpacity
-      style={[styles.container, btnStyle]}
-      onPress={onPress}
-      disabled={disabled}
-      activeOpacity={0.6}
-    >
+export const IconButton: FC<IProps> = ({
+  source,
+  onPress,
+  disabled,
+  size = ms(30)
+}) => (
+  <ButtonIcon
+    p={0}
+    onPress={onPress}
+    disabled={disabled}
+    icon={
       <Image
         source={source}
         resizeMode="contain"
-        style={[styles.icon, iconStyle]}
+        size={size}
+        alt="icon-button"
       />
-    </TouchableOpacity>
-  )
-}
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: 'transparent',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 5
-  },
-  icon: {
-    width: 30,
-    height: 30
-  }
-})
+    }
+    variant="unstyled"
+    _pressed={{
+      opacity: 0.8
+    }}
+  />
+)
