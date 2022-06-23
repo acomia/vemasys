@@ -1,5 +1,5 @@
 import React from 'react'
-import {View} from 'native-base'
+import {Box, HStack, View} from 'native-base'
 import {createDrawerNavigator} from '@react-navigation/drawer'
 import {DrawerActions} from '@react-navigation/native'
 import {Notification, Entity, Map, Planning} from '@bluecentury/screens'
@@ -8,6 +8,7 @@ import {icons} from '@bluecentury/assets'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {Screens} from '@bluecentury/constants'
 import {ms} from 'react-native-size-matters'
+import {Colors} from '@bluecentury/styles'
 
 const {Navigator, Screen} = createDrawerNavigator<MainStackParamList>()
 
@@ -21,35 +22,32 @@ export default function MainNavigator({navigation}: Props) {
           width: ms(220)
         },
         headerTitleAlign: 'left',
-        headerStyle: {backgroundColor: '#F0F0F0'},
+        headerStyle: {
+          backgroundColor: Colors.light
+        },
         headerShadowVisible: false,
         headerRight: () => (
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginRight: 10
-            }}
-          >
-            <IconButton
-              source={icons.qr}
-              btnStyle={{marginRight: 10}}
-              onPress={() => navigation.navigate('QRScanner')}
-            />
-            <IconButton
-              source={icons.gps}
-              iconStyle={{width: 35, height: 35}}
-              onPress={() => navigation.navigate('GPSTracker')}
-            />
-          </View>
+          <Box flexDirection="row" alignItems="center" mr={ms(20)}>
+            <HStack space="3">
+              <IconButton
+                source={icons.qr}
+                onPress={() => navigation.navigate('QRScanner')}
+              />
+              <IconButton
+                source={icons.gps}
+                onPress={() => navigation.navigate('GPSTracker')}
+              />
+            </HStack>
+          </Box>
         ),
         headerLeft: () => (
-          <IconButton
-            source={icons.menu}
-            btnStyle={{marginLeft: 10}}
-            onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
-            iconStyle={{width: 22, height: 22}}
-          />
+          <Box ml={ms(20)}>
+            <IconButton
+              source={icons.menu}
+              onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
+              iconStyle={{width: 22, height: 22}}
+            />
+          </Box>
         )
       }}
       initialRouteName={Screens.MapView}
