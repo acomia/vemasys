@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {ActivityIndicator} from 'react-native'
 import {
   Box,
@@ -31,8 +31,8 @@ function Login() {
   const [isShowPassword, setIsShowPassword] = useState(false)
   const [isUsernameEmpty, setIsUsernameEmpty] = useState(false)
   const [isPasswordEmpty, setIsPasswordEmpty] = useState(false)
-
-  const onUserLogin = () => {
+  const passwordRef = useRef<any>()
+  const handleOnPressLogin = () => {
     if (user.username === '' && user.password === '') {
       setIsPasswordEmpty(true)
       setIsUsernameEmpty(true)
@@ -47,7 +47,7 @@ function Login() {
 
     authenticate(user)
   }
-
+  const handleOnSubmitEditingPassword = () => handleOnPressLogin()
   return (
     <Box flex="1" safeArea>
       <VStack space="10" flex="1" p="5" justifyContent="center">
@@ -77,6 +77,8 @@ function Login() {
               _disabled={{bgColor: '#ADADAD'}}
               fontSize={ms(15)}
               size="lg"
+              returnKeyType="next"
+              onSubmitEditing={() => passwordRef.current.focus()}
             />
             <FormControl.ErrorMessage
               leftIcon={<WarningOutlineIcon size="xs" />}
@@ -87,6 +89,7 @@ function Login() {
           </FormControl>
           <FormControl isInvalid={isPasswordEmpty}>
             <Input
+              ref={passwordRef}
               value={user.password}
               onChangeText={text => {
                 setUser({...user, password: text})
@@ -118,6 +121,7 @@ function Login() {
               fontSize={ms(15)}
               color={Colors.disabled}
               size="lg"
+              onSubmitEditing={handleOnSubmitEditingPassword}
             />
             <FormControl.ErrorMessage
               leftIcon={<WarningOutlineIcon size="xs" />}
@@ -138,7 +142,7 @@ function Login() {
           _text={{
             textTransform: 'uppercase'
           }}
-          onPress={onUserLogin}
+          onPress={handleOnPressLogin}
         >
           {login}
         </Button>

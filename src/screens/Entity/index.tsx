@@ -44,14 +44,13 @@ export default function Entity({navigation}: Props) {
     logout()
   }
   return (
-    <Box flex={1} bg={Colors.white} safeArea>
+    <Box flex={1} bg={Colors.light} safeArea>
       <Box
+        bg={Colors.white}
         flex={1}
         pt={ms(20)}
         px={ms(20)}
-        backgroundColor="#"
-        borderTopRightRadius={15}
-        borderTopLeftRadius={15}
+        borderTopRadius="3xl"
       >
         <Heading fontSize="xl" pb="2">
           Roles
