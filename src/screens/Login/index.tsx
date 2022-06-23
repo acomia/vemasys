@@ -1,5 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react'
-import {ActivityIndicator} from 'react-native'
+import React, {useRef, useState} from 'react'
 import {
   Box,
   VStack,
@@ -60,6 +59,7 @@ function Login() {
           </Text>
           <FormControl isInvalid={isUsernameEmpty}>
             <Input
+              bg={Colors.white}
               value={user.username}
               onChangeText={text => {
                 setUser({...user, username: text})
@@ -89,6 +89,7 @@ function Login() {
           </FormControl>
           <FormControl isInvalid={isPasswordEmpty}>
             <Input
+              bg={Colors.white}
               ref={passwordRef}
               value={user.password}
               onChangeText={text => {
