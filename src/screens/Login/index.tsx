@@ -1,5 +1,4 @@
-import React, {useEffect, useState} from 'react'
-import {ActivityIndicator} from 'react-native'
+import React, {useRef, useState} from 'react'
 import {
   Box,
   VStack,
@@ -31,8 +30,8 @@ function Login() {
   const [isShowPassword, setIsShowPassword] = useState(false)
   const [isUsernameEmpty, setIsUsernameEmpty] = useState(false)
   const [isPasswordEmpty, setIsPasswordEmpty] = useState(false)
-
-  const onUserLogin = () => {
+  const passwordRef = useRef<any>()
+  const handleOnPressLogin = () => {
     if (user.username === '' && user.password === '') {
       setIsPasswordEmpty(true)
       setIsUsernameEmpty(true)
@@ -47,7 +46,7 @@ function Login() {
 
     authenticate(user)
   }
-
+  const handleOnSubmitEditingPassword = () => handleOnPressLogin()
   return (
     <Box flex="1" safeArea>
       <VStack space="10" flex="1" p="5" justifyContent="center">
@@ -60,6 +59,7 @@ function Login() {
           </Text>
           <FormControl isInvalid={isUsernameEmpty}>
             <Input
+              bg={Colors.white}
               value={user.username}
               onChangeText={text => {
                 setUser({...user, username: text})
@@ -77,15 +77,20 @@ function Login() {
               _disabled={{bgColor: '#ADADAD'}}
               fontSize={ms(15)}
               size="lg"
+              returnKeyType="next"
+              onSubmitEditing={() => passwordRef.current.focus()}
             />
             <FormControl.ErrorMessage
-              leftIcon={<WarningOutlineIcon size="xs" />}>
+              leftIcon={<WarningOutlineIcon size="xs" />}
+            >
               {/* {_t(language, 'usernameRequired')} */}
               {usernameRequired}
             </FormControl.ErrorMessage>
           </FormControl>
           <FormControl isInvalid={isPasswordEmpty}>
             <Input
+              bg={Colors.white}
+              ref={passwordRef}
               value={user.password}
               onChangeText={text => {
                 setUser({...user, password: text})
@@ -117,9 +122,11 @@ function Login() {
               fontSize={ms(15)}
               color={Colors.disabled}
               size="lg"
+              onSubmitEditing={handleOnSubmitEditingPassword}
             />
             <FormControl.ErrorMessage
-              leftIcon={<WarningOutlineIcon size="xs" />}>
+              leftIcon={<WarningOutlineIcon size="xs" />}
+            >
               {user.username === '' && user.password === ''
                 ? usernamePasswordRequired
                 : passwordRequired}
@@ -128,13 +135,16 @@ function Login() {
         </VStack>
         <Button
           colorScheme="azure"
-          onPress={onUserLogin}
-          isDisabled={isAuthenticatingUser}
+          isLoadingText="Logging in"
           isLoading={isAuthenticatingUser}
-          _loading={<ActivityIndicator size="small" />}
+          _spinner={{
+            color: Colors.white
+          }}
           _text={{
             textTransform: 'uppercase'
-          }}>
+          }}
+          onPress={handleOnPressLogin}
+        >
           {login}
         </Button>
       </VStack>
