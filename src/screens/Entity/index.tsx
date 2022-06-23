@@ -1,15 +1,14 @@
 import React, {useEffect} from 'react'
 import {RefreshControl} from 'react-native'
-import {Box, FlatList, Heading, Divider, Button, Image, Flex} from 'native-base'
-import {CommonActions, useRoute} from '@react-navigation/native'
+import {Box, FlatList, Heading, Divider, Button, Image} from 'native-base'
+import {CommonActions} from '@react-navigation/native'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {ms} from 'react-native-size-matters'
-
 import {useEntity, useAuth} from '@bluecentury/stores'
-import {icons} from '@bluecentury/assets'
+import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
-import {PROD_URL} from '@bluecentury/env'
 import {EntityCard, LoadingIndicator} from '@bluecentury/components'
+import {Shadow} from 'react-native-shadow-2'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 
@@ -22,20 +21,12 @@ export default function Entity({navigation}: Props) {
     getEntityUsers,
     selectEntityUser
   } = useEntity()
-  const {logout, token} = useAuth()
-  const routeName = useRoute().name
-
+  const {logout, isLoggingOut} = useAuth()
   useEffect(() => {
-    navigation.setOptions({
-      headerBackVisible: false
-    })
-
-    // logout()
-
     getUserInfo()
     getEntityUsers()
-  }, [navigation])
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   const onSelectEntityUser = (entity: any) => {
     selectEntityUser(entity)
     navigation.dispatch(
@@ -45,23 +36,21 @@ export default function Entity({navigation}: Props) {
       })
     )
   }
-
   const onPullToReload = () => {
     getUserInfo()
     getEntityUsers()
   }
-
-  const onUserLogout = () => {
+  const handleOnPressLogout = () => {
     logout()
   }
-
   return (
-    <Flex flex={1} backgroundColor="#F0F0F0">
+    <Box flex={1} bg={Colors.light} safeArea>
       <Box
-        p="15px"
-        backgroundColor="#fff"
-        borderTopRightRadius={15}
-        borderTopLeftRadius={15}
+        bg={Colors.white}
+        flex={1}
+        pt={ms(20)}
+        px={ms(20)}
+        borderTopRadius="3xl"
       >
         <Heading fontSize="xl" pb="2">
           Roles
@@ -89,37 +78,54 @@ export default function Entity({navigation}: Props) {
               )
             }}
             keyExtractor={(item: any) => `Entity-${item?.id}`}
-            contentContainerStyle={{paddingBottom: 120}}
+            // eslint-disable-next-line react-native/no-inline-styles
+            contentContainerStyle={{paddingBottom: 150}}
             showsVerticalScrollIndicator={false}
           />
         )}
       </Box>
-      <Box
-        position="absolute"
-        bottom={ms(0)}
-        left={ms(0)}
-        right={ms(0)}
-        backgroundColor="#fff"
-        justifyContent="center"
-        padding={ms(15)}
-      >
-        <Button
-          mb={'10px'}
-          size={'md'}
-          backgroundColor={Colors.danger}
-          leftIcon={
-            <Image
-              alt="logout-img"
-              source={icons.logout}
-              resizeMode="contain"
-              style={{width: 20, height: 20}}
-            />
-          }
-          onPress={onUserLogout}
+      <Box bg={Colors.white} position="absolute" left={0} right={0} bottom={0}>
+        <Shadow
+          distance={25}
+          // eslint-disable-next-line react-native/no-inline-styles
+          viewStyle={{
+            width: '100%'
+          }}
         >
-          Log out
-        </Button>
+          <Box>
+            <Button
+              m={ms(20)}
+              bg={Colors.danger}
+              _light={{
+                _pressed: {
+                  bg: Colors.danger
+                }
+              }}
+              isLoading={isLoggingOut}
+              _loading={{
+                opacity: 0.5,
+                bg: Colors.danger
+              }}
+              _spinner={{
+                size: ms(20),
+                color: Colors.white
+              }}
+              isLoadingText="Logging out"
+              leftIcon={
+                <Image
+                  alt="logout-img"
+                  source={Icons.logout}
+                  resizeMode="contain"
+                  size={ms(20)}
+                />
+              }
+              onPress={handleOnPressLogout}
+            >
+              Log out
+            </Button>
+          </Box>
+        </Shadow>
       </Box>
-    </Flex>
+    </Box>
   )
 }
