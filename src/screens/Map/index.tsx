@@ -322,7 +322,7 @@ export default function Map() {
 
   return (
     <Box flex={1} bg={Colors.light} safeArea>
-      <Box flex={1} bg={Colors.white} borderRadius="3xl" overflow="hidden">
+      <Box flex={1} bg={Colors.white} borderTopRadius="3xl" overflow="hidden">
         <MapView
           ref={mapRef}
           provider={PROVIDER_GOOGLE} // remove if not using Google Maps
