@@ -32,7 +32,7 @@ export default function Formations({navigation}: Props) {
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <IconButton source={icons.qr} onPress={() => navigation.goBack()} />
+        <IconButton source={Icons.qr} onPress={() => navigation.goBack()} />
       )
     })
     getActiveFormations()

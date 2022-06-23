@@ -28,70 +28,70 @@ const Sidebar = (props: DrawerContentComponentProps) => {
         <MenuButton
           active={currentRoute === 'Notification'}
           onPress={() => handlePressMenu(Screens.Notifications)}
-          iconSource={icons.notification}
+          iconSource={Icons.notification}
         >
           Notifications
         </MenuButton>
         <MenuButton
           active={currentRoute === 'MapView'}
           onPress={() => handlePressMenu(Screens.MapView)}
-          iconSource={icons.map}
+          iconSource={Icons.map}
         >
           Map View
         </MenuButton>
         <MenuButton
           active={currentRoute === ''}
           onPress={() => handlePressMenu(Screens.Planning)}
-          iconSource={icons.calendar}
+          iconSource={Icons.calendar}
         >
           Planning
         </MenuButton>
         <MenuButton
           active={currentRoute === ''}
           onPress={() => handlePressMenu(Screens.Charters)}
-          iconSource={icons.fileContract}
+          iconSource={Icons.fileContract}
         >
           Charters
         </MenuButton>
         <MenuButton
           active={currentRoute === ''}
           onPress={() => handlePressMenu(Screens.Technical)}
-          iconSource={icons.tools}
+          iconSource={Icons.tools}
         >
           Technical
         </MenuButton>
         <MenuButton
           active={currentRoute === ''}
           onPress={() => handlePressMenu(Screens.Financial)}
-          iconSource={icons.card}
+          iconSource={Icons.card}
         >
           Financial
         </MenuButton>
         <MenuButton
           active={currentRoute === ''}
           onPress={() => handlePressMenu(Screens.Information)}
-          iconSource={icons.infoCircle}
+          iconSource={Icons.infoCircle}
         >
           Information
         </MenuButton>
         <MenuButton
           active={currentRoute === Screens.ToDo}
           onPress={() => handlePressMenu(Screens.ToDo)}
-          iconSource={icons.clipboardCheck}
+          iconSource={Icons.clipboardCheck}
         >
           To Do
         </MenuButton>
         <MenuButton
           active={currentRoute === Screens.Crew}
           onPress={() => handlePressMenu(Screens.Crew)}
-          iconSource={icons.userHardHat}
+          iconSource={Icons.userHardHat}
         >
           Crew
         </MenuButton>
         <MenuButton
           active={currentRoute === Screens.QSHE}
           onPress={() => handlePressMenu(Screens.QSHE)}
-          iconSource={icons.hardHat}
+          iconSource={Icons.hardHat}
         >
           QSHE
         </MenuButton>
@@ -102,7 +102,7 @@ const Sidebar = (props: DrawerContentComponentProps) => {
         <MenuButton
           active={currentRoute === Screens.ChangeRole}
           onPress={() => handlePressMenu(Screens.ChangeRole)}
-          iconSource={icons.userCircle}
+          iconSource={Icons.userCircle}
         >
           Change role
         </MenuButton>
@@ -110,7 +110,7 @@ const Sidebar = (props: DrawerContentComponentProps) => {
         <MenuButton
           active={currentRoute === Screens.Settings}
           onPress={() => handlePressMenu(Screens.Settings)}
-          iconSource={icons.cog}
+          iconSource={Icons.cog}
         >
           Settings
         </MenuButton>

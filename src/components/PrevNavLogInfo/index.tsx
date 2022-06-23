@@ -59,7 +59,7 @@ export const PreviousNavLogInfo = () => {
           >
             <Image
               alt="prev-nav-log-img"
-              source={icons.completed}
+              source={Icons.completed}
               width={ms(30)}
               height={ms(30)}
               resizeMode="contain"
