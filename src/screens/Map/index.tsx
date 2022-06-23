@@ -1,12 +1,11 @@
 import React, {useEffect, useLayoutEffect, useRef, useState} from 'react'
 import {StyleSheet, TouchableOpacity, Dimensions, Alert} from 'react-native'
-import {Box, Flex, Text, Button, HStack, Image} from 'native-base'
+import {Box, Text, Button, HStack, Image, VStack} from 'native-base'
 import MapView, {PROVIDER_GOOGLE, Marker, Callout} from 'react-native-maps'
 import BottomSheet from 'reanimated-bottom-sheet'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import Icon from 'react-native-vector-icons/FontAwesome5'
-
 import {
   PreviousNavLogInfo,
   PlannedNavLogInfo,
@@ -14,7 +13,7 @@ import {
   LoadingIndicator,
   IconButton
 } from '@bluecentury/components'
-import {icons, Images} from '@bluecentury/assets'
+import {Icons, Images} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
 import {useMap, useAuth, useEntity} from '@bluecentury/stores'
 import {formatLocationLabel} from '@bluecentury/constants'
@@ -170,7 +169,7 @@ export default function Map() {
             <Text pb={ms(20)}>
               <Image
                 alt="next-navlog-img"
-                source={icons.unloading}
+                source={Icons.unloading}
                 width={ms(30)}
                 height={ms(30)}
                 resizeMode="contain"
@@ -339,12 +338,20 @@ export default function Map() {
               )
             : null}
         </MapView>
-        <IconButton
-          source={Images.current_location}
-          btnStyle={{alignSelf: 'flex-end'}}
-          iconStyle={{width: 80, height: 80}}
-          onPress={centerMapToCurrentLocation}
-        />
+        <Box position="absolute" right="0" top={ms(10)}>
+          <VStack space="1" bgColor="white" justifyContent="flex-start">
+            <IconButton
+              source={Icons.location}
+              size={ms(80)}
+              onPress={centerMapToCurrentLocation}
+            />
+            <IconButton
+              source={Icons.location}
+              size={ms(80)}
+              onPress={centerMapToCurrentLocation}
+            />
+          </VStack>
+        </Box>
         <BottomSheet
           ref={sheetRef}
           initialSnap={1}

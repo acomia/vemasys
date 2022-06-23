@@ -4,7 +4,7 @@ import {createDrawerNavigator} from '@react-navigation/drawer'
 import {DrawerActions} from '@react-navigation/native'
 import {Notification, Entity, Map, Planning} from '@bluecentury/screens'
 import {Sidebar, IconButton} from '@bluecentury/components'
-import {icons} from '@bluecentury/assets'
+import {Icons} from '@bluecentury/assets'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {Screens} from '@bluecentury/constants'
 import {ms} from 'react-native-size-matters'
@@ -30,12 +30,14 @@ export default function MainNavigator({navigation}: Props) {
           <Box flexDirection="row" alignItems="center" mr={ms(20)}>
             <HStack space="3">
               <IconButton
-                source={icons.qr}
+                source={Icons.qr}
                 onPress={() => navigation.navigate('QRScanner')}
+                size={ms(20)}
               />
               <IconButton
-                source={icons.gps}
+                source={Icons.gps}
                 onPress={() => navigation.navigate('GPSTracker')}
+                size={ms(35)}
               />
             </HStack>
           </Box>
@@ -43,9 +45,9 @@ export default function MainNavigator({navigation}: Props) {
         headerLeft: () => (
           <Box ml={ms(20)}>
             <IconButton
-              source={icons.menu}
+              source={Icons.menu}
               onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
-              iconStyle={{width: 22, height: 22}}
+              size={ms(20)}
             />
           </Box>
         )

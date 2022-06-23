@@ -5,7 +5,7 @@ import {CommonActions} from '@react-navigation/native'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {ms} from 'react-native-size-matters'
 import {useEntity, useAuth} from '@bluecentury/stores'
-import {icons} from '@bluecentury/assets'
+import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
 import {EntityCard, LoadingIndicator} from '@bluecentury/components'
 import {Shadow} from 'react-native-shadow-2'
@@ -114,7 +114,7 @@ export default function Entity({navigation}: Props) {
               leftIcon={
                 <Image
                   alt="logout-img"
-                  source={icons.logout}
+                  source={Icons.logout}
                   resizeMode="contain"
                   size={ms(20)}
                 />

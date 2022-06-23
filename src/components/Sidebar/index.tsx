@@ -1,7 +1,7 @@
 import React from 'react'
 import {Box, Image, VStack, Divider} from 'native-base'
 import {DrawerContentComponentProps} from '@react-navigation/drawer'
-import {icons, Images} from '@bluecentury/assets'
+import {Icons, Images} from '@bluecentury/assets'
 import {ms} from 'react-native-size-matters'
 import MenuButton from '../MenuButton'
 import {Screens} from '@bluecentury/constants'
