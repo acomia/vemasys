@@ -1,7 +1,6 @@
 import React, {useRef, useEffect} from 'react'
 import {createNativeStackNavigator} from '@react-navigation/native-stack'
 import {CommonActions, useNavigation} from '@react-navigation/native'
-
 import MainNavigator from './main-navigator'
 import {GPSTracker} from '@bluecentury/components'
 import {useAuth} from '@bluecentury/stores'
@@ -12,7 +11,6 @@ import {
   QRScanner,
   Formations
 } from '@bluecentury/screens'
-import {icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
 
 const {Navigator, Screen, Group} =
@@ -97,7 +95,10 @@ export default function RootNavigator() {
         <Screen
           name="GPSTracker"
           component={GPSTracker}
-          options={{presentation: 'transparentModal'}}
+          options={{
+            presentation: 'transparentModal',
+            animation: 'slide_from_bottom'
+          }}
         />
       </Group>
     </Navigator>
