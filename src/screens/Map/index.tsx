@@ -338,18 +338,22 @@ export default function Map() {
               )
             : null}
         </MapView>
-        <Box position="absolute" right="0" top={ms(10)}>
-          <VStack space="1" bgColor="white" justifyContent="flex-start">
-            <IconButton
-              source={Icons.location}
-              size={ms(80)}
-              onPress={centerMapToCurrentLocation}
-            />
-            <IconButton
-              source={Icons.location}
-              size={ms(80)}
-              onPress={centerMapToCurrentLocation}
-            />
+        <Box position="absolute" right="0">
+          <VStack space="5" justifyContent="flex-start" m="4">
+            <Box bg={Colors.white} borderRadius="full" p="2">
+              <IconButton
+                source={Icons.compass}
+                size={ms(30)}
+                onPress={centerMapToCurrentLocation}
+              />
+            </Box>
+            <Box bg={Colors.white} borderRadius="full" p="2">
+              <IconButton
+                source={Icons.location}
+                size={ms(30)}
+                onPress={centerMapToCurrentLocation}
+              />
+            </Box>
           </VStack>
         </Box>
         <BottomSheet

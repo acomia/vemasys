@@ -20,5 +20,6 @@ export const Icons = {
   unloading: require('./unloading.png'),
 
   // others
-  location: require('./location.png')
+  location: require('./location.png'),
+  compass: require('./compass.png')
 }
