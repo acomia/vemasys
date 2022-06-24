@@ -17,5 +17,21 @@ export const icons = {
   logout: require('./logout.png'),
   qr: require('./qr.png'),
   gps: require('./gps.png'),
-  unloading: require('./unloading.png')
+  unloading: require('./unloading.png'),
+  planned: require('./planned.png'),
+  en_route: require('./en_route.png'),
+  accepted: require('./accepted.png'),
+  draft: require('./draft.png'),
+  inbox: require('./inbox.png'),
+  submitted: require('./submitted.png'),
+  loading: require('./loading.png'),
+  laoded_enroute: require('./loaded_enroute.png'),
+  slider: require('./sliders-h.png'),
+  ellipsis: require('./ellipsis-h.png'),
+  list: require('./list-alt.png'),
+  map_marked: require('./map-marked-alt.png'),
+  triple_arrow: require('./triple_arrow.png'),
+  navlog_pin: require('./navlog_pin.png'),
+  charter_contact: require('./contacts.png'),
+  pdf: require('./pdf.png')
 }

@@ -66,6 +66,7 @@ export default function MainNavigator({navigation}: Props) {
       <Screen name={Screens.MapView} component={Map} />
       <Screen name={Screens.Planning} component={Planning} />
       <Screen name={Screens.Charters} component={Charters} />
+
       <Screen
         name={Screens.ChangeRole}
         component={Entity}

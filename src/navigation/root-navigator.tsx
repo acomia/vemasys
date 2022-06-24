@@ -10,7 +10,9 @@ import {
   Splash,
   Entity,
   QRScanner,
-  Formations
+  Formations,
+  CharterDetails,
+  PDFView
 } from '@bluecentury/screens'
 import {icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
@@ -54,7 +56,8 @@ export default function RootNavigator() {
       screenOptions={{
         headerShown: false,
         headerShadowVisible: false,
-        headerStyle: {backgroundColor: Colors.light}
+        headerStyle: {backgroundColor: Colors.light},
+        headerTitleStyle: {fontSize: 16, fontWeight: 'bold'}
       }}
     >
       <Group>
@@ -91,6 +94,16 @@ export default function RootNavigator() {
             title: 'Active Formations',
             headerShown: true
           }}
+        />
+        <Screen
+          name={'CharterDetails'}
+          component={CharterDetails}
+          options={{headerShown: true}}
+        />
+        <Screen
+          name={'PDFView'}
+          component={PDFView}
+          options={{headerShown: true}}
         />
       </Group>
       <Group>
