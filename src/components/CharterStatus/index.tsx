@@ -9,7 +9,7 @@ import {
   ENTITY_TYPE_EXPLOITATION_VESSEL,
   ENTITY_TYPE_EXPLOITATION_GROUP
 } from '@bluecentury/constants'
-import {Animated, icons} from '@bluecentury/assets'
+import {Animated, Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
 
 export const CharterStatus = ({entityType, charter}: any) => {
@@ -38,41 +38,41 @@ export const CharterStatus = ({entityType, charter}: any) => {
 
     switch (status) {
       case 'planned':
-        return icons.planned
+        return Icons.planned
       case 'en_route':
         if (isCurrentlyActive) {
           return Animated.nav_navigating
         } else {
-          return icons.en_route
+          return Icons.en_route
         }
       case 'completed':
-        return icons.completed
+        return Icons.completed
       case 'inbox':
-        return icons.inbox
+        return Icons.inbox
       case 'draft':
-        return icons.draft
+        return Icons.draft
       case 'accepted':
-        return icons.accepted
+        return Icons.accepted
       case 'loading':
         if (isCurrentlyActive) {
           return Animated.nav_loading
         } else {
-          return icons.loading
+          return Icons.loading
         }
       case 'unloading':
         if (isCurrentlyActive) {
           return Animated.nav_unloading
         } else {
-          return icons.unloading
+          return Icons.unloading
         }
       case 'loaded_en_route':
         if (isCurrentlyActive) {
           return Animated.loaded_enroute
         } else {
-          return icons.laoded_enroute
+          return Icons.laoded_enroute
         }
       default:
-        return icons.submitted
+        return Icons.submitted
     }
   }
 

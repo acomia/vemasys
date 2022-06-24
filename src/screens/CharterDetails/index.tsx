@@ -16,7 +16,7 @@ import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 
 import {CharterStatus, IconButton} from '@bluecentury/components'
-import {icons} from '@bluecentury/assets'
+import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
 import {useAuth, useCharters, useEntity} from '@bluecentury/stores'
 
@@ -27,11 +27,11 @@ export default function CharterDetails({navigation, route}: Props) {
   const {token} = useAuth()
 
   useEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <IconButton source={icons.ellipsis} onPress={() => {}} />
-      )
-    })
+    // navigation.setOptions({
+    //   headerRight: () => (
+    //     <IconButton source={Icons.ellipsis} onPress={() => {}} />
+    //   )
+    // })
   }, [])
 
   const {charter} = route.params
@@ -43,9 +43,10 @@ export default function CharterDetails({navigation, route}: Props) {
     )
   }
 
-  const renderCargoDetails = (cargo: any) => {
+  const renderCargoDetails = (cargo: any, index: number) => {
     return (
       <Box
+        key={index}
         borderRadius={ms(5)}
         borderWidth={1}
         borderColor={Colors.light}
@@ -79,7 +80,7 @@ export default function CharterDetails({navigation, route}: Props) {
 
   const renderRoutes = (navlogs: any, index: number) => {
     return (
-      <HStack alignItems="center">
+      <HStack key={index} alignItems="center">
         <VStack alignItems="center">
           <Box flex={1}>
             {index > 0 && (
@@ -88,7 +89,7 @@ export default function CharterDetails({navigation, route}: Props) {
           </Box>
           <Image
             alt="triple-arrow-navlogs"
-            source={icons.navlog_pin}
+            source={Icons.navlog_pin}
             resizeMode="contain"
           />
           <Box flex={1}>
@@ -151,7 +152,7 @@ export default function CharterDetails({navigation, route}: Props) {
                 </Text>
                 <Image
                   alt="triple-arrow-navlogs"
-                  source={icons.triple_arrow}
+                  source={Icons.triple_arrow}
                   mx={ms(5)}
                   resizeMode="contain"
                 />
@@ -171,13 +172,13 @@ export default function CharterDetails({navigation, route}: Props) {
             ) ? (
               <Image
                 alt="triple-arrow-navlogs"
-                source={icons.unloading}
+                source={Icons.unloading}
                 resizeMode="contain"
               />
             ) : (
               <Image
                 alt="triple-arrow-navlogs"
-                source={icons.loading}
+                source={Icons.loading}
                 resizeMode="contain"
               />
             )}
@@ -241,7 +242,7 @@ export default function CharterDetails({navigation, route}: Props) {
         <Text fontWeight="bold">{contact.name}</Text>
         <Image
           alt="charter-contact"
-          source={icons.charter_contact}
+          source={Icons.charter_contact}
           resizeMode="contain"
         />
       </HStack>
@@ -250,9 +251,7 @@ export default function CharterDetails({navigation, route}: Props) {
 
   const handlePDFView = () => {
     viewPdf(charter.id, token)
-    // if (!isCharterLoading) {
-    //   navigation.navigate('PDFView')
-    // }
+    navigation.navigate('PDFView')
   }
 
   return (
@@ -294,7 +293,7 @@ export default function CharterDetails({navigation, route}: Props) {
               leftIcon={
                 <Image
                   alt="view-navlog"
-                  source={icons.list}
+                  source={Icons.list}
                   maxWidth={ms(15)}
                   maxHeight={ms(13)}
                   resizeMode="contain"
@@ -309,7 +308,7 @@ export default function CharterDetails({navigation, route}: Props) {
               leftIcon={
                 <Image
                   alt="view-map"
-                  source={icons.map_marked}
+                  source={Icons.map_marked}
                   maxWidth={ms(15)}
                   maxHeight={ms(13)}
                   resizeMode="contain"
@@ -326,9 +325,9 @@ export default function CharterDetails({navigation, route}: Props) {
           </Text>
           <Box my={ms(15)}>
             {charter.navigationLogs.map((navlog: {bulkCargo: any[]}) =>
-              navlog.bulkCargo.map(cargo => {
+              navlog.bulkCargo.map((cargo: any, index: number) => {
                 if (cargo.isLoading) {
-                  return renderCargoDetails(cargo)
+                  return renderCargoDetails(cargo, index)
                 }
               })
             )}
@@ -397,12 +396,13 @@ export default function CharterDetails({navigation, route}: Props) {
             </Button>
           </Box> */}
         </ScrollView>
-        <IconButton
-          source={icons.pdf}
-          btnStyle={{position: 'absolute', bottom: 30, right: 20}}
-          iconStyle={{width: 50, height: 50}}
-          onPress={handlePDFView}
-        />
+        <Box position="absolute" bottom={ms(10)} right={ms(20)}>
+          <IconButton
+            source={Icons.pdf}
+            size={ms(50)}
+            onPress={handlePDFView}
+          />
+        </Box>
       </Box>
     </Flex>
   )

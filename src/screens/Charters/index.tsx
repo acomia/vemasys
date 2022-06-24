@@ -19,14 +19,14 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack'
 
 import {useCharters, useEntity} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
-import {CharterStatus, IconButton} from '@bluecentury/components'
+import {CharterStatus} from '@bluecentury/components'
 import {
   CHARTER_CONTRACTOR_STATUS_ARCHIVED,
   CHARTER_ORDERER_STATUS_COMPLETED,
   ENTITY_TYPE_EXPLOITATION_GROUP,
   ENTITY_TYPE_EXPLOITATION_VESSEL
 } from '@bluecentury/constants'
-import {Animated, icons} from '@bluecentury/assets'
+import {Animated} from '@bluecentury/assets'
 import {TouchableOpacity} from 'react-native'
 
 type Props = NativeStackScreenProps<RootStackParamList>
