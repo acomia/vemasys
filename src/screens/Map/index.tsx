@@ -1,12 +1,11 @@
 import React, {useEffect, useLayoutEffect, useRef, useState} from 'react'
 import {StyleSheet, TouchableOpacity, Dimensions, Alert} from 'react-native'
-import {Box, Flex, Text, Button, HStack, Image} from 'native-base'
+import {Box, Text, Button, HStack, Image, VStack} from 'native-base'
 import MapView, {PROVIDER_GOOGLE, Marker, Callout} from 'react-native-maps'
 import BottomSheet from 'reanimated-bottom-sheet'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import Icon from 'react-native-vector-icons/FontAwesome5'
-
 import {
   PreviousNavLogInfo,
   PlannedNavLogInfo,
@@ -14,7 +13,7 @@ import {
   LoadingIndicator,
   IconButton
 } from '@bluecentury/components'
-import {icons, Images} from '@bluecentury/assets'
+import {Icons, Images} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
 import {useMap, useAuth, useEntity} from '@bluecentury/stores'
 import {formatLocationLabel} from '@bluecentury/constants'
@@ -170,7 +169,7 @@ export default function Map() {
             <Text pb={ms(20)}>
               <Image
                 alt="next-navlog-img"
-                source={icons.unloading}
+                source={Icons.unloading}
                 width={ms(30)}
                 height={ms(30)}
                 resizeMode="contain"
@@ -321,53 +320,67 @@ export default function Map() {
   }
 
   return (
-    <Flex flex={1}>
-      <MapView
-        ref={mapRef}
-        provider={PROVIDER_GOOGLE} // remove if not using Google Maps
-        style={styles.map}
-        initialRegion={region}
-        onRegionChange={region => handleRegionChange(region)}
-      >
-        {prevNavLogs?.length > 0 ? renderMarkerFrom() : null}
-        {currentNavLogs?.length > 0 ? renderMarkerVesel() : null}
-        {plannedNavLogs?.length > 0 ? renderMarkerTo() : null}
-        {lastCompleteNavLogs && lastCompleteNavLogs.length > 0
-          ? lastCompleteNavLogs[0]?.waypoints?.map((log: any) =>
-              renderLastCompleteNavLogs(log)
-            )
-          : null}
-      </MapView>
-      <IconButton
-        source={Images.current_location}
-        btnStyle={{alignSelf: 'flex-end'}}
-        iconStyle={{width: 80, height: 80}}
-        onPress={centerMapToCurrentLocation}
-      />
-      <BottomSheet
-        ref={sheetRef}
-        initialSnap={1}
-        snapPoints={[ms(410), ms(150)]}
-        borderRadius={20}
-        renderContent={renderBottomContent}
-        onOpenEnd={() => setSnapStatus(1)}
-        onCloseEnd={() => setSnapStatus(0)}
-      />
-      {isLoadingMap ? (
-        <Box
-          position="absolute"
-          top="0"
-          bottom="0"
-          left="0"
-          right="0"
-          justifyContent="center"
-          backgroundColor="rgba(0,0,0,0.5)"
-          zIndex={999}
+    <Box flex={1} bg={Colors.light} safeArea>
+      <Box flex={1} bg={Colors.white} borderTopRadius="3xl" overflow="hidden">
+        <MapView
+          ref={mapRef}
+          provider={PROVIDER_GOOGLE} // remove if not using Google Maps
+          style={styles.map}
+          initialRegion={region}
+          onRegionChange={region => handleRegionChange(region)}
         >
-          <LoadingIndicator width={200} height={200} />
+          {prevNavLogs?.length > 0 ? renderMarkerFrom() : null}
+          {currentNavLogs?.length > 0 ? renderMarkerVesel() : null}
+          {plannedNavLogs?.length > 0 ? renderMarkerTo() : null}
+          {lastCompleteNavLogs && lastCompleteNavLogs.length > 0
+            ? lastCompleteNavLogs[0]?.waypoints?.map((log: any) =>
+                renderLastCompleteNavLogs(log)
+              )
+            : null}
+        </MapView>
+        <Box position="absolute" right="0">
+          <VStack space="5" justifyContent="flex-start" m="4">
+            <Box bg={Colors.white} borderRadius="full" p="2">
+              <IconButton
+                source={Icons.compass}
+                size={ms(30)}
+                onPress={centerMapToCurrentLocation}
+              />
+            </Box>
+            <Box bg={Colors.white} borderRadius="full" p="2">
+              <IconButton
+                source={Icons.location}
+                size={ms(30)}
+                onPress={centerMapToCurrentLocation}
+              />
+            </Box>
+          </VStack>
         </Box>
-      ) : null}
-    </Flex>
+        <BottomSheet
+          ref={sheetRef}
+          initialSnap={1}
+          snapPoints={[ms(410), ms(150)]}
+          borderRadius={20}
+          renderContent={renderBottomContent}
+          onOpenEnd={() => setSnapStatus(1)}
+          onCloseEnd={() => setSnapStatus(0)}
+        />
+        {isLoadingMap ? (
+          <Box
+            position="absolute"
+            top="0"
+            bottom="0"
+            left="0"
+            right="0"
+            justifyContent="center"
+            backgroundColor="rgba(0,0,0,0.5)"
+            zIndex={999}
+          >
+            <LoadingIndicator width={200} height={200} />
+          </Box>
+        ) : null}
+      </Box>
+    </Box>
   )
 }
 

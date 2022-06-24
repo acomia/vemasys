@@ -3,8 +3,7 @@ import {StyleSheet, TouchableOpacity} from 'react-native'
 import {Box, Text, Image} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
-
-import {icons} from '@bluecentury/assets'
+import {Icons} from '@bluecentury/assets'
 import {useMap} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
 import {formatLocationLabel} from '@bluecentury/constants'
@@ -60,7 +59,7 @@ export const PreviousNavLogInfo = () => {
           >
             <Image
               alt="prev-nav-log-img"
-              source={icons.completed}
+              source={Icons.completed}
               width={ms(30)}
               height={ms(30)}
               resizeMode="contain"

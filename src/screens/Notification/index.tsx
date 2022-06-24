@@ -13,18 +13,16 @@ import {
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import Icon from 'react-native-vector-icons/FontAwesome5'
-
-import {icons, Animated} from '@bluecentury/assets'
+import {Icons, Animated} from '@bluecentury/assets'
 import {useNotif, useAuth} from '@bluecentury/stores'
 
 const screenWidth = Dimensions.get('screen').width
 
 export default function Notification() {
   const {isLoadingNotification, notifications, getAllNotifications} = useNotif()
-  const {logout} = useAuth()
-
   useEffect(() => {
     getAllNotifications()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   let groupByDate = Object.values(
@@ -84,7 +82,7 @@ export default function Notification() {
       >
         {/* <Image
         alt="notif-img"
-        source={icons.completed}
+        source={Icons.completed}
         width={ms(32)}
         height={ms(32)}
         resizeMode="contain"

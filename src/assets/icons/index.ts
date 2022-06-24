@@ -1,4 +1,4 @@
-export const icons = {
+export const Icons = {
   notification: require('./bell.png'),
   map: require('./map-marked-alt.png'),
   calendar: require('./calendar-alt.png'),
@@ -33,5 +33,9 @@ export const icons = {
   triple_arrow: require('./triple_arrow.png'),
   navlog_pin: require('./navlog_pin.png'),
   charter_contact: require('./contacts.png'),
-  pdf: require('./pdf.png')
+  pdf: require('./pdf.png'),
+
+  // others
+  location: require('./location.png'),
+  compass: require('./compass.png')
 }

@@ -1,19 +1,13 @@
-import {create, ResponseTransform} from 'apisauce';
-import camelCaseKeys from 'camelcase-keys';
-import {API_URL, PROD_URL} from '@bluecentury/env';
+import {create} from 'apisauce'
+import {API_URL} from '@bluecentury/env'
+import {dataToCamelCase} from './transformers/response'
 
 export const API = create({
   baseURL: API_URL,
   headers: {
     Accept: 'application/json',
-    'content-type': 'application/json',
-  },
-});
-
-const dataToCamelCase: ResponseTransform = response => {
-  if (response.data) {
-    response.data = camelCaseKeys(response.data, {deep: true});
+    'content-type': 'application/json'
   }
-};
+})
 
-API.addResponseTransform(dataToCamelCase);
+API.addResponseTransform(dataToCamelCase)
