@@ -7,6 +7,7 @@ export enum Screens {
   MapView = 'MapView',
   Planning = 'Planning',
   Charters = 'Charters',
+  CharterDetails = 'CharterDetails',
   Technical = 'Technical',
   Financial = 'Financial',
   Information = 'Information',
@@ -16,5 +17,6 @@ export enum Screens {
   Settings = 'Settings',
   ChangeRole = 'ChangeRole',
   QRScanner = 'QRScanner',
-  Formations = 'Formations'
+  Formations = 'Formations',
+  PDFView = 'PDFView'
 }
