@@ -2,7 +2,13 @@ import React from 'react'
 import {Box, HStack, View} from 'native-base'
 import {createDrawerNavigator} from '@react-navigation/drawer'
 import {DrawerActions} from '@react-navigation/native'
-import {Notification, Entity, Map, Planning} from '@bluecentury/screens'
+import {
+  Notification,
+  Entity,
+  Map,
+  Planning,
+  Charters
+} from '@bluecentury/screens'
 import {Sidebar, IconButton} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
@@ -22,9 +28,8 @@ export default function MainNavigator({navigation}: Props) {
           width: ms(220)
         },
         headerTitleAlign: 'left',
-        headerStyle: {
-          backgroundColor: Colors.light
-        },
+        headerTitleStyle: {fontSize: 16, fontWeight: 'bold'},
+        headerStyle: {backgroundColor: Colors.light},
         headerShadowVisible: false,
         headerRight: () => (
           <Box flexDirection="row" alignItems="center" mr={ms(20)}>
@@ -52,12 +57,14 @@ export default function MainNavigator({navigation}: Props) {
           </Box>
         )
       }}
-      initialRouteName={Screens.MapView}
+      initialRouteName={Screens.Charters}
       drawerContent={props => <Sidebar {...props} />}
     >
       <Screen name={Screens.Notifications} component={Notification} />
       <Screen name={Screens.MapView} component={Map} />
       <Screen name={Screens.Planning} component={Planning} />
+      <Screen name={Screens.Charters} component={Charters} />
+
       <Screen
         name={Screens.ChangeRole}
         component={Entity}
