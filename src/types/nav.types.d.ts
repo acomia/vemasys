@@ -6,6 +6,8 @@ type RootStackParamList = {
   QRScanner: undefined
   Formations: undefined
   GPSTracker: undefined
+  CharterDetails: {charter: {} | undefined}
+  PDFView: undefined
 }
 
 type MainStackParamList = {
