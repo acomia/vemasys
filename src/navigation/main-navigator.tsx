@@ -1,12 +1,20 @@
 import React from 'react'
-import {IconButton, Icon} from 'native-base'
+import {Box, HStack, View} from 'native-base'
 import {createDrawerNavigator} from '@react-navigation/drawer'
 import {DrawerActions} from '@react-navigation/native'
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
-import {Notification} from '@bluecentury/screens'
-import {Sidebar} from '@bluecentury/components'
-import {ms} from 'react-native-size-matters'
+import {
+  Notification,
+  Entity,
+  Map,
+  Planning,
+  Charters
+} from '@bluecentury/screens'
+import {Sidebar, IconButton} from '@bluecentury/components'
+import {Icons} from '@bluecentury/assets'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
+import {Screens} from '@bluecentury/constants'
+import {ms} from 'react-native-size-matters'
+import {Colors} from '@bluecentury/styles'
 
 const {Navigator, Screen} = createDrawerNavigator<MainStackParamList>()
 
@@ -16,60 +24,52 @@ export default function MainNavigator({navigation}: Props) {
   return (
     <Navigator
       screenOptions={{
-        drawerActiveBackgroundColor: '#44A7B9',
-        drawerActiveTintColor: '#fff',
-        drawerInactiveTintColor: '#333',
-        drawerLabelStyle: {
-          fontSize: 15
+        drawerStyle: {
+          width: ms(220)
         },
         headerTitleAlign: 'left',
-        headerStyle: {backgroundColor: '#F0F0F0'},
-        // headerRight: () => (
-        //   <View
-        //     style={{
-        //       flexDirection: 'row',
-        //       alignItems: 'center',
-        //       marginRight: 10,
-        //     }}
-        //   >
-        //     <IconButton
-        //       source={icons.qr}
-        //       btnStyle={{ marginRight: 10 }}
-        //       onPress={() => navigation.navigate('QRScanner')}
-        //     />
-        //     <IconButton
-        //       source={icons.gps}
-        //       iconStyle={{ width: 35, height: 35 }}
-        //       onPress={() => navigation.navigate('QRScanner')}
-        //     />
-        //   </View>
-        // ),
-        headerLeft: () => (
-          <IconButton
-            icon={
-              <Icon
-                as={<MaterialCommunityIcons name="menu" />}
-                size={ms(24)}
-                color="#23475C"
+        headerTitleStyle: {fontSize: 16, fontWeight: 'bold'},
+        headerStyle: {backgroundColor: Colors.light},
+        headerShadowVisible: false,
+        headerRight: () => (
+          <Box flexDirection="row" alignItems="center" mr={ms(20)}>
+            <HStack space="3">
+              <IconButton
+                source={Icons.qr}
+                onPress={() => navigation.navigate('QRScanner')}
+                size={ms(20)}
               />
-            }
-            onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
-          />
+              <IconButton
+                source={Icons.gps}
+                onPress={() => navigation.navigate('GPSTracker')}
+                size={ms(35)}
+              />
+            </HStack>
+          </Box>
+        ),
+        headerLeft: () => (
+          <Box ml={ms(20)}>
+            <IconButton
+              source={Icons.menu}
+              onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
+              size={ms(20)}
+            />
+          </Box>
         )
       }}
-      initialRouteName="Notification"
-      drawerContent={props => <Sidebar {...props} />}>
+      initialRouteName={Screens.Charters}
+      drawerContent={props => <Sidebar {...props} />}
+    >
+      <Screen name={Screens.Notifications} component={Notification} />
+      <Screen name={Screens.MapView} component={Map} />
+      <Screen name={Screens.Planning} component={Planning} />
+      <Screen name={Screens.Charters} component={Charters} />
+
       <Screen
-        name="Notification"
-        component={Notification}
+        name={Screens.ChangeRole}
+        component={Entity}
         options={{
-          drawerIcon: ({color, size}) => (
-            <Icon
-              as={<MaterialCommunityIcons name="bell-outline" />}
-              size={ms(size)}
-              color={color}
-            />
-          )
+          headerTitle: 'Select your role'
         }}
       />
     </Navigator>

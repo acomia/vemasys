@@ -12,6 +12,8 @@ printenv | grep 'ENVFILE'
 echo API_URL=$API_URL >> .env
 echo SENTRY_DSN=$SENTRY_DSN >> .env
 echo CODEPUSH_DEPLOYMENT_KEY=$CODEPUSH_DEPLOYMENT_KEY >> .env
+echo MAP_KEY=$MAP_KEY >> .env
+echo PROD_URL =$PROD_URL >> .env
 
 echo " .env created with following contents:"
 cat .env
