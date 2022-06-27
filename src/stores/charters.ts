@@ -46,6 +46,8 @@ export const useCharters = create(
         set({isCharterLoading: true})
         try {
           const response = await API.viewPdfFile(charterId, token)
+          // console.log('pdf', response)
+
           set({pdfPath: response, isCharterLoading: false})
         } catch (error) {
           set({isCharterLoading: false})

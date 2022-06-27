@@ -7548,10 +7548,10 @@ react-native-barcode-mask@^1.2.4:
   dependencies:
     prop-types "^15.6.2"
 
-react-native-blob-util@^0.16.0:
-  version "0.16.0"
-  resolved "https://registry.yarnpkg.com/react-native-blob-util/-/react-native-blob-util-0.16.0.tgz#175299992d4db3b788bd6cf8545fc42a2917b544"
-  integrity sha512-Ouyvw3ObMikEK5c2BW5WvcAsLmED7GuSm6CDmTPse0qTn43H3O8XL3kZEmrf2A4w1QoSvhy8v0IuADm/kaLTcg==
+react-native-blob-util@^0.16.1:
+  version "0.16.1"
+  resolved "https://registry.yarnpkg.com/react-native-blob-util/-/react-native-blob-util-0.16.1.tgz#bc15e4fc279a5c1a0a6e53ef24a29864a9cdca63"
+  integrity sha512-mhdkUDlwNnF0aUTlFd8qjmYnbrHJHKeuDH4ocnM38wBu7ZC5R+68rqZC2VuHFQ/U+q0SDf/wO4XVaSm6/a940A==
   dependencies:
     base-64 "0.1.0"
     glob "^7.1.6"

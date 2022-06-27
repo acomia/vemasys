@@ -101,7 +101,7 @@ export default function Map() {
     </Box>
   )
 
-  function renderMarkerFrom() {
+  const renderMarkerFrom = () => {
     const previousLocation = prevNavLogs?.find(
       (prev: any) => prev.plannedETA !== null
     )
@@ -143,7 +143,7 @@ export default function Map() {
     )
   }
 
-  function renderMarkerTo() {
+  const renderMarkerTo = () => {
     const nextLocation = plannedNavLogs?.find(
       (plan: any) => plan.plannedETA !== null
     )
@@ -191,7 +191,7 @@ export default function Map() {
     )
   }
 
-  function renderMarkerVesel() {
+  const renderMarkerVesel = () => {
     return (
       <Marker
         key={`Vessel-${currentNavLogs[0]?.location?.id}`}
@@ -209,7 +209,7 @@ export default function Map() {
     )
   }
 
-  function renderLastCompleteNavLogs(log: any) {
+  const renderLastCompleteNavLogs = (log: any) => {
     return (
       <Marker
         key={log.location?.id}
@@ -254,7 +254,7 @@ export default function Map() {
     )
   }
 
-  function fitToAllMarkers() {
+  const fitToAllMarkers = () => {
     const previousLocation: any = prevNavLogs?.filter(
       (e: any) => e && e.plannedETA !== null
     )
@@ -296,7 +296,7 @@ export default function Map() {
     })
   }
 
-  function centerMapToCurrentLocation() {
+  const centerMapToCurrentLocation = () => {
     mapRef.current?.animateCamera({
       center: {
         latitude: currentNavLogs[0]?.location?.latitude,
@@ -309,12 +309,12 @@ export default function Map() {
     })
   }
 
-  function handleRegionChange(reg: {
+  const handleRegionChange = (reg: {
     latitude: number
     longitude: number
     latitudeDelta: number
     longitudeDelta: number
-  }) {
+  }) => {
     let zoom = Math.round(Math.log(360 / reg.longitudeDelta) / Math.LN2)
     setZoomLevel(zoom)
   }

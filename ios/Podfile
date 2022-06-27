@@ -5,6 +5,9 @@ platform :ios, '11.0'
 install! 'cocoapods', :deterministic_uuids => false
 
 target 'VemasysV2' do
+  pod 'react-native-blob-util',
+    :path => '../node_modules/react-native-blob-util'
+    
   config = use_native_modules!
 
   # Flags change depending on the env values.

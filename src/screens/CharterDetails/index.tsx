@@ -250,8 +250,9 @@ export default function CharterDetails({navigation, route}: Props) {
   }
 
   const handlePDFView = () => {
+    console.log(charter.id)
     viewPdf(charter.id, token)
-    navigation.navigate('PDFView')
+    // navigation.navigate('PDFView')
   }
 
   return (
