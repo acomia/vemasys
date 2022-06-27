@@ -9,6 +9,8 @@ type AuthState = {
   refreshToken: string | undefined
   isAuthenticatingUser: boolean
   hasAuthenticationError: boolean
+  isLoggingOut: boolean
+  hasErrorLogout: boolean
 }
 
 type AuthActions = {
@@ -25,6 +27,8 @@ export const useAuth = create(
       refreshToken: undefined,
       isAuthenticatingUser: false,
       hasAuthenticationError: false,
+      isLoggingOut: false,
+      hasErrorLogout: false,
       authenticate: async credentials => {
         set({
           token: undefined,
@@ -50,15 +54,12 @@ export const useAuth = create(
         }
       },
       logout: async () => {
-        set(
-          {
-            token: undefined,
-            refreshToken: undefined,
-            isAuthenticatingUser: false,
-            hasAuthenticationError: false
-          },
-          true
-        )
+        set({
+          token: undefined,
+          refreshToken: undefined,
+          isAuthenticatingUser: false,
+          hasAuthenticationError: false
+        })
       }
     }),
     {
