@@ -38,7 +38,11 @@ export const Icons = {
 
   // maps
   location: require('./location.png'),
+  location_alt: require('./location-alt.png'),
   compass: require('./compass.png'),
   navigating: require('./navigating.png'),
-  anchor: require('./anchor.png')
+  anchor: require('./anchor.png'),
+  mobile_tracker: require('./mobile-alt.png'),
+  ais_tracker: require('./ais.png'),
+  vemasys_tracker: require('./vemasys-tracker.png')
 }
