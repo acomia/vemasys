@@ -16,6 +16,7 @@ export const Icons = {
   completed: require('./completed.png'),
   logout: require('./logout.png'),
   qr: require('./qr.png'),
+  formations: require('./formation.png'),
   gps: require('./gps.png'),
   unloading: require('./unloading.png'),
   planned: require('./planned.png'),
@@ -35,7 +36,9 @@ export const Icons = {
   charter_contact: require('./contacts.png'),
   pdf: require('./pdf.png'),
 
-  // others
+  // maps
   location: require('./location.png'),
-  compass: require('./compass.png')
+  compass: require('./compass.png'),
+  navigating: require('./navigating.png'),
+  anchor: require('./anchor.png')
 }

@@ -13,7 +13,7 @@ import {
   LoadingIndicator,
   IconButton
 } from '@bluecentury/components'
-import {Icons, Images} from '@bluecentury/assets'
+import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
 import {useMap, useAuth, useEntity} from '@bluecentury/stores'
 import {formatLocationLabel} from '@bluecentury/constants'
@@ -201,8 +201,8 @@ export default function Map() {
         }}
         image={
           vesselDetails?.lastGeolocation?.speed > 0
-            ? Images.vessel_navigating
-            : Images.anchor
+            ? Icons.navigating
+            : Icons.anchor
         }
         style={{zIndex: 1}}
       />
