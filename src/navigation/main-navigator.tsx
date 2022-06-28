@@ -7,7 +7,8 @@ import {
   Entity,
   Map,
   Planning,
-  Charters
+  Charters,
+  Technical
 } from '@bluecentury/screens'
 import {Sidebar, IconButton} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
@@ -64,7 +65,7 @@ export default function MainNavigator({navigation}: Props) {
       <Screen name={Screens.MapView} component={Map} />
       <Screen name={Screens.Planning} component={Planning} />
       <Screen name={Screens.Charters} component={Charters} />
-
+      <Screen name={Screens.Technical} component={Technical} />
       <Screen
         name={Screens.ChangeRole}
         component={Entity}
