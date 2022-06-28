@@ -15,12 +15,15 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {Screens} from '@bluecentury/constants'
 import {ms} from 'react-native-size-matters'
 import {Colors} from '@bluecentury/styles'
+import {useMap} from '@bluecentury/stores'
 
 const {Navigator, Screen} = createDrawerNavigator<MainStackParamList>()
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Main'>
 
 export default function MainNavigator({navigation}: Props) {
+  const {activeFormations} = useMap()
+
   return (
     <Navigator
       screenOptions={{
@@ -35,8 +38,14 @@ export default function MainNavigator({navigation}: Props) {
           <Box flexDirection="row" alignItems="center" mr={ms(20)}>
             <HStack space="3">
               <IconButton
-                source={Icons.qr}
-                onPress={() => navigation.navigate('QRScanner')}
+                source={
+                  activeFormations?.length > 0 ? Icons.formations : Icons.qr
+                }
+                onPress={() =>
+                  navigation.navigate(
+                    activeFormations?.length > 0 ? 'Formations' : 'QRScanner'
+                  )
+                }
                 size={ms(20)}
               />
               <IconButton
