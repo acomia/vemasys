@@ -16,7 +16,7 @@ type MainStackParamList = {
   MapView: undefined
   Planning: undefined
   Charters: undefined
-  Tehcnical: undefined
+  Technical: undefined
   Financial: undefined
   Information: undefined
   ToDo: undefined
