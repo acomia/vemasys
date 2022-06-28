@@ -134,17 +134,17 @@ def reactNativeArchitectures() {
 
 def getVersionCode() {
     def isAppCenter = System.env.APPCENTER_BUILD_ID != null
-    def versionCode = project.hasProperty('VERSION_CODE') ? project.VERSION_CODE : 1697360752
+    def versionCode = Integer.parseInt(project.hasProperty('VERSION_CODE') ? project.VERSION_CODE : 1697360752)
     
     if (isAppCenter) {
         try {
             def appcenterBuildId = Integer.parseInt(System.env.APPCENTER_BUILD_ID)
-            return Integer.parseInt(versionCode) + appcenterBuildId
+            return Integer.parseInt(versionCode + appcenterBuildId)
         } catch (e) {
             println("Error ", e)
         }
     }
-    return versionCode
+    return Integer.parseInt(versionCode)
 }
 
 def getVersionName() {
@@ -159,7 +159,7 @@ def getVersionName() {
             println("Error ", e)
         }
     }
-    return versionName
+    return versionName.toString()
 }
 
 android {
@@ -172,7 +172,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode getVersionCode()
-        versionName getVersionName().toString()
+        versionName getVersionName()
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
         missingDimensionStrategy 'react-native-camera', 'general'
         
