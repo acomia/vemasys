@@ -18,9 +18,7 @@ const getPreviousNavLog = async (vesselId: string) => {
 }
 
 const getPlannedNavLog = async (vesselId: string) => {
-  return API.get(
-    `navigation_logs?isCompleted=0&exists[plannedETA]=1&itemsPerPage=1&order[plannedETA]=asc&exploitationVessel=${vesselId}`
-  )
+  return API.get(`navigation_logs?exploitationVessel=${vesselId}&type=planned`)
     .then(response => {
       if (response.data) {
         return response.data

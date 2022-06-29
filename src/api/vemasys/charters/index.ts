@@ -28,17 +28,15 @@ const reloadVesselCharters = async () => {
 //   })
 // }
 
-const viewPdfFile = async (charterId: string, token: string) => {
-  let dirs = ReactNativeBlobUtil.fs.dirs
+const viewPdfFile = async (charterId: string) => {
   return await ReactNativeBlobUtil.config({
-    fileCache: true,
-    appendExt: 'pdf'
+    fileCache: true
   })
     .fetch('GET', `${PROD_URL}/api/charters/${charterId}/pdf`, {
-      'Jwt-Auth': `Bearer ${token}`
+      'Jwt-Auth': `Bearer ${useAuth.getState().token}`
     })
     .then(response => {
-      console.log('path', response.path())
+      console.log('path', response)
 
       if (response.data) {
         return response.path()

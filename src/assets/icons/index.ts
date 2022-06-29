@@ -37,5 +37,7 @@ export const Icons = {
 
   // others
   location: require('./location.png'),
-  compass: require('./compass.png')
+  compass: require('./compass.png'),
+  file_download: require('./file-download.png'),
+  eye: require('./eye.png')
 }

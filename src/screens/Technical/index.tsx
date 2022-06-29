@@ -11,11 +11,11 @@ import {technicalTabs} from '@bluecentury/constants'
 const renderScene = SceneMap({
   bunkering: Bunkering,
   engines: Engines,
-  reservoirs: Bunkering,
-  tasks: Engines,
-  routines: Bunkering,
-  certificates: Engines,
-  inventory: Bunkering
+  reservoirs: () => <Text>Reservoirs</Text>,
+  tasks: () => <Text>tasks</Text>,
+  routines: () => <Text>routines</Text>,
+  certificates: () => <Text>certificates</Text>,
+  inventory: () => <Text>inventory</Text>
 })
 
 export default function Technical() {
@@ -51,7 +51,7 @@ export default function Technical() {
       renderScene={renderScene}
       renderTabBar={renderTabBar}
       onIndexChange={setIndex}
-      // initialLayout={{width: layout.width}}
+      initialLayout={{width: layout.width}}
     />
   )
 }
