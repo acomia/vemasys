@@ -24,7 +24,6 @@ type Props = NativeStackScreenProps<RootStackParamList>
 export default function CharterDetails({navigation, route}: Props) {
   const {entityType} = useEntity()
   const {viewPdf, isCharterLoading} = useCharters()
-  const {token} = useAuth()
 
   useEffect(() => {
     // navigation.setOptions({
@@ -250,8 +249,7 @@ export default function CharterDetails({navigation, route}: Props) {
   }
 
   const handlePDFView = () => {
-    console.log(charter.id)
-    viewPdf(charter.id, token)
+    viewPdf(charter.id)
     // navigation.navigate('PDFView')
   }
 
@@ -301,7 +299,7 @@ export default function CharterDetails({navigation, route}: Props) {
                 />
               }
               mb={ms(10)}
-              backgroundColor={Colors.primary}
+              bg={Colors.primary}
             >
               View Navlog
             </Button>
@@ -315,7 +313,7 @@ export default function CharterDetails({navigation, route}: Props) {
                   resizeMode="contain"
                 />
               }
-              backgroundColor={Colors.primary}
+              bg={Colors.primary}
             >
               View Map
             </Button>

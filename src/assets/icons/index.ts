@@ -44,5 +44,7 @@ export const Icons = {
   anchor: require('./anchor.png'),
   mobile_tracker: require('./mobile-alt.png'),
   ais_tracker: require('./ais.png'),
-  vemasys_tracker: require('./vemasys-tracker.png')
+  vemasys_tracker: require('./vemasys-tracker.png'),
+  file_download: require('./file-download.png'),
+  eye: require('./eye.png')
 }
