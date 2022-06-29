@@ -1,6 +1,9 @@
 {
   "login": "Login",
-  "usernamePasswordRequired": "Please fill in all required fields.",
+  "allFieldsRequired": "Please fill in all required fields.",
   "passwordRequired": "A password is required.",
-  "usernameRequired": "A username is required."
+  "usernameRequired": "A username is required.",
+  "newBunkeringSupplierRequired": "Please select a supplier.",
+  "newBunkeringAmountRequired": "An amount is required.",
+  "newBunkeringGreaterAmount": "The amount should be greater than 0."
 }
