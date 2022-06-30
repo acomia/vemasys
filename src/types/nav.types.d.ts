@@ -8,6 +8,8 @@ type RootStackParamList = {
   GPSTracker: undefined
   CharterDetails: {charter: {} | undefined}
   PDFView: undefined
+  NewBunkering: undefined
+  BunkeringDetails: {bunk: {} | undefined}
 }
 
 type MainStackParamList = {
@@ -16,7 +18,7 @@ type MainStackParamList = {
   MapView: undefined
   Planning: undefined
   Charters: undefined
-  Tehcnical: undefined
+  Technical: undefined
   Financial: undefined
   Information: undefined
   ToDo: undefined

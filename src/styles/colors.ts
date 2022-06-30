@@ -9,6 +9,9 @@ export const Colors = {
   danger: '#FA5555',
   black: '#000',
 
+  // border color
+  border: '#BEE3F8',
   // text color
-  text: '#23272F'
+  text: '#23272F',
+  highlighted_text: '#29B7EF'
 }

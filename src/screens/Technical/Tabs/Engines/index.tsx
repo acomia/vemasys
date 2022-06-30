@@ -1,0 +1,155 @@
+import React, {useEffect} from 'react'
+import {Box, Divider, HStack, ScrollView, Text} from 'native-base'
+import {ms} from 'react-native-size-matters'
+import moment from 'moment'
+import _ from 'lodash'
+
+import {useEntity, useTechnical} from '@bluecentury/stores'
+import {Colors} from '@bluecentury/styles'
+import {LoadingIndicator} from '@bluecentury/components'
+import {formatNumber} from '@bluecentury/constants'
+
+const Engines = () => {
+  const {isTechnicalLoading, engines, getVesselEngines} = useTechnical()
+  const {physicalVesselId} = useEntity()
+
+  useEffect(() => {
+    getVesselEngines(physicalVesselId)
+  }, [])
+
+  // const vesselZones = _.uniq(_.map(engines, 'vesselZone.title'))
+  // const partTypes = _.uniq(_.map(engines, 'type.title'))
+
+  let vesselZones = Object.values(
+    engines.reduce((acc: any, item) => {
+      const zones = item.vesselZone.title
+      if (!acc[zones])
+        acc[zones] = {
+          zones: zones,
+          data: []
+        }
+      acc[zones].data.push(item)
+      return acc
+    }, {})
+  )
+
+  const renderEngineList = (partType: any, index: number) => {
+    const pLength = partType.data.length - 1
+    return (
+      <Box key={index} mb={ms(index === vesselZones.data?.length - 1 ? 10 : 0)}>
+        <Box px={ms(5)} py={ms(5)}>
+          <HStack alignItems="center" justifyContent="space-around">
+            <Box>
+              <Text flex={1} color={Colors.azure} fontWeight="medium">
+                <Text flex={1} color={Colors.text} fontWeight="medium">
+                  {partType.data[pLength].type.title}
+                </Text>
+              </Text>
+              <Text flex={1} color={Colors.disabled}>
+                {partType.data[pLength].lastMeasurement
+                  ? moment(partType.data[pLength].lastMeasurement).format(
+                      'DD/MM/YYYY'
+                    )
+                  : 'N/A'}
+              </Text>
+            </Box>
+            <Text color={Colors.azure} fontSize={ms(16)} fontWeight="bold">
+              {partType.data[pLength].lastMeasurement
+                ? formatNumber(partType.data[pLength].lastMeasurement, 0, 'h')
+                : 'N/A'}
+            </Text>
+            <Text
+              key={index}
+              bg={Colors.highlighted_text}
+              color={Colors.white}
+              fontSize={ms(12)}
+              py={ms(2)}
+              px={ms(10)}
+              borderRadius={ms(20)}
+            >
+              {partType.part}
+            </Text>
+          </HStack>
+        </Box>
+        {index === vesselZones.data?.length - 1 ? null : (
+          <Divider mt={ms(10)} />
+        )}
+      </Box>
+    )
+  }
+
+  if (isTechnicalLoading) return <LoadingIndicator />
+
+  return (
+    <Box flex="1" bg={Colors.white}>
+      <ScrollView
+        contentContainerStyle={{flexGrow: 1, paddingBottom: 20}}
+        px={ms(12)}
+        py={ms(20)}
+      >
+        <Text
+          color={Colors.azure}
+          fontSize={ms(20)}
+          fontWeight="bold"
+          mb={ms(15)}
+        >
+          Engines
+        </Text>
+        {vesselZones.length > 0 ? (
+          vesselZones.map((engine: any, index: number) => {
+            const groupByPart = Object.values(
+              engine.data.reduce((acc: any, item) => {
+                const part = item.name
+                if (!acc[part])
+                  acc[part] = {
+                    part: part,
+                    data: []
+                  }
+                acc[part].data.push(item)
+                return acc
+              }, {})
+            )
+
+            return (
+              <Box
+                key={index}
+                borderRadius={ms(5)}
+                borderWidth={1}
+                borderColor={Colors.border}
+                mb={ms(25)}
+              >
+                {/* Engine Header */}
+                <Box
+                  backgroundColor={Colors.border}
+                  px={ms(16)}
+                  py={ms(10)}
+                  justifyContent="center"
+                >
+                  <Text color={Colors.azure} fontWeight="medium">
+                    {_.startCase(_.toLower(engine.zones))}
+                  </Text>
+                </Box>
+
+                {groupByPart.map((partType: any, index: number) =>
+                  renderEngineList(partType, index)
+                )}
+              </Box>
+            )
+          })
+        ) : (
+          <Text
+            color={Colors.text}
+            fontWeight="semibold"
+            fontSize={ms(15)}
+            textAlign="center"
+            mt={ms(20)}
+          >
+            No available data.
+          </Text>
+        )}
+      </ScrollView>
+    </Box>
+  )
+}
+
+export default Engines
