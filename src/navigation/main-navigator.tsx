@@ -7,7 +7,8 @@ import {
   Entity,
   Map,
   Planning,
-  Charters
+  Charters,
+  Technical
 } from '@bluecentury/screens'
 import {Sidebar, IconButton} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
@@ -15,12 +16,15 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {Screens} from '@bluecentury/constants'
 import {ms} from 'react-native-size-matters'
 import {Colors} from '@bluecentury/styles'
+import {useMap} from '@bluecentury/stores'
 
 const {Navigator, Screen} = createDrawerNavigator<MainStackParamList>()
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Main'>
 
 export default function MainNavigator({navigation}: Props) {
+  const {activeFormations} = useMap()
+
   return (
     <Navigator
       screenOptions={{
@@ -35,8 +39,14 @@ export default function MainNavigator({navigation}: Props) {
           <Box flexDirection="row" alignItems="center" mr={ms(20)}>
             <HStack space="3">
               <IconButton
-                source={Icons.qr}
-                onPress={() => navigation.navigate('QRScanner')}
+                source={
+                  activeFormations?.length > 0 ? Icons.formations : Icons.qr
+                }
+                onPress={() =>
+                  navigation.navigate(
+                    activeFormations?.length > 0 ? 'Formations' : 'QRScanner'
+                  )
+                }
                 size={ms(20)}
               />
               <IconButton
@@ -64,7 +74,7 @@ export default function MainNavigator({navigation}: Props) {
       <Screen name={Screens.MapView} component={Map} />
       <Screen name={Screens.Planning} component={Planning} />
       <Screen name={Screens.Charters} component={Charters} />
-
+      <Screen name={Screens.Technical} component={Technical} />
       <Screen
         name={Screens.ChangeRole}
         component={Entity}
