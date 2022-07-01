@@ -3,12 +3,15 @@ import {StyleSheet, TouchableOpacity} from 'react-native'
 import {Box, Text, Image} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
+import {useNavigation} from '@react-navigation/native'
+
 import {Icons} from '@bluecentury/assets'
 import {useMap} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
 import {formatLocationLabel} from '@bluecentury/constants'
 
 export const PreviousNavLogInfo = () => {
+  const navigation = useNavigation()
   const {prevNavLogs}: any = useMap()
   const navigationLog = prevNavLogs?.find(
     (prev: any) => prev.plannedETA !== null
@@ -17,7 +20,12 @@ export const PreviousNavLogInfo = () => {
   return (
     <TouchableOpacity
       style={styles.container}
-      onPress={() => console.log('Previous')}
+      onPress={() =>
+        navigation.navigate('PlanningDetails', {
+          navlog: navigationLog,
+          title: formatLocationLabel(navigationLog?.location)
+        })
+      }
     >
       <Box ml={ms(15)}>
         {navigationLog === undefined ? (

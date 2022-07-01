@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import {useWindowDimensions} from 'react-native'
-import {Text} from 'native-base'
+import {Box, Text} from 'native-base'
 import {TabView, SceneMap, TabBar} from 'react-native-tab-view'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 
@@ -15,6 +15,14 @@ export default function Charters({navigation}: Props) {
 
   const [index, setIndex] = useState(0)
   const [routes] = useState(chartersTabs)
+
+  const LazyPlaceholder = ({route}) => (
+    <Box flex="1" alignItems="center" justifyContent="center">
+      <Text>Loading {route.title}…</Text>
+    </Box>
+  )
+
+  const renderLazyPlaceholder = ({route}) => <LazyPlaceholder route={route} />
 
   const renderScene = ({route}) => {
     switch (route.key) {
@@ -46,9 +54,11 @@ export default function Charters({navigation}: Props) {
 
   return (
     <TabView
+      lazy
       navigationState={{index, routes}}
       renderScene={renderScene}
       renderTabBar={renderTabBar}
+      renderLazyPlaceholder={renderLazyPlaceholder}
       onIndexChange={setIndex}
       initialLayout={{width: layout.width}}
     />
