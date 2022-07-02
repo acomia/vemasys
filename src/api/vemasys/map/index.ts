@@ -17,10 +17,24 @@ const getPreviousNavLog = async (vesselId: string) => {
     })
 }
 
-const getPlannedNavLog = async (vesselId: string) => {
+const reloadVesselHistoryNavLogs = async (vesselId: string, page: number) => {
   return API.get(
-    `navigation_logs?isCompleted=0&exists[plannedETA]=1&itemsPerPage=1&order[plannedETA]=asc&exploitationVessel=${vesselId}`
+    `navigation_logs?exploitationVessel=${vesselId}&type=logbook&page=${page}`
   )
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('History navigation logs failed.')
+      }
+    })
+    .catch(error => {
+      console.error('Error: History navigation logs', error)
+    })
+}
+
+const getPlannedNavLog = async (vesselId: string) => {
+  return API.get(`navigation_logs?exploitationVessel=${vesselId}&type=planned`)
     .then(response => {
       if (response.data) {
         return response.data
@@ -199,6 +213,7 @@ const sendCurrentPosition = async (position: GeoPosition) => {
 
 export {
   getPreviousNavLog,
+  reloadVesselHistoryNavLogs,
   getPlannedNavLog,
   getCurrentNavLog,
   getLastCompleteNavLogs,

@@ -17,7 +17,7 @@ import BackgroundTimer from 'react-native-background-timer'
 import moment from 'moment'
 
 import {Colors} from '@bluecentury/styles'
-import {Images} from '@bluecentury/assets'
+import {Icons} from '@bluecentury/assets'
 import {useEntity, useMap} from '@bluecentury/stores'
 
 type Props = NativeStackScreenProps<RootStackParamList>
@@ -172,9 +172,9 @@ export const GPSTracker = ({navigation}: Props) => {
   const renderTrackerSource = (sourceData: string) => {
     let source = null
     if (sourceData.includes('ais')) {
-      source = Images.ais_tracker
+      source = Icons.mobile_tracker
     } else if (sourceData.includes('vematrack')) {
-      source = Images.vemasys_tracker
+      source = Icons.mobile_tracker
     }
     return source
   }
@@ -245,7 +245,7 @@ export const GPSTracker = ({navigation}: Props) => {
             <RNImage
               source={
                 isMobileTracking
-                  ? Images.mobile_tracker
+                  ? Icons.mobile_tracker
                   : renderTrackerSource(
                       vesselDetails?.lastGeolocation?.sourceOfData
                     )
@@ -272,11 +272,10 @@ export const GPSTracker = ({navigation}: Props) => {
         >
           <Image
             alt="my-location"
-            source={Images.my_location}
-            tintColor={Colors.primary}
+            source={Icons.location_alt}
             mr={ms(10)}
-            width={ms(24)}
-            height={ms(24)}
+            width={ms(20)}
+            height={ms(20)}
           />
           <Text flex={1} fontWeight="medium">
             Set this device as Vessel GPS

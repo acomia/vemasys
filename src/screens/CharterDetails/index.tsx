@@ -19,12 +19,12 @@ import {CharterStatus, IconButton} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
 import {useAuth, useCharters, useEntity} from '@bluecentury/stores'
+import {formatLocationLabel} from '@bluecentury/constants'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 export default function CharterDetails({navigation, route}: Props) {
   const {entityType} = useEntity()
   const {viewPdf, isCharterLoading} = useCharters()
-  const {token} = useAuth()
 
   useEffect(() => {
     // navigation.setOptions({
@@ -110,6 +110,12 @@ export default function CharterDetails({navigation, route}: Props) {
             marginLeft: ms(-20),
             zIndex: -1
           }}
+          onPress={() =>
+            navigation.navigate('PlanningDetails', {
+              navlog: navlogs,
+              title: formatLocationLabel(navlogs.location)
+            })
+          }
         >
           <HStack
             px={ms(25)}
@@ -250,8 +256,8 @@ export default function CharterDetails({navigation, route}: Props) {
   }
 
   const handlePDFView = () => {
-    viewPdf(charter.id, token)
-    navigation.navigate('PDFView')
+    viewPdf(charter.id)
+    // navigation.navigate('PDFView')
   }
 
   return (
@@ -300,7 +306,8 @@ export default function CharterDetails({navigation, route}: Props) {
                 />
               }
               mb={ms(10)}
-              backgroundColor={Colors.primary}
+              bg={Colors.primary}
+              onPress={() => navigation.navigate('Planning')}
             >
               View Navlog
             </Button>
@@ -314,7 +321,8 @@ export default function CharterDetails({navigation, route}: Props) {
                   resizeMode="contain"
                 />
               }
-              backgroundColor={Colors.primary}
+              bg={Colors.primary}
+              onPress={() => navigation.navigate('MapView')}
             >
               View Map
             </Button>

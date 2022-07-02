@@ -11,7 +11,10 @@ import {
   QRScanner,
   Formations,
   CharterDetails,
-  PDFView
+  PDFView,
+  NewBunkering,
+  BunkeringDetails,
+  PlanningDetails
 } from '@bluecentury/screens'
 import {Colors} from '@bluecentury/styles'
 
@@ -96,12 +99,30 @@ export default function RootNavigator() {
         <Screen
           name={'CharterDetails'}
           component={CharterDetails}
-          options={{headerShown: true}}
+          options={{headerShown: true, title: 'Charter Information'}}
         />
         <Screen
           name={'PDFView'}
           component={PDFView}
           options={{headerShown: true}}
+        />
+        <Screen
+          name={'NewBunkering'}
+          component={NewBunkering}
+          options={{headerShown: true, title: 'Add bunkering'}}
+        />
+        <Screen
+          name={'BunkeringDetails'}
+          component={BunkeringDetails}
+          options={{headerShown: true, title: 'Bunkering Details'}}
+        />
+        <Screen
+          name={'PlanningDetails'}
+          component={PlanningDetails}
+          options={({route}) => ({
+            headerShown: true,
+            title: route.params.title
+          })}
         />
       </Group>
       <Group>

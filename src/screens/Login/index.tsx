@@ -21,7 +21,7 @@ import {useAuth} from '@bluecentury/stores'
 
 const usernameRequired = _t('usernameRequired')
 const passwordRequired = _t('passwordRequired')
-const usernamePasswordRequired = _t('usernamePasswordRequired')
+const allFieldsRequired = _t('allFieldsRequired')
 const login = _t('login')
 
 function Login() {
@@ -128,7 +128,7 @@ function Login() {
               leftIcon={<WarningOutlineIcon size="xs" />}
             >
               {user.username === '' && user.password === ''
-                ? usernamePasswordRequired
+                ? allFieldsRequired
                 : passwordRequired}
             </FormControl.ErrorMessage>
           </FormControl>

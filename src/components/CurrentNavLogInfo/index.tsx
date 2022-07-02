@@ -3,18 +3,30 @@ import {StyleSheet, TouchableOpacity} from 'react-native'
 import {Box, Text, Image} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
+import {useNavigation} from '@react-navigation/native'
 
 import {Animated} from '@bluecentury/assets'
 import {useEntity, useMap} from '@bluecentury/stores'
 
 export const CurrentNavLogInfo = () => {
+  const navigation = useNavigation()
   const {currentNavLogs, prevNavLogs}: any = useMap()
   const {vesselDetails}: any = useEntity()
+
+  const handleOnPressNavigation = () => {
+    if (vesselDetails?.lastGeolocation?.speed > 0) {
+    } else {
+      navigation.navigate('PlanningDetails', {
+        navlog: currentNavLogs[0],
+        title: currentNavLogs[0]?.location?.name
+      })
+    }
+  }
 
   return (
     <TouchableOpacity
       style={styles.container}
-      onPress={() => console.log('Current')}
+      onPress={handleOnPressNavigation}
     >
       <Box ml={ms(15)}>
         {vesselDetails?.lastGeolocation?.speed > 0 ? (

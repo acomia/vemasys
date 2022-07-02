@@ -8,7 +8,7 @@ import {ms} from 'react-native-size-matters'
 
 import {Colors} from '@bluecentury/styles'
 import {IconButton} from '@bluecentury/components'
-import {icons} from '@bluecentury/assets'
+import {Icons} from '@bluecentury/assets'
 import {useEntity, useMap} from '@bluecentury/stores'
 
 type Props = NativeStackScreenProps<RootStackParamList>

@@ -87,6 +87,7 @@ project.ext.react = [
 apply from: "../../node_modules/react-native/react.gradle"
 apply from: "../../node_modules/@sentry/react-native/sentry.gradle"
 apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
+
 /**
  * Set this to true to create two separate APKs instead of one:
  *   - An APK that only works on ARM devices
@@ -122,7 +123,8 @@ def jscFlavor = 'org.webkit:android-jsc:+'
  * on project.ext.react, JavaScript will not be compiled to Hermes Bytecode
  * and the benefits of using Hermes will therefore be sharply reduced.
  */
-def enableHermes = project.ext.react.get("enableHermes", false);
+def enableHermes = project.ext.react.get("enableHermes", false)
+
 
 /**
  * Architectures to build native code for.
@@ -132,19 +134,27 @@ def reactNativeArchitectures() {
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
+
 android {
     ndkVersion rootProject.ext.ndkVersion
-
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
         applicationId "com.vemasysreactnativeapp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode getProjectVersionCode()
+        versionName getProjectVersionName()
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
         missingDimensionStrategy 'react-native-camera', 'general'
+
+        task checkConfig {
+            def code = getVersionCode()
+            def name = getVersionName()
+
+            println("Version code is $code")
+            println("Version name is $name")
+        }
         
         if (isNewArchitectureEnabled()) {
             // We configure the NDK build only if you decide to opt-in for the New Architecture.
@@ -343,4 +353,44 @@ def isNewArchitectureEnabled() {
     // - Invoke gradle with `-newArchEnabled=true`
     // - Set an environment variable `ORG_GRADLE_PROJECT_newArchEnabled=true`
     return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
+}
+
+def getProjectVersionCode() {
+    println("Getting version code.")
+    def isAppCenter = System.env.APPCENTER_BUILD_ID != null
+    def versionCode = project.hasProperty('VERSION_CODE') ? project.VERSION_CODE : "1697360752"
+
+    if (isAppCenter) {
+        try {
+            def appCenterBuildId = System.env.APPCENTER_BUILD_ID
+            def newVersionCode = Integer.parseInt(versionCode) + Integer.parseInt(appCenterBuildId)
+
+            if (newVersionCode > 2100000000) { // Google Play Version Code limit
+                // temp solution
+                return  Integer.parseInt(appCenterBuildId)
+            } else {
+                return newVersionCode
+            }
+        } catch (e) {
+            println("Error $e")
+        }
+    }
+    return Integer.parseInt(versionCode)
+}
+
+def getProjectVersionName() {
+    println("Getting version name.")
+    def isAppCenter = System.env.APPCENTER_BUILD_ID != null
+    def versionName = project.hasProperty('VERSION_NAME') ? project.VERSION_NAME : "1700506480"
+
+    if (isAppCenter) {
+        try {
+            def versionNameOffset = System.env.APPCENTER_VERSION_NAME_OFFSET ? System.env.APPCENTER_VERSION_NAME_OFFSET : "0"
+            def newVersionName = Integer.parseInt(versionNameOffset) + Integer.parseInt(versionName)
+            return newVersionName.toString()
+        } catch (e) {
+            println("Error $e")
+        }
+    }
+    return versionName
 }

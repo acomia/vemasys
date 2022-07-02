@@ -6,6 +6,8 @@ import BottomSheet from 'reanimated-bottom-sheet'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import Icon from 'react-native-vector-icons/FontAwesome5'
+import {NativeStackScreenProps} from '@react-navigation/native-stack'
+
 import {
   PreviousNavLogInfo,
   PlannedNavLogInfo,
@@ -13,7 +15,7 @@ import {
   LoadingIndicator,
   IconButton
 } from '@bluecentury/components'
-import {Icons, Images} from '@bluecentury/assets'
+import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
 import {useMap, useAuth, useEntity} from '@bluecentury/stores'
 import {formatLocationLabel} from '@bluecentury/constants'
@@ -24,7 +26,8 @@ const LATITUDE_DELTA = 0.0922
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO
 const DEFAULT_PADDING = {top: 45, right: 45, bottom: 45, left: 45}
 
-export default function Map() {
+type Props = NativeStackScreenProps<MainStackParamList>
+export default function Map({navigation}: Props) {
   const {
     isLoadingMap,
     getPreviousNavigationLogs,
@@ -96,12 +99,17 @@ export default function Map() {
       <CurrentNavLogInfo />
       {snapStatus === 1 && <PlannedNavLogInfo />}
       {snapStatus === 1 && (
-        <Button backgroundColor={Colors.azure}>View Navlog</Button>
+        <Button
+          bg={Colors.azure}
+          onPress={() => navigation.navigate('Planning')}
+        >
+          View Navlog
+        </Button>
       )}
     </Box>
   )
 
-  function renderMarkerFrom() {
+  const renderMarkerFrom = () => {
     const previousLocation = prevNavLogs?.find(
       (prev: any) => prev.plannedETA !== null
     )
@@ -143,7 +151,7 @@ export default function Map() {
     )
   }
 
-  function renderMarkerTo() {
+  const renderMarkerTo = () => {
     const nextLocation = plannedNavLogs?.find(
       (plan: any) => plan.plannedETA !== null
     )
@@ -191,7 +199,7 @@ export default function Map() {
     )
   }
 
-  function renderMarkerVesel() {
+  const renderMarkerVesel = () => {
     return (
       <Marker
         key={`Vessel-${currentNavLogs[0]?.location?.id}`}
@@ -201,15 +209,15 @@ export default function Map() {
         }}
         image={
           vesselDetails?.lastGeolocation?.speed > 0
-            ? Images.vessel_navigating
-            : Images.anchor
+            ? Icons.navigating
+            : Icons.anchor
         }
         style={{zIndex: 1}}
       />
     )
   }
 
-  function renderLastCompleteNavLogs(log: any) {
+  const renderLastCompleteNavLogs = (log: any) => {
     return (
       <Marker
         key={log.location?.id}
@@ -254,7 +262,7 @@ export default function Map() {
     )
   }
 
-  function fitToAllMarkers() {
+  const fitToAllMarkers = () => {
     const previousLocation: any = prevNavLogs?.filter(
       (e: any) => e && e.plannedETA !== null
     )
@@ -296,7 +304,7 @@ export default function Map() {
     })
   }
 
-  function centerMapToCurrentLocation() {
+  const centerMapToCurrentLocation = () => {
     mapRef.current?.animateCamera({
       center: {
         latitude: currentNavLogs[0]?.location?.latitude,
@@ -309,12 +317,12 @@ export default function Map() {
     })
   }
 
-  function handleRegionChange(reg: {
+  const handleRegionChange = (reg: {
     latitude: number
     longitude: number
     latitudeDelta: number
     longitudeDelta: number
-  }) {
+  }) => {
     let zoom = Math.round(Math.log(360 / reg.longitudeDelta) / Math.LN2)
     setZoomLevel(zoom)
   }

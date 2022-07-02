@@ -3,5 +3,10 @@ export const Animated = {
   nav_unloading: require('./unloading.gif'),
   nav_navigating: require('./navigating.gif'),
   nav_loading: require('./loading.gif'),
-  loaded_enroute: require('./loaded_enroute.gif')
+  loaded_enroute: require('./loaded_enroute.gif'),
+  sluice: require('./sluice.gif'),
+  waiting: require('./waiting.gif'),
+  bridge: require('./bridge.gif'),
+  checkpoint: require('./checkpoint.gif'),
+  junction: require('./junction.gif')
 }
