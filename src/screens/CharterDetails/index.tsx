@@ -19,6 +19,7 @@ import {CharterStatus, IconButton} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
 import {useAuth, useCharters, useEntity} from '@bluecentury/stores'
+import {formatLocationLabel} from '@bluecentury/constants'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 export default function CharterDetails({navigation, route}: Props) {
@@ -109,6 +110,12 @@ export default function CharterDetails({navigation, route}: Props) {
             marginLeft: ms(-20),
             zIndex: -1
           }}
+          onPress={() =>
+            navigation.navigate('PlanningDetails', {
+              navlog: navlogs,
+              title: formatLocationLabel(navlogs.location)
+            })
+          }
         >
           <HStack
             px={ms(25)}
@@ -300,6 +307,7 @@ export default function CharterDetails({navigation, route}: Props) {
               }
               mb={ms(10)}
               bg={Colors.primary}
+              onPress={() => navigation.navigate('Planning')}
             >
               View Navlog
             </Button>
@@ -314,6 +322,7 @@ export default function CharterDetails({navigation, route}: Props) {
                 />
               }
               bg={Colors.primary}
+              onPress={() => navigation.navigate('MapView')}
             >
               View Map
             </Button>
