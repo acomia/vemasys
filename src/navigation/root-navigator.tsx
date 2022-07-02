@@ -13,7 +13,8 @@ import {
   CharterDetails,
   PDFView,
   NewBunkering,
-  BunkeringDetails
+  BunkeringDetails,
+  PlanningDetails
 } from '@bluecentury/screens'
 import {Colors} from '@bluecentury/styles'
 
@@ -114,6 +115,14 @@ export default function RootNavigator() {
           name={'BunkeringDetails'}
           component={BunkeringDetails}
           options={{headerShown: true, title: 'Bunkering Details'}}
+        />
+        <Screen
+          name={'PlanningDetails'}
+          component={PlanningDetails}
+          options={({route}) => ({
+            headerShown: true,
+            title: route.params.title
+          })}
         />
       </Group>
       <Group>

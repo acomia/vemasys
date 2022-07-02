@@ -3,12 +3,14 @@ import {StyleSheet, TouchableOpacity} from 'react-native'
 import {Box, Text, Image} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
+import {useNavigation} from '@react-navigation/native'
 
 import {Animated} from '@bluecentury/assets'
 import {useMap} from '@bluecentury/stores'
 import {formatLocationLabel} from '@bluecentury/constants'
 
 export const PlannedNavLogInfo = () => {
+  const navigation = useNavigation()
   const {plannedNavLogs}: any = useMap()
   const navigationLog = plannedNavLogs?.find(
     (plan: any) => plan.plannedETA !== null
@@ -17,7 +19,12 @@ export const PlannedNavLogInfo = () => {
   return (
     <TouchableOpacity
       style={styles.container}
-      onPress={() => console.log('Planned')}
+      onPress={() =>
+        navigation.navigate('PlanningDetails', {
+          navlog: navigationLog,
+          title: formatLocationLabel(navigationLog?.location)
+        })
+      }
     >
       <Box ml={ms(15)}>
         {navigationLog === undefined ? (

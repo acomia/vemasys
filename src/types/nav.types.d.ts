@@ -10,6 +10,7 @@ type RootStackParamList = {
   PDFView: undefined
   NewBunkering: undefined
   BunkeringDetails: {bunk: {} | undefined}
+  PlanningDetails: {navlog: any; title?: string}
 }
 
 type MainStackParamList = {

@@ -46,5 +46,15 @@ export const Icons = {
   ais_tracker: require('./ais.png'),
   vemasys_tracker: require('./vemasys-tracker.png'),
   file_download: require('./file-download.png'),
-  eye: require('./eye.png')
+  eye: require('./eye.png'),
+  tags: require('./tags.png'),
+  waiting: require('./waiting.png'),
+  sluice: require('./sluice.png'),
+  bridge: require('./bridge.png'),
+  checkpoint: require('./checkpoint.png'),
+  junction: require('./junction.png'),
+  cargo: require('./cargo.png'),
+  close: require('./close.png'),
+  edit: require('./edit.png'),
+  trash: require('./trash.png')
 }

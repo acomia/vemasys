@@ -7,6 +7,20 @@ export const ENTITY_TYPE_SUPPLIER_COMPANY = 'SupplierCompany'
 export const ENTITY_TYPE_TERMINAL = 'Terminal'
 export const VEMASYS_PRODUCTION_FILE_URL = `${PROD_URL}/upload/documents`
 
+// Planning constants
+export const planningTabs = [
+  {key: 'planning', title: 'Planning'},
+  {key: 'logbook', title: 'Logbook'}
+]
+
+export const planningDetailsTabs = [
+  {key: 'details', title: 'Details'},
+  {key: 'cargoList', title: 'Cargo List'},
+  {key: 'cargoHolds', title: 'Cargo Holds'},
+  {key: 'documents', title: 'Documents'},
+  {key: 'purchases', title: 'Purchases'}
+]
+
 // Charters constants
 export const chartersTabs = [
   {key: 'charters', title: 'Charters'},

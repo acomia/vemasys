@@ -6,6 +6,8 @@ import BottomSheet from 'reanimated-bottom-sheet'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import Icon from 'react-native-vector-icons/FontAwesome5'
+import {NativeStackScreenProps} from '@react-navigation/native-stack'
+
 import {
   PreviousNavLogInfo,
   PlannedNavLogInfo,
@@ -24,7 +26,8 @@ const LATITUDE_DELTA = 0.0922
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO
 const DEFAULT_PADDING = {top: 45, right: 45, bottom: 45, left: 45}
 
-export default function Map() {
+type Props = NativeStackScreenProps<MainStackParamList>
+export default function Map({navigation}: Props) {
   const {
     isLoadingMap,
     getPreviousNavigationLogs,
@@ -96,7 +99,12 @@ export default function Map() {
       <CurrentNavLogInfo />
       {snapStatus === 1 && <PlannedNavLogInfo />}
       {snapStatus === 1 && (
-        <Button backgroundColor={Colors.azure}>View Navlog</Button>
+        <Button
+          bg={Colors.azure}
+          onPress={() => navigation.navigate('Planning')}
+        >
+          View Navlog
+        </Button>
       )}
     </Box>
   )

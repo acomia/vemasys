@@ -22,6 +22,8 @@ target 'VemasysV2' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
+  pod 'RNSentry', :path => '../node_modules/@sentry/react-native'
+
   target 'VemasysV2Tests' do
     inherit! :complete
     # Pods for testing
