@@ -3,11 +3,11 @@ import {useWindowDimensions} from 'react-native'
 import {Box, Text} from 'native-base'
 import {TabView, TabBar, SceneMap} from 'react-native-tab-view'
 
-import {Details, CargoList, CargoHolds, Documents, Purchases} from './tabs'
+import {Details, CargoList, CargoHolds, Documents} from './tabs'
 import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
 import {planningDetailsTabs} from '@bluecentury/constants'
-import {useEntity, usePlanning} from '@bluecentury/stores'
+import {usePlanning} from '@bluecentury/stores'
 
 export default function PlanningDetails() {
   const layout = useWindowDimensions()
@@ -16,37 +16,26 @@ export default function PlanningDetails() {
   const [routes, setRoutes] = useState(planningDetailsTabs)
 
   useEffect(() => {
-    if (navigationLogDetails?.cargoType === 'liquid_bulk') {
+    if (
+      navigationLogDetails?.cargoType !== 'liquid_bulk' &&
+      navigationLogDetails?.cargoType !== undefined
+    ) {
       const newRoutes = planningDetailsTabs.filter(
         route => route.key !== 'cargoHolds'
       )
       setRoutes(newRoutes)
+    } else {
+      setRoutes(planningDetailsTabs)
     }
     console.log(navigationLogDetails?.cargoType)
   }, [navigationLogDetails])
 
-  // const renderScene = SceneMap({
-  //   details: Details,
-  //   cargoList: CargoList,
-  //   cargoHolds: CargoHolds,
-  //   documents: Documents,
-  //   purchases: Purchases
-  // })
-
-  const renderScene = ({route}) => {
-    switch (route.key) {
-      case 'details':
-        return <Details />
-      case 'cargoList':
-        return <CargoList />
-      case 'cargoHolds':
-        return <CargoHolds />
-      case 'documents':
-        return <Documents />
-      case 'purchases':
-        return <Purchases />
-    }
-  }
+  const renderScene = SceneMap({
+    details: Details,
+    cargoList: CargoList,
+    cargoHolds: CargoHolds,
+    documents: Documents
+  })
 
   const LazyPlaceholder = ({route}) => (
     <Box flex="1" alignItems="center" justifyContent="center">

@@ -3,7 +3,7 @@ import {useWindowDimensions} from 'react-native'
 import {Text} from 'native-base'
 import {TabView, SceneMap, TabBar} from 'react-native-tab-view'
 
-import {Bunkering, Engines} from './Tabs'
+import {Bunkering, Engines} from './tabs'
 import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
 import {technicalTabs} from '@bluecentury/constants'

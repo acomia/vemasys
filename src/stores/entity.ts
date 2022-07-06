@@ -16,6 +16,7 @@ type EntityState = {
   vesselId: string
   vesselDetails: {}
   selectedVessel: {}
+  selectedEntity: {}
   physicalVesselId: string
   navigationLog: any
   cargoEntryId: string
@@ -62,6 +63,7 @@ export const useEntity = create(
       vesselId: '',
       vesselDetails: {},
       selectedVessel: {},
+      selectedEntity: {},
       physicalVesselId: '',
       navigationLog: null,
       cargoEntryId: '',
@@ -138,7 +140,8 @@ export const useEntity = create(
             ENTITY_TYPE_EXPLOITATION_VESSEL === entityType
               ? entity.entity.exploitationVessel.id
               : entity.entity.exploitationGroup.exploitationVessels[0].id,
-          selectedVessel: entity.entity
+          selectedVessel: entity.entity,
+          selectedEntity: entity
         })
         try {
           API.selectEntityUser(entity.id)

@@ -14,7 +14,9 @@ import {
   PDFView,
   NewBunkering,
   BunkeringDetails,
-  PlanningDetails
+  PlanningDetails,
+  PlanningNewComment,
+  AddEditNavlogAction
 } from '@bluecentury/screens'
 import {Colors} from '@bluecentury/styles'
 
@@ -122,6 +124,19 @@ export default function RootNavigator() {
           options={({route}) => ({
             headerShown: true,
             title: route.params.title
+          })}
+        />
+        <Screen
+          name={'PlanningNewComment'}
+          component={PlanningNewComment}
+          options={{headerShown: true, title: 'New Comment'}}
+        />
+        <Screen
+          name={'AddEditNavlogAction'}
+          component={AddEditNavlogAction}
+          options={({route}) => ({
+            headerShown: true,
+            title: route.params.method === 'add' ? 'Add Action' : 'Edit Action'
           })}
         />
       </Group>
