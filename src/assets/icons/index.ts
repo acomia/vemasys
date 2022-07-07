@@ -56,5 +56,7 @@ export const Icons = {
   cargo: require('./cargo.png'),
   close: require('./close.png'),
   edit: require('./edit.png'),
-  trash: require('./trash.png')
+  trash: require('./trash.png'),
+  play: require('./play-circle.png'),
+  stop: require('./stop-circle.png')
 }
