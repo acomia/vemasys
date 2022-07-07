@@ -7,10 +7,10 @@ import {useAuth} from '@bluecentury/stores'
 const reloadVesselCharters = async () => {
   return API.get(`v3/charters?isArchived=0`)
     .then(response => {
-      if (response.data) {
+      if (response.data.length > 0) {
         return _.orderBy(response.data, 'charterDate', 'desc')
       } else {
-        throw new Error('Charters failed.')
+        return []
       }
     })
     .catch(error => {

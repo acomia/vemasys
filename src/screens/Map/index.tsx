@@ -285,8 +285,8 @@ export default function Map({navigation}: Props) {
     )
     let markers: [] | any = []
     if (
-      prevNavLogs.length > 0 &&
-      plannedNavLogs.length > 0 &&
+      prevNavLogs.length > 0 ||
+      plannedNavLogs.length > 0 ||
       currentNavLogs.length > 0
     ) {
       markers = [
