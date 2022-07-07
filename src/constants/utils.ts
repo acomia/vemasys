@@ -109,3 +109,26 @@ export function calculateTotalOut(navigationlog: any): number {
   }
   return totalOut
 }
+
+export const hasSelectedEntityUserPermission = (
+  entity: any,
+  permission: string
+) => {
+  if (!entity) {
+    return false
+  }
+
+  if (!entity.role) {
+    return false
+  }
+
+  if (!entity.role.permissions || entity.role.permissions.length === 0) {
+    return false
+  }
+
+  return entity.role.permissions.includes(permission)
+}
+
+export const titleCase = (str: string) => {
+  return str.toLowerCase().replace(/\b\w/g, s => s.toUpperCase())
+}

@@ -1,18 +1,21 @@
 import React from 'react'
 import {StyleSheet, Dimensions, View} from 'react-native'
 import Pdf from 'react-native-pdf'
+import {NativeStackScreenProps} from '@react-navigation/native-stack'
+import {Box} from 'native-base'
+import {ms} from 'react-native-size-matters'
 
 import {useCharters} from '@bluecentury/stores'
-import {VEMASYS_PRODUCTION_FILE_URL} from '@bluecentury/constants'
 
-export default function PDFView() {
+type Props = NativeStackScreenProps<RootStackParamList>
+export default function PDFView({route}: Props) {
   const {pdfPath} = useCharters()
-  // console.log('path', `${VEMASYS_PRODUCTION_FILE_URL}/${pdfPath}`)
+  const {path}: any = route.params
 
-  const source = {uri: `${VEMASYS_PRODUCTION_FILE_URL}/${pdfPath}`, cache: true}
+  const source = {uri: path, cache: true}
 
   return (
-    <View style={styles.container}>
+    <Box flex="1" justifyContent="flex-start" alignItems="center" mt={ms(20)}>
       <Pdf
         source={source}
         onLoadComplete={(numberOfPages, filePath) => {
@@ -28,18 +31,14 @@ export default function PDFView() {
           console.log(`Link pressed: ${uri}`)
         }}
         style={styles.pdf}
+        enablePaging
+        trustAllCerts={false}
       />
-    </View>
+    </Box>
   )
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    marginTop: 25
-  },
   pdf: {
     flex: 1,
     width: Dimensions.get('window').width,

@@ -23,6 +23,12 @@ type PlanningActions = {
   getNavigationLogCargoHolds?: (physicalVesselId: string) => void
   getNavigationLogComments?: (navLogId: string) => void
   getNavigationLogDocuments?: (navLogId: string) => void
+  updateNavlogDates?: (navLogId: string, dates: object) => void
+  createNavlogComment?: (
+    navLogId: string,
+    comment: string,
+    userId: string
+  ) => void
 }
 
 type PlanningStore = PlanningState & PlanningActions
@@ -91,8 +97,6 @@ export const usePlanning = create(
         })
         try {
           const response = await API.reloadNavigationLogDetails(navLogId)
-          console.log('details navlog', response)
-
           if (typeof response === 'object') {
             set({
               isPlanningLoading: false,
@@ -191,6 +195,8 @@ export const usePlanning = create(
         })
         try {
           const response = await API.reloadNavigationLogDocuments(navLogId)
+          console.log('docs', response)
+
           if (Array.isArray(response)) {
             set({
               isPlanningLoading: false,
@@ -206,6 +212,37 @@ export const usePlanning = create(
           set({
             isPlanningLoading: false
           })
+        }
+      },
+      updateNavlogDates: async (navLogId: string, dates: object) => {
+        set({isPlanningLoading: true})
+        try {
+          const response = await API.updateNavigationLogDatetimeFields(
+            navLogId,
+            dates
+          )
+          set({isPlanningLoading: false})
+          return response
+        } catch (error) {
+          set({isPlanningLoading: false})
+        }
+      },
+      createNavlogComment: async (
+        navLogId: string,
+        comment: string,
+        userId: string
+      ) => {
+        set({isPlanningLoading: true})
+        try {
+          const response = await API.createNavlogComment(
+            navLogId,
+            comment,
+            userId
+          )
+          set({isPlanningLoading: false})
+          return response
+        } catch (error) {
+          set({isPlanningLoading: false})
         }
       }
     }),

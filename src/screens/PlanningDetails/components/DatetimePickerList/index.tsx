@@ -31,7 +31,7 @@ const DatetimePickerList = ({
       >
         <Icon
           name="calendar-month-outline"
-          size={ms(26)}
+          size={ms(22)}
           color={Colors.highlighted_text}
         />
         <TouchableOpacity
@@ -43,11 +43,21 @@ const DatetimePickerList = ({
           onPress={onChangeDate}
           disabled={locked}
         >
-          <Text fontSize={ms(16)} fontWeight="medium">
-            {date ? moment(date).format('D MMM YYYY') : null}
+          <Text
+            fontSize={ms(16)}
+            fontWeight="medium"
+            color={date ? Colors.text : Colors.disabled}
+          >
+            {date ? moment(date).format('D MMM YYYY') : 'No Date Set'}
           </Text>
         </TouchableOpacity>
-        <IconButton source={Icons.close} onPress={onClearDate} size={ms(25)} />
+        {date ? (
+          <IconButton
+            source={Icons.close}
+            onPress={onClearDate}
+            size={ms(22)}
+          />
+        ) : null}
       </HStack>
     </HStack>
   )

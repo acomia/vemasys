@@ -130,7 +130,14 @@ export default function Map({navigation}: Props) {
         title={`From: ${previousLocation?.location?.name}`}
         style={{zIndex: 1}}
       >
-        <Callout onPress={() => Alert.alert('navigate to navlog details')}>
+        <Callout
+          onPress={() =>
+            navigation.navigate('PlanningDetails', {
+              navlog: previousLocation,
+              title: formatLocationLabel(previousLocation?.location)
+            })
+          }
+        >
           <HStack borderRadius={ms(5)} alignItems="center" px={ms(5)}>
             <Icon name="check-circle" color="#6BBF87" size={25} solid={true} />
             <Box mx={ms(5)}>
@@ -172,7 +179,14 @@ export default function Map({navigation}: Props) {
         title={`To: ${nextLocation?.location?.name}`}
         style={{zIndex: 1}}
       >
-        <Callout onPress={() => Alert.alert('navigate to navlog details')}>
+        <Callout
+          onPress={() =>
+            navigation.navigate('PlanningDetails', {
+              navlog: nextLocation,
+              title: formatLocationLabel(nextLocation?.location)
+            })
+          }
+        >
           <HStack borderRadius={ms(5)} alignItems="center" px={ms(5)}>
             <Text pb={ms(20)}>
               <Image

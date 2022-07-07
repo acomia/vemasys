@@ -5,6 +5,10 @@ export const ENTITY_TYPE_EXPLOITATION_GROUP = 'ExploitationGroup'
 export const ENTITY_TYPE_CUSTOMER_COMPANY = 'CustomerCompany'
 export const ENTITY_TYPE_SUPPLIER_COMPANY = 'SupplierCompany'
 export const ENTITY_TYPE_TERMINAL = 'Terminal'
+export const ROLE_PERMISSION_NAVIGATION_LOG_ADD_COMMENT =
+  'ROLE_PERMISSION_NAVIGATION_LOG_ADD_COMMENT'
+export const ROLE_PERMISSION_NAVIGATION_LOG_ADD_FILE =
+  'ROLE_PERMISSION_NAVIGATION_LOG_ADD_FILE'
 export const VEMASYS_PRODUCTION_FILE_URL = `${PROD_URL}/upload/documents`
 
 // Planning constants
@@ -17,8 +21,7 @@ export const planningDetailsTabs = [
   {key: 'details', title: 'Details'},
   {key: 'cargoList', title: 'Cargo List'},
   {key: 'cargoHolds', title: 'Cargo Holds'},
-  {key: 'documents', title: 'Documents'},
-  {key: 'purchases', title: 'Purchases'}
+  {key: 'documents', title: 'Documents'}
 ]
 
 // Charters constants

@@ -69,10 +69,55 @@ const reloadNavigationLogDocuments = async (navLogId: string) => {
     })
 }
 
+const updateNavigationLogDatetimeFields = async (
+  navLogId: string,
+  dates: object
+) => {
+  return API.put(`navigation_logs/${navLogId}`, dates)
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Update navlog datetime failed.')
+      }
+    })
+    .catch(error => {
+      console.error('Error: Update navlog datetime data', error)
+    })
+}
+
+const createNavlogComment = async (
+  navlogId: string,
+  comment: string,
+  userId: string
+) => {
+  return API.post(`navigation_log_comments`, {
+    description: comment,
+    user: {
+      id: userId
+    },
+    log: {
+      id: navlogId
+    }
+  })
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Create navlog comment failed.')
+      }
+    })
+    .catch(error => {
+      console.error('Error: Create navlog comment data', error)
+    })
+}
+
 export {
   reloadNavigationLogDetails,
   reloadNavigationLogActions,
   reloadNavigationLogCargoHolds,
   reloadNavigationLogComments,
-  reloadNavigationLogDocuments
+  reloadNavigationLogDocuments,
+  updateNavigationLogDatetimeFields,
+  createNavlogComment
 }

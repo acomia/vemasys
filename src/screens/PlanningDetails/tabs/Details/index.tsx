@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import {TouchableOpacity} from 'react-native'
 import {
   Avatar,
@@ -8,30 +8,130 @@ import {
   Icon,
   Image,
   ScrollView,
-  Text
+  Text,
+  useToast
 } from 'native-base'
 import {ms} from 'react-native-size-matters'
 import DatePicker from 'react-native-date-picker'
-import {useRoute} from '@react-navigation/native'
+import {useNavigation, useRoute} from '@react-navigation/native'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import moment from 'moment'
+import _ from 'lodash'
 
 import {DatetimePickerList} from '../../components'
 import {Colors} from '@bluecentury/styles'
 import {Icons} from '@bluecentury/assets'
-import {usePlanning} from '@bluecentury/stores'
-import {formatLocationLabel} from '@bluecentury/constants'
+import {useEntity, usePlanning} from '@bluecentury/stores'
+import {
+  formatLocationLabel,
+  formatNumber,
+  hasSelectedEntityUserPermission,
+  ROLE_PERMISSION_NAVIGATION_LOG_ADD_COMMENT,
+  ROLE_PERMISSION_NAVIGATION_LOG_ADD_FILE,
+  titleCase
+} from '@bluecentury/constants'
 import {PROD_URL} from '@bluecentury/env'
 import {LoadingIndicator} from '@bluecentury/components'
 
 const Details = () => {
-  const {isPlanningLoading, navigationLogDetails, getNavigationLogDetails} =
-    usePlanning()
+  const toast = useToast()
+  const navigation = useNavigation()
   const route = useRoute()
+  const {
+    isPlanningLoading,
+    navigationLogDetails,
+    navigationLogActions,
+    getNavigationLogDetails,
+    getNavigationLogActions,
+    updateNavlogDates
+  } = usePlanning()
+  const {user, selectedEntity} = useEntity()
   const {navlog}: any = route.params
+  const [dates, setDates] = useState({
+    captainDatetimeETA: null,
+    announcedDatetime: null,
+    terminalApprovedDeparture: null
+  })
+  const [selectedDate, setSelectedDate] = useState('')
+  const [openDatePicker, setOpenDatePicker] = useState(false)
+  const hasAddCommentPermission = hasSelectedEntityUserPermission(
+    selectedEntity,
+    ROLE_PERMISSION_NAVIGATION_LOG_ADD_COMMENT
+  )
+  const hasAddDocumentPermission = hasSelectedEntityUserPermission(
+    selectedEntity,
+    ROLE_PERMISSION_NAVIGATION_LOG_ADD_FILE
+  )
+
   useEffect(() => {
     getNavigationLogDetails(navlog.id)
+    getNavigationLogActions(navlog.id)
   }, [])
+
+  const handleOnSaveDateUpdates = async () => {
+    let updates = Object.entries([dates]).map(keyValue => {
+      return keyValue[1]
+    })
+    const body = {}
+    Object.entries(updates[0]).forEach(update => {
+      const [field, datetime] = update
+      body[field] = datetime
+        ? moment(datetime).format()
+        : Object.entries(navigationLogDetails).find(keyValue => {
+            if (keyValue[0] === field) {
+              return keyValue[1]
+            }
+          })[1]
+      if (field === 'departureDatetime') {
+        body['modifiedByUser'] = {
+          id: user?.id
+        }
+        body['modificationDate'] = new Date()
+      }
+    })
+
+    const isSuccess = await updateNavlogDates(navlog?.id, body)
+    if (typeof isSuccess === 'object') {
+      toast.show({
+        duration: 2000,
+        render: () => {
+          return (
+            <Text
+              bg="emerald.500"
+              px="2"
+              py="1"
+              rounded="sm"
+              mb={5}
+              color={Colors.white}
+            >
+              Updates saved.
+            </Text>
+          )
+        }
+      })
+    } else {
+      toast.show({
+        duration: 2000,
+        render: () => {
+          return (
+            <Box bg="red.500" px="2" py="1" rounded="sm" mb={5}>
+              Updates failed.
+            </Box>
+          )
+        }
+      })
+    }
+  }
+
+  const onDatesChange = (date: Date) => {
+    if (selectedDate === 'ETA') {
+      setDates({...dates, captainDatetimeETA: date})
+    } else if (selectedDate === 'NOR') {
+      setDates({...dates, announcedDatetime: date})
+    } else {
+      setDates({...dates, terminalApprovedDeparture: date})
+    }
+  }
 
   const renderDetails = () => {
     return (
@@ -50,37 +150,81 @@ const Details = () => {
             {formatLocationLabel(navigationLogDetails?.location)}
           </Text>
         </HStack>
-        {!navigationLogDetails?.captainDatetimeETA &&
-        !navigationLogDetails?.plannedETA ? null : (
+        {!navigationLogDetails?.captainDatetimeEta &&
+        !navigationLogDetails?.plannedEta ? null : (
           <DatetimePickerList
             title="ETA"
-            date={navigationLogDetails?.captainDatetimeEta}
+            date={
+              _.isNull(dates.captainDatetimeETA)
+                ? navigationLogDetails?.captainDatetimeEta
+                : dates.captainDatetimeETA
+            }
             locked={navigationLogDetails?.locked}
+            onChangeDate={() => {
+              setSelectedDate('ETA'), setOpenDatePicker(true)
+            }}
+            onClearDate={() => setDates({...dates, captainDatetimeETA: null})}
           />
         )}
 
         {!navigationLogDetails?.announcedDatetime &&
-        !navigationLogDetails?.plannedETA ? null : (
+        !navigationLogDetails?.plannedEta ? null : (
           <DatetimePickerList
             title="NOR"
-            date={navigationLogDetails?.announcedDatetime}
+            date={
+              _.isNull(dates.announcedDatetime)
+                ? navigationLogDetails?.announcedDatetime
+                : dates.announcedDatetime
+            }
             locked={navigationLogDetails?.locked}
+            onChangeDate={() => {
+              setSelectedDate('NOR'), setOpenDatePicker(true)
+            }}
+            onClearDate={() => setDates({...dates, announcedDatetime: null})}
           />
         )}
 
         {!navigationLogDetails?.terminalApprovedDeparture &&
-        !navigationLogDetails?.plannedETA ? null : (
+        !navigationLogDetails?.plannedEta ? null : (
           <DatetimePickerList
             title="DOC"
-            date={navigationLogDetails?.terminalApprovedDeparture}
+            date={
+              _.isNull(dates.terminalApprovedDeparture)
+                ? navigationLogDetails?.terminalApprovedDeparture
+                : dates.terminalApprovedDeparture
+            }
             locked={navigationLogDetails?.locked}
+            onChangeDate={() => {
+              setSelectedDate('DOC'), setOpenDatePicker(true)
+            }}
+            onClearDate={() =>
+              setDates({...dates, terminalApprovedDeparture: null})
+            }
           />
         )}
 
         <Button
-          bg={Colors.primary}
+          bg={
+            _.isNull(
+              dates.terminalApprovedDeparture ||
+                dates.captainDatetimeETA ||
+                dates.announcedDatetime
+            )
+              ? Colors.disabled
+              : Colors.primary
+          }
           leftIcon={<Icon as={Ionicons} name="save-outline" size="sm" />}
           mt={ms(20)}
+          disabled={
+            _.isNull(
+              dates.terminalApprovedDeparture ||
+                dates.captainDatetimeETA ||
+                dates.announcedDatetime
+            )
+              ? true
+              : false
+          }
+          onPress={handleOnSaveDateUpdates}
         >
           Save Changes
         </Button>
@@ -125,6 +269,30 @@ const Details = () => {
     )
   }
 
+  const renderContactInformation = (contact: any, index: number) => {
+    return (
+      <HStack
+        key={index}
+        p={ms(10)}
+        borderWidth={1}
+        borderColor={Colors.light}
+        borderRadius={ms(5)}
+        alignItems="center"
+        justifyContent="space-between"
+        mb={ms(10)}
+        bg={Colors.white}
+        shadow={3}
+      >
+        <Text fontWeight="bold">{contact.name}</Text>
+        <Image
+          alt="charter-contact"
+          source={Icons.charter_contact}
+          resizeMode="contain"
+        />
+      </HStack>
+    )
+  }
+
   if (isPlanningLoading) return <LoadingIndicator />
   return (
     <Box flex="1">
@@ -148,17 +316,26 @@ const Details = () => {
         >
           Contact Information
         </Text>
-        <Box
-          borderWidth={1}
-          borderColor={Colors.light}
-          borderRadius={5}
-          p={ms(16)}
-          mt={ms(10)}
-          bg={Colors.white}
-          shadow={2}
-        >
-          <Text>No contact information found.</Text>
+        <Box my={ms(15)}>
+          {navigationLogDetails?.contacts?.length > 0 ? (
+            navigationLogDetails?.contacts.map((contact: any, index: number) =>
+              renderContactInformation(contact.contact, index)
+            )
+          ) : (
+            <Box
+              borderWidth={1}
+              borderColor={Colors.light}
+              borderRadius={5}
+              p={ms(16)}
+              mt={ms(10)}
+              bg={Colors.white}
+              shadow={2}
+            >
+              <Text>No contact information found.</Text>
+            </Box>
+          )}
         </Box>
+
         {/* Actions Section */}
         <Text
           fontSize={ms(20)}
@@ -168,24 +345,98 @@ const Details = () => {
         >
           Actions
         </Text>
+        {navigationLogActions?.length > 0
+          ? navigationLogActions?.map((action, index) => (
+              <TouchableOpacity
+                activeOpacity={0.7}
+                key={index}
+                onPress={() =>
+                  navigation.navigate('AddEditNavlogAction', {
+                    method: 'edit',
+                    navlogAction: action
+                  })
+                }
+              >
+                <HStack
+                  borderWidth={1}
+                  borderColor={Colors.light}
+                  borderRadius={5}
+                  p={ms(10)}
+                  mt={ms(10)}
+                  bg={Colors.white}
+                  shadow={1}
+                  alignItems="center"
+                >
+                  <Box flex="1">
+                    <HStack>
+                      <Text fontWeight="medium" color={Colors.text}>
+                        {titleCase(action.type)}
+                      </Text>
+                      {action.type.toLowerCase() !== 'cleaning' &&
+                      action.navigationBulk ? (
+                        <Text
+                          fontWeight="medium"
+                          color={Colors.text}
+                          ml={ms(5)}
+                        >
+                          {action.navigationBulk.type.nameEN}
+                        </Text>
+                      ) : null}
+
+                      <Text fontWeight="medium" color={Colors.text} ml={ms(5)}>
+                        {action.value && formatNumber(action.value, 0)}
+                      </Text>
+                    </HStack>
+                    <Text color={Colors.disabled}>{`${moment(
+                      action.start
+                    ).format('DD/MM | HH:mm')} - ${moment(
+                      _.isNull(action.end) ? null : action.end
+                    ).format('DD/MM | HH:mm')}`}</Text>
+                  </Box>
+                  <Image
+                    alt="navlog-action-icon"
+                    source={action.end ? Icons.play : Icons.stop}
+                  />
+                </HStack>
+              </TouchableOpacity>
+            ))
+          : null}
         <Box>
           <Button
             bg={Colors.primary}
             leftIcon={<Icon as={Ionicons} name="add" size="sm" />}
             mt={ms(20)}
+            onPress={() =>
+              navigation.navigate('AddEditNavlogAction', {
+                method: 'add',
+                navlogAction: {}
+              })
+            }
           >
             Start new action
           </Button>
         </Box>
         {/* Comments Section */}
-        <Text
-          fontSize={ms(20)}
-          fontWeight="bold"
-          color={Colors.azure}
-          mt={ms(20)}
-        >
-          Comments
-        </Text>
+        <HStack alignItems="center" mt={ms(20)}>
+          <Text fontSize={ms(20)} fontWeight="bold" color={Colors.azure}>
+            Comments
+          </Text>
+          {navigationLogDetails?.comments?.length > 0 ? (
+            <Text
+              bg={Colors.azure}
+              color={Colors.white}
+              width={ms(22)}
+              height={ms(22)}
+              ml={ms(10)}
+              borderRadius={ms(20)}
+              fontWeight="bold"
+              textAlign="center"
+            >
+              {navigationLogDetails?.comments?.length}
+            </Text>
+          ) : null}
+        </HStack>
+
         {navigationLogDetails?.comments?.map((comment, index) => {
           const filteredDescription = comment.description.replace(/(\\)/g, '')
           const descriptionText = filteredDescription.match(/([^<br>]+)/)[0]
@@ -197,6 +448,30 @@ const Details = () => {
             />
           )
         })}
+        {hasAddCommentPermission && (
+          <Button
+            bg={Colors.primary}
+            leftIcon={<Icon as={Ionicons} name="add" size="sm" />}
+            mt={ms(20)}
+            mb={ms(20)}
+            onPress={() => navigation.navigate('PlanningNewComment')}
+          >
+            Add comment
+          </Button>
+        )}
+
+        <DatePicker
+          modal
+          open={openDatePicker}
+          date={new Date()}
+          mode="datetime"
+          onConfirm={date => {
+            setOpenDatePicker(false), onDatesChange(date)
+          }}
+          onCancel={() => {
+            setOpenDatePicker(false)
+          }}
+        />
       </ScrollView>
     </Box>
   )
