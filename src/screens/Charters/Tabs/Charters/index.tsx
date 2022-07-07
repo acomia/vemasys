@@ -154,7 +154,9 @@ export default function Charters({navigation, route}: any) {
     setSearchValue(value)
     const searchedCharter = charters.filter(charter => {
       const containsKey = value
-        ? `${charter.vesselReference}`.includes(value)
+        ? `${charter.vesselReference.toLowerCase()}`.includes(
+            value.toLowerCase()
+          )
         : true
 
       return containsKey
