@@ -7,10 +7,12 @@ type RootStackParamList = {
   Formations: undefined
   GPSTracker: undefined
   CharterDetails: {charter: {} | undefined}
-  PDFView: undefined
+  PDFView: {path: string | undefined}
   NewBunkering: undefined
   BunkeringDetails: {bunk: {} | undefined}
   PlanningDetails: {navlog: any; title?: string}
+  PlanningNewComment: undefined
+  AddEditNavlogAction: {method: string; navlogAction?: {} | undefined}
 }
 
 type MainStackParamList = {

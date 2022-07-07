@@ -144,8 +144,7 @@ export const useMap = create(
       },
       getActiveFormations: async () => {
         try {
-          const response: any = await API.getActiveFormations()
-          console.log('formation', response)
+          const response = await API.getActiveFormations()
           if (Array.isArray(response)) {
             set({
               activeFormations: response

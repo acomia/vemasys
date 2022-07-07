@@ -6,12 +6,13 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 
 import {Colors} from '@bluecentury/styles'
 import moment from 'moment'
-import {formatNumber} from '@bluecentury/constants'
+import {formatNumber, VEMASYS_PRODUCTION_FILE_URL} from '@bluecentury/constants'
 import {IconButton} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
+import {TouchableOpacity} from 'react-native'
 
 type Props = NativeStackScreenProps<RootStackParamList>
-export default function BunkeringDetails({route}: Props) {
+export default function BunkeringDetails({route, navigation}: Props) {
   const {bunk}: any = route.params
 
   const renderCardDetails = (title: string, value: string, suffix?: string) => {
@@ -76,30 +77,48 @@ export default function BunkeringDetails({route}: Props) {
         </HStack>
         <Divider my={ms(15)} />
         {bunk.fileGroup.files.length > 0 ? (
-          <HStack
-            bg={Colors.white}
-            borderRadius={5}
-            justifyContent="space-between"
-            alignItems="center"
-            height={ms(50)}
-            px={ms(16)}
-            width="100%"
-            mb={ms(15)}
-            shadow={3}
-          >
-            <Text flex={1} fontWeight="medium">
-              File name
-            </Text>
-            <HStack alignItems="center">
-              <IconButton
-                source={Icons.file_download}
-                onPress={() => {}}
-                size={ms(22)}
-              />
-              <Box w={ms(10)} />
-              <IconButton source={Icons.eye} onPress={() => {}} size={ms(22)} />
-            </HStack>
-          </HStack>
+          bunk.fileGroup.files.map((file: any, index: number) => (
+            <TouchableOpacity key={index}>
+              <HStack
+                bg={Colors.white}
+                borderRadius={5}
+                justifyContent="space-between"
+                alignItems="center"
+                height={ms(50)}
+                px={ms(16)}
+                width="100%"
+                mb={ms(15)}
+                shadow={3}
+              >
+                <Text
+                  flex={1}
+                  maxW="80%"
+                  fontWeight="medium"
+                  numberOfLines={1}
+                  ellipsizeMode="middle"
+                >
+                  {file.path}
+                </Text>
+                <HStack alignItems="center">
+                  <IconButton
+                    source={Icons.file_download}
+                    onPress={() => {}}
+                    size={ms(22)}
+                  />
+                  <Box w={ms(10)} />
+                  <IconButton
+                    source={Icons.eye}
+                    onPress={() =>
+                      navigation.navigate('PDFView', {
+                        path: `${VEMASYS_PRODUCTION_FILE_URL}/${file.path}`
+                      })
+                    }
+                    size={ms(22)}
+                  />
+                </HStack>
+              </HStack>
+            </TouchableOpacity>
+          ))
         ) : (
           <Text mb={ms(20)} color={Colors.text} fontWeight="medium">
             No uploaded files.
