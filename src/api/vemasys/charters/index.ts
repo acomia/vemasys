@@ -7,10 +7,10 @@ import {useAuth} from '@bluecentury/stores'
 const reloadVesselCharters = async () => {
   return API.get(`v3/charters?isArchived=0`)
     .then(response => {
-      if (response.data) {
+      if (response.data.length > 0) {
         return _.orderBy(response.data, 'charterDate', 'desc')
       } else {
-        throw new Error('Charters failed.')
+        return []
       }
     })
     .catch(error => {
@@ -28,17 +28,15 @@ const reloadVesselCharters = async () => {
 //   })
 // }
 
-const viewPdfFile = async (charterId: string, token: string) => {
-  let dirs = ReactNativeBlobUtil.fs.dirs
+const viewPdfFile = async (charterId: string) => {
   return await ReactNativeBlobUtil.config({
-    fileCache: true,
-    appendExt: 'pdf'
+    fileCache: true
   })
     .fetch('GET', `${PROD_URL}/api/charters/${charterId}/pdf`, {
-      'Jwt-Auth': `Bearer ${token}`
+      'Jwt-Auth': `Bearer ${useAuth.getState().token}`
     })
     .then(response => {
-      console.log('path', response.path())
+      console.log('path', response)
 
       if (response.data) {
         return response.path()

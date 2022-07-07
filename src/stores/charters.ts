@@ -12,7 +12,7 @@ type ChartersState = {
 
 type ChartersActions = {
   getCharters: () => void
-  viewPdf: (charterId: string, token: string) => void
+  viewPdf: (charterId: string) => void
 }
 
 type ChartersStore = ChartersState & ChartersActions
@@ -42,10 +42,10 @@ export const useCharters = create(
           set({isCharterLoading: false})
         }
       },
-      viewPdf: async (charterId: string, token: string) => {
+      viewPdf: async (charterId: string) => {
         set({isCharterLoading: true})
         try {
-          const response = await API.viewPdfFile(charterId, token)
+          const response = await API.viewPdfFile(charterId)
           set({pdfPath: response, isCharterLoading: false})
         } catch (error) {
           set({isCharterLoading: false})
