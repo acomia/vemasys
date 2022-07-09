@@ -11,5 +11,5 @@ export const API = create({
   }
 })
 
-API.addResponseTransform(paramsToSnakeCase)
+API.addRequestTransform(paramsToSnakeCase)
 API.addResponseTransform(dataToCamelCase)
