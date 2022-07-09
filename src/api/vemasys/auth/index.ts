@@ -21,6 +21,7 @@ const login = (userCredentials: TCredentials) => {
 const logout = (userCredentials: TCredentials) => {
   return API.post<TUser>('login', userCredentials)
     .then(response => {
+      API.setHeader('Authorization', '')
       if (response.data) {
         return response.data
       } else {
