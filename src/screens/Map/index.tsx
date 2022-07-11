@@ -64,14 +64,17 @@ export default function Map({navigation}: Props) {
   }, [])
 
   useEffect(() => {
-    setRegion({
-      ...region,
-      latitude: currentNavLogs[0]?.location?.latitude,
-      longitude: currentNavLogs[0]?.location?.longitude
-    })
     getLastCompleteNavigationLogs(plannedNavLogs[0]?.id)
-
-    fitToAllMarkers()
+    if (currentNavLogs.length > 0) {
+      setRegion({
+        ...region,
+        latitude: currentNavLogs[0]?.location?.latitude,
+        longitude: currentNavLogs[0]?.location?.longitude
+      })
+      centerMapToCurrentLocation()
+    } else {
+      fitToAllMarkers()
+    }
   }, [currentNavLogs])
 
   const renderBottomContent = () => (
@@ -295,12 +298,12 @@ export default function Map({navigation}: Props) {
           longitude: previousLocation[0]?.location?.longitude
         },
         {
-          latitude: currentNavLogs[0]?.location?.latitude,
-          longitude: currentNavLogs[0]?.location?.longitude
-        },
-        {
           latitude: nextLocation[0]?.location?.latitude,
           longitude: nextLocation[0]?.location?.longitude
+        },
+        {
+          latitude: currentNavLogs[0]?.location?.latitude,
+          longitude: currentNavLogs[0]?.location?.longitude
         }
       ]
     } else {

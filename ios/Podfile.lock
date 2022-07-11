@@ -355,6 +355,7 @@ PODS:
   - react-native-google-maps (0.31.1):
     - Google-Maps-iOS-Utils (= 4.1.0)
     - GoogleMaps (= 6.1.1)
+  - react-native-image-picker (4.8.4):
     - React-Core
   - react-native-maps (0.31.1):
     - React-Core
@@ -539,6 +540,7 @@ DEPENDENCIES:
   - react-native-date-picker (from `../node_modules/react-native-date-picker`)
   - react-native-geolocation-service (from `../node_modules/react-native-geolocation-service`)
   - react-native-google-maps (from `../node_modules/react-native-maps`)
+  - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - react-native-maps (from `../node_modules/react-native-maps`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-pager-view (from `../node_modules/react-native-pager-view`)
@@ -650,6 +652,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-geolocation-service"
   react-native-google-maps:
     :path: "../node_modules/react-native-maps"
+  react-native-image-picker:
+    :path: "../node_modules/react-native-image-picker"
   react-native-maps:
     :path: "../node_modules/react-native-maps"
   react-native-netinfo:
@@ -750,6 +754,7 @@ SPEC CHECKSUMS:
   react-native-date-picker: 9088350e06918f7d842a34c171acadc66583cb94
   react-native-geolocation-service: c0efb872258ed9240f1003a70fca9e9757e5c785
   react-native-google-maps: 8231ffa015bf8b222c2e2661fa9163cdb609a224
+  react-native-image-picker: cffb727cf2f59bd5c0408e30b3dbe0b935f88835
   react-native-maps: 8b8bfada2c86205a7f5a07dd1f92f29b33ea83aa
   react-native-netinfo: 5b664b2945a8f02102b296f0f812bddd6827ed9c
   react-native-pager-view: 95d0418c3c74279840abec6926653d32447bafb6
