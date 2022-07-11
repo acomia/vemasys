@@ -2,6 +2,7 @@ import {API} from '../../apiService'
 import {TCredentials, TUser} from '@bluecentury/api/models'
 
 const login = (userCredentials: TCredentials) => {
+  API.deleteHeader('Jwt-Auth')
   return API.post<TUser>('login_check', userCredentials)
     .then(response => {
       // Set future request Authorization
@@ -22,6 +23,7 @@ const logout = (userCredentials: TCredentials) => {
   return API.post<TUser>('login', userCredentials)
     .then(response => {
       if (response.data) {
+        API.deleteHeader('Jwt-Auth')
         return response.data
       } else {
         throw new Error('Request Failed')

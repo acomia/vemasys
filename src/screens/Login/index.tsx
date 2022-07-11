@@ -74,6 +74,9 @@ function Login() {
                   marginLeft={ms(10)}
                 />
               }
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
               _disabled={{bgColor: '#ADADAD'}}
               fontSize={ms(15)}
               size="lg"
