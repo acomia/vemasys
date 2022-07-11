@@ -58,5 +58,10 @@ export const Icons = {
   edit: require('./edit.png'),
   trash: require('./trash.png'),
   play: require('./play-circle.png'),
-  stop: require('./stop-circle.png')
+  stop: require('./stop-circle.png'),
+  clipboard: require('./clipboard.png'),
+  calendar_week: require('./calendar-week.png'),
+  layer_group: require('./layer-group.png'),
+  overdue_tasks: require('./overdue-tasks.png'),
+  flag: require('./flag.png')
 }

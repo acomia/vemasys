@@ -7,6 +7,7 @@ import {useNavigation} from '@react-navigation/native'
 
 import {Animated} from '@bluecentury/assets'
 import {useEntity, useMap} from '@bluecentury/stores'
+import {formatLocationLabel} from '@bluecentury/constants'
 
 export const CurrentNavLogInfo = () => {
   const navigation = useNavigation()
@@ -17,8 +18,8 @@ export const CurrentNavLogInfo = () => {
     if (vesselDetails?.lastGeolocation?.speed > 0) {
     } else {
       navigation.navigate('PlanningDetails', {
-        navlog: currentNavLogs[0],
-        title: currentNavLogs[0]?.location?.name
+        navlog: currentNavLogs[currentNavLogs?.length - 1],
+        title: currentNavLogs[currentNavLogs?.length - 1]?.location?.name
       })
     }
   }
@@ -38,12 +39,16 @@ export const CurrentNavLogInfo = () => {
           </Text>
         ) : currentNavLogs?.length !== 0 ? (
           <>
-            <Text fontWeight="700">{currentNavLogs[0]?.location?.name}</Text>
+            <Text fontWeight="700">
+              {formatLocationLabel(
+                currentNavLogs[currentNavLogs?.length - 1]?.location
+              )}
+            </Text>
             <Text color="#ADADAD">
               Arrival:{' '}
-              {moment(currentNavLogs[0]?.arrivalDatetime).format(
-                'DD MMM YYYY | HH:mm'
-              )}
+              {moment(
+                currentNavLogs[currentNavLogs?.length - 1]?.arrivalDatetime
+              ).format('DD MMM YYYY | HH:mm')}
             </Text>
           </>
         ) : (

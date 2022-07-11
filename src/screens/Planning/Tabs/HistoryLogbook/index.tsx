@@ -296,6 +296,7 @@ const HistoryLogbook = ({routeIndex}: any) => {
 
           return (
             <NavLogCard
+              key={i}
               navigationLog={navigationLog}
               currentDate={currentDate}
               dateChanged={dateChanged}

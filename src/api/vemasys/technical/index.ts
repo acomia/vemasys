@@ -2,6 +2,7 @@ import moment from 'moment'
 import {API} from '../../apiService'
 import {ENTITY_TYPE_SUPPLIER_COMPANY} from '@bluecentury/constants'
 import {useAuth, useEntity} from '@bluecentury/stores'
+import {PROD_URL} from '@bluecentury/env'
 
 const reloadVesselBunkering = async (vesselId: string) => {
   return API.get(`consumption_bunkerings?exploitationVessel.id=${vesselId}`)
@@ -86,10 +87,10 @@ const reloadVesselEngines = async (physicalVesselId: string) => {
       if (response.data) {
         return response.data
       } else {
-        throw new Error('Bunkering suppliers failed.')
+        throw new Error('Vessel engines failed.')
       }
     })
-    .catch(error => console.error('Error: Engines fetching data', error))
+    .catch(error => console.error('Error: Vessel engines fetching data', error))
 }
 
 const reloadVesselPartLastMeasurements = async (partId: string) => {
@@ -109,11 +110,161 @@ const reloadVesselPartLastMeasurements = async (partId: string) => {
     )
 }
 
+const reloadVesselReservoirs = async (physicalVesselId: string) => {
+  return API.get(`reservoirs?physicalVesselId=${physicalVesselId}`)
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Vessel reservoirs failed.')
+      }
+    })
+    .catch(error => console.error('Error: Vessel reservoirs data', error))
+}
+
+const reloadTasksCategory = async (vesselId: string) => {
+  return API.get(`tasks/sections?exploitationVesselId=${vesselId}`)
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Vessel tasks category failed.')
+      }
+    })
+    .catch(error => console.error('Error: Vessel tasks category data', error))
+}
+
+const reloadTasksByCategory = async (vesselId: string, categoryKey: string) => {
+  return API.get(
+    `tasks/sections/${categoryKey}?exploitationVesselId=${vesselId}`
+  )
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Vessel tasks by category failed.')
+      }
+    })
+    .catch(error =>
+      console.error('Error: Vessel tasks by category data', error)
+    )
+}
+
+const createTaskComment = async (taskId: string, comment: string) => {
+  return API.put(`tasks/${taskId}`, {
+    comments: [
+      {
+        description: comment,
+        creationDate: new Date()
+      }
+    ]
+  })
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Vessel tasks create comment failed.')
+      }
+    })
+    .catch(error =>
+      console.error('Error: Vessel tasks create comment data', error)
+    )
+}
+
+const deleteVesselTask = async (taskId: string) => {
+  return API.delete(`tasks/${taskId}`)
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Vessel delete task failed.')
+      }
+    })
+    .catch(error => console.error('Error: Vessel delete task data', error))
+}
+
+const uploadTaskImageFile = async (
+  subject: string,
+  file: ImageFile,
+  accessLevel: string,
+  id: number
+) => {
+  const formData = new FormData()
+  const image = {
+    uri: file.uri,
+    type: file.type,
+    name: file.fileName || `IMG_${Date.now()}`
+  }
+  formData.append('file', image)
+  formData.append('access-level', accessLevel)
+  API.setBaseURL(`${PROD_URL}/api/`)
+  return API.post(`v2/files/${subject}/${id}`, formData)
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Vessel task upload image failed.')
+      }
+    })
+    .catch(error =>
+      console.error('Error: Vessel task upload image data', error)
+    )
+}
+
+const createVesselTask = async (task: Task) => {
+  return API.post(`tasks`, task)
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Add vessel task failed.')
+      }
+    })
+    .catch(error => console.error('Error: Add vessel task data', error))
+}
+
+const updateVesselTask = async (taskId: string, task: Task) => {
+  return API.put(`tasks/${taskId}`, task)
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Update vessel task failed.')
+      }
+    })
+    .catch(error => console.error('Error: Update vessel task data', error))
+}
+
+const reloadRoutines = async (vesselId: string) => {
+  return API.get(
+    `v3/maintenance_routines/sections?exploitationVesselId=${vesselId}`
+  )
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Vessel routines category failed.')
+      }
+    })
+    .catch(error =>
+      console.error('Error: Vessel routines category data', error)
+    )
+}
+
 export {
   reloadVesselBunkering,
   reloadVesselGasoilReservoirs,
   reloadVesselBunkeringSuppliers,
   createVesselBunkering,
   reloadVesselEngines,
-  reloadVesselPartLastMeasurements
+  reloadVesselPartLastMeasurements,
+  reloadVesselReservoirs,
+  reloadTasksCategory,
+  reloadTasksByCategory,
+  createTaskComment,
+  deleteVesselTask,
+  uploadTaskImageFile,
+  createVesselTask,
+  updateVesselTask,
+  reloadRoutines
 }
