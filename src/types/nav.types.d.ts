@@ -13,6 +13,10 @@ type RootStackParamList = {
   PlanningDetails: {navlog: any; title?: string}
   PlanningNewComment: undefined
   AddEditNavlogAction: {method: string; navlogAction?: {} | undefined}
+  TechnicalTasksList: {category: string; title: string}
+  TechnicalTaskDetails: {task: any}
+  TechnicalTaskNewComment: {taskId: string}
+  AddEditTechnicalTask: {method: string; task?: any}
 }
 
 type MainStackParamList = {

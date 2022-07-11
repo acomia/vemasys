@@ -11,7 +11,11 @@ type TechnicalState = {
   lastGasoilMeasurements: [] | undefined
   bunkeringSuppliers?: [] | undefined
   engines: [] | undefined
-  lastMeasurements?: [] | undefined
+  reservoirs: [] | undefined
+  lastWaterMeasurements: any[] | undefined
+  tasksCategory?: [] | undefined
+  tasksByCategory?: [] | undefined
+  routinesCategory?: [] | undefined
 }
 
 type TechnicalActions = {
@@ -20,6 +24,20 @@ type TechnicalActions = {
   getVesselBunkeringSuppliers: () => void
   createVesselBunkering?: (bunkering: any) => void
   getVesselEngines: (physicalVesselId: string) => void
+  getVesselReservoirs?: (physicalVesselId: string) => void
+  getVesselTasksCategory?: (vesselId: string) => void
+  getVesselTasksByCategory?: (vesselId: string, categoryKey: string) => void
+  createTaskComment?: (taskId: string, comment: string) => void
+  deleteTask?: (taskId: string) => void
+  createVesselTask?: (task: Task) => void
+  updateVesselTask?: (taskId: string, task: Task) => void
+  uploadTaskImageFile?: (
+    subject: string,
+    file: ImageFile,
+    accessLevel: string,
+    id: number
+  ) => void
+  getVesselRoutines?: (vesselId: string) => void
 }
 
 type TechnicalStore = TechnicalState & TechnicalActions
@@ -32,6 +50,10 @@ export const useTechnical = create(
       gasoilReserviors: [],
       lastGasoilMeasurements: [],
       engines: [],
+      reservoirs: [],
+      lastWaterMeasurements: [],
+      tasksCategory: [],
+      tasksByCategory: [],
       getVesselBunkering: async (vesselId: string) => {
         set({isTechnicalLoading: true, bunkering: []})
         try {
@@ -144,6 +166,157 @@ export const useTechnical = create(
             set({
               isTechnicalLoading: false,
               engines: []
+            })
+          }
+        } catch (error) {
+          set({isTechnicalLoading: false})
+        }
+      },
+      getVesselReservoirs: async (physicalVesselId: string) => {
+        set({isTechnicalLoading: true, reservoirs: []})
+        try {
+          const response = await API.reloadVesselReservoirs(physicalVesselId)
+
+          if (Array.isArray(response)) {
+            const waterTank = response.filter(res => res.type.title !== 'Fuel')
+            let lastWaterM: any[] = []
+            waterTank.forEach(async (tank, index) => {
+              set({isTechnicalLoading: true})
+              const lastM = await API.reloadVesselPartLastMeasurements(tank.id)
+              lastWaterM?.push(lastM[0])
+            })
+            set({
+              isTechnicalLoading: false,
+              reservoirs: waterTank,
+              lastWaterMeasurements: lastWaterM
+            })
+          } else {
+            set({
+              isTechnicalLoading: false,
+              reservoirs: []
+            })
+          }
+        } catch (error) {
+          set({isTechnicalLoading: false})
+        }
+      },
+      getVesselTasksCategory: async (vesselId: string) => {
+        set({isTechnicalLoading: true, tasksCategory: []})
+        try {
+          const response = await API.reloadTasksCategory(vesselId)
+          if (Array.isArray(response)) {
+            set({
+              isTechnicalLoading: false,
+              tasksCategory: response
+            })
+          } else {
+            set({
+              isTechnicalLoading: false,
+              tasksCategory: []
+            })
+          }
+        } catch (error) {
+          set({isTechnicalLoading: false})
+        }
+      },
+      getVesselTasksByCategory: async (
+        vesselId: string,
+        categoryKey: string
+      ) => {
+        set({isTechnicalLoading: true, tasksByCategory: []})
+        try {
+          const response = await API.reloadTasksByCategory(
+            vesselId,
+            categoryKey
+          )
+          if (Array.isArray(response)) {
+            set({
+              isTechnicalLoading: false,
+              tasksByCategory: response
+            })
+          } else {
+            set({
+              isTechnicalLoading: false,
+              tasksByCategory: []
+            })
+          }
+        } catch (error) {
+          set({isTechnicalLoading: false})
+        }
+      },
+      createTaskComment: async (taskId: string, comment: string) => {
+        set({isTechnicalLoading: true})
+        try {
+          const response = await API.createTaskComment(taskId, comment)
+          return [response]
+        } catch (error) {
+          set({isTechnicalLoading: false})
+        }
+      },
+      deleteTask: async (taskId: string) => {
+        set({isTechnicalLoading: true})
+        try {
+          const response = await API.deleteVesselTask(taskId)
+          set({isTechnicalLoading: false})
+          return [response]
+        } catch (error) {
+          set({isTechnicalLoading: false})
+        }
+      },
+      createVesselTask: async (task: Task) => {
+        set({isTechnicalLoading: true})
+        try {
+          const response = await API.createVesselTask(task)
+          console.log('createTask', response)
+          set({isTechnicalLoading: false})
+          return response
+        } catch (error) {
+          set({isTechnicalLoading: false})
+        }
+      },
+      updateVesselTask: async (taskId: string, task: Task) => {
+        set({isTechnicalLoading: true})
+        try {
+          const response = await API.updateVesselTask(taskId, task)
+          set({isTechnicalLoading: false})
+          return response
+        } catch (error) {
+          set({isTechnicalLoading: false})
+        }
+      },
+      uploadTaskImageFile: async (
+        subject: string,
+        file: ImageFile,
+        accessLevel: string,
+        id: number
+      ) => {
+        set({isTechnicalLoading: true})
+        try {
+          const response = await API.uploadTaskImageFile(
+            subject,
+            file,
+            accessLevel,
+            id
+          )
+          set({isTechnicalLoading: false})
+          return response
+        } catch (error) {
+          set({isTechnicalLoading: false})
+        }
+      },
+      getVesselRoutines: async (vesselId: string) => {
+        set({isTechnicalLoading: true, routinesCategory: []})
+        try {
+          const response = await API.reloadRoutines(vesselId)
+          if (Array.isArray(response)) {
+            set({
+              isTechnicalLoading: false,
+              routinesCategory: response
+            })
+          } else {
+            set({
+              isTechnicalLoading: false,
+              routinesCategory: []
             })
           }
         } catch (error) {

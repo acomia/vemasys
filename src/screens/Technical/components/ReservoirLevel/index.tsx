@@ -9,7 +9,7 @@ import {PROD_URL} from '@bluecentury/env'
 import {formatNumber} from '@bluecentury/constants'
 import {useTechnical} from '@bluecentury/stores'
 
-const GasoilReservoirsLevel = ({gasoilReserviors, physicalVesselId}: any) => {
+const ReservoirLevel = ({reservoir, physicalVesselId}: any) => {
   const {lastGasoilMeasurements} = useTechnical()
 
   const totalGasoil = lastGasoilMeasurements?.reduce(
@@ -19,7 +19,7 @@ const GasoilReservoirsLevel = ({gasoilReserviors, physicalVesselId}: any) => {
   )
 
   const renderGasoilList = (reservoir: any, index: number) => {
-    const gasoilListLength = gasoilReserviors.length - 1
+    const gasoilListLength = reservoir.length - 1
     let fillPct = 0
     let value = 0
     let capacity = 0
@@ -88,8 +88,8 @@ const GasoilReservoirsLevel = ({gasoilReserviors, physicalVesselId}: any) => {
           {formatNumber(totalGasoil, 0)} L
         </Text>
       </HStack>
-      {gasoilReserviors.length > 0 ? (
-        gasoilReserviors.map((reservoir: any, index: number) =>
+      {reservoir.length > 0 ? (
+        reservoir.map((reservoir: any, index: number) =>
           renderGasoilList(reservoir, index)
         )
       ) : (
@@ -110,4 +110,4 @@ const GasoilReservoirsLevel = ({gasoilReserviors, physicalVesselId}: any) => {
   )
 }
 
-export default GasoilReservoirsLevel
+export default ReservoirLevel

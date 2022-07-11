@@ -16,7 +16,11 @@ import {
   BunkeringDetails,
   PlanningDetails,
   PlanningNewComment,
-  AddEditNavlogAction
+  AddEditNavlogAction,
+  TechnicalTasksList,
+  TechnicalTaskDetails,
+  TechnicalTaskNewComment,
+  AddEditTechnicalTask
 } from '@bluecentury/screens'
 import {Colors} from '@bluecentury/styles'
 
@@ -137,6 +141,32 @@ export default function RootNavigator() {
           options={({route}) => ({
             headerShown: true,
             title: route.params.method === 'add' ? 'Add Action' : 'Edit Action'
+          })}
+        />
+        <Screen
+          name={'TechnicalTasksList'}
+          component={TechnicalTasksList}
+          options={({route}) => ({
+            headerShown: true,
+            title: route.params.title
+          })}
+        />
+        <Screen
+          name={'TechnicalTaskDetails'}
+          component={TechnicalTaskDetails}
+          options={{headerShown: true, title: 'Task Details'}}
+        />
+        <Screen
+          name={'TechnicalTaskNewComment'}
+          component={TechnicalTaskNewComment}
+          options={{headerShown: true, title: 'New Comment'}}
+        />
+        <Screen
+          name={'AddEditTechnicalTask'}
+          component={AddEditTechnicalTask}
+          options={({route}) => ({
+            headerShown: true,
+            title: route.params.method === 'add' ? 'Add a Task' : 'Edit Task'
           })}
         />
       </Group>

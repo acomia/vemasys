@@ -1,10 +1,9 @@
 import React from 'react'
-import {Box, Button, HStack, Pressable, Text, VStack} from 'native-base'
+import {Box, HStack, Pressable, Text, VStack} from 'native-base'
 import {useNavigation} from '@react-navigation/native'
 
 import {Colors} from '@bluecentury/styles'
 import moment from 'moment'
-import {Platform} from 'react-native'
 import {ms} from 'react-native-size-matters'
 import {formatNumber} from '@bluecentury/constants'
 
