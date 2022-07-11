@@ -1,3 +1,4 @@
+import {Icons} from '@bluecentury/assets'
 import {PROD_URL} from '@bluecentury/env'
 
 export const ENTITY_TYPE_EXPLOITATION_VESSEL = 'ExploitationVessel'
@@ -41,6 +42,8 @@ export const CHARTER_ORDERER_STATUS_COMPLETED = 'completed'
 export const CHARTER_ORDERER_STATUS_ARCHIVED = 'archived'
 
 // Technical constants
+
+export const ROLE_PERMISSION_TASK_MANAGE = 'ROLE_PERMISSION_TASK_MANAGE'
 
 export const technicalTabs = [
   {key: 'bunkering', title: 'Bunkering'},
