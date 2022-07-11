@@ -20,10 +20,12 @@ export const PlannedNavLogInfo = () => {
     <TouchableOpacity
       style={styles.container}
       onPress={() =>
-        navigation.navigate('PlanningDetails', {
-          navlog: navigationLog,
-          title: formatLocationLabel(navigationLog?.location)
-        })
+        navigationLog === undefined
+          ? null
+          : navigation.navigate('PlanningDetails', {
+              navlog: navigationLog,
+              title: formatLocationLabel(navigationLog?.location)
+            })
       }
     >
       <Box ml={ms(15)}>

@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react'
-import {Box, Button, Center, Flex, Image, ScrollView, Text} from 'native-base'
+import {RefreshControl} from 'react-native'
+import {Box, Button, Flex, ScrollView, Text} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import {Shadow} from 'react-native-shadow-2'
 import {useNavigation} from '@react-navigation/native'
@@ -7,8 +8,7 @@ import {useNavigation} from '@react-navigation/native'
 import {useEntity, useTechnical} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
 import {LoadingIndicator} from '@bluecentury/components'
-import {BunkeringList, GasoilReservoirsLevel} from './components'
-import {RefreshControl} from 'react-native'
+import {ReservoirLevel, BunkeringList} from '../../components'
 
 const Bunkering = () => {
   const navigation = useNavigation()
@@ -49,8 +49,8 @@ const Bunkering = () => {
         </Text>
         {/* Gasoil Card */}
         {gasoilReserviors?.length > 0 ? (
-          <GasoilReservoirsLevel
-            gasoilReserviors={gasoilReserviors}
+          <ReservoirLevel
+            reservoir={gasoilReserviors}
             physicalVesselId={physicalVesselId}
           />
         ) : (

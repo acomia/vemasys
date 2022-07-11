@@ -3,7 +3,14 @@ import {useWindowDimensions} from 'react-native'
 import {Text} from 'native-base'
 import {TabView, SceneMap, TabBar} from 'react-native-tab-view'
 
-import {Bunkering, Engines} from './tabs'
+import {
+  Bunkering,
+  Certificates,
+  Engines,
+  Reservoirs,
+  Routines,
+  Tasks
+} from './Tabs'
 import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
 import {technicalTabs} from '@bluecentury/constants'
@@ -11,10 +18,10 @@ import {technicalTabs} from '@bluecentury/constants'
 const renderScene = SceneMap({
   bunkering: Bunkering,
   engines: Engines,
-  reservoirs: () => <Text>Reservoirs</Text>,
-  tasks: () => <Text>tasks</Text>,
-  routines: () => <Text>routines</Text>,
-  certificates: () => <Text>certificates</Text>,
+  reservoirs: Reservoirs,
+  tasks: Tasks,
+  routines: Routines,
+  certificates: Certificates,
   inventory: () => <Text>inventory</Text>
 })
 

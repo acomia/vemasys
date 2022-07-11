@@ -54,7 +54,7 @@ const PlanningLogbook = () => {
               {formatLocationLabel(navigationLog?.location)}
             </Text>
             <Text color={'#23475C'} fontWeight="medium">
-              Planned: $
+              Planned:{' '}
               {moment(navigationLog?.plannedEta).format('DD MMM YYYY | HH:mm')}
             </Text>
           </Box>

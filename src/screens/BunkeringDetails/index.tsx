@@ -76,8 +76,8 @@ export default function BunkeringDetails({route, navigation}: Props) {
           </Text>
         </HStack>
         <Divider my={ms(15)} />
-        {bunk.fileGroup.files.length > 0 ? (
-          bunk.fileGroup.files.map((file: any, index: number) => (
+        {bunk?.fileGroup?.files?.length > 0 ? (
+          bunk?.fileGroup?.files?.map((file: any, index: number) => (
             <TouchableOpacity key={index}>
               <HStack
                 bg={Colors.white}
