@@ -3,12 +3,12 @@ import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import * as API from '@bluecentury/api/vemasys'
+import moment from 'moment'
 
 type TechnicalState = {
   isTechnicalLoading: boolean
   bunkering: [] | undefined
   gasoilReserviors: [] | undefined
-  lastGasoilMeasurements: [] | undefined
   bunkeringSuppliers?: [] | undefined
   engines: [] | undefined
   reservoirs: [] | undefined
@@ -16,6 +16,7 @@ type TechnicalState = {
   tasksCategory?: [] | undefined
   tasksByCategory?: [] | undefined
   routinesCategory?: [] | undefined
+  certificates?: [] | undefined
 }
 
 type TechnicalActions = {
@@ -38,6 +39,7 @@ type TechnicalActions = {
     id: number
   ) => void
   getVesselRoutines?: (vesselId: string) => void
+  getVesselCertificates?: (vesselId: string) => void
 }
 
 type TechnicalStore = TechnicalState & TechnicalActions
@@ -54,6 +56,7 @@ export const useTechnical = create(
       lastWaterMeasurements: [],
       tasksCategory: [],
       tasksByCategory: [],
+      certificates: [],
       getVesselBunkering: async (vesselId: string) => {
         set({isTechnicalLoading: true, bunkering: []})
         try {
@@ -79,27 +82,6 @@ export const useTechnical = create(
           const response = await API.reloadVesselGasoilReservoirs(
             physicalVesselId
           )
-          if (response && response.length > 0) {
-            const gasoilR = response
-              .filter(
-                (gasoil: {type: {title: string}}) =>
-                  gasoil.type.title === 'Fuel'
-              )
-              .filter(
-                (reservoir: {vesselZone: {physicalVessel: {id: any}}}) =>
-                  reservoir?.vesselZone?.physicalVessel?.id === physicalVesselId
-              )
-            set({lastGasoilMeasurements: []})
-            gasoilR.forEach(async reservoir => {
-              set({isTechnicalLoading: true})
-              const lastM = await API.reloadVesselPartLastMeasurements(
-                reservoir.id
-              )
-              let lastGasoilM = get().lastGasoilMeasurements
-              lastGasoilM?.push(lastM[0])
-              set({lastGasoilMeasurements: lastGasoilM})
-            })
-          }
           if (Array.isArray(response)) {
             const gasoilR = response
               .filter(
@@ -110,6 +92,12 @@ export const useTechnical = create(
                 (reservoir: {vesselZone: {physicalVessel: {id: any}}}) =>
                   reservoir?.vesselZone?.physicalVessel?.id === physicalVesselId
               )
+            gasoilR.forEach(async reservoir => {
+              const lastM = await API.reloadVesselPartLastMeasurements(
+                reservoir.id
+              )
+              reservoir.lastMeasurement = lastM[0]
+            })
             set({
               isTechnicalLoading: false,
               gasoilReserviors: gasoilR
@@ -158,6 +146,12 @@ export const useTechnical = create(
         try {
           const response = await API.reloadVesselEngines(physicalVesselId)
           if (Array.isArray(response)) {
+            response.forEach(async engine => {
+              const lastM = await API.reloadVesselPartLastMeasurements(
+                engine.id
+              )
+              engine.lastMeasurement = lastM[0]
+            })
             set({
               isTechnicalLoading: false,
               engines: response
@@ -176,7 +170,6 @@ export const useTechnical = create(
         set({isTechnicalLoading: true, reservoirs: []})
         try {
           const response = await API.reloadVesselReservoirs(physicalVesselId)
-
           if (Array.isArray(response)) {
             const waterTank = response.filter(res => res.type.title !== 'Fuel')
             let lastWaterM: any[] = []
@@ -317,6 +310,31 @@ export const useTechnical = create(
             set({
               isTechnicalLoading: false,
               routinesCategory: []
+            })
+          }
+        } catch (error) {
+          set({isTechnicalLoading: false})
+        }
+      },
+      getVesselCertificates: async (vesselId: string) => {
+        set({isTechnicalLoading: true, certificates: []})
+        try {
+          const response = await API.reloadCertificates(vesselId)
+          if (Array.isArray(response)) {
+            const today = moment()
+            response.forEach(c => {
+              c.remainingDays = c.endDate
+                ? moment(c.endDate).diff(today, 'days')
+                : 0
+            })
+            set({
+              isTechnicalLoading: false,
+              certificates: response
+            })
+          } else {
+            set({
+              isTechnicalLoading: false,
+              certificates: []
             })
           }
         } catch (error) {

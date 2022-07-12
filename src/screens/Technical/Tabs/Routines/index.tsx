@@ -20,15 +20,14 @@ const Routines = () => {
     getVesselRoutines(vesselId)
   }, [])
 
-  console.log(routinesCategory)
-
   if (isTechnicalLoading) return <LoadingIndicator />
 
   return (
     <Box flex="1">
       <ScrollView
         contentContainerStyle={{
-          flexGrow: 1
+          flexGrow: 1,
+          paddingBottom: 20
         }}
         px={ms(12)}
         py={ms(20)}
@@ -77,7 +76,7 @@ const Routines = () => {
                 // }
               >
                 <Box
-                  w={ms(width / 2 - 30)}
+                  w={width / 2 - 30}
                   p={ms(30)}
                   alignItems="center"
                   justifyContent="center"

@@ -17,6 +17,8 @@ type RootStackParamList = {
   TechnicalTaskDetails: {task: any}
   TechnicalTaskNewComment: {taskId: string}
   AddEditTechnicalTask: {method: string; task?: any}
+  TechnicalCertificateList: {certificates: any; title: string}
+  TechnicalCertificateDetails: {certificate: any}
 }
 
 type MainStackParamList = {
