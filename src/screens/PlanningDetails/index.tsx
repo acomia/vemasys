@@ -27,7 +27,6 @@ export default function PlanningDetails() {
     } else {
       setRoutes(planningDetailsTabs)
     }
-    console.log(navigationLogDetails?.cargoType)
   }, [navigationLogDetails])
 
   const renderScene = SceneMap({

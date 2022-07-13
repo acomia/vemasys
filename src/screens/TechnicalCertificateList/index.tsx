@@ -8,7 +8,6 @@ import {
   HStack,
   Icon,
   Input,
-  ScrollView,
   Text
 } from 'native-base'
 import moment from 'moment'
@@ -17,9 +16,8 @@ import Material from 'react-native-vector-icons/MaterialCommunityIcons'
 import {ms} from 'react-native-size-matters'
 
 import {Colors} from '@bluecentury/styles'
-import {IconButton, LoadingIndicator} from '@bluecentury/components'
+import {IconButton} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
-import {SharedElement} from 'react-navigation-shared-element'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 
 type Props = NativeStackScreenProps<RootStackParamList>

@@ -71,5 +71,6 @@ export const Icons = {
   all_certificate: require('./all-certificate.png'),
   status_check_alt: require('./status-check-alt.png'),
   status_x_alt: require('./status-x-alt.png'),
-  status_exclamation_alt: require('./status-exclamation-alt.png')
+  status_exclamation_alt: require('./status-exclamation-alt.png'),
+  add: require('./add-circle.png')
 }
