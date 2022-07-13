@@ -61,6 +61,7 @@ export default function Map({navigation}: Props) {
     getPreviousNavigationLogs(vesselId)
     getPlannedNavigationLogs(vesselId)
     getCurrentNavigationLogs(vesselId)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -71,11 +72,18 @@ export default function Map({navigation}: Props) {
         latitude: currentNavLogs[0]?.location?.latitude,
         longitude: currentNavLogs[0]?.location?.longitude
       })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentNavLogs])
+
+  useEffect(() => {
+    if (vesselDetails) {
       centerMapToCurrentLocation()
     } else {
       fitToAllMarkers()
     }
-  }, [currentNavLogs])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vesselDetails])
 
   const renderBottomContent = () => (
     <Box backgroundColor="#fff" height={ms(440)} px={ms(30)} py={ms(20)}>
@@ -114,7 +122,7 @@ export default function Map({navigation}: Props) {
 
   const renderMarkerFrom = () => {
     const previousLocation = prevNavLogs?.find(
-      (prev: any) => prev.plannedETA !== null
+      (prev: any) => prev.plannedEta !== null
     )
     if (zoomLevel > 12) {
       markerRef?.current?.showCallout()
@@ -163,7 +171,7 @@ export default function Map({navigation}: Props) {
 
   const renderMarkerTo = () => {
     const nextLocation = plannedNavLogs?.find(
-      (plan: any) => plan.plannedETA !== null
+      (plan: any) => plan.plannedEta !== null
     )
     if (zoomLevel > 12) {
       markerRef?.current?.showCallout()
@@ -206,7 +214,7 @@ export default function Map({navigation}: Props) {
               </Text>
               <Text fontSize={ms(12)} fontWeight="medium" color="#ADADAD">
                 Arrived:{' '}
-                {moment(nextLocation?.plannedETA).format('DD MMM YYYY | HH:mm')}
+                {moment(nextLocation?.plannedEta).format('DD MMM YYYY | HH:mm')}
               </Text>
             </Box>
             <Icon name="angle-right" color="#ADADAD" size={25} />
@@ -216,25 +224,28 @@ export default function Map({navigation}: Props) {
     )
   }
 
-  const renderMarkerVesel = () => {
+  const renderMarkerVessel = () => {
+    const {latitude, longitude, speed}: any = vesselDetails?.lastGeolocation
     return (
       <Marker
         key={`Vessel-${currentNavLogs[0]?.location?.id}`}
         coordinate={{
-          latitude: currentNavLogs[0]?.location?.latitude,
-          longitude: currentNavLogs[0]?.location?.longitude
+          latitude: latitude,
+          longitude: longitude
         }}
-        image={
-          vesselDetails?.lastGeolocation?.speed > 0
-            ? Icons.navigating
-            : Icons.anchor
-        }
+        image={speed > 0 ? Icons.navigating : Icons.anchor}
         style={{zIndex: 1}}
       />
     )
   }
 
   const renderLastCompleteNavLogs = (log: any) => {
+    if (
+      !log?.navigationLog?.plannedEta &&
+      !log?.navigationLog?.arrivalDatetime
+    ) {
+      return null
+    }
     return (
       <Marker
         key={log.location?.id}
@@ -269,7 +280,7 @@ export default function Map({navigation}: Props) {
                 {moment(
                   log?.navigationLog?.arrivalDatetime
                     ? log?.navigationLog?.arrivalDatetime
-                    : log?.navigationLog?.plannedETA
+                    : log?.navigationLog?.plannedEta
                 ).format('DD MMM YYYY | HH:mm')}
               </Text>
             )}
@@ -281,10 +292,10 @@ export default function Map({navigation}: Props) {
 
   const fitToAllMarkers = () => {
     const previousLocation: any = prevNavLogs?.filter(
-      (e: any) => e && e.plannedETA !== null
+      (e: any) => e && e.plannedEta !== null
     )
     const nextLocation: any = plannedNavLogs?.filter(
-      (e: any) => e && e.plannedETA !== null
+      (e: any) => e && e.plannedEta !== null
     )
     let markers: [] | any = []
     if (
@@ -322,10 +333,11 @@ export default function Map({navigation}: Props) {
   }
 
   const centerMapToCurrentLocation = () => {
+    const {latitude, longitude} = vesselDetails?.lastGeolocation
     mapRef.current?.animateCamera({
       center: {
-        latitude: currentNavLogs[0]?.location?.latitude,
-        longitude: currentNavLogs[0]?.location?.longitude
+        latitude: latitude,
+        longitude: longitude
       },
       zoom: 15,
       heading: 0,
@@ -345,7 +357,7 @@ export default function Map({navigation}: Props) {
   }
 
   return (
-    <Box flex={1} bg={Colors.light} safeArea>
+    <Box flex={1} bg={Colors.light}>
       <Box flex={1} bg={Colors.white} borderTopRadius="3xl" overflow="hidden">
         <MapView
           ref={mapRef}
@@ -354,14 +366,20 @@ export default function Map({navigation}: Props) {
           initialRegion={region}
           onRegionChange={region => handleRegionChange(region)}
         >
-          {prevNavLogs?.length > 0 ? renderMarkerFrom() : null}
-          {currentNavLogs?.length > 0 ? renderMarkerVesel() : null}
-          {plannedNavLogs?.length > 0 ? renderMarkerTo() : null}
-          {lastCompleteNavLogs && lastCompleteNavLogs.length > 0
-            ? lastCompleteNavLogs[0]?.waypoints?.map((log: any) =>
-                renderLastCompleteNavLogs(log)
-              )
-            : null}
+          {prevNavLogs?.length > 0 &&
+            prevNavLogs.find((plan: any) => plan.plannedEta !== null) !==
+              undefined &&
+            renderMarkerFrom()}
+          {renderMarkerVessel()}
+          {plannedNavLogs?.length > 0 &&
+            plannedNavLogs.find((plan: any) => plan.plannedEta !== null) !==
+              undefined &&
+            renderMarkerTo()}
+          {lastCompleteNavLogs &&
+            lastCompleteNavLogs.length > 0 &&
+            lastCompleteNavLogs[0]?.waypoints?.map((log: any) =>
+              renderLastCompleteNavLogs(log)
+            )}
         </MapView>
         <Box position="absolute" right="0">
           <VStack space="5" justifyContent="flex-start" m="4">

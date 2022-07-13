@@ -17,6 +17,7 @@
       "@bluecentury/screens": ["./src/screens"],
       "@bluecentury/stores": ["./src/stores"],
       "@bluecentury/styles": ["./src/styles"],
+      "@bluecentury/types": ["./src/types"],
     },
     "resolveJsonModule": true,
     "allowJs": true,

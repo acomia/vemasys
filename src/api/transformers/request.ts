@@ -9,5 +9,5 @@ export const paramsToSnakeCase: RequestTransform = request => {
   //     request.data = snakeCaseKeys(request.data)
   //   }
   // }
-  console.log('API Request: ', request)
+  // console.log('API Request: ', request)
 }

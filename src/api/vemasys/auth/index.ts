@@ -34,10 +34,15 @@ const logout = (userCredentials: TCredentials) => {
     })
 }
 
-const resetToken = (userCredentials: TCredentials) => {
-  return API.post<TUser>('./login', userCredentials)
+const resetToken = (refreshToken: string) => {
+  API.setHeaders({
+    Accept: 'application/json',
+    'Content-Type': 'multipart/form-data'
+  })
+  return API.post<TUser>(`token/refresh?refresh_token=${refreshToken}`)
     .then(response => {
       if (response.data) {
+        API.setHeader('Jwt-Auth', `Bearer ${response.data.token}`)
         return response.data
       } else {
         throw new Error('Request Failed')
@@ -45,6 +50,9 @@ const resetToken = (userCredentials: TCredentials) => {
     })
     .catch(error => {
       console.error('Error: API Reset Token ', error)
+    })
+    .finally(() => {
+      API.setHeader('Content-Type', 'application/json')
     })
 }
 
