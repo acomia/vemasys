@@ -13,7 +13,7 @@ export const PlannedNavLogInfo = () => {
   const navigation = useNavigation()
   const {plannedNavLogs}: any = useMap()
   const navigationLog = plannedNavLogs?.find(
-    (plan: any) => plan.plannedETA !== null
+    (plan: any) => plan.plannedEta !== null
   )
 
   return (
@@ -40,7 +40,7 @@ export const PlannedNavLogInfo = () => {
             </Text>
             <Text color="#ADADAD">
               Planned:{' '}
-              {moment(navigationLog?.plannedETA).format('DD MMM YYYY | HH:mm')}
+              {moment(navigationLog?.plannedEta).format('DD MMM YYYY | HH:mm')}
             </Text>
           </>
         )}

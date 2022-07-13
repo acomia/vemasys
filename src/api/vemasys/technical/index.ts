@@ -174,8 +174,8 @@ const createTaskComment = async (taskId: string, comment: string) => {
 const deleteVesselTask = async (taskId: string) => {
   return API.delete(`tasks/${taskId}`)
     .then(response => {
-      if (response.data) {
-        return response.data
+      if (response.status) {
+        return response.status
       } else {
         throw new Error('Vessel delete task failed.')
       }
@@ -251,6 +251,18 @@ const reloadRoutines = async (vesselId: string) => {
     )
 }
 
+const reloadCertificates = async (vesselId: string) => {
+  return API.get(`certificates?exploitationVessel.id=${vesselId}`)
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Vessel certificates failed.')
+      }
+    })
+    .catch(error => console.error('Error: Vessel certificates data', error))
+}
+
 export {
   reloadVesselBunkering,
   reloadVesselGasoilReservoirs,
@@ -266,5 +278,6 @@ export {
   uploadTaskImageFile,
   createVesselTask,
   updateVesselTask,
-  reloadRoutines
+  reloadRoutines,
+  reloadCertificates
 }

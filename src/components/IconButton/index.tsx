@@ -9,6 +9,7 @@ interface IProps {
   disabled?: boolean
   size?: number
   styles?: ViewStyle
+  tintColor?: string
 }
 
 export const IconButton: FC<IProps> = ({
@@ -16,7 +17,8 @@ export const IconButton: FC<IProps> = ({
   onPress,
   disabled,
   size = ms(30),
-  styles
+  styles,
+  tintColor
 }) => (
   <ButtonIcon
     p={0}
@@ -28,6 +30,7 @@ export const IconButton: FC<IProps> = ({
         source={source}
         resizeMode="contain"
         size={size}
+        tintColor={tintColor}
         alt="icon-button"
       />
     }

@@ -31,9 +31,10 @@ import {useEntity, useTechnical} from '@bluecentury/stores'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const TechnicalTaskDetails = ({navigation, route}: Props) => {
-  const {task} = route.params
-  const {selectedEntity} = useEntity()
-  const {isTechnicalLoading, deleteTask} = useTechnical()
+  const {task, category} = route.params
+  const {selectedEntity, vesselId} = useEntity()
+  const {isTechnicalLoading, deleteTask, getVesselTasksByCategory} =
+    useTechnical()
   const hasTaskPermission = hasSelectedEntityUserPermission(
     selectedEntity,
     ROLE_PERMISSION_TASK_MANAGE
@@ -310,7 +311,8 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
 
   const handleDeleteTask = async () => {
     const res = await deleteTask(task?.id)
-    if (typeof res === 'object') {
+    if (res === 204) {
+      getVesselTasksByCategory(vesselId, category)
       toast.show({
         duration: 2000,
         render: () => {

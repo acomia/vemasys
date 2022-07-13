@@ -152,10 +152,10 @@ export default function Charters({navigation, route}: any) {
 
   const onSearchCharter = (value: string) => {
     setSearchValue(value)
-    const searchedCharter = charters.filter(charter => {
+    const searchedCharter = charters?.filter(charter => {
       const containsKey = value
-        ? `${charter.vesselReference.toLowerCase()}`.includes(
-            value.toLowerCase()
+        ? `${charter?.vesselReference?.toLowerCase()}`?.includes(
+            value?.toLowerCase()
           )
         : true
 
@@ -219,6 +219,17 @@ export default function Charters({navigation, route}: any) {
         renderItem={renderItem}
         keyExtractor={item => `Charter-${item.id}`}
         showsVerticalScrollIndicator={false}
+        ListEmptyComponent={() => (
+          <Text
+            fontSize={ms(20)}
+            fontWeight="bold"
+            color={Colors.azure}
+            mt={ms(20)}
+            textAlign="center"
+          >
+            No Charters.
+          </Text>
+        )}
       />
     </Flex>
   )

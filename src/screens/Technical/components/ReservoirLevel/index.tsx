@@ -10,11 +10,14 @@ import {formatNumber} from '@bluecentury/constants'
 import {useTechnical} from '@bluecentury/stores'
 
 const ReservoirLevel = ({reservoir, physicalVesselId}: any) => {
-  const {lastGasoilMeasurements} = useTechnical()
+  const {gasoilReserviors} = useTechnical()
 
-  const totalGasoil = lastGasoilMeasurements?.reduce(
+  const totalGasoil = gasoilReserviors?.reduce(
     (acc: any, reservoir: {volume: any}) =>
-      acc + (reservoir?.value ? reservoir?.value : 0),
+      acc +
+      (reservoir?.lastMeasurement?.value
+        ? reservoir?.lastMeasurement?.value
+        : 0),
     0
   )
 
@@ -24,18 +27,27 @@ const ReservoirLevel = ({reservoir, physicalVesselId}: any) => {
     let value = 0
     let capacity = 0
     let lastMeasurementDate = null
-    if (lastGasoilMeasurements?.length > 0) {
-      value =
-        typeof lastGasoilMeasurements[index]?.value === 'undefined'
-          ? 0
-          : lastGasoilMeasurements[index]?.value
-      capacity = reservoir.capacity === null ? 0 : reservoir.capacity
+    // if (lastGasoilMeasurements?.length > 0) {
+    //   value =
+    //     typeof lastGasoilMeasurements[index]?.value === 'undefined'
+    //       ? 0
+    //       : lastGasoilMeasurements[index]?.value
+    //   capacity = reservoir.capacity === null ? 0 : reservoir.capacity
 
-      lastMeasurementDate = lastGasoilMeasurements[index]?.date
-      let used = capacity - value
-      fillPct = (used / capacity) * 100 - 100
-      fillPct = fillPct < 0 ? fillPct * -1 : fillPct
-    }
+    //   lastMeasurementDate = lastGasoilMeasurements[index]?.date
+    //   let used = capacity - value
+    //   fillPct = (used / capacity) * 100 - 100
+    //   fillPct = fillPct < 0 ? fillPct * -1 : fillPct
+    // }
+    capacity = reservoir?.capacity === null ? 0 : reservoir?.capacity
+    value =
+      typeof reservoir?.lastMeasurement?.value === 'undefined'
+        ? 0
+        : reservoir?.lastMeasurement?.value
+    lastMeasurementDate = reservoir?.lastMeasurement?.date
+    let used = capacity - value
+    fillPct = (used / capacity) * 100 - 100
+    fillPct = fillPct < 0 ? fillPct * -1 : fillPct
 
     return (
       <Box key={index} mb={ms(index === gasoilListLength ? 10 : 0)}>

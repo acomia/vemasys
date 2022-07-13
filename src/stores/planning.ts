@@ -13,6 +13,7 @@ type PlanningState = {
   navigationLogCargoHolds?: any[]
   navigationLogComments?: any[]
   navigationLogDocuments?: any[]
+  bulkTypes?: []
 }
 
 type PlanningActions = {
@@ -29,6 +30,10 @@ type PlanningActions = {
     comment: string,
     userId: string
   ) => void
+  getBulkTypes?: (query: string) => void
+  updateBulkCargo?: (cargo: any) => void
+  createBulkCargo?: (cargo: any, navLogId: string) => void
+  deleteBulkCargo?: (id: string) => void
 }
 
 type PlanningStore = PlanningState & PlanningActions
@@ -195,8 +200,6 @@ export const usePlanning = create(
         })
         try {
           const response = await API.reloadNavigationLogDocuments(navLogId)
-          console.log('docs', response)
-
           if (Array.isArray(response)) {
             set({
               isPlanningLoading: false,
@@ -239,6 +242,49 @@ export const usePlanning = create(
             comment,
             userId
           )
+          set({isPlanningLoading: false})
+          return response
+        } catch (error) {
+          set({isPlanningLoading: false})
+        }
+      },
+      getBulkTypes: async (query: string) => {
+        set({isPlanningLoading: true, bulkTypes: []})
+        try {
+          const response = await API.reloadBulkTypes(query)
+          if (Array.isArray(response)) {
+            set({isPlanningLoading: false, bulkTypes: response})
+          } else {
+            set({isPlanningLoading: false, bulkTypes: []})
+          }
+        } catch (error) {
+          set({isPlanningLoading: false})
+        }
+      },
+      updateBulkCargo: async (cargo: any) => {
+        set({isPlanningLoading: true})
+        try {
+          const response = await API.updateBulkCargoEntry(cargo)
+          set({isPlanningLoading: false})
+          return response
+        } catch (error) {
+          set({isPlanningLoading: false})
+        }
+      },
+      createBulkCargo: async (cargo: any, navLogId: string) => {
+        set({isPlanningLoading: true})
+        try {
+          const response = await API.createNewBulkCargoEntry(cargo, navLogId)
+          set({isPlanningLoading: false})
+          return response
+        } catch (error) {
+          set({isPlanningLoading: false})
+        }
+      },
+      deleteBulkCargo: async (id: string) => {
+        set({isPlanningLoading: true})
+        try {
+          const response = await API.deleteBulkCargoEntry(id)
           set({isPlanningLoading: false})
           return response
         } catch (error) {
