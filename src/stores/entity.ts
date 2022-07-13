@@ -89,12 +89,14 @@ export const useEntity = create(
       consumableTypeId: '',
       getUserInfo: async () => {
         set({
+          user: [],
           isLoadingEntityUsers: true
         })
         try {
           const response = await API.reloadUser()
           set({
-            user: response
+            user: response,
+            isLoadingEntityUsers: false
           })
         } catch (error) {
           set({
@@ -103,6 +105,10 @@ export const useEntity = create(
         }
       },
       getEntityUsers: async () => {
+        set({
+          entityUsers: [],
+          isLoadingEntityUsers: true
+        })
         try {
           const response = await API.reloadEntityUsers()
           if (Array.isArray(response)) {
