@@ -251,7 +251,7 @@ export const useTechnical = create(
         try {
           const response = await API.deleteVesselTask(taskId)
           set({isTechnicalLoading: false})
-          return [response]
+          return response
         } catch (error) {
           set({isTechnicalLoading: false})
         }

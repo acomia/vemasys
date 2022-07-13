@@ -174,8 +174,8 @@ const createTaskComment = async (taskId: string, comment: string) => {
 const deleteVesselTask = async (taskId: string) => {
   return API.delete(`tasks/${taskId}`)
     .then(response => {
-      if (response.data) {
-        return response.data
+      if (response.status) {
+        return response.status
       } else {
         throw new Error('Vessel delete task failed.')
       }

@@ -144,7 +144,10 @@ const TechnicalTasksList = ({navigation, route}: Props) => {
                   key={index}
                   activeOpacity={0.6}
                   onPress={() =>
-                    navigation.navigate('TechnicalTaskDetails', {task: task})
+                    navigation.navigate('TechnicalTaskDetails', {
+                      task: task,
+                      category: category
+                    })
                   }
                 >
                   <Box

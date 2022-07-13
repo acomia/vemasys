@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react'
-import {Dimensions, TouchableOpacity} from 'react-native'
+import {Dimensions, RefreshControl, TouchableOpacity} from 'react-native'
 import {Box, HStack, Icon, Image, ScrollView, Text} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import {useNavigation} from '@react-navigation/native'
@@ -20,6 +20,10 @@ const Tasks = () => {
     getVesselTasksCategory(vesselId)
   }, [])
 
+  const onPullRefresh = () => {
+    getVesselTasksCategory(vesselId)
+  }
+
   if (isTechnicalLoading) return <LoadingIndicator />
 
   return (
@@ -29,6 +33,13 @@ const Tasks = () => {
           flexGrow: 1,
           paddingBottom: 20
         }}
+        scrollEventThrottle={16}
+        refreshControl={
+          <RefreshControl
+            onRefresh={onPullRefresh}
+            refreshing={isTechnicalLoading}
+          />
+        }
         px={ms(12)}
         py={ms(20)}
         bg={Colors.white}

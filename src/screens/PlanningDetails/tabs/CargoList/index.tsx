@@ -1,16 +1,78 @@
 import React from 'react'
-import {Box, Divider, HStack, ScrollView, Text} from 'native-base'
-
+import {Alert} from 'react-native'
+import {Box, Divider, HStack, ScrollView, Text, useToast} from 'native-base'
+import {useNavigation} from '@react-navigation/native'
 import {ms} from 'react-native-size-matters'
+
 import {Colors} from '@bluecentury/styles'
 import {usePlanning} from '@bluecentury/stores'
-import {IconButton} from '@bluecentury/components'
+import {IconButton, LoadingIndicator} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {formatBulkTypeLabel, formatNumber} from '@bluecentury/constants'
 
 const CargoList = () => {
-  const {navigationLogDetails} = usePlanning()
+  const navigation = useNavigation()
+  const toast = useToast()
+  const {
+    isPlanningLoading,
+    navigationLogDetails,
+    getNavigationLogDetails,
+    deleteBulkCargo
+  } = usePlanning()
 
+  const showToast = (text: string, res: string) => {
+    toast.show({
+      duration: 1000,
+      render: () => {
+        return (
+          <Text
+            bg={res === 'success' ? 'emerald.500' : 'red.500'}
+            px="2"
+            py="1"
+            rounded="sm"
+            mb={5}
+            color={Colors.white}
+          >
+            {text}
+          </Text>
+        )
+      }
+    })
+  }
+
+  const deleteBulkCargoConfirmation = (cargo: any) => {
+    Alert.alert(
+      'Confirmation required',
+      'Are you sure you want to delete this item? This action cannot be reversed.',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel'
+        },
+        {
+          text: 'Yes, delete it',
+          onPress: async () => onDeleteBulkCargoEntry(cargo),
+          style: 'destructive'
+        }
+      ]
+    )
+  }
+
+  const onDeleteBulkCargoEntry = async (cargo: any) => {
+    try {
+      const res = await deleteBulkCargo(cargo?.id.toString())
+      if (res === 204) {
+        getNavigationLogDetails(navigationLogDetails?.id)
+        showToast('Cargo entry deleted.', 'success')
+      } else {
+        showToast('Could not delete cargo entry.', 'failed')
+      }
+    } catch (error) {
+      throw new Error(`Could not delete cargo entry. ${error}`)
+    }
+  }
+
+  if (isPlanningLoading) return <LoadingIndicator />
   return (
     <Box flex="1">
       <ScrollView
@@ -61,13 +123,18 @@ const CargoList = () => {
                 <HStack alignItems="center">
                   <IconButton
                     source={Icons.edit}
-                    onPress={() => {}}
+                    onPress={() =>
+                      navigation.navigate('AddEditBulkCargo', {
+                        cargo: cargo,
+                        method: 'edit'
+                      })
+                    }
                     size={ms(22)}
                   />
                   <Box w={ms(10)} />
                   <IconButton
                     source={Icons.trash}
-                    onPress={() => {}}
+                    onPress={() => deleteBulkCargoConfirmation(cargo)}
                     size={ms(22)}
                   />
                 </HStack>
@@ -75,9 +142,26 @@ const CargoList = () => {
             )
           })
         ) : (
-          <Text textAlign="center" color={Colors.disabled} fontWeight="medium">
-            This navigation log has no cargo listed.
-          </Text>
+          <Box flex="1">
+            <Text
+              textAlign="center"
+              color={Colors.disabled}
+              fontWeight="medium"
+            >
+              This navigation log has no cargo listed.
+            </Text>
+            <Box position="absolute" bottom={0} right={ms(12)}>
+              <IconButton
+                source={Icons.add}
+                size={ms(50)}
+                onPress={() =>
+                  navigation.navigate('AddEditBulkCargo', {
+                    method: 'add'
+                  })
+                }
+              />
+            </Box>
+          </Box>
         )}
       </ScrollView>
     </Box>
