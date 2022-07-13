@@ -11,10 +11,11 @@ type RootStackParamList = {
   NewBunkering: undefined
   BunkeringDetails: {bunk: {} | undefined}
   PlanningDetails: {navlog: any; title?: string}
+  AddEditBulkCargo: {cargo?: any; method?: string}
   PlanningNewComment: undefined
   AddEditNavlogAction: {method: string; navlogAction?: {} | undefined}
   TechnicalTasksList: {category: string; title: string}
-  TechnicalTaskDetails: {task: any}
+  TechnicalTaskDetails: {task: any; category: string}
   TechnicalTaskNewComment: {taskId: string}
   AddEditTechnicalTask: {method: string; task?: any}
   TechnicalCertificateList: {certificates: any; title: string}

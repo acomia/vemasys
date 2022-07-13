@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react'
+import {RefreshControl, TouchableOpacity} from 'react-native'
 import {Box, HStack, Image, ScrollView, Text} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
@@ -12,7 +13,6 @@ import {
   calculateTotalOut,
   formatLocationLabel
 } from '@bluecentury/constants'
-import {TouchableOpacity} from 'react-native'
 import {LoadingIndicator, NavigationLogType} from '@bluecentury/components'
 
 const PlanningLogbook = () => {
@@ -117,6 +117,10 @@ const PlanningLogbook = () => {
     )
   }
 
+  const onPullRefresh = () => {
+    getVesselPlannedNavLogs(vesselId)
+  }
+
   if (isPlanningLoading) return <LoadingIndicator />
 
   return (
@@ -124,6 +128,12 @@ const PlanningLogbook = () => {
       <ScrollView
         contentContainerStyle={{flexGrow: 1, paddingBottom: 20}}
         scrollEventThrottle={16}
+        refreshControl={
+          <RefreshControl
+            onRefresh={onPullRefresh}
+            refreshing={isPlanningLoading}
+          />
+        }
         px={ms(12)}
         py={ms(15)}
       >

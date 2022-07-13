@@ -82,67 +82,65 @@ const TechnicalCertificateDetails = ({navigation, route}: Props) => {
           bg={Colors.white}
           shadow={2}
         >
-          <Box>
-            {/* Certificate Header */}
-            <HStack
-              backgroundColor={Colors.border}
-              px={ms(15)}
-              py={ms(12)}
-              alignItems="center"
-            >
-              <Box flex="1">
-                <Text color={Colors.text} fontWeight="medium">
-                  {certificate?.name}
-                </Text>
-                <Text
-                  color={
-                    certificate?.remainingDays < 0
-                      ? Colors.danger
-                      : Colors.secondary
-                  }
-                >
-                  {certificate?.remainingDays === 0
-                    ? '---'
-                    : certificate?.remainingDays < 0
-                    ? 'Expired'
-                    : `Expires in ${certificate?.remainingDays} days`}
-                </Text>
-              </Box>
-
-              {!isValid ? (
-                <IconButton
-                  source={Icons.status_x}
-                  onPress={() => {}}
-                  size={ms(25)}
-                />
-              ) : isExpiring ? (
-                <IconButton
-                  source={Icons.status_exclamation}
-                  onPress={() => {}}
-                  size={ms(25)}
-                />
-              ) : (
-                <IconButton
-                  source={Icons.status_check}
-                  onPress={() => {}}
-                  size={ms(25)}
-                />
-              )}
-            </HStack>
-            {/* End of Header */}
-            <Box p={ms(10)}>
-              <Text color={Colors.disabled} fontWeight="medium">
-                Validity Period
+          {/* Certificate Header */}
+          <HStack
+            backgroundColor={Colors.border}
+            px={ms(15)}
+            py={ms(12)}
+            alignItems="center"
+          >
+            <Box flex="1">
+              <Text color={Colors.text} fontWeight="medium">
+                {certificate?.name}
               </Text>
-              <Text color={Colors.secondary} fontWeight="bold">
-                {moment(certificate?.startDate).format('DD MMM YYYY')} -{' '}
-                <Text color={Colors.danger} fontWeight="bold">
-                  {certificate?.endDate
-                    ? moment(certificate?.endDate).format('DD MMM YYYY')
-                    : 'Never'}
-                </Text>
+              <Text
+                color={
+                  certificate?.remainingDays < 0
+                    ? Colors.danger
+                    : Colors.secondary
+                }
+              >
+                {certificate?.remainingDays === 0
+                  ? '---'
+                  : certificate?.remainingDays < 0
+                  ? 'Expired'
+                  : `Expires in ${certificate?.remainingDays} days`}
               </Text>
             </Box>
+
+            {!isValid ? (
+              <IconButton
+                source={Icons.status_x}
+                onPress={() => {}}
+                size={ms(25)}
+              />
+            ) : isExpiring ? (
+              <IconButton
+                source={Icons.status_exclamation}
+                onPress={() => {}}
+                size={ms(25)}
+              />
+            ) : (
+              <IconButton
+                source={Icons.status_check}
+                onPress={() => {}}
+                size={ms(25)}
+              />
+            )}
+          </HStack>
+          {/* End of Header */}
+          <Box p={ms(10)}>
+            <Text color={Colors.disabled} fontWeight="medium">
+              Validity Period
+            </Text>
+            <Text color={Colors.secondary} fontWeight="bold">
+              {moment(certificate?.startDate).format('DD MMM YYYY')} -{' '}
+              <Text color={Colors.danger} fontWeight="bold">
+                {certificate?.endDate
+                  ? moment(certificate?.endDate).format('DD MMM YYYY')
+                  : 'Never'}
+              </Text>
+            </Text>
           </Box>
           <Divider my={ms(5)} />
           <Box p={ms(10)}>
