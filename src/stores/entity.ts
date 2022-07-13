@@ -3,6 +3,7 @@ import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as API from '@bluecentury/api/vemasys'
 import {ENTITY_TYPE_EXPLOITATION_VESSEL} from '@bluecentury/constants'
+import {VesselDetails} from '@bluecentury/types'
 
 type EntityState = {
   isLoadingEntityUsers: boolean
@@ -14,7 +15,7 @@ type EntityState = {
   entityRole: string
   entityUserId: string
   vesselId: string
-  vesselDetails: {}
+  vesselDetails: VesselDetails | undefined
   selectedVessel: {}
   selectedEntity: {}
   physicalVesselId: string
@@ -61,7 +62,7 @@ export const useEntity = create(
       entityRole: '',
       entityUserId: '',
       vesselId: '',
-      vesselDetails: {},
+      vesselDetails: undefined,
       selectedVessel: {},
       selectedEntity: {},
       physicalVesselId: '',
@@ -88,12 +89,14 @@ export const useEntity = create(
       consumableTypeId: '',
       getUserInfo: async () => {
         set({
+          user: [],
           isLoadingEntityUsers: true
         })
         try {
           const response = await API.reloadUser()
           set({
-            user: response
+            user: response,
+            isLoadingEntityUsers: false
           })
         } catch (error) {
           set({
@@ -102,6 +105,10 @@ export const useEntity = create(
         }
       },
       getEntityUsers: async () => {
+        set({
+          entityUsers: [],
+          isLoadingEntityUsers: true
+        })
         try {
           const response = await API.reloadEntityUsers()
           if (Array.isArray(response)) {

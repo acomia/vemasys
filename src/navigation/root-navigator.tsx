@@ -20,7 +20,10 @@ import {
   TechnicalTasksList,
   TechnicalTaskDetails,
   TechnicalTaskNewComment,
-  AddEditTechnicalTask
+  AddEditTechnicalTask,
+  TechnicalCertificateDetails,
+  TechnicalCertificateList,
+  AddEditBulkCargo
 } from '@bluecentury/screens'
 import {Colors} from '@bluecentury/styles'
 
@@ -167,6 +170,34 @@ export default function RootNavigator() {
           options={({route}) => ({
             headerShown: true,
             title: route.params.method === 'add' ? 'Add a Task' : 'Edit Task'
+          })}
+        />
+
+        <Screen
+          name={'TechnicalCertificateList'}
+          component={TechnicalCertificateList}
+          options={({route}) => ({
+            headerShown: true,
+            title: route.params.title
+          })}
+        />
+        <Screen
+          name={'TechnicalCertificateDetails'}
+          component={TechnicalCertificateDetails}
+          options={{
+            headerShown: true,
+            title: 'Certificate Details'
+          }}
+        />
+        <Screen
+          name={'AddEditBulkCargo'}
+          component={AddEditBulkCargo}
+          options={({route}) => ({
+            headerShown: true,
+            title:
+              route.params.method === 'edit'
+                ? 'Edit Cargo Entry'
+                : 'New Cargo Entry'
           })}
         />
       </Group>

@@ -1,6 +1,7 @@
 import {Icons} from '@bluecentury/assets'
 import {PROD_URL} from '@bluecentury/env'
 
+// General
 export const ENTITY_TYPE_EXPLOITATION_VESSEL = 'ExploitationVessel'
 export const ENTITY_TYPE_EXPLOITATION_GROUP = 'ExploitationGroup'
 export const ENTITY_TYPE_CUSTOMER_COMPANY = 'CustomerCompany'
@@ -11,6 +12,8 @@ export const ROLE_PERMISSION_NAVIGATION_LOG_ADD_COMMENT =
 export const ROLE_PERMISSION_NAVIGATION_LOG_ADD_FILE =
   'ROLE_PERMISSION_NAVIGATION_LOG_ADD_FILE'
 export const VEMASYS_PRODUCTION_FILE_URL = `${PROD_URL}/upload/documents`
+export const FILE_TYPE_PDF = 'application/pdf'
+export const FILE_TYPE_JPEG = 'image/jpeg'
 
 // Planning constants
 export const planningTabs = [

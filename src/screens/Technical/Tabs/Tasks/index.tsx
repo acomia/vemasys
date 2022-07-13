@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react'
-import {Dimensions, TouchableOpacity} from 'react-native'
+import {Dimensions, RefreshControl, TouchableOpacity} from 'react-native'
 import {Box, HStack, Icon, Image, ScrollView, Text} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import {useNavigation} from '@react-navigation/native'
@@ -20,26 +20,42 @@ const Tasks = () => {
     getVesselTasksCategory(vesselId)
   }, [])
 
+  const onPullRefresh = () => {
+    getVesselTasksCategory(vesselId)
+  }
+
   if (isTechnicalLoading) return <LoadingIndicator />
 
   return (
     <Box flex="1">
       <ScrollView
         contentContainerStyle={{
-          flexGrow: 1
+          flexGrow: 1,
+          paddingBottom: 20
         }}
+        scrollEventThrottle={16}
+        refreshControl={
+          <RefreshControl
+            onRefresh={onPullRefresh}
+            refreshing={isTechnicalLoading}
+          />
+        }
         px={ms(12)}
         py={ms(20)}
         bg={Colors.white}
       >
-        <Text fontSize={ms(20)} fontWeight="bold" color={Colors.azure}>
+        <Text
+          fontSize={ms(20)}
+          fontWeight="bold"
+          color={Colors.azure}
+          mb={ms(15)}
+        >
           Overview
         </Text>
         <HStack
           flexWrap="wrap"
-          justifyContent="space-between"
+          justifyContent="space-evenly"
           alignItems="center"
-          mt={ms(15)}
         >
           {tasksCategory?.map((task: any, index) => {
             let icon = undefined
@@ -75,8 +91,8 @@ const Tasks = () => {
                 }
               >
                 <Box
-                  w={ms(width / 2 - 30)}
-                  p={ms(30)}
+                  w={width / 2 - 30}
+                  p={30}
                   alignItems="center"
                   justifyContent="center"
                   bg={Colors.white}

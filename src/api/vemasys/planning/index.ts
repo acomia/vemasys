@@ -112,6 +112,83 @@ const createNavlogComment = async (
     })
 }
 
+const reloadBulkTypes = async (query: string) => {
+  return API.get(
+    `bulk_types?nameNL=${query}&nameEN=${query}&nameFR=${query}&nameDE=${query}`
+  )
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Fetch bulk types failed.')
+      }
+    })
+    .catch(error => {
+      console.error('Error: Fetch bulk types data', error)
+    })
+}
+
+const updateBulkCargoEntry = async (cargo: any) => {
+  return API.put(`navigation_bulks/${cargo.id}`, {
+    type: {id: parseInt(cargo.typeId)},
+    amount: cargo.amount.toString(),
+    actualAmount: cargo.actualAmount.toString(),
+    isLoading: cargo.isLoading === '1'
+  })
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Update bulk cargo entry failed.')
+      }
+    })
+    .catch(error => {
+      console.error('Error: Update bulk cargo entry data', error)
+    })
+}
+
+const createNewBulkCargoEntry = async (cargo: any, navLogId: string) => {
+  return API.post(
+    `navigation_bulks`,
+    {
+      log: {
+        id: navLogId
+      },
+      type: {id: parseInt(cargo.typeId)},
+      amount: cargo.amount,
+      actualAmount: cargo.actualAmount,
+      isLoading: cargo.isLoading === '1'
+    },
+    {}
+  )
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Create new bulk cargo entry failed.')
+      }
+    })
+    .catch(error => {
+      console.error('Error: Create new bulk cargo entry data', error)
+    })
+}
+
+const deleteBulkCargoEntry = async (id: string) => {
+  return API.delete(`navigation_bulks/${id}`)
+    .then(response => {
+      if (response.status) {
+        return response.status
+      } else {
+        throw new Error('Delete bulk cargo entry failed.')
+      }
+    })
+    .catch(error => {
+      console.error('Error: Delete bulk cargo entry data', error)
+    })
+}
+
+const uploadFile = async (file: string, type: string) => {}
+
 export {
   reloadNavigationLogDetails,
   reloadNavigationLogActions,
@@ -119,5 +196,9 @@ export {
   reloadNavigationLogComments,
   reloadNavigationLogDocuments,
   updateNavigationLogDatetimeFields,
-  createNavlogComment
+  createNavlogComment,
+  reloadBulkTypes,
+  updateBulkCargoEntry,
+  createNewBulkCargoEntry,
+  deleteBulkCargoEntry
 }

@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react'
-import {Dimensions, TouchableOpacity} from 'react-native'
+import {Dimensions, RefreshControl, TouchableOpacity} from 'react-native'
 import {Box, HStack, Icon, Image, ScrollView, Text} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import {useNavigation} from '@react-navigation/native'
@@ -20,7 +20,9 @@ const Routines = () => {
     getVesselRoutines(vesselId)
   }, [])
 
-  console.log(routinesCategory)
+  const onPullRefresh = () => {
+    getVesselRoutines(vesselId)
+  }
 
   if (isTechnicalLoading) return <LoadingIndicator />
 
@@ -28,8 +30,16 @@ const Routines = () => {
     <Box flex="1">
       <ScrollView
         contentContainerStyle={{
-          flexGrow: 1
+          flexGrow: 1,
+          paddingBottom: 30
         }}
+        scrollEventThrottle={16}
+        refreshControl={
+          <RefreshControl
+            onRefresh={onPullRefresh}
+            refreshing={isTechnicalLoading}
+          />
+        }
         px={ms(12)}
         py={ms(20)}
         bg={Colors.white}
@@ -77,7 +87,7 @@ const Routines = () => {
                 // }
               >
                 <Box
-                  w={ms(width / 2 - 30)}
+                  w={width / 2 - 30}
                   p={ms(30)}
                   alignItems="center"
                   justifyContent="center"

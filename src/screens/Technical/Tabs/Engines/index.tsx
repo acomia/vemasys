@@ -19,7 +19,6 @@ const Engines = () => {
 
   // const vesselZones = _.uniq(_.map(engines, 'vesselZone.title'))
   // const partTypes = _.uniq(_.map(engines, 'type.title'))
-
   let vesselZones = Object.values(
     engines.reduce((acc: any, item) => {
       const zones = item.vesselZone.title
@@ -35,40 +34,47 @@ const Engines = () => {
 
   const renderEngineList = (partType: any, index: number) => {
     const pLength = partType.data.length - 1
+
     return (
       <Box key={index} mb={ms(index === vesselZones.data?.length - 1 ? 10 : 0)}>
-        <Box px={ms(5)} py={ms(5)}>
+        <Box px={ms(12)} py={ms(5)}>
           <HStack alignItems="center" justifyContent="space-around">
-            <Box>
-              <Text flex={1} color={Colors.azure} fontWeight="medium">
-                <Text flex={1} color={Colors.text} fontWeight="medium">
-                  {partType.data[pLength].type.title}
-                </Text>
+            <Box width="40%">
+              <Text color={Colors.text} fontWeight="medium">
+                {partType.data[pLength].type.title}
               </Text>
-              <Text flex={1} color={Colors.disabled}>
+              <Text color={Colors.disabled}>
                 {partType.data[pLength].lastMeasurement
-                  ? moment(partType.data[pLength].lastMeasurement).format(
+                  ? moment(partType.data[pLength].lastMeasurement.date).format(
                       'DD/MM/YYYY'
                     )
-                  : 'N/A'}
+                  : 'Loading...'}
               </Text>
             </Box>
-            <Text color={Colors.azure} fontSize={ms(16)} fontWeight="bold">
-              {partType.data[pLength].lastMeasurement
-                ? formatNumber(partType.data[pLength].lastMeasurement, 0, 'h')
-                : 'N/A'}
-            </Text>
             <Text
-              key={index}
-              bg={Colors.highlighted_text}
-              color={Colors.white}
-              fontSize={ms(12)}
+              flex="1"
+              color={Colors.azure}
+              fontSize={ms(15)}
+              fontWeight="bold"
+            >
+              {partType.data[pLength].lastMeasurement
+                ? `${formatNumber(
+                    partType.data[pLength].lastMeasurement.value,
+                    0
+                  )}h`
+                : 'Loading...'}
+            </Text>
+            <Box
+              flex="1"
               py={ms(2)}
               px={ms(10)}
               borderRadius={ms(20)}
+              bg={Colors.highlighted_text}
             >
-              {partType.part}
-            </Text>
+              <Text color={Colors.white} fontSize={ms(11)} textAlign="center">
+                {partType.part}
+              </Text>
+            </Box>
           </HStack>
         </Box>
         {index === vesselZones.data?.length - 1 ? null : (
@@ -109,7 +115,6 @@ const Engines = () => {
                 return acc
               }, {})
             )
-
             return (
               <Box
                 key={index}

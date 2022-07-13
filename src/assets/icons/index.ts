@@ -63,5 +63,14 @@ export const Icons = {
   calendar_week: require('./calendar-week.png'),
   layer_group: require('./layer-group.png'),
   overdue_tasks: require('./overdue-tasks.png'),
-  flag: require('./flag.png')
+  flag: require('./flag.png'),
+  cloud_download: require('./cloud-download.png'),
+  status_check: require('./status-check.png'),
+  status_x: require('./status-x.png'),
+  status_exclamation: require('./status-exclamation.png'),
+  all_certificate: require('./all-certificate.png'),
+  status_check_alt: require('./status-check-alt.png'),
+  status_x_alt: require('./status-x-alt.png'),
+  status_exclamation_alt: require('./status-exclamation-alt.png'),
+  add: require('./add-circle.png')
 }
