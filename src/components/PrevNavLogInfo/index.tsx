@@ -14,7 +14,7 @@ export const PreviousNavLogInfo = () => {
   const navigation = useNavigation()
   const {prevNavLogs}: any = useMap()
   const navigationLog = prevNavLogs?.find(
-    (prev: any) => prev.plannedETA !== null
+    (prev: any) => prev.plannedEta !== null
   )
 
   return (
