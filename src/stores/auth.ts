@@ -63,7 +63,6 @@ export const useAuth = create(
         })
       },
       resetToken: async () => {
-        console.log('reset token')
         set({
           token: undefined,
           isAuthenticatingUser: true
@@ -75,21 +74,27 @@ export const useAuth = create(
             console.log('reset token result ', res)
             set({
               token: res?.token,
-              refreshToken: res?.refreshToken
+              refreshToken: res?.refreshToken,
+              isAuthenticatingUser: false,
+              hasAuthenticationError: false
             })
+            return Promise.resolve(get().token)
+          } else {
+            set({
+              token: undefined,
+              refreshToken: undefined,
+              isAuthenticatingUser: false,
+              hasAuthenticationError: false
+            })
+            return Promise.resolve(false)
           }
-          set({
-            isAuthenticatingUser: false,
-            hasAuthenticationError: false
-          })
-          return Promise.resolve(get().token)
         } catch (error) {
           console.log('Error stores>auth>resetToken* ', error)
           set({
             isAuthenticatingUser: false,
             hasAuthenticationError: true
           })
-          return Promise.resolve(error)
+          return Promise.resolve(false)
         }
       }
     }),
