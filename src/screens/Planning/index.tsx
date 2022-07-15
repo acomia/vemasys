@@ -1,14 +1,11 @@
-import React, {useEffect, useState} from 'react'
+import React, {useState} from 'react'
 import {useWindowDimensions} from 'react-native'
 import {Box, Text} from 'native-base'
 import {TabView, TabBar, SceneMap} from 'react-native-tab-view'
-import {NativeStackScreenProps} from '@react-navigation/native-stack'
-
-import {PlanningLogbook, HistoryLogbook} from './tabs'
+import {PlanningLogbook, HistoryLogbook} from './Tabs'
 import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
 import {planningTabs} from '@bluecentury/constants'
-import {useEntity, usePlanning} from '@bluecentury/stores'
 
 const renderScene = SceneMap({
   planning: PlanningLogbook,
