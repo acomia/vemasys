@@ -34,6 +34,7 @@ type PlanningActions = {
   updateBulkCargo?: (cargo: any) => void
   createBulkCargo?: (cargo: any, navLogId: string) => void
   deleteBulkCargo?: (id: string) => void
+  updateComment?: (id: string, description: string) => void
 }
 
 type PlanningStore = PlanningState & PlanningActions
@@ -285,6 +286,16 @@ export const usePlanning = create(
         set({isPlanningLoading: true})
         try {
           const response = await API.deleteBulkCargoEntry(id)
+          set({isPlanningLoading: false})
+          return response
+        } catch (error) {
+          set({isPlanningLoading: false})
+        }
+      },
+      updateComment: async (id: string, description: string) => {
+        set({isPlanningLoading: true})
+        try {
+          const response = await API.updateComment(id, description)
           set({isPlanningLoading: false})
           return response
         } catch (error) {

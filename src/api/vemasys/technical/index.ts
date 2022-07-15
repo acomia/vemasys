@@ -263,6 +263,31 @@ const reloadCertificates = async (vesselId: string) => {
     .catch(error => console.error('Error: Vessel certificates data', error))
 }
 
+const createNewConsumptionMeasure = async (resId: string, value: string) => {
+  return API.post(`consumption_measures`, {
+    vesselPart: {
+      id: resId
+    },
+    user: {
+      id: useEntity.getState().user.id
+    },
+    date: new Date(),
+    value: value.toString(),
+    total: value.toString(),
+    type: ''
+  })
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Create consumption measures failed.')
+      }
+    })
+    .catch(error =>
+      console.error('Error: Create consumption measures data', error)
+    )
+}
+
 export {
   reloadVesselBunkering,
   reloadVesselGasoilReservoirs,
@@ -279,5 +304,6 @@ export {
   createVesselTask,
   updateVesselTask,
   reloadRoutines,
-  reloadCertificates
+  reloadCertificates,
+  createNewConsumptionMeasure
 }

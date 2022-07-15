@@ -23,7 +23,9 @@ import {
   AddEditTechnicalTask,
   TechnicalCertificateDetails,
   TechnicalCertificateList,
-  AddEditBulkCargo
+  AddEditBulkCargo,
+  AddEditComment,
+  Measurements
 } from '@bluecentury/screens'
 import {Colors} from '@bluecentury/styles'
 
@@ -199,6 +201,23 @@ export default function RootNavigator() {
                 ? 'Edit Cargo Entry'
                 : 'New Cargo Entry'
           })}
+        />
+        <Screen
+          name={'AddEditComment'}
+          component={AddEditComment}
+          options={({route}) => ({
+            headerShown: true,
+            title:
+              route.params.method === 'edit' ? 'Edit Comment' : 'New Comment'
+          })}
+        />
+        <Screen
+          name={'Measurements'}
+          component={Measurements}
+          options={{
+            headerShown: true,
+            title: 'Measurements'
+          }}
         />
       </Group>
       <Group>
