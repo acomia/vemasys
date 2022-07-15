@@ -2,6 +2,7 @@ import {API} from '../../apiService'
 import {TCredentials, TUser} from '@bluecentury/api/models'
 
 const login = (userCredentials: TCredentials) => {
+  API.deleteHeader('Jwt-Auth')
   return API.post<TUser>('login_check', userCredentials)
     .then(response => {
       // Set future request Authorization
@@ -22,6 +23,7 @@ const logout = (userCredentials: TCredentials) => {
   return API.post<TUser>('login', userCredentials)
     .then(response => {
       if (response.data) {
+        API.deleteHeader('Jwt-Auth')
         return response.data
       } else {
         throw new Error('Request Failed')
@@ -32,10 +34,15 @@ const logout = (userCredentials: TCredentials) => {
     })
 }
 
-const resetToken = (userCredentials: TCredentials) => {
-  return API.post<TUser>('./login', userCredentials)
+const resetToken = (refreshToken: string) => {
+  API.setHeaders({
+    Accept: 'application/json',
+    'Content-Type': 'multipart/form-data'
+  })
+  return API.post<TUser>(`token/refresh?refresh_token=${refreshToken}`)
     .then(response => {
       if (response.data) {
+        API.setHeader('Jwt-Auth', `Bearer ${response.data.token}`)
         return response.data
       } else {
         throw new Error('Request Failed')
@@ -43,6 +50,9 @@ const resetToken = (userCredentials: TCredentials) => {
     })
     .catch(error => {
       console.error('Error: API Reset Token ', error)
+    })
+    .finally(() => {
+      API.setHeader('Content-Type', 'application/json')
     })
 }
 

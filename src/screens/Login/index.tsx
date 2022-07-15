@@ -9,7 +9,8 @@ import {
   Input,
   Button,
   WarningOutlineIcon,
-  Center
+  Center,
+  KeyboardAvoidingView
 } from 'native-base'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import {ms} from 'react-native-size-matters'
@@ -48,107 +49,118 @@ function Login() {
   }
   const handleOnSubmitEditingPassword = () => handleOnPressLogin()
   return (
-    <Box flex="1" safeArea>
-      <VStack space="10" flex="1" p="5" justifyContent="center">
-        <Center>
-          <Image alt="Company Logo" source={Images.logo} resizeMode="contain" />
-        </Center>
-        <VStack space="5">
-          <Text bold fontSize="2xl" color={Colors.azure}>
-            Login to your Account
-          </Text>
-          <FormControl isInvalid={isUsernameEmpty}>
-            <Input
-              bg={Colors.white}
-              value={user.username}
-              onChangeText={text => {
-                setUser({...user, username: text})
-                setIsUsernameEmpty(false)
-              }}
-              placeholder="Username"
-              InputLeftElement={
-                <Icon
-                  as={<Ionicons name="person-outline" />}
-                  size={ms(20)}
-                  color={Colors.azure}
-                  marginLeft={ms(10)}
-                />
-              }
-              _disabled={{bgColor: '#ADADAD'}}
-              fontSize={ms(15)}
-              size="lg"
-              returnKeyType="next"
-              onSubmitEditing={() => passwordRef.current.focus()}
+    <KeyboardAvoidingView flex={1} behavior="padding">
+      <Box flex="1" safeArea>
+        <VStack space="10" flex="1" p="5" justifyContent="center">
+          <Center>
+            <Image
+              alt="Company Logo"
+              source={Images.logo}
+              resizeMode="contain"
             />
-            <FormControl.ErrorMessage
-              leftIcon={<WarningOutlineIcon size="xs" />}
-            >
-              {/* {_t(language, 'usernameRequired')} */}
-              {usernameRequired}
-            </FormControl.ErrorMessage>
-          </FormControl>
-          <FormControl isInvalid={isPasswordEmpty}>
-            <Input
-              bg={Colors.white}
-              ref={passwordRef}
-              value={user.password}
-              onChangeText={text => {
-                setUser({...user, password: text})
-                setIsPasswordEmpty(false)
-              }}
-              type={isShowPassword ? 'text' : 'password'}
-              placeholder="Password"
-              InputLeftElement={
-                <Icon
-                  as={<Ionicons name="lock-open-outline" />}
-                  size={ms(20)}
-                  color="#23475C"
-                  marginLeft={ms(10)}
-                />
-              }
-              InputRightElement={
-                <Icon
-                  as={
-                    <Ionicons
-                      name={isShowPassword ? 'eye-outline' : 'eye-off-outline'}
-                    />
-                  }
-                  size={ms(20)}
-                  color={Colors.azure}
-                  marginRight={ms(10)}
-                  onPress={() => setIsShowPassword(!isShowPassword)}
-                />
-              }
-              fontSize={ms(15)}
-              color={Colors.disabled}
-              size="lg"
-              onSubmitEditing={handleOnSubmitEditingPassword}
-            />
-            <FormControl.ErrorMessage
-              leftIcon={<WarningOutlineIcon size="xs" />}
-            >
-              {user.username === '' && user.password === ''
-                ? allFieldsRequired
-                : passwordRequired}
-            </FormControl.ErrorMessage>
-          </FormControl>
+          </Center>
+          <VStack space="5">
+            <Text bold fontSize="2xl" color={Colors.azure}>
+              Login to your Account
+            </Text>
+            <FormControl isInvalid={isUsernameEmpty}>
+              <Input
+                bg={Colors.white}
+                value={user.username}
+                onChangeText={text => {
+                  setUser({...user, username: text})
+                  setIsUsernameEmpty(false)
+                }}
+                placeholder="Username"
+                InputLeftElement={
+                  <Icon
+                    as={<Ionicons name="person-outline" />}
+                    size={ms(20)}
+                    color={Colors.azure}
+                    marginLeft={ms(10)}
+                  />
+                }
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+                _disabled={{bgColor: '#ADADAD'}}
+                fontSize={ms(15)}
+                size="lg"
+                returnKeyType="next"
+                onSubmitEditing={() => passwordRef.current.focus()}
+              />
+              <FormControl.ErrorMessage
+                leftIcon={<WarningOutlineIcon size="xs" />}
+              >
+                {/* {_t(language, 'usernameRequired')} */}
+                {usernameRequired}
+              </FormControl.ErrorMessage>
+            </FormControl>
+            <FormControl isInvalid={isPasswordEmpty}>
+              <Input
+                bg={Colors.white}
+                ref={passwordRef}
+                value={user.password}
+                onChangeText={text => {
+                  setUser({...user, password: text})
+                  setIsPasswordEmpty(false)
+                }}
+                type={isShowPassword ? 'text' : 'password'}
+                placeholder="Password"
+                InputLeftElement={
+                  <Icon
+                    as={<Ionicons name="lock-open-outline" />}
+                    size={ms(20)}
+                    color="#23475C"
+                    marginLeft={ms(10)}
+                  />
+                }
+                InputRightElement={
+                  <Icon
+                    as={
+                      <Ionicons
+                        name={
+                          isShowPassword ? 'eye-outline' : 'eye-off-outline'
+                        }
+                      />
+                    }
+                    size={ms(20)}
+                    color={Colors.azure}
+                    marginRight={ms(10)}
+                    onPress={() => setIsShowPassword(!isShowPassword)}
+                  />
+                }
+                fontSize={ms(15)}
+                color={Colors.disabled}
+                size="lg"
+                onSubmitEditing={handleOnSubmitEditingPassword}
+              />
+              <FormControl.ErrorMessage
+                leftIcon={<WarningOutlineIcon size="xs" />}
+              >
+                {user.username === '' && user.password === ''
+                  ? allFieldsRequired
+                  : passwordRequired}
+              </FormControl.ErrorMessage>
+            </FormControl>
+          </VStack>
+          <Button
+            colorScheme="azure"
+            isLoadingText="Logging in"
+            isLoading={isAuthenticatingUser}
+            _spinner={{
+              color: Colors.white
+            }}
+            _text={{
+              textTransform: 'uppercase'
+            }}
+            onPress={handleOnPressLogin}
+          >
+            {login}
+          </Button>
         </VStack>
-        <Button
-          colorScheme="azure"
-          isLoadingText="Logging in"
-          isLoading={isAuthenticatingUser}
-          _spinner={{
-            color: Colors.white
-          }}
-          _text={{
-            textTransform: 'uppercase'
-          }}
-          onPress={handleOnPressLogin}
-        >
-          {login}
-        </Button>
-      </VStack>
-    </Box>
+      </Box>
+    </KeyboardAvoidingView>
   )
 }
 

@@ -16,13 +16,14 @@ type AuthState = {
 type AuthActions = {
   authenticate: (credentials: TCredentials) => void
   logout: () => void
+  resetToken: () => Promise<any>
 }
 
 type AuthStore = AuthState & AuthActions
 
 export const useAuth = create(
   persist<AuthStore>(
-    set => ({
+    (set, get) => ({
       token: undefined,
       refreshToken: undefined,
       isAuthenticatingUser: false,
@@ -60,6 +61,36 @@ export const useAuth = create(
           isAuthenticatingUser: false,
           hasAuthenticationError: false
         })
+      },
+      resetToken: async () => {
+        console.log('reset token')
+        set({
+          token: undefined,
+          isAuthenticatingUser: true
+        })
+        try {
+          const refreshToken = get().refreshToken
+          if (typeof refreshToken !== 'undefined') {
+            const res = await API.resetToken(refreshToken)
+            console.log('reset token result ', res)
+            set({
+              token: res?.token,
+              refreshToken: res?.refreshToken
+            })
+          }
+          set({
+            isAuthenticatingUser: false,
+            hasAuthenticationError: false
+          })
+          return Promise.resolve(get().token)
+        } catch (error) {
+          console.log('Error stores>auth>resetToken* ', error)
+          set({
+            isAuthenticatingUser: false,
+            hasAuthenticationError: true
+          })
+          return Promise.resolve(error)
+        }
       }
     }),
     {

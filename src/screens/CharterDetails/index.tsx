@@ -145,8 +145,8 @@ export default function CharterDetails({navigation, route}: Props) {
                     : '#6BBF87'
                 }
               >
-                {moment(navlogs.plannedETA).format('DD MMM YYYY')} -{' '}
-                {moment(navlogs.plannedETA).format('H:SS')}
+                {moment(navlogs.plannedEta).format('DD MMM YYYY')} -{' '}
+                {moment(navlogs.plannedEta).format('H:SS')}
               </Text>
               <HStack alignItems="center">
                 <Text style={{fontWeight: 'bold', color: '#29B7EF'}}>
