@@ -41,11 +41,14 @@ const Details = () => {
     isPlanningLoading,
     navigationLogDetails,
     navigationLogActions,
+    navigationLogComments,
     getNavigationLogDetails,
     getNavigationLogActions,
+    getNavigationLogCargoHolds,
+    getNavigationLogComments,
     updateNavlogDates
   } = usePlanning()
-  const {user, selectedEntity} = useEntity()
+  const {user, selectedEntity, physicalVesselId} = useEntity()
   const {navlog}: any = route.params
   const [dates, setDates] = useState({
     captainDatetimeETA: null,
@@ -66,6 +69,8 @@ const Details = () => {
   useEffect(() => {
     getNavigationLogDetails(navlog.id)
     getNavigationLogActions(navlog.id)
+    getNavigationLogComments(navlog.id)
+    getNavigationLogCargoHolds(physicalVesselId)
   }, [])
 
   const handleOnSaveDateUpdates = async () => {
@@ -234,38 +239,49 @@ const Details = () => {
 
   const CommentCard = ({comment, commentDescription}) => {
     return (
-      <Box
-        borderWidth={1}
-        borderColor={Colors.light}
-        borderRadius={5}
-        p={ms(16)}
-        mt={ms(10)}
-        bg={Colors.white}
-        shadow={2}
+      <TouchableOpacity
+        activeOpacity={0.6}
+        onPress={() =>
+          navigation.navigate('AddEditComment', {
+            comment: comment,
+            method: 'edit',
+            routeFrom: 'Planning'
+          })
+        }
       >
-        <HStack alignItems="center">
-          <Avatar
-            size="48px"
-            source={{
-              uri: comment?.user?.icon?.path
-                ? `${PROD_URL}/upload/documents/${comment?.user?.icon?.path}`
-                : ''
-            }}
-          />
-          <Box ml={ms(10)}>
-            <Text fontWeight="bold">
-              {comment?.user ? comment?.user?.firstname : ''}{' '}
-              {comment?.user ? comment?.user?.lastname : ''}
-            </Text>
-            <Text fontWeight="medium" color={Colors.disabled}>
-              {moment(comment?.creationDate).format('DD MMM YYYY')}
-            </Text>
-          </Box>
-        </HStack>
-        <Text fontSize={ms(13)} mt={ms(5)}>
-          {commentDescription}
-        </Text>
-      </Box>
+        <Box
+          borderWidth={1}
+          borderColor={Colors.light}
+          borderRadius={5}
+          p={ms(16)}
+          mt={ms(10)}
+          bg={Colors.white}
+          shadow={2}
+        >
+          <HStack alignItems="center">
+            <Avatar
+              size="48px"
+              source={{
+                uri: comment?.user?.icon?.path
+                  ? `${PROD_URL}/upload/documents/${comment?.user?.icon?.path}`
+                  : ''
+              }}
+            />
+            <Box ml={ms(10)}>
+              <Text fontWeight="bold">
+                {comment?.user ? comment?.user?.firstname : ''}{' '}
+                {comment?.user ? comment?.user?.lastname : ''}
+              </Text>
+              <Text fontWeight="medium" color={Colors.disabled}>
+                {moment(comment?.creationDate).format('DD MMM YYYY')}
+              </Text>
+            </Box>
+          </HStack>
+          <Text fontSize={ms(13)} mt={ms(5)}>
+            {commentDescription}
+          </Text>
+        </Box>
+      </TouchableOpacity>
     )
   }
 
@@ -408,8 +424,7 @@ const Details = () => {
             mt={ms(20)}
             onPress={() =>
               navigation.navigate('AddEditNavlogAction', {
-                method: 'add',
-                navlogAction: {}
+                method: 'add'
               })
             }
           >
@@ -421,7 +436,7 @@ const Details = () => {
           <Text fontSize={ms(20)} fontWeight="bold" color={Colors.azure}>
             Comments
           </Text>
-          {navigationLogDetails?.comments?.length > 0 ? (
+          {navigationLogComments?.length > 0 ? (
             <Text
               bg={Colors.azure}
               color={Colors.white}
@@ -432,12 +447,12 @@ const Details = () => {
               fontWeight="bold"
               textAlign="center"
             >
-              {navigationLogDetails?.comments?.length}
+              {navigationLogComments?.length}
             </Text>
           ) : null}
         </HStack>
 
-        {navigationLogDetails?.comments?.map((comment, index) => {
+        {navigationLogComments?.map((comment, index) => {
           const filteredDescription = comment.description.replace(/(\\)/g, '')
           const descriptionText = filteredDescription.match(/([^<br>]+)/)[0]
           return (

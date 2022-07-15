@@ -1,4 +1,5 @@
 import {API} from '../../apiService'
+import {VESSEL_PART_CARGO_TYPE} from '@bluecentury/constants'
 
 const reloadNavigationLogDetails = async (navLogId: string) => {
   return API.get(`navigation_logs/${navLogId}`)
@@ -29,7 +30,7 @@ const reloadNavigationLogActions = async (navLogId: string) => {
 }
 const reloadNavigationLogCargoHolds = async (physicalVesselId: string) => {
   return API.get(
-    `vessel_parts?part.type.title=Cargo&vesselZone.physicalVessel.id=${physicalVesselId}`
+    `vessel_parts?part.type.title=${VESSEL_PART_CARGO_TYPE}&vesselZone.physicalVessel.id=${physicalVesselId}`
   )
     .then(response => {
       if (response.data) {
@@ -187,6 +188,20 @@ const deleteBulkCargoEntry = async (id: string) => {
     })
 }
 
+const updateComment = async (id: string, description: string) => {
+  return API.put(`comments/${id}`, {description})
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Update comment failed.')
+      }
+    })
+    .catch(error => {
+      console.error('Error: Update comment data', error)
+    })
+}
+
 const uploadFile = async (file: string, type: string) => {}
 
 export {
@@ -200,5 +215,6 @@ export {
   reloadBulkTypes,
   updateBulkCargoEntry,
   createNewBulkCargoEntry,
-  deleteBulkCargoEntry
+  deleteBulkCargoEntry,
+  updateComment
 }

@@ -1,8 +1,9 @@
 import React from 'react'
-import {Linking} from 'react-native'
+import {Linking, TouchableOpacity} from 'react-native'
 import {Box, Divider, HStack, Progress, Text} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
+import {useNavigation} from '@react-navigation/native'
 
 import {Colors} from '@bluecentury/styles'
 import {PROD_URL} from '@bluecentury/env'
@@ -10,6 +11,7 @@ import {formatNumber} from '@bluecentury/constants'
 import {useTechnical} from '@bluecentury/stores'
 
 const ReservoirLevel = ({reservoir, physicalVesselId}: any) => {
+  const navigation = useNavigation()
   const {gasoilReserviors} = useTechnical()
 
   const totalGasoil = gasoilReserviors?.reduce(
@@ -51,29 +53,38 @@ const ReservoirLevel = ({reservoir, physicalVesselId}: any) => {
 
     return (
       <Box key={index} mb={ms(index === gasoilListLength ? 10 : 0)}>
-        <Box px={ms(16)} py={ms(5)}>
-          <HStack alignItems="center">
-            <Text flex={1} color={Colors.azure} fontWeight="medium">
-              {reservoir.name}
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={() =>
+            navigation.navigate('Measurements', {reservoir: reservoir})
+          }
+        >
+          <Box px={ms(16)} py={ms(5)}>
+            <HStack alignItems="center">
+              <Text flex={1} color={Colors.azure} fontWeight="medium">
+                {reservoir.name}
+              </Text>
+              <Text color={Colors.azure} fontSize={ms(16)} fontWeight="bold">
+                {formatNumber(value, 0)} L (
+                {isNaN(fillPct) || fillPct === Infinity
+                  ? 0
+                  : Math.floor(fillPct)}
+                %)
+              </Text>
+            </HStack>
+            <Text flex={1} color={Colors.disabled} fontWeight="medium">
+              {moment(lastMeasurementDate).fromNow()}
             </Text>
-            <Text color={Colors.azure} fontSize={ms(16)} fontWeight="bold">
-              {formatNumber(value, 0)} L (
-              {isNaN(fillPct) || fillPct === Infinity ? 0 : Math.floor(fillPct)}
-              %)
-            </Text>
-          </HStack>
-          <Text flex={1} color={Colors.disabled} fontWeight="medium">
-            {moment(lastMeasurementDate).fromNow()}
-          </Text>
-          <Progress
-            value={isNaN(fillPct) ? 0 : Math.floor(fillPct)}
-            mt={ms(10)}
-            size="md"
-            colorScheme={
-              fillPct <= 25 ? 'danger' : fillPct <= 50 ? 'warning' : 'primary'
-            }
-          />
-        </Box>
+            <Progress
+              value={isNaN(fillPct) ? 0 : Math.floor(fillPct)}
+              mt={ms(10)}
+              size="md"
+              colorScheme={
+                fillPct <= 25 ? 'danger' : fillPct <= 50 ? 'warning' : 'primary'
+              }
+            />
+          </Box>
+        </TouchableOpacity>
         {index === gasoilListLength ? null : <Divider mt={ms(10)} />}
       </Box>
     )
