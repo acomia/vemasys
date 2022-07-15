@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {TouchableOpacity} from 'react-native'
 import {
   Box,
@@ -18,21 +18,68 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import moment from 'moment'
 
 import {Colors} from '@bluecentury/styles'
-import {usePlanning} from '@bluecentury/stores'
+import {useEntity, usePlanning} from '@bluecentury/stores'
 import DatePicker from 'react-native-date-picker'
+import {titleCase} from '@bluecentury/constants'
+import {uniqueId} from 'lodash'
+import {LoadingIndicator} from '@bluecentury/components'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const AddEditNavlogAction = ({navigation, route}: Props) => {
-  const {method, navglogAction}: any = route.params
-  const {navigationLogDetails} = usePlanning()
+  const {method, navlogAction}: any = route.params
+  const {
+    isPlanningLoading,
+    navigationLogActions,
+    navigationLogCargoHolds,
+    navigationLogDetails
+  } = usePlanning()
+
+  const cargoChoices =
+    navigationLogDetails && navigationLogDetails?.bulkCargo
+      ? navigationLogDetails?.bulkCargo?.map(
+          (c: {type: {nameEn: any}; id: any}) => ({
+            label: c.type.nameEn,
+            value: c.id
+          })
+        )
+      : []
+
+  const {navigationBulk, cargoHoldTransactions} = navigationLogActions
   const [navAction, setNavAction] = useState({
-    type: '',
-    start: null,
-    estimated_end: null,
-    end: null
+    type: navlogAction !== undefined ? titleCase(navlogAction.type) : '',
+    start: navlogAction !== undefined ? navlogAction.start : new Date(),
+    estimatedEnd:
+      navlogAction !== undefined ? navlogAction.estimatedEnd : new Date(),
+    end: navlogAction !== undefined ? navlogAction.end : new Date(),
+    cargoHoldActions:
+      cargoHoldTransactions && cargoHoldTransactions.length > 0
+        ? cargoHoldTransactions.map(cht => {
+            return {
+              navigationBulk: navigationBulk ? navigationBulk.id : 0,
+              cargoHoldTransactions: navigationLogCargoHolds.map(cargoHold => ({
+                id: cargoHold.id,
+                amount:
+                  cht.cargoHold.id == cargoHold.id ? cht.amount.toString() : '0'
+              }))
+            }
+          })
+        : [
+            {
+              navigationBulk: navigationBulk
+                ? navigationBulk.id
+                : cargoChoices.length
+                ? cargoChoices[0].value
+                : 0,
+              cargoHoldTransactions: navigationLogCargoHolds.map(cargoHold => ({
+                id: cargoHold.id,
+                amount: '0'
+              }))
+            }
+          ]
   })
-  const [cargoHoldActions, setCargoHoldActions] = useState('')
-  const [selectedCargoHolds, setSelectedCargoHolds] = useState([])
+
+  const [cargoHoldActions, setCargoHoldActions] = useState([])
+  const [selectedCargoHolds, setSelectedCargoHolds] = useState('')
   const [selectedDate, setSelectedDate] = useState('')
   const [openDatePicker, setOpenDatePicker] = useState(false)
   const [showCargo, setShowCargo] = useState(false)
@@ -42,19 +89,13 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
     {value: 'cleaning', label: 'Cleaning'}
   ]
 
-  const navigationLogCargoToChoices = (navigationLog: any) => {
-    if (
-      !navigationLog ||
-      !navigationLog?.bulkCargo ||
-      navigationLog?.bulkCargo.length === 0
-    ) {
-      return []
-    }
-
-    return navigationLog?.bulkCargo?.map((c: any) => ({
-      label: c.type.nameEn || c.type.nameNl,
-      value: c.id
-    }))
+  const cargoHoldsToTransactions = (cargoHolds: any[]) => {
+    return cargoHolds
+      ? cargoHolds.map(cargoHold => ({
+          id: cargoHold.id,
+          amount: '0'
+        }))
+      : []
   }
 
   const DatetimePicker = ({date, onChangeDate, color}: any) => {
@@ -94,64 +135,80 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
   }
 
   const CargoHoldActions = () => {
-    return selectedCargoHolds.length > 0 ? (
-      selectedCargoHolds.map((cargo, index) => (
-        <HStack alignItems="center" mt={ms(3)}>
-          <Select
-            key={index}
-            defaultValue={cargo.cargo}
-            minWidth="280"
-            accessibilityLabel=""
-            placeholder=""
-            bg="#F7F7F7"
-            onValueChange={val => {
-              setCargoHoldActions(val)
-            }}
-          >
-            {cargoHolds.map((type: any, index: number) => (
-              <Select.Item key={index} label={type.label} value={type.value} />
-            ))}
-          </Select>
-          <Button
-            bg={Colors.light}
-            size="md"
-            mx={ms(10)}
-            minH={ms(40)}
-            onPress={() => setCargoHoldActions([])}
-          >
-            <Text color={Colors.danger} fontSize={ms(12)} fontWeight="bold">
-              Remove
-            </Text>
-          </Button>
-        </HStack>
-      ))
-    ) : (
-      <></>
-    )
+    return cargoHoldActions.length > 0
+      ? cargoHoldActions.map((cargoHold, index) => (
+          <HStack key={index} alignItems="center" mb={ms(10)}>
+            <Select
+              minWidth="280"
+              bg="#F7F7F7"
+              onValueChange={val => {
+                setSelectedCargoHolds(val)
+              }}
+              selectedValue={selectedCargoHolds}
+            >
+              {cargoChoices.map((type: any, index: number) => (
+                <Select.Item
+                  key={index}
+                  label={type.label}
+                  value={type.value}
+                />
+              ))}
+            </Select>
+            <Button
+              bg={Colors.light}
+              size="md"
+              mx={ms(10)}
+              minH={ms(40)}
+              // onPress={() => setCargoHoldActions([])}
+            >
+              <Text
+                color={Colors.danger}
+                fontSize={ms(12)}
+                fontWeight="bold"
+                onPress={() => onRemoveCargoEntry(cargoHold.id)}
+              >
+                Remove
+              </Text>
+            </Button>
+          </HStack>
+        ))
+      : null
   }
 
   const onDatesChange = (date: Date) => {
     if (selectedDate === 'start') {
       setNavAction({...navAction, start: date})
     } else if (selectedDate === 'estimated') {
-      setNavAction({...navAction, estimated_end: date})
+      setNavAction({...navAction, estimatedEnd: date})
     } else {
       setNavAction({...navAction, end: date})
     }
   }
 
-  const handleOnAddBulk = () => {
-    setShowCargo(true)
-    const newData = {cargo: cargoHolds}
-    setCargoHoldActions([...cargoHoldActions, newData])
+  const onRemoveCargoEntry = (id: string) => {
+    const remove = cargoHoldActions.filter(cargo => cargo.id !== id)
+    setCargoHoldActions(remove)
   }
 
-  const cargoHolds = navigationLogCargoToChoices(navigationLogDetails)
+  const handleOnAddBulk = () => {
+    setShowCargo(true)
+    const navigationBulk = cargoChoices.length ? cargoChoices[0].value : 0
+    const cargohHoldTransactions = cargoHoldsToTransactions(
+      navigationLogCargoHolds
+    )
+    const newCargoHolds = {
+      navigationBulk,
+      cargoHoldTransactions: cargohHoldTransactions
+    }
 
+    setCargoHoldActions([...cargoHoldActions, newCargoHolds])
+  }
+
+  if (isPlanningLoading) return <LoadingIndicator />
   return (
     <Box flex="1">
       <ScrollView
-        contentContainerStyle={{flexGrow: 1, paddingBottom: 100}}
+        contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
         px={ms(12)}
         py={ms(20)}
         bg={Colors.white}
@@ -167,7 +224,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
         <Select
           minWidth="300"
           accessibilityLabel=""
-          placeholder=""
+          placeholder={navAction.type}
           bg={'#F7F7F7'}
           onValueChange={val => {
             setNavAction({...navAction, type: val})
@@ -193,7 +250,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
           Estimated end
         </Text>
         <DatetimePicker
-          date={navAction.estimated_end}
+          date={navAction.estimatedEnd}
           color={Colors.azure}
           onChangeDate={() => {
             setSelectedDate('estimated'), setOpenDatePicker(true)
@@ -209,7 +266,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
             setSelectedDate('end'), setOpenDatePicker(true)
           }}
         />
-        <Text fontWeight="medium" color={Colors.disabled}>
+        <Text fontWeight="medium" color={Colors.disabled} mb={ms(5)}>
           Cargo
         </Text>
         {showCargo ? <CargoHoldActions /> : null}
@@ -237,9 +294,8 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
           }}
         />
       </ScrollView>
-      <Box bg={Colors.white} position="absolute" bottom={0} left={0} right={0}>
+      <Box bg={Colors.white}>
         <Shadow
-          distance={20}
           viewStyle={{
             width: '100%'
           }}

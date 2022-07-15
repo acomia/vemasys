@@ -42,7 +42,7 @@ const TechnicalCertificareList = ({navigation, route}: Props) => {
   const renderItem = ({item, index}: any) => {
     const isValid = item?.endDate ? item?.remainingDays >= 0 : true
     const isExpiring = item?.endDate ? item?.remainingDays <= 31 : false
-    const hasBeenDownloaded = item?.downloaded
+    const canBeDownload = item?.fileGroup?.files?.length > 0
     return (
       <TouchableOpacity
         key={index}
@@ -89,7 +89,7 @@ const TechnicalCertificareList = ({navigation, route}: Props) => {
               source={Icons.cloud_download}
               onPress={() => {}}
               size={ms(25)}
-              tintColor={hasBeenDownloaded ? '#8FB4C9' : ''}
+              tintColor={canBeDownload ? '' : '#8FB4C9'}
             />
           </HStack>
           {/* End of Header */}

@@ -83,12 +83,48 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
     })
   }
 
+  const showWarningToast = (text: string) => {
+    toast.show({
+      duration: 1000,
+      render: () => {
+        return (
+          <Text
+            bg="warning.500"
+            px="2"
+            py="1"
+            rounded="sm"
+            mb={5}
+            color={Colors.white}
+          >
+            {text}
+          </Text>
+        )
+      }
+    })
+  }
+
   const onSuccess = () => {
     getNavigationLogDetails(navigationLogDetails?.id)
     navigation.goBack()
   }
 
   const onSaveCargoEntry = async () => {
+    if (
+      cargoData.typeId === '' &&
+      cargoData.amount === '' &&
+      cargoData.actualAmount === ''
+    ) {
+      return showWarningToast('All fields are required.')
+    }
+    if (cargoData.amount === '') {
+      return showWarningToast('Amount is required.')
+    }
+    if (cargoData.actualAmount === '') {
+      return showWarningToast('Actual amount is required.')
+    }
+    if (cargoData.typeId === '') {
+      return showWarningToast('Type is required.')
+    }
     try {
       let res
       if (method === 'edit') {
