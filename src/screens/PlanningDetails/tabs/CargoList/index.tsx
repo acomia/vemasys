@@ -150,19 +150,19 @@ const CargoList = () => {
             >
               This navigation log has no cargo listed.
             </Text>
-            <Box position="absolute" bottom={0} right={ms(12)}>
-              <IconButton
-                source={Icons.add}
-                size={ms(50)}
-                onPress={() =>
-                  navigation.navigate('AddEditBulkCargo', {
-                    method: 'add'
-                  })
-                }
-              />
-            </Box>
           </Box>
         )}
+        <Box position="absolute" bottom={0} right={ms(12)}>
+          <IconButton
+            source={Icons.add}
+            size={ms(50)}
+            onPress={() =>
+              navigation.navigate('AddEditBulkCargo', {
+                method: 'add'
+              })
+            }
+          />
+        </Box>
       </ScrollView>
     </Box>
   )

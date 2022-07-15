@@ -17,6 +17,7 @@ type TechnicalState = {
   tasksByCategory?: [] | undefined
   routinesCategory?: [] | undefined
   certificates?: [] | undefined
+  lastMeasurements?: []
 }
 
 type TechnicalActions = {
@@ -40,6 +41,8 @@ type TechnicalActions = {
   ) => void
   getVesselRoutines?: (vesselId: string) => void
   getVesselCertificates?: (vesselId: string) => void
+  getVesselPartLastMeasurements?: (id: string) => void
+  createNewConsumptionMeasure?: (resId: string, value: string) => void
 }
 
 type TechnicalStore = TechnicalState & TechnicalActions
@@ -337,6 +340,37 @@ export const useTechnical = create(
               certificates: []
             })
           }
+        } catch (error) {
+          set({isTechnicalLoading: false})
+        }
+      },
+      getVesselPartLastMeasurements: async (id: string) => {
+        set({isTechnicalLoading: true, lastMeasurements: []})
+        try {
+          const response = await API.reloadVesselPartLastMeasurements(id)
+          if (Array.isArray(response)) {
+            set({
+              isTechnicalLoading: false,
+              lastMeasurements: response
+            })
+          } else {
+            set({
+              isTechnicalLoading: false,
+              lastMeasurements: []
+            })
+          }
+        } catch (error) {
+          set({isTechnicalLoading: false})
+        }
+      },
+      createNewConsumptionMeasure: async (resId: string, value: string) => {
+        set({isTechnicalLoading: true})
+        try {
+          const response = await API.createNewConsumptionMeasure(resId, value)
+          set({
+            isTechnicalLoading: false
+          })
+          return response
         } catch (error) {
           set({isTechnicalLoading: false})
         }

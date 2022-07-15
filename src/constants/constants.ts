@@ -16,6 +16,7 @@ export const FILE_TYPE_PDF = 'application/pdf'
 export const FILE_TYPE_JPEG = 'image/jpeg'
 
 // Planning constants
+export const VESSEL_PART_CARGO_TYPE = 'Cargo'
 export const planningTabs = [
   {key: 'planning', title: 'Planning'},
   {key: 'logbook', title: 'Logbook'}
