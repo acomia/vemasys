@@ -7,6 +7,7 @@ import {
   Bunkering,
   Certificates,
   Engines,
+  Inventory,
   Reservoirs,
   Routines,
   Tasks
@@ -22,7 +23,7 @@ const renderScene = SceneMap({
   tasks: Tasks,
   routines: Routines,
   certificates: Certificates,
-  inventory: () => <Text>inventory</Text>
+  inventory: Inventory
 })
 
 export default function Technical() {

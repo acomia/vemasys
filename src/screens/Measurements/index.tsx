@@ -25,7 +25,7 @@ import {LoadingIndicator} from '@bluecentury/components'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const Measurements = ({navigation, route}: Props) => {
-  const {reservoir} = route.params
+  const {reservoir, lastMeasurement} = route.params
   const toast = useToast()
   const {
     isTechnicalLoading,
@@ -39,16 +39,26 @@ const Measurements = ({navigation, route}: Props) => {
   let fillPct = 0
   let value = 0
   let capacity = 0
-  let lastMeasurementDate = null
-  capacity = reservoir?.capacity === null ? 0 : reservoir?.capacity
-  value =
-    typeof reservoir?.lastMeasurement?.value === 'undefined'
-      ? 0
-      : reservoir?.lastMeasurement?.value
-  lastMeasurementDate = reservoir?.lastMeasurement?.date
-  let used = capacity - value
-  fillPct = (used / capacity) * 100 - 100
-  fillPct = fillPct < 0 ? fillPct * -1 : fillPct
+  let lastMeasurementDate = new Date()
+  if (lastMeasurement) {
+    value =
+      typeof lastMeasurement?.value === 'undefined' ? 0 : lastMeasurement?.value
+    capacity = reservoir?.capacity === null ? 0 : reservoir?.capacity
+    lastMeasurementDate = lastMeasurement?.date
+    let used = capacity - value
+    fillPct = (used / capacity) * 100 - 100
+    fillPct = fillPct < 0 ? fillPct * -1 : fillPct
+  } else {
+    capacity = reservoir?.capacity === null ? 0 : reservoir?.capacity
+    value =
+      typeof reservoir?.lastMeasurement?.value === 'undefined'
+        ? 0
+        : reservoir?.lastMeasurement?.value
+    lastMeasurementDate = reservoir?.lastMeasurement?.date
+    let used = capacity - value
+    fillPct = (used / capacity) * 100 - 100
+    fillPct = fillPct < 0 ? fillPct * -1 : fillPct
+  }
 
   useEffect(() => {
     getVesselPartLastMeasurements(reservoir.id)
@@ -112,7 +122,7 @@ const Measurements = ({navigation, route}: Props) => {
           %)
         </Text>
       </HStack>
-      <Text flex={1} color={Colors.disabled} fontWeight="medium">
+      <Text color={Colors.disabled} fontWeight="medium">
         {moment(lastMeasurementDate).fromNow()}
       </Text>
       <Progress
@@ -132,11 +142,11 @@ const Measurements = ({navigation, route}: Props) => {
     }
     setOpen(false)
     const res = await createNewConsumptionMeasure(reservoir.id, newMeasurement)
-    if (typeof res === 'object') {
+    if (typeof res === 'object' && res?.id) {
       getVesselPartLastMeasurements(reservoir.id)
       showToast('New measurement added.', 'success')
     } else {
-      showToast('New measurement added.', 'success')
+      showToast('New measurement failed.', 'failed')
     }
   }
 
@@ -178,19 +188,19 @@ const Measurements = ({navigation, route}: Props) => {
                 <HStack alignItems="center">
                   <Box flex="1">
                     <Text fontWeight="medium" color={Colors.text}>
-                      {item.user.firstname} {item.user.lastname}
+                      {item?.user?.firstname} {item?.user?.lastname}
                     </Text>
                     <Text color={Colors.disabled}>
-                      {moment(item.date).format('DD MMM YYYY - HH:mm')}
+                      {moment(item?.date).format('DD MMM YYYY - HH:mm')}
                     </Text>
                   </Box>
                   <Text fontWeight="bold" color={Colors.highlighted_text}>
-                    {formatNumber(item.value, 0)} L
+                    {formatNumber(item?.value, 0)} L
                   </Text>
                 </HStack>
               </Box>
             )}
-            keyExtractor={(item: any) => `LastMeasure-${item.id}`}
+            keyExtractor={(item: any) => `LastMeasure-${item?.id}`}
             contentContainerStyle={{paddingBottom: 20}}
           />
         )}
@@ -199,16 +209,14 @@ const Measurements = ({navigation, route}: Props) => {
         <Modal.Content>
           <Modal.Header>Enter new measurement (L)</Modal.Header>
           <Modal.Body>
-            <FormControl>
-              <Input
-                variant="filled"
-                backgroundColor="#F7F7F7"
-                keyboardType="number-pad"
-                size="sm"
-                value={newMeasurement}
-                onChangeText={e => setNewMeasurement(e)}
-              />
-            </FormControl>
+            <Input
+              variant="filled"
+              backgroundColor="#F7F7F7"
+              keyboardType="number-pad"
+              size="sm"
+              value={newMeasurement}
+              onChangeText={e => setNewMeasurement(e)}
+            />
           </Modal.Body>
           <Modal.Footer>
             <Button

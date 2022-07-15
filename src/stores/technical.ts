@@ -18,6 +18,8 @@ type TechnicalState = {
   routinesCategory?: [] | undefined
   certificates?: [] | undefined
   lastMeasurements?: []
+  inventory?: []
+  consumableTypes?: []
 }
 
 type TechnicalActions = {
@@ -43,6 +45,9 @@ type TechnicalActions = {
   getVesselCertificates?: (vesselId: string) => void
   getVesselPartLastMeasurements?: (id: string) => void
   createNewConsumptionMeasure?: (resId: string, value: string) => void
+  getVesselInventory?: (vesselId: string) => void
+  getConsumableTypes?: () => void
+  updateVesselInventoryItem?: (quantity: number, consumableId: number) => void
 }
 
 type TechnicalStore = TechnicalState & TechnicalActions
@@ -370,6 +375,48 @@ export const useTechnical = create(
           set({
             isTechnicalLoading: false
           })
+          return response
+        } catch (error) {
+          set({isTechnicalLoading: false})
+        }
+      },
+      getVesselInventory: async (vesselId: string) => {
+        set({isTechnicalLoading: true, inventory: []})
+        try {
+          const response = await API.reloadVesselInventory(vesselId)
+          if (Array.isArray(response)) {
+            set({isTechnicalLoading: false, inventory: response})
+          } else {
+            set({isTechnicalLoading: false, inventory: []})
+          }
+        } catch (error) {
+          set({isTechnicalLoading: false})
+        }
+      },
+      getConsumableTypes: async () => {
+        set({isTechnicalLoading: true, consumableTypes: []})
+        try {
+          const response = await API.reloadConsumableTypes()
+          if (Array.isArray(response)) {
+            set({isTechnicalLoading: false, consumableTypes: response})
+          } else {
+            set({isTechnicalLoading: false, consumableTypes: []})
+          }
+        } catch (error) {
+          set({isTechnicalLoading: false})
+        }
+      },
+      updateVesselInventoryItem: async (
+        quantity: number,
+        consumableId: number
+      ) => {
+        set({isTechnicalLoading: true})
+        try {
+          const response = await API.updateVesselInventoryItem(
+            quantity,
+            consumableId
+          )
+          set({isTechnicalLoading: false})
           return response
         } catch (error) {
           set({isTechnicalLoading: false})

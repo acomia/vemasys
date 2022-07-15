@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import {Box, HStack, View} from 'native-base'
 import {createDrawerNavigator} from '@react-navigation/drawer'
 import {DrawerActions} from '@react-navigation/native'
@@ -23,7 +23,11 @@ const {Navigator, Screen} = createDrawerNavigator<MainStackParamList>()
 type Props = NativeStackScreenProps<RootStackParamList, 'Main'>
 
 export default function MainNavigator({navigation}: Props) {
-  const {activeFormations} = useMap()
+  const {activeFormations, getActiveFormations} = useMap()
+
+  useEffect(() => {
+    getActiveFormations()
+  }, [])
 
   return (
     <Navigator
@@ -67,7 +71,7 @@ export default function MainNavigator({navigation}: Props) {
           </Box>
         )
       }}
-      initialRouteName={Screens.Planning}
+      initialRouteName={Screens.Technical}
       drawerContent={props => <Sidebar {...props} />}
     >
       <Screen name={Screens.MapView} component={Map} />
