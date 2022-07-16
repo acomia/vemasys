@@ -132,3 +132,11 @@ export const hasSelectedEntityUserPermission = (
 export const titleCase = (str: string) => {
   return str.toLowerCase().replace(/\b\w/g, s => s.toUpperCase())
 }
+
+export const formatConsumableLabel = (consumable: Consumable) => {
+  if (consumable.brand && consumable.brand.title) {
+    return `${consumable.brand.title}: ${consumable.name}`
+  }
+
+  return consumable.name
+}

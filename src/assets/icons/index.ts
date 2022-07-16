@@ -66,11 +66,15 @@ export const Icons = {
   flag: require('./flag.png'),
   cloud_download: require('./cloud-download.png'),
   status_check: require('./status-check.png'),
+  status_archived: require('./status-archived.png'),
   status_x: require('./status-x.png'),
   status_exclamation: require('./status-exclamation.png'),
   all_certificate: require('./all-certificate.png'),
   status_check_alt: require('./status-check-alt.png'),
   status_x_alt: require('./status-x-alt.png'),
   status_exclamation_alt: require('./status-exclamation-alt.png'),
-  add: require('./add-circle.png')
+  add: require('./add-circle.png'),
+  slider_outline: require('./sliders-outline.png'),
+  check: require('./check.png'),
+  warning: require('./warning.png')
 }
