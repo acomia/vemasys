@@ -30,14 +30,11 @@ export default function MainNavigator({navigation}: Props) {
 
   useFocusEffect(
     useCallback(() => {
-      console.log('focus')
-
       getActiveFormations()
     }, [])
   )
 
   useEffect(() => {
-    console.log('updated')
     if (activeFormations?.length > 0) {
       scanIcon = Icons.qr
       scanNavigateTo = () => navigation.navigate('QRScanner')
@@ -83,7 +80,7 @@ export default function MainNavigator({navigation}: Props) {
           </Box>
         )
       }}
-      initialRouteName={Screens.Notifications}
+      initialRouteName={Screens.MapView}
       drawerContent={props => <Sidebar {...props} />}
     >
       <Screen name={Screens.MapView} component={Map} />

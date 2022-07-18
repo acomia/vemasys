@@ -251,6 +251,37 @@ const reloadRoutines = async (vesselId: string) => {
     )
 }
 
+const reloadRoutinesByCategory = async (
+  vesselId: string,
+  categoryKey: string
+) => {
+  return API.get(
+    `v3/maintenance_routines/sections/${categoryKey}?exploitationVesselId=${vesselId}`
+  )
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Vessel routines by category failed.')
+      }
+    })
+    .catch(error =>
+      console.error('Error: Vessel routines by category data', error)
+    )
+}
+
+const reloadRoutineDetails = async (id: string) => {
+  return API.get(`v3/maintenance_routines/${id}`)
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Vessel routine details failed.')
+      }
+    })
+    .catch(error => console.error('Error: Vessel routine details data', error))
+}
+
 const reloadCertificates = async (vesselId: string) => {
   return API.get(`certificates?exploitationVessel.id=${vesselId}`)
     .then(response => {
@@ -345,6 +376,8 @@ export {
   createVesselTask,
   updateVesselTask,
   reloadRoutines,
+  reloadRoutinesByCategory,
+  reloadRoutineDetails,
   reloadCertificates,
   createNewConsumptionMeasure,
   reloadVesselInventory,

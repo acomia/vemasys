@@ -79,12 +79,12 @@ const Routines = () => {
               <TouchableOpacity
                 key={index}
                 activeOpacity={0.6}
-                // onPress={() =>
-                //   navigation.navigate('TechnicalTasksList', {
-                //     category: task.key,
-                //     title: task.label
-                //   })
-                // }
+                onPress={() =>
+                  navigation.navigate('TechnicalRoutinesList', {
+                    category: task.key,
+                    title: task.label
+                  })
+                }
               >
                 <Box
                   w={width / 2 - 30}

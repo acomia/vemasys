@@ -22,6 +22,8 @@ type RootStackParamList = {
   TechnicalCertificateList: {certificates: any; title: string}
   TechnicalCertificateDetails: {certificate: any}
   Measurements: {reservoir: any; lastMeasurement?: []}
+  TechnicalRoutinesList: {category: string; title: string}
+  TechnicalRoutineDetails: {id: any; title: string}
 }
 
 type MainStackParamList = {
