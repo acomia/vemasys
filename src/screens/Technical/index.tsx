@@ -11,7 +11,7 @@ import {
   Reservoirs,
   Routines,
   Tasks
-} from './Tabs'
+} from './tabs'
 import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
 import {technicalTabs} from '@bluecentury/constants'

@@ -125,7 +125,7 @@ export default function Formations({navigation}: Props) {
           </Text>
         )}
       />
-      <Modal isOpen={dropOffModal}>
+      <Modal isOpen={dropOffModal} animationPreset="slide">
         <Modal.Content width="95%" px={ms(10)}>
           <Modal.Header>Drop off</Modal.Header>
           <Modal.Body py={ms(20)}>

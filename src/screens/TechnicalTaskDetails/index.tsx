@@ -50,8 +50,6 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
     {value: 'cancel', label: 'Cancel'}
   ]
 
-  console.log(task)
-
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (

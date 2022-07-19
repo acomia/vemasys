@@ -16,6 +16,8 @@ type TechnicalState = {
   tasksCategory?: [] | undefined
   tasksByCategory?: [] | undefined
   routinesCategory?: [] | undefined
+  routinesByCategory?: [] | undefined
+  routineDetails?: [] | undefined
   certificates?: [] | undefined
   lastMeasurements?: []
   inventory?: []
@@ -42,6 +44,8 @@ type TechnicalActions = {
     id: number
   ) => void
   getVesselRoutines?: (vesselId: string) => void
+  getVesselRoutinesByCategory?: (vesselId: string, categoryKey: string) => void
+  getVesselRoutineDetails?: (id: string) => void
   getVesselCertificates?: (vesselId: string) => void
   getVesselPartLastMeasurements?: (id: string) => void
   createNewConsumptionMeasure?: (resId: string, value: string) => void
@@ -418,6 +422,51 @@ export const useTechnical = create(
           )
           set({isTechnicalLoading: false})
           return response
+        } catch (error) {
+          set({isTechnicalLoading: false})
+        }
+      },
+      getVesselRoutinesByCategory: async (
+        vesselId: string,
+        categoryKey: string
+      ) => {
+        set({isTechnicalLoading: true, routinesByCategory: []})
+        try {
+          const response = await API.reloadRoutinesByCategory(
+            vesselId,
+            categoryKey
+          )
+
+          if (Array.isArray(response)) {
+            set({
+              isTechnicalLoading: false,
+              routinesByCategory: response
+            })
+          } else {
+            set({
+              isTechnicalLoading: false,
+              routinesByCategory: []
+            })
+          }
+        } catch (error) {
+          set({isTechnicalLoading: false})
+        }
+      },
+      getVesselRoutineDetails: async (id: string) => {
+        set({isTechnicalLoading: true, routineDetails: []})
+        try {
+          const response = await API.reloadRoutineDetails(id)
+          if (typeof response === 'object') {
+            set({
+              isTechnicalLoading: false,
+              routineDetails: response
+            })
+          } else {
+            set({
+              isTechnicalLoading: false,
+              routineDetails: []
+            })
+          }
         } catch (error) {
           set({isTechnicalLoading: false})
         }

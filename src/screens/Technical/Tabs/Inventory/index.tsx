@@ -388,13 +388,8 @@ const Inventory = () => {
             </Modal.Footer>
           </Modal.Content>
         </Modal>
-        <Modal
-          isOpen={openNewStock}
-          size="full"
-          px={ms(15)}
-          animationPreset="slide"
-        >
-          <Modal.Content>
+        <Modal isOpen={openNewStock} animationPreset="slide">
+          <Modal.Content width="95%" px={ms(10)}>
             <Modal.Header>Enter quantity</Modal.Header>
             <Modal.Body>
               <Input

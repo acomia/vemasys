@@ -1,7 +1,8 @@
-import React, {useEffect} from 'react'
+import React, {useCallback, useEffect} from 'react'
+import {ImageSourcePropType} from 'react-native'
 import {Box, HStack, View} from 'native-base'
 import {createDrawerNavigator} from '@react-navigation/drawer'
-import {DrawerActions} from '@react-navigation/native'
+import {DrawerActions, useFocusEffect} from '@react-navigation/native'
 import {
   Notification,
   Entity,
@@ -24,10 +25,24 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Main'>
 
 export default function MainNavigator({navigation}: Props) {
   const {activeFormations, getActiveFormations} = useMap()
+  let scanIcon: ImageSourcePropType = Icons.qr
+  let scanNavigateTo: () => void
+
+  useFocusEffect(
+    useCallback(() => {
+      getActiveFormations()
+    }, [])
+  )
 
   useEffect(() => {
-    getActiveFormations()
-  }, [])
+    if (activeFormations?.length > 0) {
+      scanIcon = Icons.qr
+      scanNavigateTo = () => navigation.navigate('QRScanner')
+    } else {
+      scanIcon = Icons.formations
+      scanNavigateTo = () => navigation.navigate('Formations')
+    }
+  }, [activeFormations])
 
   return (
     <Navigator
@@ -43,14 +58,8 @@ export default function MainNavigator({navigation}: Props) {
           <Box flexDirection="row" alignItems="center" mr={ms(20)}>
             <HStack space="3">
               <IconButton
-                source={
-                  activeFormations?.length > 0 ? Icons.formations : Icons.qr
-                }
-                onPress={() =>
-                  navigation.navigate(
-                    activeFormations?.length > 0 ? 'Formations' : 'QRScanner'
-                  )
-                }
+                source={scanIcon}
+                onPress={() => scanNavigateTo()}
                 size={ms(20)}
               />
               <IconButton
@@ -71,7 +80,7 @@ export default function MainNavigator({navigation}: Props) {
           </Box>
         )
       }}
-      initialRouteName={Screens.Technical}
+      initialRouteName={Screens.MapView}
       drawerContent={props => <Sidebar {...props} />}
     >
       <Screen name={Screens.MapView} component={Map} />
