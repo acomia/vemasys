@@ -1,4 +1,5 @@
 import React, {useRef, useState} from 'react'
+import {Platform} from 'react-native'
 import {
   Box,
   VStack,
@@ -14,6 +15,7 @@ import {
 } from 'native-base'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import {ms} from 'react-native-size-matters'
+
 import {Colors} from '@bluecentury/styles'
 import {TCredentials} from '@bluecentury/api/models'
 import {Images} from '@bluecentury/assets'
@@ -49,7 +51,13 @@ function Login() {
   }
   const handleOnSubmitEditingPassword = () => handleOnPressLogin()
   return (
-    <KeyboardAvoidingView flex={1} behavior="padding">
+    <KeyboardAvoidingView
+      h={{
+        base: '100%',
+        lg: 'auto'
+      }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
       <Box flex="1" safeArea>
         <VStack space="10" flex="1" p="5" justifyContent="center">
           <Center>
