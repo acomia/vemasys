@@ -24,6 +24,7 @@ type RootStackParamList = {
   Measurements: {reservoir: any; lastMeasurement?: []}
   TechnicalRoutinesList: {category: string; title: string}
   TechnicalRoutineDetails: {id: any; title: string}
+  FinancialInvoiceDetails: {id: string; routeFrom: string; title: string}
 }
 
 type MainStackParamList = {
