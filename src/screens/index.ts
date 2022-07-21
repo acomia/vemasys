@@ -24,3 +24,5 @@ export {default as TechnicalCertificateDetails} from './TechnicalCertificateDeta
 export {default as AddEditBulkCargo} from './AddEditBulkCargo'
 export {default as AddEditComment} from './AddEditComment'
 export {default as Measurements} from './Measurements'
+export {default as TechnicalRoutinesList} from './TechnicalRoutinesList'
+export {default as TechnicalRoutineDetails} from './TechnicalRoutineDetails'

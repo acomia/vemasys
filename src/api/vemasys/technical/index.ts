@@ -251,6 +251,37 @@ const reloadRoutines = async (vesselId: string) => {
     )
 }
 
+const reloadRoutinesByCategory = async (
+  vesselId: string,
+  categoryKey: string
+) => {
+  return API.get(
+    `v3/maintenance_routines/sections/${categoryKey}?exploitationVesselId=${vesselId}`
+  )
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Vessel routines by category failed.')
+      }
+    })
+    .catch(error =>
+      console.error('Error: Vessel routines by category data', error)
+    )
+}
+
+const reloadRoutineDetails = async (id: string) => {
+  return API.get(`v3/maintenance_routines/${id}`)
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Vessel routine details failed.')
+      }
+    })
+    .catch(error => console.error('Error: Vessel routine details data', error))
+}
+
 const reloadCertificates = async (vesselId: string) => {
   return API.get(`certificates?exploitationVessel.id=${vesselId}`)
     .then(response => {
@@ -288,6 +319,47 @@ const createNewConsumptionMeasure = async (resId: string, value: string) => {
     )
 }
 
+const reloadVesselInventory = async (vesselId: string) => {
+  return API.get(
+    `consumable_exploitation_vessels?exploitationVesselId=${vesselId}`
+  )
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Vessel inventory failed.')
+      }
+    })
+    .catch(error => console.error('Error: Vessel inventory data', error))
+}
+
+const reloadConsumableTypes = async () => {
+  return API.get(`consumable_types`)
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Vessel consumable types failed.')
+      }
+    })
+    .catch(error => console.error('Error: Vessel consumable types data', error))
+}
+
+const updateVesselInventoryItem = async (
+  quantity: number,
+  consumableId: number
+) => {
+  return API.put(`consumable_exploitation_vessels/${consumableId}`, {quantity})
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Update consumable stock failed.')
+      }
+    })
+    .catch(error => console.error('Error: Update consumable stock data', error))
+}
+
 export {
   reloadVesselBunkering,
   reloadVesselGasoilReservoirs,
@@ -304,6 +376,11 @@ export {
   createVesselTask,
   updateVesselTask,
   reloadRoutines,
+  reloadRoutinesByCategory,
+  reloadRoutineDetails,
   reloadCertificates,
-  createNewConsumptionMeasure
+  createNewConsumptionMeasure,
+  reloadVesselInventory,
+  reloadConsumableTypes,
+  updateVesselInventoryItem
 }

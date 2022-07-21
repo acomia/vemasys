@@ -25,7 +25,9 @@ import {
   TechnicalCertificateList,
   AddEditBulkCargo,
   AddEditComment,
-  Measurements
+  Measurements,
+  TechnicalRoutinesList,
+  TechnicalRoutineDetails
 } from '@bluecentury/screens'
 import {Colors} from '@bluecentury/styles'
 
@@ -218,6 +220,22 @@ export default function RootNavigator() {
             headerShown: true,
             title: 'Measurements'
           }}
+        />
+        <Screen
+          name={'TechnicalRoutinesList'}
+          component={TechnicalRoutinesList}
+          options={({route}) => ({
+            headerShown: true,
+            title: route.params.title
+          })}
+        />
+        <Screen
+          name={'TechnicalRoutineDetails'}
+          component={TechnicalRoutineDetails}
+          options={({route}) => ({
+            headerShown: true,
+            title: route.params.title
+          })}
         />
       </Group>
       <Group>
