@@ -10,7 +10,8 @@ import {
   Planning,
   Charters,
   Technical,
-  Financial
+  Financial,
+  Information
 } from '@bluecentury/screens'
 import {Sidebar, IconButton} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
@@ -90,6 +91,7 @@ export default function MainNavigator({navigation}: Props) {
       <Screen name={Screens.Charters} component={Charters} />
       <Screen name={Screens.Technical} component={Technical} />
       <Screen name={Screens.Financial} component={Financial} />
+      <Screen name={Screens.Information} component={Information} />
       <Screen
         name={Screens.ChangeRole}
         component={Entity}

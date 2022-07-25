@@ -83,3 +83,10 @@ export const technicalTabs = [
   {key: 'certificates', title: 'Certificates'},
   {key: 'inventory', title: 'Inventory'}
 ]
+
+// Information constants
+export const informationTabs = [
+  {key: 'pegels', title: 'Pegels'},
+  {key: 'rules', title: 'Rules'},
+  {key: 'tickerOilPrices', title: 'Ticker Oil Prices'}
+]

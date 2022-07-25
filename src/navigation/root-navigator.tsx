@@ -28,7 +28,8 @@ import {
   Measurements,
   TechnicalRoutinesList,
   TechnicalRoutineDetails,
-  FinancialInvoiceDetails
+  FinancialInvoiceDetails,
+  TickerOilPriceDetails
 } from '@bluecentury/screens'
 import {Colors} from '@bluecentury/styles'
 
@@ -245,6 +246,14 @@ export default function RootNavigator() {
             headerShown: true,
             title: route.params.title
           })}
+        />
+        <Screen
+          name={'TickerOilPriceDetails'}
+          component={TickerOilPriceDetails}
+          options={{
+            headerShown: true,
+            title: 'Ticker oil price details'
+          }}
         />
       </Group>
       <Group>
