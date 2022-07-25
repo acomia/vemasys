@@ -140,8 +140,6 @@ export default function Charters({navigation, route}: any) {
             top={0}
             bottom={0}
             width={ms(7)}
-            // borderTopLeftRadius={ms(5)}
-            // borderBottomLeftRadius={ms(5)}
             backgroundColor={
               item.isCurrentlyActive ? Colors.primary_light : Colors.disabled
             }
