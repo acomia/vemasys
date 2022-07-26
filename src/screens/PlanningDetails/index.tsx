@@ -3,7 +3,7 @@ import {useWindowDimensions} from 'react-native'
 import {Box, Text} from 'native-base'
 import {TabView, TabBar, SceneMap} from 'react-native-tab-view'
 
-import {Details, CargoList, CargoHolds, Documents} from './Tabs'
+import {Details, CargoList, CargoHolds, Documents} from './tabs'
 import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
 import {planningDetailsTabs} from '@bluecentury/constants'

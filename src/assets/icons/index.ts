@@ -76,5 +76,10 @@ export const Icons = {
   add: require('./add-circle.png'),
   slider_outline: require('./sliders-outline.png'),
   check: require('./check.png'),
-  warning: require('./warning.png')
+  warning: require('./warning.png'),
+  water_normal: require('./water.png'),
+  water_low: require('./water-lower.png'),
+  water_rise: require('./water-rise.png'),
+  chart_line_up: require('./chart-line.png'),
+  chart__line_down: require('./chart-line-down.png')
 }

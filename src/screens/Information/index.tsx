@@ -2,21 +2,22 @@ import React, {useState} from 'react'
 import {useWindowDimensions} from 'react-native'
 import {Box, Text} from 'native-base'
 import {TabView, TabBar, SceneMap} from 'react-native-tab-view'
-import {PlanningLogbook, HistoryLogbook} from './tabs'
+
+import {Pegels, Rules, TickerOilPrices} from './tabs'
 import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
-import {planningTabs} from '@bluecentury/constants'
+import {informationTabs} from '@bluecentury/constants'
 
-const renderScene = SceneMap({
-  planning: PlanningLogbook,
-  logbook: HistoryLogbook
-})
-
-export default function Planning() {
+export default function Financial() {
   const layout = useWindowDimensions()
-
   const [index, setIndex] = useState(0)
-  const [routes] = useState(planningTabs)
+  const [routes] = useState(informationTabs)
+
+  const renderScene = SceneMap({
+    pegels: Pegels,
+    rules: Rules,
+    tickerOilPrices: TickerOilPrices
+  })
 
   const LazyPlaceholder = ({route}) => (
     <Box flex="1" alignItems="center" justifyContent="center">
@@ -33,15 +34,20 @@ export default function Planning() {
         backgroundColor: Colors.azure,
         height: 3,
         borderRadius: 3,
-        width: ms(50),
-        marginHorizontal: layout.width / 6 + 5
+        width: ms(60),
+        marginLeft: 30
       }}
       style={{backgroundColor: Colors.primary}}
+      tabStyle={{
+        width: ms(120),
+        height: ms(40)
+      }}
       renderLabel={({route, color}) => (
-        <Text color={color} fontWeight="bold" fontSize={ms(15)}>
+        <Text color={color} fontWeight="bold" textAlign="justify">
           {route.title}
         </Text>
       )}
+      scrollEnabled={true}
     />
   )
 
