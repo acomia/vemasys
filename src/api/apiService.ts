@@ -1,9 +1,8 @@
-import {create} from 'apisauce'
+import axios from 'axios'
 import {API_URL} from '@bluecentury/env'
-import {dataToCamelCase} from './transformers/response'
-import {paramsToSnakeCase} from './transformers/request'
+import {onFailedResponse, onSuccessfulResponse} from './interceptors'
 
-export const API = create({
+export const API = axios.create({
   baseURL: API_URL,
   headers: {
     Accept: 'application/json',
@@ -11,5 +10,6 @@ export const API = create({
   }
 })
 
-API.addRequestTransform(paramsToSnakeCase)
-API.addResponseTransform(dataToCamelCase)
+// API.interceptors.request.use(paramsToSnakeCase)
+// API.addResponseTransform(dataToCamelCase)
+API.interceptors.response.use(onSuccessfulResponse, onFailedResponse)
