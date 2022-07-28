@@ -5,6 +5,7 @@ import * as API from '@bluecentury/api/vemasys'
 import {TCredentials} from '@bluecentury/api/models'
 
 type AuthState = {
+  _hasHydrated: boolean
   token: string | undefined
   refreshToken: string | undefined
   isAuthenticatingUser: boolean
@@ -15,6 +16,7 @@ type AuthState = {
 
 type AuthActions = {
   authenticate: (credentials: TCredentials) => void
+  setHasHydrated: (state: boolean) => void
   logout: () => void
 }
 
@@ -23,6 +25,7 @@ type AuthStore = AuthState & AuthActions
 export const useAuth = create(
   persist<AuthStore>(
     (set, get) => ({
+      _hasHydrated: false,
       token: undefined,
       refreshToken: undefined,
       isAuthenticatingUser: false,
@@ -60,11 +63,19 @@ export const useAuth = create(
           isAuthenticatingUser: false,
           hasAuthenticationError: false
         })
+      },
+      setHasHydrated: state => {
+        set({
+          _hasHydrated: state
+        })
       }
     }),
     {
       name: 'auth-storage',
-      getStorage: () => AsyncStorage
+      getStorage: () => AsyncStorage,
+      onRehydrateStorage: () => state => {
+        state?.setHasHydrated(true)
+      }
     }
   )
 )

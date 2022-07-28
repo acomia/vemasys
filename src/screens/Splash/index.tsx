@@ -7,34 +7,36 @@ import {CommonActions, useNavigation} from '@react-navigation/native'
 
 export default function Splash() {
   const navigation = useNavigation()
-  const token = useAuth(state => state.token)
+  const {_hasHydrated, token} = useAuth(state => state)
   const entityId = useEntity(state => state.entityId)
 
   useEffect(() => {
-    if (token && entityId) {
-      navigation.dispatch(
-        CommonActions.reset({
-          index: 0,
-          routes: [{name: 'Main'}]
-        })
-      )
-    } else if (token) {
-      navigation.dispatch(
-        CommonActions.reset({
-          index: 0,
-          routes: [{name: 'SelectEntity'}]
-        })
-      )
-    } else {
-      navigation.dispatch(
-        CommonActions.reset({
-          index: 0,
-          routes: [{name: 'Login'}]
-        })
-      )
+    if (_hasHydrated) {
+      if (token && entityId) {
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{name: 'Main'}]
+          })
+        )
+      } else if (token) {
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{name: 'SelectEntity'}]
+          })
+        )
+      } else {
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{name: 'Login'}]
+          })
+        )
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token, entityId])
+  }, [_hasHydrated, token, entityId])
 
   return (
     <Box flex="1" justifyContent="center" safeArea>
