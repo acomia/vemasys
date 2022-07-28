@@ -9,7 +9,7 @@ export const onFailedResponse = async (error: any) => {
   // DO anything here
   console.log('Error data: ', error?.response.data)
   console.log('Error status: ', error?.response.status)
-  console.log('Error request url: ', error?.config.headers['Jwt-Auth'])
+  console.log('Error request url: ', error?.config.url)
   const failedRequest = error?.config
 
   if (error?.response?.status === UNAUTHENTICATED) {
