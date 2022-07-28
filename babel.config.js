@@ -4,6 +4,7 @@ module.exports = {
   plugins: [
     ['module-resolver', {
       root: ['./src'],
+      extensions: ['.ios.js', '.android.js', '.js', '.ts', '.tsx', '.json'],
       alias: {
         '@bluecentury/api': ['./src/api'],
         '@bluecentury/assets': ['./src/assets'],
