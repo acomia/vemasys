@@ -1,6 +1,6 @@
 import React, {useEffect, useLayoutEffect, useRef, useState} from 'react'
 import {StyleSheet, TouchableOpacity, Dimensions, Alert} from 'react-native'
-import {Box, Text, Button, HStack, Image, VStack} from 'native-base'
+import {Box, Text, Button, HStack, Image, VStack, Spinner} from 'native-base'
 import MapView, {PROVIDER_GOOGLE, Marker, Callout} from 'react-native-maps'
 import BottomSheet from 'reanimated-bottom-sheet'
 import {ms} from 'react-native-size-matters'
@@ -78,7 +78,17 @@ export default function Map({navigation}: Props) {
 
   useEffect(() => {
     if (vesselDetails) {
-      centerMapToCurrentLocation()
+      const {latitude, longitude} = vesselDetails.lastGeolocation
+      mapRef.current?.animateCamera({
+        center: {
+          latitude: latitude,
+          longitude: longitude
+        },
+        zoom: 15,
+        heading: 0,
+        pitch: 0,
+        altitude: 5
+      })
     } else {
       fitToAllMarkers()
     }
@@ -333,17 +343,19 @@ export default function Map({navigation}: Props) {
   }
 
   const centerMapToCurrentLocation = () => {
-    const {latitude, longitude} = vesselDetails?.lastGeolocation
-    mapRef.current?.animateCamera({
-      center: {
-        latitude: latitude,
-        longitude: longitude
-      },
-      zoom: 15,
-      heading: 0,
-      pitch: 0,
-      altitude: 5
-    })
+    if (vesselDetails && vesselDetails.lastGeolocation) {
+      const {latitude, longitude} = vesselDetails?.lastGeolocation
+      mapRef.current?.animateCamera({
+        center: {
+          latitude: latitude,
+          longitude: longitude
+        },
+        zoom: 15,
+        heading: 0,
+        pitch: 0,
+        altitude: 5
+      })
+    }
   }
 
   const handleRegionChange = (reg: {
@@ -358,7 +370,8 @@ export default function Map({navigation}: Props) {
 
   return (
     <Box flex={1} bg={Colors.light}>
-      <Box flex={1} bg={Colors.white} borderTopRadius="3xl" overflow="hidden">
+      <Box flex={1}>
+        <Spinner size={50} color={'red'} />
         <MapView
           ref={mapRef}
           provider={PROVIDER_GOOGLE} // remove if not using Google Maps

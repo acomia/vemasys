@@ -6,6 +6,9 @@ import {ENTITY_TYPE_EXPLOITATION_VESSEL} from '@bluecentury/constants'
 import {VesselDetails} from '@bluecentury/types'
 
 type EntityState = {
+  hasErrorLoadingCurrentUser: boolean
+  hasErrorLoadingEntityUsers: boolean
+  isLoadingCurrentUserInfo: boolean
   isLoadingEntityUsers: boolean
   user: []
   userVessels: []
@@ -53,6 +56,9 @@ type EntityStore = EntityState & EntityActions
 export const useEntity = create(
   persist<EntityStore>(
     (set, get) => ({
+      hasErrorLoadingCurrentUser: false,
+      hasErrorLoadingEntityUsers: false,
+      isLoadingCurrentUserInfo: false,
       isLoadingEntityUsers: false,
       user: [],
       userVessels: [],
@@ -90,24 +96,27 @@ export const useEntity = create(
       getUserInfo: async () => {
         set({
           user: [],
-          isLoadingEntityUsers: true
+          isLoadingCurrentUserInfo: true,
+          hasErrorLoadingCurrentUser: false
         })
         try {
           const response = await API.reloadUser()
           set({
             user: response,
-            isLoadingEntityUsers: false
+            isLoadingCurrentUserInfo: false
           })
         } catch (error) {
           set({
-            isLoadingEntityUsers: false
+            hasErrorLoadingCurrentUser: true,
+            isLoadingCurrentUserInfo: false
           })
         }
       },
       getEntityUsers: async () => {
         set({
           entityUsers: [],
-          isLoadingEntityUsers: true
+          isLoadingEntityUsers: true,
+          hasErrorLoadingEntityUsers: false
         })
         try {
           const response = await API.reloadEntityUsers()
@@ -119,12 +128,14 @@ export const useEntity = create(
           } else {
             set({
               entityUsers: [],
-              isLoadingEntityUsers: false
+              isLoadingEntityUsers: false,
+              hasErrorLoadingEntityUsers: true
             })
           }
         } catch (error) {
           set({
-            isLoadingEntityUsers: false
+            isLoadingEntityUsers: false,
+            hasErrorLoadingEntityUsers: true
           })
         }
       },
@@ -151,7 +162,7 @@ export const useEntity = create(
           selectedEntity: entity
         })
         try {
-          API.selectEntityUser(entity.id)
+          await API.selectEntityUser(entity.id)
           const response = await API.getVesselNavigationDetails(
             entity.entity.exploitationVessel.id
           )

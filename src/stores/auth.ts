@@ -39,6 +39,7 @@ export const useAuth = create(
         })
         try {
           const response = await API.login(credentials)
+          console.log('login response ', response)
           set({
             token: response?.token,
             refreshToken: response?.refreshToken,
