@@ -1,4 +1,4 @@
 export type TUser = {
-  refreshToken: string;
-  token: string;
-};
+  refreshToken: string
+  token: string
+}
