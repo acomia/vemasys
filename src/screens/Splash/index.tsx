@@ -3,10 +3,14 @@ import {ActivityIndicator} from 'react-native'
 import {Box, Center, Image} from 'native-base'
 import {Images} from '@bluecentury/assets'
 import {useAuth, useEntity} from '@bluecentury/stores'
-import {CommonActions, useNavigation} from '@react-navigation/native'
+import {
+  CommonActions,
+  NavigationProp,
+  useNavigation
+} from '@react-navigation/native'
 
 export default function Splash() {
-  const navigation = useNavigation()
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>()
   const {_hasHydrated, token} = useAuth(state => state)
   const entityId = useEntity(state => state.entityId)
 
@@ -20,19 +24,9 @@ export default function Splash() {
           })
         )
       } else if (token) {
-        navigation.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{name: 'SelectEntity'}]
-          })
-        )
+        navigation.navigate('SelectEntity')
       } else {
-        navigation.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{name: 'Login'}]
-          })
-        )
+        navigation.navigate('Login')
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

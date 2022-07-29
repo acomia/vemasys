@@ -26,7 +26,8 @@ import {
   TechnicalRoutinesList,
   TechnicalRoutineDetails,
   FinancialInvoiceDetails,
-  TickerOilPriceDetails
+  TickerOilPriceDetails,
+  Entity
 } from '@bluecentury/screens'
 import {Colors} from '@bluecentury/styles'
 
@@ -54,14 +55,14 @@ export default function RootNavigator() {
             headerShown: false
           }}
         />
-        {/* <Screen
+        <Screen
           name="SelectEntity"
           component={Entity}
           options={{
             title: 'Select your role',
             headerStyle: {backgroundColor: '#F0F0F0'}
           }}
-        /> */}
+        />
         <Screen
           name="Main"
           component={MainNavigator}
