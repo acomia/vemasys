@@ -21,8 +21,12 @@ import {LoadingIndicator} from '@bluecentury/components'
 export default function PlanningNewComment() {
   const navigation = useNavigation()
   const toast = useToast()
-  const {isPlanningLoading, createNavlogComment, navigationLogDetails} =
-    usePlanning()
+  const {
+    isPlanningLoading,
+    createNavlogComment,
+    navigationLogDetails,
+    getNavigationLogComments
+  } = usePlanning()
   const {user} = useEntity()
 
   const [comment, setComment] = useState('')
@@ -40,6 +44,7 @@ export default function PlanningNewComment() {
       user?.id
     )
     if (typeof res === 'object') {
+      getNavigationLogComments(navigationLogDetails?.id)
       toast.show({
         duration: 2000,
         render: () => {
