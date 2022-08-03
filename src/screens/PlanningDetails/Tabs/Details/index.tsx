@@ -469,7 +469,12 @@ const Details = () => {
             leftIcon={<Icon as={Ionicons} name="add" size="sm" />}
             mt={ms(20)}
             mb={ms(20)}
-            onPress={() => navigation.navigate('PlanningNewComment')}
+            onPress={() =>
+              navigation.navigate('AddEditComment', {
+                method: 'add',
+                routeFrom: 'Planning'
+              })
+            }
           >
             Add comment
           </Button>
