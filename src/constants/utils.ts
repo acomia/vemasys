@@ -140,3 +140,16 @@ export const formatConsumableLabel = (consumable: Consumable) => {
 
   return consumable.name
 }
+
+export function getAvailableColors(): string[] {
+  return [
+    '#A0AEC0',
+    '#F56565',
+    '#ED8936',
+    '#ECC94B',
+    '#667EEA',
+    '#ED64A6',
+    '#81E6D9',
+    '#10B981'
+  ]
+}

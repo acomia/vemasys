@@ -29,7 +29,8 @@ import {
   TechnicalRoutinesList,
   TechnicalRoutineDetails,
   FinancialInvoiceDetails,
-  TickerOilPriceDetails
+  TickerOilPriceDetails,
+  AddCrewMember
 } from '@bluecentury/screens'
 import {Colors} from '@bluecentury/styles'
 
@@ -253,6 +254,14 @@ export default function RootNavigator() {
           options={{
             headerShown: true,
             title: 'Ticker oil price details'
+          }}
+        />
+        <Screen
+          name={'AddCrewMember'}
+          component={AddCrewMember}
+          options={{
+            headerShown: true,
+            title: 'Add crew member'
           }}
         />
       </Group>

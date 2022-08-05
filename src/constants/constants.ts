@@ -90,3 +90,10 @@ export const informationTabs = [
   {key: 'rules', title: 'Rules'},
   {key: 'tickerOilPrices', title: 'Ticker Oil Prices'}
 ]
+
+// Crew constants
+export const crewTabs = [
+  {key: 'me', title: 'Me'},
+  {key: 'planning', title: 'Planning'}
+]
+export const VESSEL_CREW_PLANNING_ONBOARD = 'onboard'
