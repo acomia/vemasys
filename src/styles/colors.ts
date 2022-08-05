@@ -8,6 +8,7 @@ export const Colors = {
   secondary: '#6BBF87',
   warning: '#F9790B',
   danger: '#FA5555',
+  dangerDarker: '#c84444',
   black: '#000',
 
   // border color
