@@ -30,7 +30,13 @@ const login = _t('login')
 
 function Login() {
   const navigation = useNavigation()
-  const {isAuthenticatingUser, authenticate, token} = useAuth()
+  const {
+    isAuthenticatingUser,
+    authenticate,
+    token,
+    hasAuthenticationError,
+    errorMessage
+  } = useAuth()
   const [user, setUser] = useState<TCredentials>({username: '', password: ''})
   const [isShowPassword, setIsShowPassword] = useState(false)
   const [isUsernameEmpty, setIsUsernameEmpty] = useState(false)
@@ -163,6 +169,11 @@ function Login() {
                   : passwordRequired}
               </FormControl.ErrorMessage>
             </FormControl>
+            {hasAuthenticationError && (
+              <Box bgColor={Colors.danger} p={2} borderRadius="md">
+                <Text color={Colors.white}>{errorMessage}</Text>
+              </Box>
+            )}
           </VStack>
           <Button
             colorScheme="azure"
