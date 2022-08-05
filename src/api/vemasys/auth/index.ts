@@ -2,12 +2,12 @@ import {API} from '../../apiService'
 import {TCredentials, TUser} from '@bluecentury/api/models'
 
 const login = (userCredentials: TCredentials) => {
-  return API.post<TUser>('login_check', userCredentials)
+  return API.post('login_check', userCredentials)
     .then(response => {
       return response.data
     })
     .catch(error => {
-      console.error('Error: API Login ', error)
+      return Promise.reject(error?.response.data.message)
     })
 }
 
@@ -17,7 +17,8 @@ const logout = (userCredentials: TCredentials) => {
       return response.data
     })
     .catch(error => {
-      console.error('Error: API Logout ', error)
+      console.log('Error: API Logout ', error)
+      return Promise.reject(error)
     })
 }
 
