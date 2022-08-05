@@ -31,7 +31,7 @@ export default function Splash() {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasAuthHydrated, token, entityId])
+  }, [hasAuthHydrated, hasEntityHydrated, token, entityId])
 
   return (
     <Box flex="1" justifyContent="center" safeArea>
