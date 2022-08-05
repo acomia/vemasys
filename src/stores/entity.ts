@@ -6,18 +6,19 @@ import {ENTITY_TYPE_EXPLOITATION_VESSEL} from '@bluecentury/constants'
 import {VesselDetails} from '@bluecentury/types'
 
 type EntityState = {
+  hasEntityHydrated: boolean
   hasErrorLoadingCurrentUser: boolean
   hasErrorLoadingEntityUsers: boolean
   isLoadingCurrentUserInfo: boolean
   isLoadingEntityUsers: boolean
-  user: []
-  userVessels: []
-  entityUsers: []
-  entityId: string
+  user: Array<any>
+  userVessels: Array<any>
+  entityUsers: Array<any>
+  entityId: string | undefined
   entityType: string
   entityRole: string
-  entityUserId: string
-  vesselId: string
+  entityUserId: string | undefined
+  vesselId: string | undefined
   vesselDetails: VesselDetails | undefined
   selectedVessel: {}
   selectedEntity: {}
@@ -49,11 +50,14 @@ type EntityActions = {
   getUserInfo: () => void
   getEntityUsers: () => void
   selectEntityUser: (entity: any) => void
+  setHasHydrated: (state: boolean) => void
+  reset: () => void
 }
 
 type EntityStore = EntityState & EntityActions
 
 const initialEntityState: EntityState = {
+  hasEntityHydrated: false,
   hasErrorLoadingCurrentUser: false,
   hasErrorLoadingEntityUsers: false,
   isLoadingCurrentUserInfo: false,
@@ -61,11 +65,11 @@ const initialEntityState: EntityState = {
   user: [],
   userVessels: [],
   entityUsers: [],
-  entityId: '',
+  entityId: undefined,
   entityType: '',
   entityRole: '',
-  entityUserId: '',
-  vesselId: '',
+  entityUserId: undefined,
+  vesselId: undefined,
   vesselDetails: undefined,
   selectedVessel: {},
   selectedEntity: {},
@@ -178,11 +182,25 @@ export const useEntity = create(
             isLoadingEntityUsers: false
           })
         }
+      },
+      setHasHydrated: state => {
+        set({
+          hasEntityHydrated: state
+        })
+      },
+      reset: () => {
+        set({
+          ...initialEntityState,
+          hasEntityHydrated: true
+        })
       }
     }),
     {
       name: 'entity-storage',
-      getStorage: () => AsyncStorage
+      getStorage: () => AsyncStorage,
+      onRehydrateStorage: () => state => {
+        state?.setHasHydrated(true)
+      }
     }
   )
 )

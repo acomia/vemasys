@@ -23,17 +23,21 @@ type AuthActions = {
 
 type AuthStore = AuthState & AuthActions
 
+const initialState: AuthState = {
+  hasAuthHydrated: false,
+  token: undefined,
+  refreshToken: undefined,
+  isAuthenticatingUser: false,
+  errorMessage: '',
+  hasAuthenticationError: false,
+  isLoggingOut: false,
+  hasErrorLogout: false
+}
+
 export const useAuth = create(
   persist<AuthStore>(
     set => ({
-      hasAuthHydrated: false,
-      token: undefined,
-      refreshToken: undefined,
-      isAuthenticatingUser: false,
-      errorMessage: '',
-      hasAuthenticationError: false,
-      isLoggingOut: false,
-      hasErrorLogout: false,
+      ...initialState,
       authenticate: async credentials => {
         set({
           token: undefined,
@@ -62,10 +66,8 @@ export const useAuth = create(
       },
       logout: async () => {
         set({
-          token: undefined,
-          refreshToken: undefined,
-          isLoggingOut: false,
-          hasAuthenticationError: false
+          ...initialState,
+          hasAuthHydrated: true
         })
       },
       setHasHydrated: state => {
