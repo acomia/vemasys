@@ -37,7 +37,7 @@ const getPreviousNavLog = async (
 
 const reloadVesselHistoryNavLogs = async (vesselId: string, page: number) => {
   return API.get(
-    `navigation_logs?exploitationVessel=${vesselId}&type=logbook&page=${page}`
+    `navigation_logs?exploitationVessel=${vesselId}&type=logbook&page=${page}&itemsPerPage=3`
   )
     .then(response => {
       if (response.data) {
