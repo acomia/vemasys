@@ -1,10 +1,28 @@
 import {GeoPosition} from 'react-native-geolocation-service'
 import {API} from '@bluecentury/api/apiService'
+import {queryString} from '@bluecentury/utils'
 
-const getPreviousNavLog = async (vesselId: string) => {
-  return API.get(
-    `v3/navigation_logs?isCompleted=1&exists[plannedETA]=1&exists[departureDatetime]=1&order[plannedETA]=desc&exploitationVessel=${vesselId}`
-  )
+const getPreviousNavLog = async (
+  vesselId: string,
+  itemsPerPage?: number,
+  page?: number
+) => {
+  itemsPerPage = itemsPerPage || 5
+  page = page || 1
+
+  const params = {
+    isCompleted: 1,
+    // 'exists[plannedETA]': 1,
+    // 'exists[departureDatetime]': 1,
+    // 'order[plannedETA]': 'desc',
+    exploitationVessel: vesselId,
+    itemsPerPage: itemsPerPage || 5,
+    page: page || 1
+  }
+
+  let stringParams = queryString(params)
+
+  return API.get(`v3/navigation_logs${stringParams}`)
     .then(response => {
       if (response.data) {
         return response.data
@@ -69,11 +87,11 @@ const getLastCompleteNavLogs = async (navLogId: string) => {
       if (response.data) {
         return response.data
       } else {
-        throw new Error('Current navigation logs failed.')
+        throw new Error('Last completed navigation logs failed.')
       }
     })
     .catch(error => {
-      console.error('Error: Current navigation logs', error)
+      console.error('Error: Last completed navigation logs', error)
     })
 }
 
