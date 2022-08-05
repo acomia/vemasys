@@ -73,12 +73,6 @@ export default function Map({navigation}: Props) {
     longitudeDelta: LONGITUDE_DELTA
   })
   const [zoomLevel, setZoomLevel] = useState(null)
-  useFocusEffect(
-    useCallback(() => {
-      centerMapToCurrentLocation()
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-  )
   useLayoutEffect(() => {
     if (vesselId) {
       getPreviousNavigationLogs(vesselId)
@@ -106,7 +100,7 @@ export default function Map({navigation}: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentNavLogs])
 
-  if (isLoadingMap === false) {
+  useEffect(() => {
     if (vesselDetails) {
       console.log('vesselDetails ', vesselDetails.lastGeolocation)
       const {latitude, longitude} = vesselDetails.lastGeolocation
@@ -123,7 +117,8 @@ export default function Map({navigation}: Props) {
       let duration = 1000 * 3
       mapRef.current?.animateCamera(camera, {duration: duration})
     }
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vesselDetails])
 
   const renderBottomContent = () => (
     <Box backgroundColor="#fff" height={ms(440)} px={ms(30)} py={ms(20)}>
