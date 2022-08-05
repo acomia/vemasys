@@ -3,6 +3,7 @@ import {ActivityIndicator} from 'react-native'
 import {Box, Center, Image} from 'native-base'
 import {Images} from '@bluecentury/assets'
 import {useAuth, useEntity} from '@bluecentury/stores'
+// import {} from '@bluecentury/utils'
 import {
   CommonActions,
   NavigationProp,
@@ -11,11 +12,11 @@ import {
 
 export default function Splash() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>()
-  const {_hasHydrated, token} = useAuth(state => state)
-  const entityId = useEntity(state => state.entityId)
+  const {hasAuthHydrated, token} = useAuth(state => state)
+  const {hasEntityHydrated, entityId} = useEntity(state => state)
 
   useEffect(() => {
-    if (_hasHydrated) {
+    if (hasAuthHydrated && hasEntityHydrated) {
       if (token && entityId) {
         navigation.dispatch(
           CommonActions.reset({
@@ -30,7 +31,7 @@ export default function Splash() {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [_hasHydrated, token, entityId])
+  }, [hasAuthHydrated, token, entityId])
 
   return (
     <Box flex="1" justifyContent="center" safeArea>
