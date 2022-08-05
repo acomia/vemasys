@@ -1,4 +1,5 @@
-import React, {useRef, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
+import {Platform} from 'react-native'
 import {
   Box,
   VStack,
@@ -14,11 +15,13 @@ import {
 } from 'native-base'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import {ms} from 'react-native-size-matters'
+
 import {Colors} from '@bluecentury/styles'
 import {TCredentials} from '@bluecentury/api/models'
 import {Images} from '@bluecentury/assets'
 import {_t} from '@bluecentury/constants'
 import {useAuth} from '@bluecentury/stores'
+import {CommonActions, useNavigation} from '@react-navigation/native'
 
 const usernameRequired = _t('usernameRequired')
 const passwordRequired = _t('passwordRequired')
@@ -26,7 +29,14 @@ const allFieldsRequired = _t('allFieldsRequired')
 const login = _t('login')
 
 function Login() {
-  const {isAuthenticatingUser, authenticate} = useAuth()
+  const navigation = useNavigation()
+  const {
+    isAuthenticatingUser,
+    authenticate,
+    token,
+    hasAuthenticationError,
+    errorMessage
+  } = useAuth()
   const [user, setUser] = useState<TCredentials>({username: '', password: ''})
   const [isShowPassword, setIsShowPassword] = useState(false)
   const [isUsernameEmpty, setIsUsernameEmpty] = useState(false)
@@ -48,8 +58,24 @@ function Login() {
     authenticate(user)
   }
   const handleOnSubmitEditingPassword = () => handleOnPressLogin()
+  useEffect(() => {
+    if (token) {
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{name: 'Splash'}]
+        })
+      )
+    }
+  })
   return (
-    <KeyboardAvoidingView flex={1} behavior="padding">
+    <KeyboardAvoidingView
+      h={{
+        base: '100%',
+        lg: 'auto'
+      }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
       <Box flex="1" safeArea>
         <VStack space="10" flex="1" p="5" justifyContent="center">
           <Center>
@@ -143,6 +169,11 @@ function Login() {
                   : passwordRequired}
               </FormControl.ErrorMessage>
             </FormControl>
+            {hasAuthenticationError && (
+              <Box bgColor={Colors.danger} p={2} borderRadius="md">
+                <Text color={Colors.white}>{errorMessage}</Text>
+              </Box>
+            )}
           </VStack>
           <Button
             colorScheme="azure"

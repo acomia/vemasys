@@ -16,7 +16,12 @@ type TechnicalState = {
   tasksCategory?: [] | undefined
   tasksByCategory?: [] | undefined
   routinesCategory?: [] | undefined
+  routinesByCategory?: [] | undefined
+  routineDetails?: [] | undefined
   certificates?: [] | undefined
+  lastMeasurements?: []
+  inventory?: []
+  consumableTypes?: []
 }
 
 type TechnicalActions = {
@@ -32,14 +37,21 @@ type TechnicalActions = {
   deleteTask?: (taskId: string) => void
   createVesselTask?: (task: Task) => void
   updateVesselTask?: (taskId: string, task: Task) => void
-  uploadTaskImageFile?: (
+  uploadFileBySubject?: (
     subject: string,
     file: ImageFile,
     accessLevel: string,
     id: number
   ) => void
   getVesselRoutines?: (vesselId: string) => void
+  getVesselRoutinesByCategory?: (vesselId: string, categoryKey: string) => void
+  getVesselRoutineDetails?: (id: string) => void
   getVesselCertificates?: (vesselId: string) => void
+  getVesselPartLastMeasurements?: (id: string) => void
+  createNewConsumptionMeasure?: (resId: string, value: string) => void
+  getVesselInventory?: (vesselId: string) => void
+  getConsumableTypes?: () => void
+  updateVesselInventoryItem?: (quantity: number, consumableId: number) => void
 }
 
 type TechnicalStore = TechnicalState & TechnicalActions
@@ -277,7 +289,7 @@ export const useTechnical = create(
           set({isTechnicalLoading: false})
         }
       },
-      uploadTaskImageFile: async (
+      uploadFileBySubject: async (
         subject: string,
         file: ImageFile,
         accessLevel: string,
@@ -285,7 +297,7 @@ export const useTechnical = create(
       ) => {
         set({isTechnicalLoading: true})
         try {
-          const response = await API.uploadTaskImageFile(
+          const response = await API.uploadFileBySubject(
             subject,
             file,
             accessLevel,
@@ -335,6 +347,124 @@ export const useTechnical = create(
             set({
               isTechnicalLoading: false,
               certificates: []
+            })
+          }
+        } catch (error) {
+          set({isTechnicalLoading: false})
+        }
+      },
+      getVesselPartLastMeasurements: async (id: string) => {
+        set({isTechnicalLoading: true, lastMeasurements: []})
+        try {
+          const response = await API.reloadVesselPartLastMeasurements(id)
+          if (Array.isArray(response)) {
+            set({
+              isTechnicalLoading: false,
+              lastMeasurements: response
+            })
+          } else {
+            set({
+              isTechnicalLoading: false,
+              lastMeasurements: []
+            })
+          }
+        } catch (error) {
+          set({isTechnicalLoading: false})
+        }
+      },
+      createNewConsumptionMeasure: async (resId: string, value: string) => {
+        set({isTechnicalLoading: true})
+        try {
+          const response = await API.createNewConsumptionMeasure(resId, value)
+          set({
+            isTechnicalLoading: false
+          })
+          return response
+        } catch (error) {
+          set({isTechnicalLoading: false})
+        }
+      },
+      getVesselInventory: async (vesselId: string) => {
+        set({isTechnicalLoading: true, inventory: []})
+        try {
+          const response = await API.reloadVesselInventory(vesselId)
+          if (Array.isArray(response)) {
+            set({isTechnicalLoading: false, inventory: response})
+          } else {
+            set({isTechnicalLoading: false, inventory: []})
+          }
+        } catch (error) {
+          set({isTechnicalLoading: false})
+        }
+      },
+      getConsumableTypes: async () => {
+        set({isTechnicalLoading: true, consumableTypes: []})
+        try {
+          const response = await API.reloadConsumableTypes()
+          if (Array.isArray(response)) {
+            set({isTechnicalLoading: false, consumableTypes: response})
+          } else {
+            set({isTechnicalLoading: false, consumableTypes: []})
+          }
+        } catch (error) {
+          set({isTechnicalLoading: false})
+        }
+      },
+      updateVesselInventoryItem: async (
+        quantity: number,
+        consumableId: number
+      ) => {
+        set({isTechnicalLoading: true})
+        try {
+          const response = await API.updateVesselInventoryItem(
+            quantity,
+            consumableId
+          )
+          set({isTechnicalLoading: false})
+          return response
+        } catch (error) {
+          set({isTechnicalLoading: false})
+        }
+      },
+      getVesselRoutinesByCategory: async (
+        vesselId: string,
+        categoryKey: string
+      ) => {
+        set({isTechnicalLoading: true, routinesByCategory: []})
+        try {
+          const response = await API.reloadRoutinesByCategory(
+            vesselId,
+            categoryKey
+          )
+
+          if (Array.isArray(response)) {
+            set({
+              isTechnicalLoading: false,
+              routinesByCategory: response
+            })
+          } else {
+            set({
+              isTechnicalLoading: false,
+              routinesByCategory: []
+            })
+          }
+        } catch (error) {
+          set({isTechnicalLoading: false})
+        }
+      },
+      getVesselRoutineDetails: async (id: string) => {
+        set({isTechnicalLoading: true, routineDetails: []})
+        try {
+          const response = await API.reloadRoutineDetails(id)
+          if (typeof response === 'object') {
+            set({
+              isTechnicalLoading: false,
+              routineDetails: response
+            })
+          } else {
+            set({
+              isTechnicalLoading: false,
+              routineDetails: []
             })
           }
         } catch (error) {

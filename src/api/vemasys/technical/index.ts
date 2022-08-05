@@ -183,7 +183,7 @@ const deleteVesselTask = async (taskId: string) => {
     .catch(error => console.error('Error: Vessel delete task data', error))
 }
 
-const uploadTaskImageFile = async (
+const uploadFileBySubject = async (
   subject: string,
   file: ImageFile,
   accessLevel: string,
@@ -251,6 +251,37 @@ const reloadRoutines = async (vesselId: string) => {
     )
 }
 
+const reloadRoutinesByCategory = async (
+  vesselId: string,
+  categoryKey: string
+) => {
+  return API.get(
+    `v3/maintenance_routines/sections/${categoryKey}?exploitationVesselId=${vesselId}`
+  )
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Vessel routines by category failed.')
+      }
+    })
+    .catch(error =>
+      console.error('Error: Vessel routines by category data', error)
+    )
+}
+
+const reloadRoutineDetails = async (id: string) => {
+  return API.get(`v3/maintenance_routines/${id}`)
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Vessel routine details failed.')
+      }
+    })
+    .catch(error => console.error('Error: Vessel routine details data', error))
+}
+
 const reloadCertificates = async (vesselId: string) => {
   return API.get(`certificates?exploitationVessel.id=${vesselId}`)
     .then(response => {
@@ -261,6 +292,72 @@ const reloadCertificates = async (vesselId: string) => {
       }
     })
     .catch(error => console.error('Error: Vessel certificates data', error))
+}
+
+const createNewConsumptionMeasure = async (resId: string, value: string) => {
+  return API.post(`consumption_measures`, {
+    vesselPart: {
+      id: resId
+    },
+    user: {
+      id: useEntity.getState().user.id
+    },
+    date: new Date(),
+    value: value.toString(),
+    total: value.toString(),
+    type: ''
+  })
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Create consumption measures failed.')
+      }
+    })
+    .catch(error =>
+      console.error('Error: Create consumption measures data', error)
+    )
+}
+
+const reloadVesselInventory = async (vesselId: string) => {
+  return API.get(
+    `consumable_exploitation_vessels?exploitationVesselId=${vesselId}`
+  )
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Vessel inventory failed.')
+      }
+    })
+    .catch(error => console.error('Error: Vessel inventory data', error))
+}
+
+const reloadConsumableTypes = async () => {
+  return API.get(`consumable_types`)
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Vessel consumable types failed.')
+      }
+    })
+    .catch(error => console.error('Error: Vessel consumable types data', error))
+}
+
+const updateVesselInventoryItem = async (
+  quantity: number,
+  consumableId: number
+) => {
+  return API.put(`consumable_exploitation_vessels/${consumableId}`, {quantity})
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Update consumable stock failed.')
+      }
+    })
+    .catch(error => console.error('Error: Update consumable stock data', error))
 }
 
 export {
@@ -275,9 +372,15 @@ export {
   reloadTasksByCategory,
   createTaskComment,
   deleteVesselTask,
-  uploadTaskImageFile,
+  uploadFileBySubject,
   createVesselTask,
   updateVesselTask,
   reloadRoutines,
-  reloadCertificates
+  reloadRoutinesByCategory,
+  reloadRoutineDetails,
+  reloadCertificates,
+  createNewConsumptionMeasure,
+  reloadVesselInventory,
+  reloadConsumableTypes,
+  updateVesselInventoryItem
 }

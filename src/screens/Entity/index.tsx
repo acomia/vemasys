@@ -9,6 +9,7 @@ import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
 import {EntityCard, LoadingIndicator} from '@bluecentury/components'
 import {Shadow} from 'react-native-shadow-2'
+import {resetAllStates} from '@bluecentury/utils'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 
@@ -41,10 +42,11 @@ export default function Entity({navigation}: Props) {
     getEntityUsers()
   }
   const handleOnPressLogout = () => {
+    resetAllStates()
     logout()
   }
   return (
-    <Box flex={1} bg={Colors.light} safeArea>
+    <Box flex={1} bg={Colors.light} pt={2}>
       <Box
         bg={Colors.white}
         flex={1}
@@ -98,7 +100,7 @@ export default function Entity({navigation}: Props) {
               bg={Colors.danger}
               _light={{
                 _pressed: {
-                  bg: Colors.danger
+                  bg: Colors.dangerDarker
                 }
               }}
               isLoading={isLoggingOut}

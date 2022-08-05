@@ -13,6 +13,7 @@ type RootStackParamList = {
   PlanningDetails: {navlog: any; title?: string}
   AddEditBulkCargo: {cargo?: any; method?: string}
   PlanningNewComment: undefined
+  AddEditComment: {comment?: any; method: string; routeFrom?: string}
   AddEditNavlogAction: {method: string; navlogAction?: {} | undefined}
   TechnicalTasksList: {category: string; title: string}
   TechnicalTaskDetails: {task: any; category: string}
@@ -20,6 +21,11 @@ type RootStackParamList = {
   AddEditTechnicalTask: {method: string; task?: any}
   TechnicalCertificateList: {certificates: any; title: string}
   TechnicalCertificateDetails: {certificate: any}
+  Measurements: {reservoir: any; lastMeasurement?: []}
+  TechnicalRoutinesList: {category: string; title: string}
+  TechnicalRoutineDetails: {id: any; title: string}
+  FinancialInvoiceDetails: {id: string; routeFrom: string; title: string}
+  TickerOilPriceDetails: undefined
 }
 
 type MainStackParamList = {

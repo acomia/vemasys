@@ -55,21 +55,21 @@ const Routines = () => {
         >
           {routinesCategory?.map((task: any, index) => {
             let icon = undefined
-            switch (task.icon) {
+            switch (task.key) {
               case 'clipboard':
                 icon = Icons.clipboard
                 break
-              case 'calendar-week':
-                icon = Icons.calendar_week
+              case 'archived':
+                icon = Icons.status_archived
                 break
-              case 'layer-group':
-                icon = Icons.layer_group
+              case 'in_order':
+                icon = Icons.status_check_alt
+                break
+              case 'due':
+                icon = Icons.status_exclamation_alt
                 break
               case 'overdue':
-                icon = Icons.overdue_tasks
-                break
-              case 'flag':
-                icon = Icons.flag
+                icon = Icons.status_x_alt
                 break
               default:
                 icon = Icons.clipboard
@@ -79,12 +79,12 @@ const Routines = () => {
               <TouchableOpacity
                 key={index}
                 activeOpacity={0.6}
-                // onPress={() =>
-                //   navigation.navigate('TechnicalTasksList', {
-                //     category: task.key,
-                //     title: task.label
-                //   })
-                // }
+                onPress={() =>
+                  navigation.navigate('TechnicalRoutinesList', {
+                    category: task.key,
+                    title: task.label
+                  })
+                }
               >
                 <Box
                   w={width / 2 - 30}

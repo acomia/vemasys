@@ -1,14 +1,21 @@
-import React from 'react'
+import React, {useCallback, useEffect} from 'react'
+import {ImageSourcePropType} from 'react-native'
 import {Box, HStack, View} from 'native-base'
 import {createDrawerNavigator} from '@react-navigation/drawer'
-import {DrawerActions} from '@react-navigation/native'
+import {
+  CommonActions,
+  DrawerActions,
+  useFocusEffect
+} from '@react-navigation/native'
 import {
   Notification,
   Entity,
   Map,
   Planning,
   Charters,
-  Technical
+  Technical,
+  Financial,
+  Information
 } from '@bluecentury/screens'
 import {Sidebar, IconButton} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
@@ -16,14 +23,49 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {Screens} from '@bluecentury/constants'
 import {ms} from 'react-native-size-matters'
 import {Colors} from '@bluecentury/styles'
-import {useMap} from '@bluecentury/stores'
+import {useAuth, useMap} from '@bluecentury/stores'
+import {navigationRef} from './navigationRef'
 
 const {Navigator, Screen} = createDrawerNavigator<MainStackParamList>()
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Main'>
 
 export default function MainNavigator({navigation}: Props) {
-  const {activeFormations} = useMap()
+  const token = useAuth(state => state.token)
+  const {activeFormations, getActiveFormations} = useMap()
+  let scanIcon: ImageSourcePropType = Icons.qr
+  let scanNavigateTo: () => void
+
+  useFocusEffect(
+    useCallback(() => {
+      getActiveFormations()
+    }, [])
+  )
+
+  useEffect(() => {
+    if (typeof token === 'undefined') {
+      navigationRef.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [
+            {
+              name: 'Splash'
+            }
+          ]
+        })
+      )
+    }
+  }, [token])
+
+  useEffect(() => {
+    if (activeFormations?.length > 0) {
+      scanIcon = Icons.qr
+      scanNavigateTo = () => navigation.navigate('QRScanner')
+    } else {
+      scanIcon = Icons.formations
+      scanNavigateTo = () => navigation.navigate('Formations')
+    }
+  }, [activeFormations])
 
   return (
     <Navigator
@@ -39,14 +81,8 @@ export default function MainNavigator({navigation}: Props) {
           <Box flexDirection="row" alignItems="center" mr={ms(20)}>
             <HStack space="3">
               <IconButton
-                source={
-                  activeFormations?.length > 0 ? Icons.formations : Icons.qr
-                }
-                onPress={() =>
-                  navigation.navigate(
-                    activeFormations?.length > 0 ? 'Formations' : 'QRScanner'
-                  )
-                }
+                source={scanIcon}
+                onPress={() => scanNavigateTo()}
                 size={ms(20)}
               />
               <IconButton
@@ -75,6 +111,8 @@ export default function MainNavigator({navigation}: Props) {
       <Screen name={Screens.Planning} component={Planning} />
       <Screen name={Screens.Charters} component={Charters} />
       <Screen name={Screens.Technical} component={Technical} />
+      <Screen name={Screens.Financial} component={Financial} />
+      <Screen name={Screens.Information} component={Information} />
       <Screen
         name={Screens.ChangeRole}
         component={Entity}

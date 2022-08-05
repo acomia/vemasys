@@ -16,6 +16,7 @@ export const FILE_TYPE_PDF = 'application/pdf'
 export const FILE_TYPE_JPEG = 'image/jpeg'
 
 // Planning constants
+export const VESSEL_PART_CARGO_TYPE = 'Cargo'
 export const planningTabs = [
   {key: 'planning', title: 'Planning'},
   {key: 'logbook', title: 'Logbook'}
@@ -26,6 +27,31 @@ export const planningDetailsTabs = [
   {key: 'cargoList', title: 'Cargo List'},
   {key: 'cargoHolds', title: 'Cargo Holds'},
   {key: 'documents', title: 'Documents'}
+]
+
+// Financial constants
+export const financialTabs = [
+  {key: 'overview', title: 'Overview'},
+  {key: 'costs', title: 'Costs'},
+  {key: 'revenue', title: 'Revenue'},
+  {key: 'scan', title: 'Scan'}
+]
+
+export const incomingStatuses = [
+  {label: 'New', value: 'new'},
+  {label: 'Read', value: 'read'},
+  {label: 'Accepted', value: 'accepted'},
+  {label: 'On hold', value: 'on_hold'},
+  {label: 'Paid', value: 'paid'},
+  {label: 'Unpaid', value: 'unpaid'}
+]
+
+export const outgoingStatuses = [
+  {label: 'Draft', value: 'draft'},
+  {label: 'Sent', value: 'sent'},
+  {label: 'Read', value: 'read'},
+  {label: 'Payment confirmed', value: 'payment_confirmed'},
+  {label: 'Unpaid', value: 'unpaid'}
 ]
 
 // Charters constants
@@ -56,4 +82,11 @@ export const technicalTabs = [
   {key: 'routines', title: 'Routines'},
   {key: 'certificates', title: 'Certificates'},
   {key: 'inventory', title: 'Inventory'}
+]
+
+// Information constants
+export const informationTabs = [
+  {key: 'pegels', title: 'Pegels'},
+  {key: 'rules', title: 'Rules'},
+  {key: 'tickerOilPrices', title: 'Ticker Oil Prices'}
 ]
