@@ -38,7 +38,7 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
     isTechnicalLoading,
     createVesselTask,
     updateVesselTask,
-    uploadTaskImageFile
+    uploadFileBySubject
   } = useTechnical()
   const {vesselId} = useEntity()
   const types = [
@@ -125,7 +125,7 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
       })
       const res = await createVesselTask(newTask)
       if (typeof res === 'object' && res?.id) {
-        const upload = await uploadTaskImageFile(
+        const upload = await uploadFileBySubject(
           'Task',
           imgFile,
           'shared_within_company',
@@ -140,7 +140,7 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
     } else {
       const res = await updateVesselTask(task?.id, taskData)
       if (typeof res === 'object' && res?.id) {
-        const upload = await uploadTaskImageFile(
+        const upload = await uploadFileBySubject(
           'Task',
           imgFile,
           'shared_within_company',

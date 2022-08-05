@@ -8,15 +8,20 @@ import {
   WarningOutlineIcon,
   TextArea,
   HStack,
-  useToast
+  useToast,
+  Image,
+  Modal,
+  Divider
 } from 'native-base'
 import {Shadow} from 'react-native-shadow-2'
 import {ms} from 'react-native-size-matters'
+import {NativeStackScreenProps} from '@react-navigation/native-stack'
+import * as ImagePicker from 'react-native-image-picker'
 
 import {Colors} from '@bluecentury/styles'
 import {useEntity, usePlanning, useTechnical} from '@bluecentury/stores'
 import {LoadingIndicator} from '@bluecentury/components'
-import {NativeStackScreenProps} from '@react-navigation/native-stack'
+import {TouchableOpacity} from 'react-native'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const AddEditComment = ({navigation, route}: Props) => {
@@ -29,13 +34,21 @@ const AddEditComment = ({navigation, route}: Props) => {
     getNavigationLogComments,
     navigationLogDetails
   } = usePlanning()
+  const {uploadFileBySubject} = useTechnical()
   const {user} = useEntity()
-  console.log(comment)
-
+  console.log('new', comment)
   const [description, setDescription] = useState(
     comment !== undefined ? comment?.description?.replace(/(\\)/g, '') : ''
   )
   const [isCommentEmpty, setIsCommentEmpty] = useState(false)
+  const [imgFile, setImgFile] = useState<ImageFile>({
+    id: '',
+    uri: '',
+    fileName: '',
+    type: ''
+  })
+  const [imgModal, setImgModal] = useState(false)
+  const [viewImg, setViewImg] = useState(false)
 
   const showToast = (text: string, res: string) => {
     toast.show({
@@ -71,7 +84,19 @@ const AddEditComment = ({navigation, route}: Props) => {
         res = await updateComment(comment?.id, description)
         if (typeof res === 'object') {
           getNavigationLogComments(navigationLogDetails?.id)
-          showToast('comment updated.', 'success')
+          if (imgFile.fileName !== '') {
+            const upload = await uploadFileBySubject(
+              'NavigationLog',
+              imgFile,
+              'shared_within_company',
+              res?.id
+            )
+            if (typeof upload === 'object') {
+              showToast('comment updated.', 'success')
+            }
+          } else {
+            showToast('comment updated.', 'success')
+          }
         } else {
           showToast('comment update failed.', 'failed')
         }
@@ -85,13 +110,40 @@ const AddEditComment = ({navigation, route}: Props) => {
           user?.id
         )
         if (typeof res === 'object') {
-          showToast('New comment added.', 'success')
+          getNavigationLogComments(navigationLogDetails?.id)
+          const upload = await uploadFileBySubject(
+            'NavigationLog',
+            imgFile,
+            'shared_within_company',
+            res?.id
+          )
+          console.log('new', res?.id)
+          if (typeof upload === 'object') {
+            showToast('New comment added.', 'success')
+          }
         } else {
           showToast('New comment failed.', 'failed')
         }
       } else if (routeFrom === 'Technical') {
       }
     }
+  }
+
+  const launchImageLibrary = () => {
+    let options: ImagePicker.ImageLibraryOptions = {
+      mediaType: 'photo'
+    }
+
+    ImagePicker.launchImageLibrary(options, response => {
+      setImgFile({
+        ...imgFile,
+        id: response.assets[0].id,
+        uri: response.assets[0].uri,
+        fileName: response.assets[0].fileName,
+        type: response.assets[0].type
+      })
+    })
+    setImgModal(false)
   }
 
   if (isPlanningLoading) return <LoadingIndicator />
@@ -108,7 +160,7 @@ const AddEditComment = ({navigation, route}: Props) => {
           {method === 'edit' ? 'Edit' : 'Add'} a comment
         </Text>
 
-        <FormControl isRequired isInvalid={isCommentEmpty} mt={ms(25)}>
+        <FormControl isRequired isInvalid={isCommentEmpty} my={ms(25)}>
           <FormControl.Label color={Colors.disabled}>
             Description
           </FormControl.Label>
@@ -125,6 +177,30 @@ const AddEditComment = ({navigation, route}: Props) => {
             Please fill in the description
           </FormControl.ErrorMessage>
         </FormControl>
+        {imgFile.uri !== '' || imgFile.fileName !== '' ? (
+          <HStack>
+            <TouchableOpacity
+              activeOpacity={0.6}
+              onPress={() => setImgModal(true)}
+            >
+              <Image
+                alt="file-upload"
+                source={{uri: imgFile.uri}}
+                w={ms(136)}
+                h={ms(114)}
+              />
+            </TouchableOpacity>
+          </HStack>
+        ) : null}
+
+        <Button
+          size="md"
+          mt={ms(10)}
+          bg={Colors.primary}
+          onPress={launchImageLibrary}
+        >
+          Upload image
+        </Button>
       </ScrollView>
       <Box bg={Colors.white} position="relative">
         <Shadow
@@ -154,6 +230,82 @@ const AddEditComment = ({navigation, route}: Props) => {
           </HStack>
         </Shadow>
       </Box>
+      {/* Image Actions Modal */}
+      <Modal isOpen={imgModal} size="full" animationPreset="slide">
+        <Modal.Content width="95%" marginBottom={0} mt="auto" bg="transparent">
+          <Box py={ms(14)}>
+            <Box bg={Colors.white} py={ms(10)} borderRadius={ms(5)}>
+              <Text textAlign="center" fontSize={ms(12)} fontWeight="bold">
+                Actions
+              </Text>
+              <Divider my={ms(14)} />
+              <TouchableOpacity activeOpacity={0.6}>
+                <Text
+                  textAlign="center"
+                  fontSize={ms(16)}
+                  fontWeight="bold"
+                  onPress={() => setViewImg(true)}
+                >
+                  View image
+                </Text>
+              </TouchableOpacity>
+              <Divider my={ms(14)} />
+              <TouchableOpacity
+                activeOpacity={0.6}
+                onPress={launchImageLibrary}
+              >
+                <Text textAlign="center" fontSize={ms(16)} fontWeight="bold">
+                  Upload new version
+                </Text>
+              </TouchableOpacity>
+              <Divider my={ms(14)} />
+              <TouchableOpacity
+                activeOpacity={0.6}
+                onPress={() => {
+                  setImgFile({...imgFile, uri: '', fileName: ''}),
+                    setImgModal(false)
+                }}
+              >
+                <Text
+                  textAlign="center"
+                  color={Colors.danger}
+                  fontSize={ms(16)}
+                  fontWeight="bold"
+                  mb={ms(5)}
+                >
+                  Delete
+                </Text>
+              </TouchableOpacity>
+            </Box>
+            <Button
+              size="lg"
+              mt={ms(10)}
+              bg={Colors.white}
+              onPress={() => setImgModal(false)}
+            >
+              <Text
+                textAlign="center"
+                color={Colors.disabled}
+                fontSize={ms(16)}
+                fontWeight="bold"
+              >
+                Cancel
+              </Text>
+            </Button>
+          </Box>
+        </Modal.Content>
+      </Modal>
+      {/* Preview Image Modal */}
+      <Modal isOpen={viewImg} size="full" onClose={() => setViewImg(false)}>
+        <Modal.Content>
+          <Image
+            alt="file-preview"
+            source={{uri: imgFile.uri}}
+            w="100%"
+            h="100%"
+          />
+        </Modal.Content>
+      </Modal>
     </Box>
   )
 }
