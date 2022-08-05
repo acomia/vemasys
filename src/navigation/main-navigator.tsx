@@ -2,7 +2,11 @@ import React, {useCallback, useEffect} from 'react'
 import {ImageSourcePropType} from 'react-native'
 import {Box, HStack, View} from 'native-base'
 import {createDrawerNavigator} from '@react-navigation/drawer'
-import {DrawerActions, useFocusEffect} from '@react-navigation/native'
+import {
+  CommonActions,
+  DrawerActions,
+  useFocusEffect
+} from '@react-navigation/native'
 import {
   Notification,
   Entity,
@@ -20,13 +24,15 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {Screens} from '@bluecentury/constants'
 import {ms} from 'react-native-size-matters'
 import {Colors} from '@bluecentury/styles'
-import {useMap} from '@bluecentury/stores'
+import {useAuth, useMap} from '@bluecentury/stores'
+import {navigationRef} from './navigationRef'
 
 const {Navigator, Screen} = createDrawerNavigator<MainStackParamList>()
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Main'>
 
 export default function MainNavigator({navigation}: Props) {
+  const token = useAuth(state => state.token)
   const {activeFormations, getActiveFormations} = useMap()
   let scanIcon: ImageSourcePropType = Icons.qr
   let scanNavigateTo: () => void
@@ -36,6 +42,21 @@ export default function MainNavigator({navigation}: Props) {
       getActiveFormations()
     }, [])
   )
+
+  useEffect(() => {
+    if (typeof token === 'undefined') {
+      navigationRef.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [
+            {
+              name: 'Splash'
+            }
+          ]
+        })
+      )
+    }
+  }, [token])
 
   useEffect(() => {
     if (activeFormations?.length > 0) {

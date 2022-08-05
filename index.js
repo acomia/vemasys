@@ -10,7 +10,9 @@ import {name as appName} from './app.json'
 LogBox.ignoreLogs([
   'ViewPropTypes will be removed',
   '`Image`',
-  '`new NativeEventEmitter()`'
+  '`new NativeEventEmitter()`',
+  'Unsupported dashed',
+  'Task orphaned'
 ])
 
 AppRegistry.registerComponent(appName, () => App)
