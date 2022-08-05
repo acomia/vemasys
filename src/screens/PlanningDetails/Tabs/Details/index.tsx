@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {TouchableOpacity} from 'react-native'
+import {RefreshControl, TouchableOpacity} from 'react-native'
 import {
   Avatar,
   Box,
@@ -309,11 +309,25 @@ const Details = () => {
     )
   }
 
+  const onPullToReload = () => {
+    getNavigationLogDetails(navlog.id)
+    getNavigationLogActions(navlog.id)
+    getNavigationLogComments(navlog.id)
+    getNavigationLogCargoHolds(physicalVesselId)
+  }
+
   if (isPlanningLoading) return <LoadingIndicator />
   return (
     <Box flex="1">
       <ScrollView
         contentContainerStyle={{flexGrow: 1, paddingBottom: 20}}
+        scrollEventThrottle={16}
+        refreshControl={
+          <RefreshControl
+            onRefresh={onPullToReload}
+            refreshing={isPlanningLoading}
+          />
+        }
         bg={Colors.white}
         px={ms(12)}
         py={ms(20)}
@@ -469,7 +483,12 @@ const Details = () => {
             leftIcon={<Icon as={Ionicons} name="add" size="sm" />}
             mt={ms(20)}
             mb={ms(20)}
-            onPress={() => navigation.navigate('PlanningNewComment')}
+            onPress={() =>
+              navigation.navigate('AddEditComment', {
+                method: 'add',
+                routeFrom: 'Planning'
+              })
+            }
           >
             Add comment
           </Button>

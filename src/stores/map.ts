@@ -4,16 +4,24 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import {GeoPosition} from 'react-native-geolocation-service'
 
 import * as API from '@bluecentury/api/vemasys'
+import {initial} from 'lodash'
 
 type MapState = {
+  prevNavLogs: Array<any>
+  plannedNavLogs: Array<any>
+  currentNavLogs: Array<any>
+  lastCompleteNavLogs: Array<any>
+  activeFormations: Array<any>
   isLoadingMap: boolean
-  prevNavLogs: [] | undefined
-  plannedNavLogs: [] | undefined
-  currentNavLogs: [] | undefined
-  lastCompleteNavLogs: [] | undefined
-  activeFormations: [] | undefined
+  isLoadingPreviousNavLogs: boolean
+  isLoadingCurrentNavLogs: boolean
+  isLoadingPlannedNavLogs: boolean
+  hasErrorLoadingPreviousNavLogs: boolean
+  hasErrorLoadingCurrentNavLogs: boolean
+  hasErrorLoadingPlannedNavLogs: boolean
   tokenHasConnectedToShip: boolean
   isMobileTrackingEnable: boolean
+  hasErrorLoadingNavigationLogs: boolean
 }
 
 type MapActions = {
@@ -31,83 +39,103 @@ type MapActions = {
 
 type MapStore = MapState & MapActions
 
+const initialMapState: MapState = {
+  prevNavLogs: [],
+  plannedNavLogs: [],
+  currentNavLogs: [],
+  lastCompleteNavLogs: [],
+  activeFormations: [],
+  isLoadingMap: false,
+  isLoadingCurrentNavLogs: false,
+  isLoadingPlannedNavLogs: false,
+  isLoadingPreviousNavLogs: false,
+  tokenHasConnectedToShip: false,
+  isMobileTrackingEnable: false,
+  hasErrorLoadingCurrentNavLogs: false,
+  hasErrorLoadingPlannedNavLogs: false,
+  hasErrorLoadingPreviousNavLogs: false,
+  hasErrorLoadingNavigationLogs: false
+}
+
 export const useMap = create(
   persist<MapStore>(
     (set, get) => ({
-      isLoadingMap: false,
-      prevNavLogs: [],
-      plannedNavLogs: [],
-      currentNavLogs: [],
-      lastCompleteNavLogs: [],
-      activeFormations: [],
-      tokenHasConnectedToShip: false,
-      isMobileTrackingEnable: false,
+      ...initialMapState,
       getPreviousNavigationLogs: async (vesselId: string) => {
         set({
-          isLoadingMap: true
+          isLoadingPreviousNavLogs: true,
+          hasErrorLoadingPreviousNavLogs: false
         })
         try {
           const response: any = await API.getPreviousNavLog(vesselId)
           if (Array.isArray(response)) {
             set({
-              isLoadingMap: false,
               prevNavLogs: response
             })
           } else {
             set({
-              isLoadingMap: false,
               prevNavLogs: []
             })
           }
+          set({
+            isLoadingPreviousNavLogs: false
+          })
         } catch (error) {
           set({
-            isLoadingMap: false
+            isLoadingPreviousNavLogs: false,
+            hasErrorLoadingPreviousNavLogs: true
           })
         }
       },
       getPlannedNavigationLogs: async (vesselId: string) => {
         set({
-          isLoadingMap: true
+          isLoadingPlannedNavLogs: true,
+          hasErrorLoadingPlannedNavLogs: false
         })
         try {
           const response: any = await API.getPlannedNavLog(vesselId)
           if (Array.isArray(response)) {
             set({
-              isLoadingMap: false,
               plannedNavLogs: response
             })
           } else {
             set({
-              isLoadingMap: false,
               plannedNavLogs: []
             })
           }
+          set({
+            isLoadingPlannedNavLogs: false
+          })
         } catch (error) {
           set({
-            isLoadingMap: false
+            isLoadingPlannedNavLogs: false,
+            hasErrorLoadingPlannedNavLogs: true
           })
         }
       },
       getCurrentNavigationLogs: async (vesselId: string) => {
         set({
-          isLoadingMap: true
+          isLoadingCurrentNavLogs: true,
+          hasErrorLoadingCurrentNavLogs: false
         })
         try {
           const response: any = await API.getCurrentNavLog(vesselId)
           if (Array.isArray(response)) {
             set({
-              isLoadingMap: false,
               currentNavLogs: response
             })
           } else {
             set({
-              isLoadingMap: false,
               currentNavLogs: []
             })
           }
+          set({
+            isLoadingCurrentNavLogs: false
+          })
         } catch (error) {
           set({
-            isLoadingMap: false
+            isLoadingCurrentNavLogs: false,
+            hasErrorLoadingCurrentNavLogs: true
           })
         }
       },

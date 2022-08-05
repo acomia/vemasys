@@ -6,15 +6,19 @@ import {ENTITY_TYPE_EXPLOITATION_VESSEL} from '@bluecentury/constants'
 import {VesselDetails} from '@bluecentury/types'
 
 type EntityState = {
+  hasEntityHydrated: boolean
+  hasErrorLoadingCurrentUser: boolean
+  hasErrorLoadingEntityUsers: boolean
+  isLoadingCurrentUserInfo: boolean
   isLoadingEntityUsers: boolean
-  user: []
-  userVessels: []
-  entityUsers: []
-  entityId: string
+  user: Array<any>
+  userVessels: Array<any>
+  entityUsers: Array<any>
+  entityId: string | undefined
   entityType: string
   entityRole: string
-  entityUserId: string
-  vesselId: string
+  entityUserId: string | undefined
+  vesselId: string | undefined
   vesselDetails: VesselDetails | undefined
   selectedVessel: {}
   selectedEntity: {}
@@ -46,68 +50,81 @@ type EntityActions = {
   getUserInfo: () => void
   getEntityUsers: () => void
   selectEntityUser: (entity: any) => void
+  setHasHydrated: (state: boolean) => void
+  reset: () => void
 }
 
 type EntityStore = EntityState & EntityActions
 
+const initialEntityState: EntityState = {
+  hasEntityHydrated: false,
+  hasErrorLoadingCurrentUser: false,
+  hasErrorLoadingEntityUsers: false,
+  isLoadingCurrentUserInfo: false,
+  isLoadingEntityUsers: false,
+  user: [],
+  userVessels: [],
+  entityUsers: [],
+  entityId: undefined,
+  entityType: '',
+  entityRole: '',
+  entityUserId: undefined,
+  vesselId: undefined,
+  vesselDetails: undefined,
+  selectedVessel: {},
+  selectedEntity: {},
+  physicalVesselId: '',
+  navigationLog: null,
+  cargoEntryId: '',
+  reservoirId: '',
+  engineId: '',
+  taskId: '',
+  bunkeringId: '',
+  certificateId: '',
+  pegelId: '',
+  userCertificateId: '',
+  pdfUrl: '',
+  searchedUser: null,
+  engineGauge: null,
+  fleetVessel: 0,
+  navigationLogId: '',
+  cargoEntry: null,
+  navigationLogActionId: '',
+  cargoHoldId: '',
+  crewMember: null,
+  userCertificate: null,
+  imageUrl: '',
+  consumableTypeId: ''
+}
+
 export const useEntity = create(
   persist<EntityStore>(
     (set, get) => ({
-      isLoadingEntityUsers: false,
-      user: [],
-      userVessels: [],
-      entityUsers: [],
-      entityId: '',
-      entityType: '',
-      entityRole: '',
-      entityUserId: '',
-      vesselId: '',
-      vesselDetails: undefined,
-      selectedVessel: {},
-      selectedEntity: {},
-      physicalVesselId: '',
-      navigationLog: null,
-      cargoEntryId: '',
-      reservoirId: '',
-      engineId: '',
-      taskId: '',
-      bunkeringId: '',
-      certificateId: '',
-      pegelId: '',
-      userCertificateId: '',
-      pdfUrl: '',
-      searchedUser: null,
-      engineGauge: null,
-      fleetVessel: 0,
-      navigationLogId: '',
-      cargoEntry: null,
-      navigationLogActionId: '',
-      cargoHoldId: '',
-      crewMember: null,
-      userCertificate: null,
-      imageUrl: '',
-      consumableTypeId: '',
+      ...initialEntityState,
       getUserInfo: async () => {
         set({
           user: [],
-          isLoadingEntityUsers: true
+          isLoadingCurrentUserInfo: true,
+          hasErrorLoadingCurrentUser: false
         })
         try {
           const response = await API.reloadUser()
           set({
             user: response,
-            isLoadingEntityUsers: false
+            isLoadingCurrentUserInfo: false
           })
         } catch (error) {
           set({
-            isLoadingEntityUsers: false
+            hasErrorLoadingCurrentUser: true,
+            isLoadingCurrentUserInfo: false
           })
         }
       },
       getEntityUsers: async () => {
         set({
           entityUsers: [],
-          isLoadingEntityUsers: true
+          isLoadingEntityUsers: true,
+          hasErrorLoadingEntityUsers: false
         })
         try {
           const response = await API.reloadEntityUsers()
@@ -119,12 +136,14 @@ export const useEntity = create(
           } else {
             set({
               entityUsers: [],
-              isLoadingEntityUsers: false
+              isLoadingEntityUsers: false,
+              hasErrorLoadingEntityUsers: true
             })
           }
         } catch (error) {
           set({
-            isLoadingEntityUsers: false
+            isLoadingEntityUsers: false,
+            hasErrorLoadingEntityUsers: true
           })
         }
       },
@@ -151,7 +170,7 @@ export const useEntity = create(
           selectedEntity: entity
         })
         try {
-          API.selectEntityUser(entity.id)
+          await API.selectEntityUser(entity.id)
           const response = await API.getVesselNavigationDetails(
             entity.entity.exploitationVessel.id
           )
@@ -163,11 +182,25 @@ export const useEntity = create(
             isLoadingEntityUsers: false
           })
         }
+      },
+      setHasHydrated: state => {
+        set({
+          hasEntityHydrated: state
+        })
+      },
+      reset: () => {
+        set({
+          ...initialEntityState,
+          hasEntityHydrated: true
+        })
       }
     }),
     {
       name: 'entity-storage',
-      getStorage: () => AsyncStorage
+      getStorage: () => AsyncStorage,
+      onRehydrateStorage: () => state => {
+        state?.setHasHydrated(true)
+      }
     }
   )
 )

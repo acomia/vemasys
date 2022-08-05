@@ -4,7 +4,7 @@ import {Box, Text} from 'native-base'
 import {TabView, SceneMap, TabBar} from 'react-native-tab-view'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 
-import {ChartersScreen, TimeChartersSreen} from './Tabs'
+import {ChartersScreen, TimeChartersSreen} from './tabs'
 import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
 import {chartersTabs} from '@bluecentury/constants'

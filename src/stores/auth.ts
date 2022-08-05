@@ -2,11 +2,13 @@ import create from 'zustand'
 import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as API from '@bluecentury/api/vemasys'
-import {TCredentials} from '@bluecentury/api/models'
+import {TCredentials, TUser} from '@bluecentury/api/models'
 
 type AuthState = {
+  hasAuthHydrated: boolean
   token: string | undefined
   refreshToken: string | undefined
+  errorMessage: string
   isAuthenticatingUser: boolean
   hasAuthenticationError: boolean
   isLoggingOut: boolean
@@ -15,40 +17,48 @@ type AuthState = {
 
 type AuthActions = {
   authenticate: (credentials: TCredentials) => void
+  setHasHydrated: (state: boolean) => void
   logout: () => void
-  resetToken: () => Promise<any>
 }
 
 type AuthStore = AuthState & AuthActions
 
+const initialState: AuthState = {
+  hasAuthHydrated: false,
+  token: undefined,
+  refreshToken: undefined,
+  isAuthenticatingUser: false,
+  errorMessage: '',
+  hasAuthenticationError: false,
+  isLoggingOut: false,
+  hasErrorLogout: false
+}
+
 export const useAuth = create(
   persist<AuthStore>(
-    (set, get) => ({
-      token: undefined,
-      refreshToken: undefined,
-      isAuthenticatingUser: false,
-      hasAuthenticationError: false,
-      isLoggingOut: false,
-      hasErrorLogout: false,
+    set => ({
+      ...initialState,
       authenticate: async credentials => {
         set({
           token: undefined,
           refreshToken: undefined,
           isAuthenticatingUser: true,
+          isLoggingOut: false,
           hasAuthenticationError: false
         })
         try {
-          const response = await API.login(credentials)
+          const response: TUser = await API.login(credentials)
           set({
-            token: response?.token,
-            refreshToken: response?.refreshToken,
+            token: response.token,
+            refreshToken: response.refreshToken,
             isAuthenticatingUser: false,
             hasAuthenticationError: false
           })
-        } catch (error) {
+        } catch (error: any) {
           set({
             token: undefined,
             refreshToken: undefined,
+            errorMessage: error,
             isAuthenticatingUser: false,
             hasAuthenticationError: true
           })
@@ -56,51 +66,22 @@ export const useAuth = create(
       },
       logout: async () => {
         set({
-          token: undefined,
-          refreshToken: undefined,
-          isAuthenticatingUser: false,
-          hasAuthenticationError: false
+          ...initialState,
+          hasAuthHydrated: true
         })
       },
-      resetToken: async () => {
+      setHasHydrated: state => {
         set({
-          token: undefined,
-          isAuthenticatingUser: true
+          hasAuthHydrated: state
         })
-        try {
-          const refreshToken = get().refreshToken
-          if (typeof refreshToken !== 'undefined') {
-            const res = await API.resetToken(refreshToken)
-            console.log('reset token result ', res)
-            set({
-              token: res?.token,
-              refreshToken: res?.refreshToken,
-              isAuthenticatingUser: false,
-              hasAuthenticationError: false
-            })
-            return Promise.resolve(get().token)
-          } else {
-            set({
-              token: undefined,
-              refreshToken: undefined,
-              isAuthenticatingUser: false,
-              hasAuthenticationError: false
-            })
-            return Promise.resolve(false)
-          }
-        } catch (error) {
-          console.log('Error stores>auth>resetToken* ', error)
-          set({
-            isAuthenticatingUser: false,
-            hasAuthenticationError: true
-          })
-          return Promise.resolve(false)
-        }
       }
     }),
     {
       name: 'auth-storage',
-      getStorage: () => AsyncStorage
+      getStorage: () => AsyncStorage,
+      onRehydrateStorage: () => state => {
+        state?.setHasHydrated(true)
+      }
     }
   )
 )

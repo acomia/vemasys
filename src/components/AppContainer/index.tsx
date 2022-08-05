@@ -1,15 +1,16 @@
-import React from 'react';
-import {NativeBaseProvider} from 'native-base';
-import {NavigationContainer} from '@react-navigation/native';
-import {theme} from '@bluecentury/styles';
+import React from 'react'
+import {NativeBaseProvider} from 'native-base'
+import {NavigationContainer} from '@react-navigation/native'
+import {theme} from '@bluecentury/styles'
+import {navigationRef} from '@bluecentury/navigation'
 interface Props {
-  children: React.ReactNode;
+  children: React.ReactNode
 }
 
 export default function AppContainer({children}: Props) {
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       <NativeBaseProvider theme={theme}>{children}</NativeBaseProvider>
     </NavigationContainer>
-  );
+  )
 }
