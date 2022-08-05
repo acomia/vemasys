@@ -3,7 +3,7 @@ import {useWindowDimensions} from 'react-native'
 import {Box, Text} from 'native-base'
 import {TabView, TabBar, SceneMap} from 'react-native-tab-view'
 
-import {Overview, Costs, Revenue, Scan} from './tabs'
+import {Overview, Costs, Revenue, Scan} from './Tabs'
 import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
 import {financialTabs} from '@bluecentury/constants'

@@ -43,7 +43,13 @@ const getVesselNavigationDetails = async (vesselId: string) => {
 }
 
 const selectEntityUser = (entityId: string) => {
-  return API.setHeader('X-active-entity-user-id', `${entityId}`)
+  return API.interceptors.request.use(req => {
+    req.headers = {
+      ...req.headers,
+      'X-active-entity-user-id': `${entityId}`
+    }
+    return req
+  })
 }
 
 export {

@@ -1,10 +1,28 @@
 import {GeoPosition} from 'react-native-geolocation-service'
 import {API} from '@bluecentury/api/apiService'
+import {queryString} from '@bluecentury/utils'
 
-const getPreviousNavLog = async (vesselId: string) => {
-  return API.get(
-    `v3/navigation_logs?isCompleted=1&exists[plannedETA]=1&exists[departureDatetime]=1&order[plannedETA]=desc&exploitationVessel=${vesselId}`
-  )
+const getPreviousNavLog = async (
+  vesselId: string,
+  itemsPerPage?: number,
+  page?: number
+) => {
+  itemsPerPage = itemsPerPage || 5
+  page = page || 1
+
+  const params = {
+    isCompleted: 1,
+    // 'exists[plannedETA]': 1,
+    // 'exists[departureDatetime]': 1,
+    // 'order[plannedETA]': 'desc',
+    exploitationVessel: vesselId,
+    itemsPerPage: itemsPerPage || 5,
+    page: page || 1
+  }
+
+  let stringParams = queryString(params)
+
+  return API.get(`v3/navigation_logs${stringParams}`)
     .then(response => {
       if (response.data) {
         return response.data
@@ -13,13 +31,14 @@ const getPreviousNavLog = async (vesselId: string) => {
       }
     })
     .catch(error => {
-      console.error('Error: Previous navigation logs', error)
+      console.log('Error: Previous navigation logs', error)
+      return Promise.reject(error)
     })
 }
 
 const reloadVesselHistoryNavLogs = async (vesselId: string, page: number) => {
   return API.get(
-    `navigation_logs?exploitationVessel=${vesselId}&type=logbook&page=${page}`
+    `navigation_logs?exploitationVessel=${vesselId}&type=logbook&page=${page}&itemsPerPage=3`
   )
     .then(response => {
       if (response.data) {
@@ -29,7 +48,8 @@ const reloadVesselHistoryNavLogs = async (vesselId: string, page: number) => {
       }
     })
     .catch(error => {
-      console.error('Error: History navigation logs', error)
+      console.log('Error: History navigation logs', error)
+      return Promise.reject(error)
     })
 }
 
@@ -43,7 +63,8 @@ const getPlannedNavLog = async (vesselId: string) => {
       }
     })
     .catch(error => {
-      console.error('Error: Planned navigation logs', error)
+      console.log('Error: Planned navigation logs', error)
+      return Promise.reject(error)
     })
 }
 
@@ -59,7 +80,8 @@ const getCurrentNavLog = async (vesselId: string) => {
       }
     })
     .catch(error => {
-      console.error('Error: Current navigation logs', error)
+      console.log('Error: Current navigation logs', error)
+      Promise.reject(error)
     })
 }
 
@@ -69,11 +91,12 @@ const getLastCompleteNavLogs = async (navLogId: string) => {
       if (response.data) {
         return response.data
       } else {
-        throw new Error('Current navigation logs failed.')
+        throw new Error('Last completed navigation logs failed.')
       }
     })
     .catch(error => {
-      console.error('Error: Current navigation logs', error)
+      console.log('Error: Last completed navigation logs', error)
+      return Promise.reject(error)
     })
 }
 
@@ -87,7 +110,8 @@ const getActiveFormations = async () => {
       }
     })
     .catch(error => {
-      console.error('Error: Active formations', error)
+      console.log('Error: Active formations', error)
+      return Promise.reject(error)
     })
 }
 

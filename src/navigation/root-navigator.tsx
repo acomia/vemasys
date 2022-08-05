@@ -1,13 +1,10 @@
-import React, {useRef, useEffect} from 'react'
+import React from 'react'
 import {createNativeStackNavigator} from '@react-navigation/native-stack'
-import {CommonActions, useNavigation} from '@react-navigation/native'
 import MainNavigator from './main-navigator'
 import {GPSTracker} from '@bluecentury/components'
-import {useAuth} from '@bluecentury/stores'
 import {
   Login,
   Splash,
-  Entity,
   QRScanner,
   Formations,
   CharterDetails,
@@ -29,7 +26,8 @@ import {
   TechnicalRoutinesList,
   TechnicalRoutineDetails,
   FinancialInvoiceDetails,
-  TickerOilPriceDetails
+  TickerOilPriceDetails,
+  Entity
 } from '@bluecentury/screens'
 import {Colors} from '@bluecentury/styles'
 
@@ -37,35 +35,6 @@ const {Navigator, Screen, Group} =
   createNativeStackNavigator<RootStackParamList>()
 
 export default function RootNavigator() {
-  const navigation = useNavigation()
-  const {token} = useAuth()
-
-  let timeout = useRef<any>()
-  useEffect(() => {
-    if (token) {
-      timeout.current = setTimeout(() => {
-        navigation.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{name: 'SelectEntity'}]
-          })
-        )
-      }, 1500)
-    } else {
-      timeout.current = setTimeout(() => {
-        navigation.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{name: 'Login'}]
-          })
-        )
-      }, 1500)
-    }
-
-    return () => clearTimeout(timeout.current)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token])
-
   return (
     <Navigator
       initialRouteName="Splash"
@@ -73,7 +42,8 @@ export default function RootNavigator() {
         headerShown: false,
         headerShadowVisible: false,
         headerStyle: {backgroundColor: Colors.light},
-        headerTitleStyle: {fontSize: 16, fontWeight: 'bold'}
+        headerTitleStyle: {fontSize: 16, fontWeight: 'bold'},
+        animation: 'fade'
       }}
     >
       <Group>
