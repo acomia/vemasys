@@ -2,14 +2,20 @@ import React, {useCallback, useEffect} from 'react'
 import {ImageSourcePropType} from 'react-native'
 import {Box, HStack, View} from 'native-base'
 import {createDrawerNavigator} from '@react-navigation/drawer'
-import {DrawerActions, useFocusEffect} from '@react-navigation/native'
+import {
+  CommonActions,
+  DrawerActions,
+  useFocusEffect
+} from '@react-navigation/native'
 import {
   Notification,
   Entity,
   Map,
   Planning,
   Charters,
-  Technical
+  Technical,
+  Financial,
+  Information
 } from '@bluecentury/screens'
 import {Sidebar, IconButton} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
@@ -17,13 +23,15 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {Screens} from '@bluecentury/constants'
 import {ms} from 'react-native-size-matters'
 import {Colors} from '@bluecentury/styles'
-import {useMap} from '@bluecentury/stores'
+import {useAuth, useMap} from '@bluecentury/stores'
+import {navigationRef} from './navigationRef'
 
 const {Navigator, Screen} = createDrawerNavigator<MainStackParamList>()
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Main'>
 
 export default function MainNavigator({navigation}: Props) {
+  const token = useAuth(state => state.token)
   const {activeFormations, getActiveFormations} = useMap()
   let scanIcon: ImageSourcePropType = Icons.qr
   let scanNavigateTo: () => void
@@ -33,6 +41,21 @@ export default function MainNavigator({navigation}: Props) {
       getActiveFormations()
     }, [])
   )
+
+  useEffect(() => {
+    if (typeof token === 'undefined') {
+      navigationRef.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [
+            {
+              name: 'Splash'
+            }
+          ]
+        })
+      )
+    }
+  }, [token])
 
   useEffect(() => {
     if (activeFormations?.length > 0) {
@@ -80,7 +103,7 @@ export default function MainNavigator({navigation}: Props) {
           </Box>
         )
       }}
-      initialRouteName={Screens.MapView}
+      initialRouteName={Screens.Planning}
       drawerContent={props => <Sidebar {...props} />}
     >
       <Screen name={Screens.MapView} component={Map} />
@@ -88,6 +111,8 @@ export default function MainNavigator({navigation}: Props) {
       <Screen name={Screens.Planning} component={Planning} />
       <Screen name={Screens.Charters} component={Charters} />
       <Screen name={Screens.Technical} component={Technical} />
+      <Screen name={Screens.Financial} component={Financial} />
+      <Screen name={Screens.Information} component={Information} />
       <Screen
         name={Screens.ChangeRole}
         component={Entity}

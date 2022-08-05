@@ -37,7 +37,7 @@ type TechnicalActions = {
   deleteTask?: (taskId: string) => void
   createVesselTask?: (task: Task) => void
   updateVesselTask?: (taskId: string, task: Task) => void
-  uploadTaskImageFile?: (
+  uploadFileBySubject?: (
     subject: string,
     file: ImageFile,
     accessLevel: string,
@@ -289,7 +289,7 @@ export const useTechnical = create(
           set({isTechnicalLoading: false})
         }
       },
-      uploadTaskImageFile: async (
+      uploadFileBySubject: async (
         subject: string,
         file: ImageFile,
         accessLevel: string,
@@ -297,7 +297,7 @@ export const useTechnical = create(
       ) => {
         set({isTechnicalLoading: true})
         try {
-          const response = await API.uploadTaskImageFile(
+          const response = await API.uploadFileBySubject(
             subject,
             file,
             accessLevel,

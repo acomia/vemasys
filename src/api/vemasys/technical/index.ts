@@ -183,7 +183,7 @@ const deleteVesselTask = async (taskId: string) => {
     .catch(error => console.error('Error: Vessel delete task data', error))
 }
 
-const uploadTaskImageFile = async (
+const uploadFileBySubject = async (
   subject: string,
   file: ImageFile,
   accessLevel: string,
@@ -372,7 +372,7 @@ export {
   reloadTasksByCategory,
   createTaskComment,
   deleteVesselTask,
-  uploadTaskImageFile,
+  uploadFileBySubject,
   createVesselTask,
   updateVesselTask,
   reloadRoutines,
