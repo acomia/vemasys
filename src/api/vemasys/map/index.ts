@@ -31,7 +31,8 @@ const getPreviousNavLog = async (
       }
     })
     .catch(error => {
-      console.error('Error: Previous navigation logs', error)
+      console.log('Error: Previous navigation logs', error)
+      return Promise.reject(error)
     })
 }
 
@@ -47,7 +48,8 @@ const reloadVesselHistoryNavLogs = async (vesselId: string, page: number) => {
       }
     })
     .catch(error => {
-      console.error('Error: History navigation logs', error)
+      console.log('Error: History navigation logs', error)
+      return Promise.reject(error)
     })
 }
 
@@ -61,7 +63,8 @@ const getPlannedNavLog = async (vesselId: string) => {
       }
     })
     .catch(error => {
-      console.error('Error: Planned navigation logs', error)
+      console.log('Error: Planned navigation logs', error)
+      return Promise.reject(error)
     })
 }
 
@@ -77,7 +80,8 @@ const getCurrentNavLog = async (vesselId: string) => {
       }
     })
     .catch(error => {
-      console.error('Error: Current navigation logs', error)
+      console.log('Error: Current navigation logs', error)
+      Promise.reject(error)
     })
 }
 
@@ -91,7 +95,8 @@ const getLastCompleteNavLogs = async (navLogId: string) => {
       }
     })
     .catch(error => {
-      console.error('Error: Last completed navigation logs', error)
+      console.log('Error: Last completed navigation logs', error)
+      return Promise.reject(error)
     })
 }
 
@@ -105,7 +110,8 @@ const getActiveFormations = async () => {
       }
     })
     .catch(error => {
-      console.error('Error: Active formations', error)
+      console.log('Error: Active formations', error)
+      return Promise.reject(error)
     })
 }
 
