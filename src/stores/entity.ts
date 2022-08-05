@@ -156,21 +156,22 @@ export const useEntity = create(
             ? entity.entity.exploitationVessel.physicalVessel.id
             : null
 
+        const vesselId =
+          ENTITY_TYPE_EXPLOITATION_VESSEL === entityType
+            ? entity.entity.exploitationVessel.id
+            : entity.entity.exploitationGroup.exploitationVessels[0].id
+
         set({
           entityId: entity.entity.id,
           entityUserId: entity.id,
-          entityRole,
-          physicalVesselId,
-          entityType,
-          vesselId:
-            ENTITY_TYPE_EXPLOITATION_VESSEL === entityType
-              ? entity.entity.exploitationVessel.id
-              : entity.entity.exploitationGroup.exploitationVessels[0].id,
+          entityRole: entityRole,
+          physicalVesselId: physicalVesselId,
+          entityType: entityType,
+          vesselId: vesselId,
           selectedVessel: entity.entity,
           selectedEntity: entity
         })
         try {
-          await API.selectEntityUser(entity.id)
           const response = await API.getVesselNavigationDetails(
             entity.entity.exploitationVessel.id
           )
