@@ -103,7 +103,7 @@ export default function MainNavigator({navigation}: Props) {
           </Box>
         )
       }}
-      initialRouteName={Screens.Planning}
+      initialRouteName={Screens.MapView}
       drawerContent={props => <Sidebar {...props} />}
     >
       <Screen name={Screens.MapView} component={Map} />
