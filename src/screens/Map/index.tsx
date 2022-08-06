@@ -1,12 +1,6 @@
-import React, {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState
-} from 'react'
-import {StyleSheet, TouchableOpacity, Dimensions, Alert} from 'react-native'
-import {Box, Text, Button, HStack, Image, VStack, Spinner} from 'native-base'
+import React, {useEffect, useLayoutEffect, useRef, useState} from 'react'
+import {StyleSheet, TouchableOpacity, Dimensions} from 'react-native'
+import {Box, Text, Button, HStack, Image, VStack} from 'native-base'
 import MapView, {
   PROVIDER_GOOGLE,
   Marker,
@@ -28,9 +22,8 @@ import {
 } from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
-import {useMap, useAuth, useEntity} from '@bluecentury/stores'
+import {useMap, useEntity} from '@bluecentury/stores'
 import {formatLocationLabel} from '@bluecentury/constants'
-import {useFocusEffect} from '@react-navigation/native'
 
 const {width, height} = Dimensions.get('window')
 const ASPECT_RATIO = width / height
@@ -102,7 +95,6 @@ export default function Map({navigation}: Props) {
 
   useEffect(() => {
     if (vesselDetails) {
-      console.log('vesselDetails ', vesselDetails.lastGeolocation)
       const {latitude, longitude} = vesselDetails.lastGeolocation
       let camera = {
         center: {
@@ -369,7 +361,6 @@ export default function Map({navigation}: Props) {
   }
 
   const centerMapToCurrentLocation = () => {
-    console.log('vesselDetails ', vesselDetails?.lastGeolocation)
     if (vesselDetails && vesselDetails.lastGeolocation) {
       const {latitude, longitude} = vesselDetails?.lastGeolocation
       let camera: Camera = {
@@ -403,7 +394,9 @@ export default function Map({navigation}: Props) {
         <MapView
           ref={mapRef}
           provider={PROVIDER_GOOGLE} // remove if not using Google Maps
-          style={styles.map}
+          style={{
+            ...StyleSheet.absoluteFillObject
+          }}
           initialRegion={region}
           onRegionChange={region => handleRegionChange(region)}
         >
@@ -440,7 +433,15 @@ export default function Map({navigation}: Props) {
             </Box>
           </VStack>
         </Box>
-
+        <Box
+          position="absolute"
+          shadow={2}
+          top={0}
+          left={0}
+          right={0}
+          h={ms(1)}
+          bgColor={Colors.light}
+        />
         <BottomSheet
           ref={sheetRef}
           initialSnap={1}
@@ -469,9 +470,3 @@ export default function Map({navigation}: Props) {
     </Box>
   )
 }
-
-const styles = StyleSheet.create({
-  map: {
-    ...StyleSheet.absoluteFillObject
-  }
-})
