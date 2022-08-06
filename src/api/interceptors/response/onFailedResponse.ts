@@ -27,9 +27,9 @@ export const onFailedResponse = async (error: any) => {
         `${API_URL}token/refresh?refresh_token=${refreshToken}`
       )
       if (res) {
-        failedRequest.defaults.headers = {
-          ...failedRequest.defaults.headers,
-          'Jwt-Auth': `Bearer ${res.data.token}`
+        API.defaults.headers.common = {
+          ...API.defaults.headers.common,
+          'Jwt-Auth': res.data.token
         }
         return API(failedRequest)
       }
