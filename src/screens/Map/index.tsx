@@ -417,14 +417,14 @@ export default function Map({navigation}: Props) {
         </MapView>
         <Box position="absolute" right="0">
           <VStack space="5" justifyContent="flex-start" m="4">
-            <Box bg={Colors.white} borderRadius="full" p="2">
+            <Box bg={Colors.white} borderRadius="full" p="2" shadow={2}>
               <IconButton
                 source={Icons.compass}
                 size={ms(30)}
                 onPress={centerMapToCurrentLocation}
               />
             </Box>
-            <Box bg={Colors.white} borderRadius="full" p="2">
+            <Box bg={Colors.white} borderRadius="full" p="2" shadow={2}>
               <IconButton
                 source={Icons.location}
                 size={ms(30)}
