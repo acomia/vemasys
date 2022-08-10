@@ -110,6 +110,15 @@ export function calculateTotalOut(navigationlog: any): number {
   return totalOut
 }
 
+export const hasSelectedEntityUserSomePermission = (
+  state: any,
+  permissions: any[]
+) => {
+  return permissions.some(permission =>
+    hasSelectedEntityUserPermission(state, permission)
+  )
+}
+
 export const hasSelectedEntityUserPermission = (
   entity: any,
   permission: string

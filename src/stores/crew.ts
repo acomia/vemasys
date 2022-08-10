@@ -7,11 +7,14 @@ type CrewState = {
   isCrewLoading: boolean
   crew: [] | undefined
   planning: [] | undefined
+  roles: []
 }
 
 type CrewActions = {
   getCrew?: (vesselId: string) => void
   getCrewPlanning?: (vesselId: string) => void
+  getUserRoles?: () => void
+  createNewUser?: (entityId: any, user: any) => void
 }
 
 type CrewStore = CrewState & CrewActions
@@ -22,6 +25,7 @@ export const useCrew = create(
       isCrewLoading: false,
       crew: [],
       planning: [],
+      roles: [],
       getCrew: async (vesselId: string) => {
         set({
           isCrewLoading: true,
@@ -59,8 +63,6 @@ export const useCrew = create(
         set({isCrewLoading: true})
         try {
           const response = await API.reloadCrewPlanning(vesselId)
-
-          console.log('planning', response)
           if (Array.isArray(response)) {
             const res = [response].reduce((acc, planningItem) => {
               const index = acc.findIndex(p => p.id === planningItem.id)
@@ -78,6 +80,32 @@ export const useCrew = create(
           } else {
             set({isCrewLoading: false})
           }
+        } catch (error) {
+          set({isCrewLoading: false})
+        }
+      },
+      getUserRoles: async () => {
+        set({isCrewLoading: true})
+        try {
+          const response = await API.reloadUserRoles()
+          if (Array.isArray(response)) {
+            set({
+              isCrewLoading: false,
+              roles: response?.map(role => {
+                return {label: role.title, value: role.id}
+              })
+            })
+          }
+        } catch (error) {
+          set({isCrewLoading: false})
+        }
+      },
+      createNewUser: async (entityId: any, user: any) => {
+        set({isCrewLoading: true})
+        try {
+          const response = await API.createNewUser(entityId, user)
+          set({isCrewLoading: false})
+          return response
         } catch (error) {
           set({isCrewLoading: false})
         }

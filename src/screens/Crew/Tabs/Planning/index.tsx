@@ -1,19 +1,35 @@
 import React, {useEffect} from 'react'
-import {Avatar, Box, HStack, Image, ScrollView, Text} from 'native-base'
-import {Calendar, CalendarList, Agenda} from 'react-native-calendars'
+import {RefreshControl, TouchableOpacity} from 'react-native'
+import {Avatar, Box, HStack, ScrollView, Text} from 'native-base'
+import {Calendar} from 'react-native-calendars'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
-import {Icons} from '@bluecentury/assets'
-import {useCrew} from '@bluecentury/stores'
 import moment from 'moment'
-import {getAvailableColors, titleCase} from '@bluecentury/constants'
-import {TouchableOpacity} from 'react-native'
+
+import {
+  getAvailableColors,
+  hasSelectedEntityUserSomePermission,
+  ROLE_PERMISSION_USER_EDIT,
+  ROLE_PERMISSION_USER_MANAGE,
+  ROLE_PERMISSION_USER_VIEW,
+  titleCase
+} from '@bluecentury/constants'
 import {PROD_URL} from '@bluecentury/env'
 import {LoadingIndicator} from '@bluecentury/components'
+import {useCrew, useEntity} from '@bluecentury/stores'
 
 const Planning = () => {
-  const {isCrewLoading, crew, planning} = useCrew()
+  const {isCrewLoading, crew, planning, getCrew, getCrewPlanning} = useCrew()
+  const {selectedEntity, vesselId} = useEntity()
+  const isAllowedToManageUser = hasSelectedEntityUserSomePermission(
+    selectedEntity,
+    [
+      ROLE_PERMISSION_USER_VIEW,
+      ROLE_PERMISSION_USER_EDIT,
+      ROLE_PERMISSION_USER_MANAGE
+    ]
+  )
 
   let crewMatrix: any = {}
   let colors: any = {}
@@ -90,8 +106,12 @@ const Planning = () => {
 
       dates[date] = currentObject
     })
-    console.log('dates', dates)
     return dates
+  }
+
+  const onPullToReload = () => {
+    getCrew(vesselId)
+    getCrewPlanning(vesselId)
   }
 
   const renderCrew = () => {
@@ -112,7 +132,7 @@ const Planning = () => {
         {crew.map((user: any, index: number) => (
           <TouchableOpacity
             key={`User-${index}`}
-            // disabled={!isAllowedToViewUser}
+            disabled={!isAllowedToManageUser}
             // onPress={(): Promise<any> => selectCrewMember(user)}
           >
             <HStack
@@ -160,20 +180,29 @@ const Planning = () => {
 
   return (
     <Box flex="1" bg={Colors.white}>
-      <Calendar
-        current={new Date().toLocaleDateString()}
-        hideArrows={true}
-        hideExtraDays={true}
-        disableMonthChange={true}
-        firstDay={7}
-        onPressArrowLeft={subtractMonth => subtractMonth()}
-        onPressArrowRight={addMonth => addMonth()}
-        disableAllTouchEventsForDisabledDays={true}
-        enableSwipeMonths={false}
-        markedDates={getCrewPlanningDates()}
-        markingType="multi-period"
-      />
-      {renderCrew()}
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            onRefresh={onPullToReload}
+            refreshing={isCrewLoading}
+          />
+        }
+      >
+        <Calendar
+          current={new Date().toLocaleDateString()}
+          hideArrows={true}
+          hideExtraDays={true}
+          disableMonthChange={true}
+          firstDay={7}
+          onPressArrowLeft={subtractMonth => subtractMonth()}
+          onPressArrowRight={addMonth => addMonth()}
+          disableAllTouchEventsForDisabledDays={true}
+          enableSwipeMonths={false}
+          markedDates={getCrewPlanningDates()}
+          markingType="multi-period"
+        />
+        {renderCrew()}
+      </ScrollView>
     </Box>
   )
 }

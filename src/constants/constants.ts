@@ -14,6 +14,9 @@ export const ROLE_PERMISSION_NAVIGATION_LOG_ADD_FILE =
 export const VEMASYS_PRODUCTION_FILE_URL = `${PROD_URL}/upload/documents`
 export const FILE_TYPE_PDF = 'application/pdf'
 export const FILE_TYPE_JPEG = 'image/jpeg'
+export const ROLE_PERMISSION_USER_EDIT = 'ROLE_PERMISSION_USER_EDIT'
+export const ROLE_PERMISSION_USER_VIEW = 'ROLE_PERMISSION_USER_VIEW'
+export const ROLE_PERMISSION_USER_MANAGE = 'ROLE_PERMISSION_USER_MANAGE'
 
 // Planning constants
 export const VESSEL_PART_CARGO_TYPE = 'Cargo'

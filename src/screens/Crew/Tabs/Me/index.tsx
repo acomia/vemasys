@@ -1,14 +1,15 @@
 import React, {useEffect, useRef, useState} from 'react'
-import {Box, HStack, Image, Text} from 'native-base'
-import {Calendar, CalendarList, Agenda} from 'react-native-calendars'
+import {RefreshControl, TouchableOpacity} from 'react-native'
+import {Box, HStack, Image, ScrollView, Text} from 'native-base'
+import {Calendar} from 'react-native-calendars'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
-import {Colors} from '@bluecentury/styles'
+import moment from 'moment'
 import {ms} from 'react-native-size-matters'
+
+import {Colors} from '@bluecentury/styles'
 import {Icons} from '@bluecentury/assets'
 import {useCrew, useEntity} from '@bluecentury/stores'
-import moment from 'moment'
 import {VESSEL_CREW_PLANNING_ONBOARD} from '@bluecentury/constants'
-import {TouchableOpacity} from 'react-native'
 import {LoadingIndicator} from '@bluecentury/components'
 
 const Me = () => {
@@ -102,57 +103,72 @@ const Me = () => {
     )
   })
 
+  const onPullToReload = () => {
+    getCrew(vesselId)
+    getCrewPlanning(vesselId)
+  }
+
   if (isCrewLoading) return <LoadingIndicator />
 
   return (
     <Box flex="1" bg={Colors.white}>
-      <Calendar
-        current={new Date().toLocaleDateString()}
-        hideArrows={true}
-        hideExtraDays={true}
-        disableMonthChange={true}
-        firstDay={7}
-        onPressArrowLeft={subtractMonth => subtractMonth()}
-        onPressArrowRight={addMonth => addMonth()}
-        disableAllTouchEventsForDisabledDays={true}
-        enableSwipeMonths={false}
-        markedDates={getSelfPlanningDates()}
-        markingType="multi-period"
-        // customHeader={CustomHeader}
-      />
-      <Box mt={ms(30)} px={ms(12)}>
-        <HStack
-          mb={ms(8)}
-          px={ms(15)}
-          py={ms(20)}
-          borderRadius={ms(5)}
-          bg={Colors.white}
-          shadow={5}
-        >
-          <Text flex="1" fontWeight="medium">
-            Working
-          </Text>
-          <Image alt="working-icon" source={Icons.check} />
-        </HStack>
-        <HStack
-          mb={ms(8)}
-          px={ms(15)}
-          py={ms(20)}
-          borderRadius={ms(5)}
-          bg={Colors.white}
-          shadow={5}
-        >
-          <Text flex="1" fontWeight="medium">
-            Absent
-          </Text>
-          <Image
-            alt="working-icon"
-            source={Icons.status_x}
-            w={ms(20)}
-            h={ms(20)}
+      <ScrollView
+        contentContainerStyle={{flexGrow: 1, paddingBottom: 20}}
+        refreshControl={
+          <RefreshControl
+            onRefresh={onPullToReload}
+            refreshing={isCrewLoading}
           />
-        </HStack>
-      </Box>
+        }
+      >
+        <Calendar
+          current={new Date().toLocaleDateString()}
+          hideArrows={true}
+          hideExtraDays={true}
+          disableMonthChange={true}
+          firstDay={7}
+          onPressArrowLeft={subtractMonth => subtractMonth()}
+          onPressArrowRight={addMonth => addMonth()}
+          disableAllTouchEventsForDisabledDays={true}
+          enableSwipeMonths={false}
+          markedDates={getSelfPlanningDates()}
+          markingType="multi-period"
+          // customHeader={CustomHeader}
+        />
+        <Box mt={ms(30)} px={ms(12)}>
+          <HStack
+            mb={ms(8)}
+            px={ms(15)}
+            py={ms(20)}
+            borderRadius={ms(5)}
+            bg={Colors.white}
+            shadow={5}
+          >
+            <Text flex="1" fontWeight="medium">
+              Working
+            </Text>
+            <Image alt="working-icon" source={Icons.check} />
+          </HStack>
+          <HStack
+            mb={ms(8)}
+            px={ms(15)}
+            py={ms(20)}
+            borderRadius={ms(5)}
+            bg={Colors.white}
+            shadow={5}
+          >
+            <Text flex="1" fontWeight="medium">
+              Absent
+            </Text>
+            <Image
+              alt="working-icon"
+              source={Icons.status_x}
+              w={ms(20)}
+              h={ms(20)}
+            />
+          </HStack>
+        </Box>
+      </ScrollView>
     </Box>
   )
 }
