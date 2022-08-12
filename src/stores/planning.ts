@@ -35,9 +35,11 @@ type PlanningActions = {
   createBulkCargo?: (cargo: any, navLogId: string) => void
   deleteBulkCargo?: (id: string) => void
   updateComment?: (id: string, description: string) => void
+  uploadImgFile?: (file: ImageFile) => void
+  deleteComment?: (id: string) => void
 }
 
-type PlanningStore = PlanningState & PlanningActions
+export type PlanningStore = PlanningState & PlanningActions
 
 export const usePlanning = create(
   persist<PlanningStore>(
@@ -296,6 +298,26 @@ export const usePlanning = create(
         set({isPlanningLoading: true})
         try {
           const response = await API.updateComment(id, description)
+          set({isPlanningLoading: false})
+          return response
+        } catch (error) {
+          set({isPlanningLoading: false})
+        }
+      },
+      uploadImgFile: async (file: ImageFile) => {
+        set({isPlanningLoading: true})
+        try {
+          const response = await API.uploadImgFile(file)
+          set({isPlanningLoading: false})
+          return response
+        } catch (error) {
+          set({isPlanningLoading: false})
+        }
+      },
+      deleteComment: async (id: string) => {
+        set({isPlanningLoading: true})
+        try {
+          const response = await API.deleteComment(id)
           set({isPlanningLoading: false})
           return response
         } catch (error) {
