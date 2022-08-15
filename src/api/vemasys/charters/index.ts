@@ -1,8 +1,8 @@
 import _ from 'lodash'
 import {API} from '@bluecentury/api/apiService'
 import ReactNativeBlobUtil from 'react-native-blob-util'
-import {PROD_URL} from '@bluecentury/env'
-import {useAuth} from '@bluecentury/stores'
+import {PROD_URL, API_URL} from '@bluecentury/env'
+import {useAuth, useEntity} from '@bluecentury/stores'
 
 const reloadVesselCharters = async () => {
   return API.get(`v3/charters?isArchived=0`)
@@ -18,35 +18,15 @@ const reloadVesselCharters = async () => {
     })
 }
 
-// const downloadPdf =async (path:string) => {
-//   const options = {
-//     fileCache: true,
-//   }
-//   const {config} = ReactNativeBlobUtil
-//   return await config(options).fetch('GET', `${store.getState().api.restBaseUrl}${path}`, {
-//     'Jwt-Auth': `Bearer ${store.getState().auth.jwt}`,
-//   })
-// }
-
 const viewPdfFile = async (charterId: string) => {
+  const token = useAuth.getState().token
+  const entityUserId = useEntity.getState().entityUserId
   return await ReactNativeBlobUtil.config({
     fileCache: true
+  }).fetch('GET', `${API_URL}charters/${charterId}/pdf`, {
+    'Jwt-Auth': `Bearer ${token}`,
+    'X-active-entity-user-id': `${entityUserId}`
   })
-    .fetch('GET', `${PROD_URL}/api/charters/${charterId}/pdf`, {
-      'Jwt-Auth': `Bearer ${useAuth.getState().token}`
-    })
-    .then(response => {
-      console.log('path', response)
-
-      if (response.data) {
-        return response.path()
-      } else {
-        throw new Error('Charters pdf file failed.')
-      }
-    })
-    .catch(error => {
-      console.error('Error: Charters PDF File', error)
-    })
 }
 
 export {reloadVesselCharters, viewPdfFile}

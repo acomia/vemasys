@@ -255,9 +255,11 @@ export default function CharterDetails({navigation, route}: Props) {
     )
   }
 
-  const handlePDFView = () => {
-    viewPdf(charter.id)
-    // navigation.navigate('PDFView')
+  const handlePDFView = async () => {
+    const path = await viewPdf(charter.id)
+    navigation.navigate('PDFView', {
+      path: `${path}`
+    })
   }
 
   return (
