@@ -1,2 +1,2 @@
-export * as API from './vemasys';
-export * from './models';
+export * as API from './vemasys'
+export * from '../models'
