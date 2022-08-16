@@ -4,17 +4,18 @@ import {Box, Text, Image} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import {useNavigation} from '@react-navigation/native'
-
 import {Animated} from '@bluecentury/assets'
-import {useMap} from '@bluecentury/stores'
 import {formatLocationLabel} from '@bluecentury/constants'
+import {NativeStackNavigationProp} from '@react-navigation/native-stack/lib/typescript/src/types'
 
-export const PlannedNavLogInfo = () => {
-  const navigation = useNavigation()
-  const {plannedNavLogs}: any = useMap()
-  const navigationLog = plannedNavLogs?.find(
-    (plan: any) => plan.plannedEta !== null
-  )
+interface Props {
+  logs: Array<any>
+}
+
+export const PlannedNavLogInfo = ({logs}: Props) => {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>()
+  const navigationLog = logs?.find((plan: any) => plan.plannedEta !== null)
 
   return (
     <TouchableOpacity
