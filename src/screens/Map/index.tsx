@@ -21,11 +21,12 @@ import {
   IconButton
 } from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
-import {Colors} from '@bluecentury/styles'
+import {Colors, MapTheme} from '@bluecentury/styles'
 import {useMap, useEntity} from '@bluecentury/stores'
 import {formatLocationLabel} from '@bluecentury/constants'
 
 const {width, height} = Dimensions.get('window')
+const windowHeight = height
 const ASPECT_RATIO = width / height
 const LATITUDE_DELTA = 0.0922
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO
@@ -113,7 +114,7 @@ export default function Map({navigation}: Props) {
   }, [vesselDetails])
 
   const renderBottomContent = () => (
-    <Box backgroundColor="#fff" height={ms(440)} px={ms(30)} py={ms(20)}>
+    <Box backgroundColor="#fff" height={height * 0.8} px={ms(30)} py={ms(20)}>
       <TouchableOpacity
         style={{
           alignSelf: 'center',
@@ -133,9 +134,9 @@ export default function Map({navigation}: Props) {
       >
         {selectedVessel?.alias || null}
       </Text>
-      {snapStatus === 1 && <PreviousNavLogInfo />}
+      {snapStatus === 1 && <PreviousNavLogInfo logs={prevNavLogs} />}
       {currentNavLogs && currentNavLogs.length > 0 && <CurrentNavLogInfo />}
-      {snapStatus === 1 && <PlannedNavLogInfo />}
+      {snapStatus === 1 && <PlannedNavLogInfo logs={plannedNavLogs} />}
       {snapStatus === 1 && (
         <Button
           bg={Colors.azure}
@@ -394,9 +395,8 @@ export default function Map({navigation}: Props) {
         <MapView
           ref={mapRef}
           provider={PROVIDER_GOOGLE} // remove if not using Google Maps
-          style={{
-            ...StyleSheet.absoluteFillObject
-          }}
+          style={{...StyleSheet.absoluteFillObject}}
+          // customMapStyle={MapTheme}
           initialRegion={region}
           onRegionChange={region => handleRegionChange(region)}
         >
