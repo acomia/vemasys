@@ -17,7 +17,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import {ms} from 'react-native-size-matters'
 
 import {Colors} from '@bluecentury/styles'
-import {TCredentials} from '@bluecentury/api/models'
+import {Credentials} from '@bluecentury/models'
 import {Images} from '@bluecentury/assets'
 import {_t} from '@bluecentury/constants'
 import {useAuth} from '@bluecentury/stores'
@@ -37,7 +37,7 @@ function Login() {
     hasAuthenticationError,
     errorMessage
   } = useAuth()
-  const [user, setUser] = useState<TCredentials>({username: '', password: ''})
+  const [user, setUser] = useState<Credentials>({username: '', password: ''})
   const [isShowPassword, setIsShowPassword] = useState(false)
   const [isUsernameEmpty, setIsUsernameEmpty] = useState(false)
   const [isPasswordEmpty, setIsPasswordEmpty] = useState(false)
