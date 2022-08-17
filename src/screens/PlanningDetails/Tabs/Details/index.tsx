@@ -30,7 +30,7 @@ import {
   ROLE_PERMISSION_NAVIGATION_LOG_ADD_FILE,
   titleCase
 } from '@bluecentury/constants'
-import {PROD_URL} from '@bluecentury/env'
+import {PROD_URL} from '@vemasys/env'
 import {LoadingIndicator} from '@bluecentury/components'
 
 const Details = () => {

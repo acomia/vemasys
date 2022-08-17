@@ -10,7 +10,7 @@ module.exports = {
       }
     }],
     ['module:react-native-dotenv', {
-      'moduleName': '@bluecentury/env',
+      'moduleName': '@vemasys/env',
     }],
     ['react-native-reanimated/plugin'],
   ],

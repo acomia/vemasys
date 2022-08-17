@@ -2,7 +2,7 @@ import moment from 'moment'
 import {API} from '../../apiService'
 import {ENTITY_TYPE_SUPPLIER_COMPANY} from '@bluecentury/constants'
 import {useAuth, useEntity} from '@bluecentury/stores'
-import {PROD_URL} from '@bluecentury/env'
+import {PROD_URL} from '@vemasys/env'
 
 const reloadVesselBunkering = async (vesselId: string) => {
   return API.get(`consumption_bunkerings?exploitationVessel.id=${vesselId}`)

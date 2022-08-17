@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import {createNativeStackNavigator} from '@react-navigation/native-stack'
 import MainNavigator from './main-navigator'
 import {GPSTracker} from '@bluecentury/components'
@@ -30,11 +30,25 @@ import {
   Entity
 } from '@bluecentury/screens'
 import {Colors} from '@bluecentury/styles'
+import {TrackingListener} from '@bluecentury/helpers/geolocation-tracking-helper'
+import {useAuth, useEntity, useSettings} from '@bluecentury/stores'
+import BackgroundGeolocation from '@mauron85/react-native-background-geolocation'
 
 const {Navigator, Screen, Group} =
   createNativeStackNavigator<RootStackParamList>()
 
 export default function RootNavigator() {
+  const isMobileTracking = useSettings(state => state.isMobileTracking)
+  useEffect(() => {
+    if (isMobileTracking) {
+      TrackingListener({
+        token: useAuth.getState().token as string,
+        selectedUserId: useEntity.getState().entityUserId as string
+      })
+    } else {
+      BackgroundGeolocation.removeAllListeners()
+    }
+  }, [isMobileTracking])
   return (
     <Navigator
       initialRouteName="Splash"

@@ -22,8 +22,9 @@ import {
 } from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {Colors, MapTheme} from '@bluecentury/styles'
-import {useMap, useEntity} from '@bluecentury/stores'
+import {useMap, useEntity, useAuth} from '@bluecentury/stores'
 import {formatLocationLabel} from '@bluecentury/constants'
+import {TrackingListener} from '@bluecentury/helpers/geolocation-tracking-helper'
 
 const {width, height} = Dimensions.get('window')
 const windowHeight = height

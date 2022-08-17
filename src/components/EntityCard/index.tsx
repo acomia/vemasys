@@ -4,7 +4,7 @@ import {Box, HStack, Avatar, VStack, Text, Button, Spacer} from 'native-base'
 import {ms} from 'react-native-size-matters'
 
 import {Colors} from '@bluecentury/styles'
-import {PROD_URL} from '@bluecentury/env'
+import {PROD_URL} from '@vemasys/env'
 
 type IProps = {
   item: any
@@ -23,7 +23,8 @@ export const EntityCard: FC<IProps> = ({item, selected, onPress}) => {
       shadow={'1'}
       borderColor="#F0F0F0"
       borderWidth="1"
-      borderRadius="md">
+      borderRadius="md"
+    >
       <TouchableOpacity activeOpacity={0.7} onPress={onPress}>
         <HStack space={3} justifyContent="space-between">
           <Avatar
@@ -46,7 +47,8 @@ export const EntityCard: FC<IProps> = ({item, selected, onPress}) => {
               py="1"
               alignSelf="center"
               textAlign="center"
-              backgroundColor={Colors.secondary}>
+              backgroundColor={Colors.secondary}
+            >
               <Text fontSize={ms(12)} color="#fff" bold>
                 active
               </Text>

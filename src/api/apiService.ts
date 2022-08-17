@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {API_URL} from '@bluecentury/env'
+import {API_URL} from '@vemasys/env'
 import {onFailedResponse, onSuccessfulResponse} from './interceptors'
 import {useAuth, useEntity} from '@bluecentury/stores'
 

@@ -1,5 +1,5 @@
 import {Icons} from '@bluecentury/assets'
-import {PROD_URL} from '@bluecentury/env'
+import {PROD_URL} from '@vemasys/env'
 
 // General
 export const ENTITY_TYPE_EXPLOITATION_VESSEL = 'ExploitationVessel'
