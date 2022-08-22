@@ -2,7 +2,8 @@ import {API} from '../../apiService'
 import {VESSEL_PART_CARGO_TYPE} from '@bluecentury/constants'
 import {API_URL, PROD_URL} from '@bluecentury/env'
 import axios from 'axios'
-import {useAuth} from '@bluecentury/stores'
+import ReactNativeBlobUtil from 'react-native-blob-util'
+import {useAuth, useEntity} from '@bluecentury/stores'
 
 const reloadNavigationLogDetails = async (navLogId: string) => {
   return API.get(`navigation_logs/${navLogId}`)
@@ -207,63 +208,28 @@ const updateComment = async (id: string, description: string) => {
 
 const uploadImgFile = async (file: ImageFile) => {
   const formData = new FormData()
-  const filesData = new FormData()
   const image = {
     uri: file.uri,
     type: file.type,
     name: file.fileName || `IMG_${Date.now()}`
   }
 
-  const files = [
-    {
-      data: image,
-      filename: file.fileName,
-      type: file.type
-    }
-    // filesData.append('data', image),
-    // filesData.append('filename', file.fileName),
-    // filesData.append('type', file.type)
-  ]
-  formData.append('files', files)
+  formData.append('file', image)
 
   const token = useAuth.getState().token
+  const entityUserId = useEntity.getState().entityUserId
   try {
-    const res = await axios.post(`${API_URL}v2/file/upload`, formData, {
+    const res = await axios.post(`${API_URL}v2/files`, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data'
+        'Content-Type': 'multipart/form-data',
+        'Jwt-Auth': `Bearer ${token}`,
+        'X-active-entity-user-id': `${entityUserId}`
       }
     })
-    console.log('upload res', res)
+    return res.data
   } catch (error) {
     console.error('Error: Upload image file data', error)
   }
-
-  // const token = useAuth.getState().token
-  // try {
-  //   const res = await axios({
-  //     method: 'POST',
-  //     url: `${API_URL}v2/file/upload`,
-  //     headers: {
-  //       'Jwt-Auth': `Bearer ${token}`,
-  //       'Content-Type': 'multipart/form-data'
-  //     },
-  //     data: formData
-  //   })
-  //   console.log('upload res', res)
-  // } catch (error) {}
-
-  // return API.post(`v2/file/upload`, formData)
-  //   .then(response => {
-  //     console.log('upload res', response)
-  //     if (response.data) {
-  //       return response.data
-  //     } else {
-  //       throw new Error('Upload image file failed.')
-  //     }
-  //   })
-  //   .catch(error => {
-  //     console.error('Error: Upload image file data', error)
-  //   })
 }
 
 const deleteComment = async (id: string) => {
