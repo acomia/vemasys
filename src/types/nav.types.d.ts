@@ -26,6 +26,7 @@ type RootStackParamList = {
   TechnicalRoutineDetails: {id: any; title: string}
   FinancialInvoiceDetails: {id: string; routeFrom: string; title: string}
   TickerOilPriceDetails: undefined
+  AddCrewMember: undefined
 }
 
 type MainStackParamList = {

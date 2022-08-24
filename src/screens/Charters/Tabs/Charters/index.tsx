@@ -151,7 +151,16 @@ export default function Charters({navigation, route}: any) {
 
   const onSearchCharter = (value: string) => {
     setSearchValue(value)
-    const searchedCharter = charters?.filter(charter => {
+    const chartersTemp =
+      route === 'charters'
+        ? charters.filter(c => c.children && c.children.length === 0)
+        : charters.filter(
+            c =>
+              (c.children && c.children.length > 0) ||
+              (!c.parent && !c.navigationLogs) ||
+              c.navigationLogs.length === 0
+          )
+    const searchedCharter = chartersTemp?.filter(charter => {
       const containsKey = value
         ? `${charter?.vesselReference?.toLowerCase()}`?.includes(
             value?.toLowerCase()

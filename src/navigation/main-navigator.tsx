@@ -15,7 +15,8 @@ import {
   Charters,
   Technical,
   Financial,
-  Information
+  Information,
+  Crew
 } from '@bluecentury/screens'
 import {Sidebar, IconButton} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
@@ -83,12 +84,12 @@ export default function MainNavigator({navigation}: Props) {
               <IconButton
                 source={scanIcon}
                 onPress={() => scanNavigateTo()}
-                size={ms(20)}
+                size={ms(25)}
               />
               <IconButton
                 source={Icons.gps}
                 onPress={() => navigation.navigate('GPSTracker')}
-                size={ms(35)}
+                size={ms(30)}
               />
             </HStack>
           </Box>
@@ -113,6 +114,7 @@ export default function MainNavigator({navigation}: Props) {
       <Screen name={Screens.Technical} component={Technical} />
       <Screen name={Screens.Financial} component={Financial} />
       <Screen name={Screens.Information} component={Information} />
+      <Screen name={Screens.Crew} component={Crew} />
       <Screen
         name={Screens.ChangeRole}
         component={Entity}
