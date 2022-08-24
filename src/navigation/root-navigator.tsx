@@ -1,7 +1,7 @@
 import React from 'react'
-import {createNativeStackNavigator} from '@react-navigation/native-stack'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import MainNavigator from './main-navigator'
-import {GPSTracker} from '@bluecentury/components'
+import { GPSTracker } from '@bluecentury/components'
 import {
   Login,
   Splash,
@@ -30,9 +30,9 @@ import {
   AddCrewMember,
   Entity
 } from '@bluecentury/screens'
-import {Colors} from '@bluecentury/styles'
+import { Colors } from '@bluecentury/styles'
 
-const {Navigator, Screen, Group} =
+const { Navigator, Screen, Group } =
   createNativeStackNavigator<RootStackParamList>()
 
 export default function RootNavigator() {
@@ -42,8 +42,8 @@ export default function RootNavigator() {
       screenOptions={{
         headerShown: false,
         headerShadowVisible: false,
-        headerStyle: {backgroundColor: Colors.light},
-        headerTitleStyle: {fontSize: 16, fontWeight: 'bold'},
+        headerStyle: { backgroundColor: Colors.light },
+        headerTitleStyle: { fontSize: 16, fontWeight: 'bold' },
         animation: 'fade'
       }}
     >
@@ -61,18 +61,18 @@ export default function RootNavigator() {
           component={Entity}
           options={{
             title: 'Select your role',
-            headerStyle: {backgroundColor: '#F0F0F0'}
+            headerStyle: { backgroundColor: '#F0F0F0' }
           }}
         />
         <Screen
           name="Main"
           component={MainNavigator}
-          options={{headerShown: false}}
+          options={{ headerShown: false }}
         />
         <Screen
           name="QRScanner"
           component={QRScanner}
-          options={{headerShown: false}}
+          options={{ headerShown: false }}
         />
         <Screen
           name="Formations"
@@ -85,27 +85,27 @@ export default function RootNavigator() {
         <Screen
           name={'CharterDetails'}
           component={CharterDetails}
-          options={{headerShown: true, title: 'Charter Information'}}
+          options={{ headerShown: true, title: 'Charter Information' }}
         />
         <Screen
           name={'PDFView'}
           component={PDFView}
-          options={{headerShown: true}}
+          options={{ headerShown: true, title: 'PDF Viewer' }}
         />
         <Screen
           name={'NewBunkering'}
           component={NewBunkering}
-          options={{headerShown: true, title: 'Add bunkering'}}
+          options={{ headerShown: true, title: 'Add bunkering' }}
         />
         <Screen
           name={'BunkeringDetails'}
           component={BunkeringDetails}
-          options={{headerShown: true, title: 'Bunkering Details'}}
+          options={{ headerShown: true, title: 'Bunkering Details' }}
         />
         <Screen
           name={'PlanningDetails'}
           component={PlanningDetails}
-          options={({route}) => ({
+          options={({ route }) => ({
             headerShown: true,
             title: route.params.title
           })}
@@ -113,12 +113,12 @@ export default function RootNavigator() {
         <Screen
           name={'PlanningNewComment'}
           component={PlanningNewComment}
-          options={{headerShown: true, title: 'New Comment'}}
+          options={{ headerShown: true, title: 'New Comment' }}
         />
         <Screen
           name={'AddEditNavlogAction'}
           component={AddEditNavlogAction}
-          options={({route}) => ({
+          options={({ route }) => ({
             headerShown: true,
             title: route.params.method === 'add' ? 'Add Action' : 'Edit Action'
           })}
@@ -126,7 +126,7 @@ export default function RootNavigator() {
         <Screen
           name={'TechnicalTasksList'}
           component={TechnicalTasksList}
-          options={({route}) => ({
+          options={({ route }) => ({
             headerShown: true,
             title: route.params.title
           })}
@@ -134,17 +134,17 @@ export default function RootNavigator() {
         <Screen
           name={'TechnicalTaskDetails'}
           component={TechnicalTaskDetails}
-          options={{headerShown: true, title: 'Task Details'}}
+          options={{ headerShown: true, title: 'Task Details' }}
         />
         <Screen
           name={'TechnicalTaskNewComment'}
           component={TechnicalTaskNewComment}
-          options={{headerShown: true, title: 'New Comment'}}
+          options={{ headerShown: true, title: 'New Comment' }}
         />
         <Screen
           name={'AddEditTechnicalTask'}
           component={AddEditTechnicalTask}
-          options={({route}) => ({
+          options={({ route }) => ({
             headerShown: true,
             title: route.params.method === 'add' ? 'Add a Task' : 'Edit Task'
           })}
@@ -153,7 +153,7 @@ export default function RootNavigator() {
         <Screen
           name={'TechnicalCertificateList'}
           component={TechnicalCertificateList}
-          options={({route}) => ({
+          options={({ route }) => ({
             headerShown: true,
             title: route.params.title
           })}
@@ -169,7 +169,7 @@ export default function RootNavigator() {
         <Screen
           name={'AddEditBulkCargo'}
           component={AddEditBulkCargo}
-          options={({route}) => ({
+          options={({ route }) => ({
             headerShown: true,
             title:
               route.params.method === 'edit'
@@ -180,7 +180,7 @@ export default function RootNavigator() {
         <Screen
           name={'AddEditComment'}
           component={AddEditComment}
-          options={({route}) => ({
+          options={({ route }) => ({
             headerShown: true,
             title:
               route.params.method === 'edit' ? 'Edit Comment' : 'New Comment'
@@ -197,7 +197,7 @@ export default function RootNavigator() {
         <Screen
           name={'TechnicalRoutinesList'}
           component={TechnicalRoutinesList}
-          options={({route}) => ({
+          options={({ route }) => ({
             headerShown: true,
             title: route.params.title
           })}
@@ -205,7 +205,7 @@ export default function RootNavigator() {
         <Screen
           name={'TechnicalRoutineDetails'}
           component={TechnicalRoutineDetails}
-          options={({route}) => ({
+          options={({ route }) => ({
             headerShown: true,
             title: route.params.title
           })}
@@ -213,7 +213,7 @@ export default function RootNavigator() {
         <Screen
           name={'FinancialInvoiceDetails'}
           component={FinancialInvoiceDetails}
-          options={({route}) => ({
+          options={({ route }) => ({
             headerShown: true,
             title: route.params.title
           })}

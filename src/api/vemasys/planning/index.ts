@@ -1,9 +1,9 @@
-import {API} from '../../apiService'
-import {VESSEL_PART_CARGO_TYPE} from '@bluecentury/constants'
-import {API_URL, PROD_URL} from '@bluecentury/env'
+import { API } from '../../apiService'
+import { VESSEL_PART_CARGO_TYPE } from '@bluecentury/constants'
+import { API_URL, PROD_URL } from '@bluecentury/env'
 import axios from 'axios'
 import ReactNativeBlobUtil from 'react-native-blob-util'
-import {useAuth, useEntity} from '@bluecentury/stores'
+import { useAuth, useEntity } from '@bluecentury/stores'
 
 const reloadNavigationLogDetails = async (navLogId: string) => {
   return API.get(`navigation_logs/${navLogId}`)
@@ -135,7 +135,7 @@ const reloadBulkTypes = async (query: string) => {
 
 const updateBulkCargoEntry = async (cargo: any) => {
   return API.put(`navigation_bulks/${cargo.id}`, {
-    type: {id: parseInt(cargo.typeId)},
+    type: { id: parseInt(cargo.typeId) },
     amount: cargo.amount.toString(),
     actualAmount: cargo.actualAmount.toString(),
     isLoading: cargo.isLoading === '1'
@@ -159,7 +159,7 @@ const createNewBulkCargoEntry = async (cargo: any, navLogId: string) => {
       log: {
         id: navLogId
       },
-      type: {id: parseInt(cargo.typeId)},
+      type: { id: parseInt(cargo.typeId) },
       amount: cargo.amount,
       actualAmount: cargo.actualAmount,
       isLoading: cargo.isLoading === '1'
@@ -193,7 +193,7 @@ const deleteBulkCargoEntry = async (id: string) => {
 }
 
 const updateComment = async (id: string, description: string) => {
-  return API.put(`comments/${id}`, {description})
+  return API.put(`comments/${id}`, { description })
     .then(response => {
       if (response.data) {
         return response.data
@@ -246,6 +246,20 @@ const deleteComment = async (id: string) => {
     })
 }
 
+const uploadVesselNavigationLogFile = async (navLogId: string, body: any) => {
+  return API.put(`navigation_logs/${navLogId}`, body)
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Update navlog datetime failed.')
+      }
+    })
+    .catch(error => {
+      console.error('Error: Update navlog datetime data', error)
+    })
+}
+
 export {
   reloadNavigationLogDetails,
   reloadNavigationLogActions,
@@ -260,5 +274,5 @@ export {
   deleteBulkCargoEntry,
   updateComment,
   uploadImgFile,
-  deleteComment
+  deleteComment, uploadVesselNavigationLogFile
 }

@@ -114,10 +114,10 @@ const AddEditComment = ({ navigation, route }: Props) => {
             if (index === imgFile.length - 1) {
               res = await updateComment(comment?.id, description)
               if (typeof res === 'object') {
-                showToast('comment updated.', 'success')
+                showToast('Comment updated.', 'success')
                 getNavigationLogComments(navigationLogDetails?.id)
               } else {
-                showToast('comment update failed.', 'failed')
+                showToast('Comment update failed.', 'failed')
               }
             }
           }
