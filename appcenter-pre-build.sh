@@ -14,6 +14,7 @@ echo SENTRY_DSN=$SENTRY_DSN >> .env
 echo CODEPUSH_DEPLOYMENT_KEY=$CODEPUSH_DEPLOYMENT_KEY >> .env
 echo MAP_KEY=$MAP_KEY >> .env
 echo PROD_URL =$PROD_URL >> .env
+echo UAT_URL =$UAT_URL >> .env
 
 echo " .env created with following contents:"
 cat .env

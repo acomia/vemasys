@@ -352,6 +352,8 @@ PODS:
     - React-Core
   - react-native-document-picker (8.1.1):
     - React-Core
+  - react-native-document-scanner-plugin (0.1.0):
+    - React-Core
   - react-native-geolocation-service (5.3.0-beta.4):
     - React
   - react-native-google-maps (0.31.1):
@@ -542,6 +544,7 @@ DEPENDENCIES:
   - react-native-config (from `../node_modules/react-native-config`)
   - react-native-date-picker (from `../node_modules/react-native-date-picker`)
   - react-native-document-picker (from `../node_modules/react-native-document-picker`)
+  - react-native-document-scanner-plugin (from `../node_modules/react-native-document-scanner-plugin`)
   - react-native-geolocation-service (from `../node_modules/react-native-geolocation-service`)
   - react-native-google-maps (from `../node_modules/react-native-maps`)
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
@@ -654,6 +657,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-date-picker"
   react-native-document-picker:
     :path: "../node_modules/react-native-document-picker"
+  react-native-document-scanner-plugin:
+    :path: "../node_modules/react-native-document-scanner-plugin"
   react-native-geolocation-service:
     :path: "../node_modules/react-native-geolocation-service"
   react-native-google-maps:
@@ -759,6 +764,7 @@ SPEC CHECKSUMS:
   react-native-config: 6502b1879f97ed5ac570a029961fc35ea606cd14
   react-native-date-picker: 9088350e06918f7d842a34c171acadc66583cb94
   react-native-document-picker: f68191637788994baed5f57d12994aa32cf8bf88
+  react-native-document-scanner-plugin: 8e214453beeecd752e70803073681d3360c1a6a8
   react-native-geolocation-service: c0efb872258ed9240f1003a70fca9e9757e5c785
   react-native-google-maps: 8231ffa015bf8b222c2e2661fa9163cdb609a224
   react-native-image-picker: cffb727cf2f59bd5c0408e30b3dbe0b935f88835
@@ -792,6 +798,6 @@ SPEC CHECKSUMS:
   Yoga: 99652481fcd320aefa4a7ef90095b95acd181952
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 89e1f039d4c891885683e296bdeef11b93f6aa1d
+PODFILE CHECKSUM: 6a042919d7e895816dec55f29b650fa4822c520a
 
 COCOAPODS: 1.11.3

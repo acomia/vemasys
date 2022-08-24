@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react'
-import {RefreshControl, TouchableOpacity} from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { RefreshControl, TouchableOpacity } from 'react-native'
 import {
   Avatar,
   Box,
@@ -11,17 +11,17 @@ import {
   Text,
   useToast
 } from 'native-base'
-import {ms} from 'react-native-size-matters'
+import { ms } from 'react-native-size-matters'
 import DatePicker from 'react-native-date-picker'
-import {useNavigation, useRoute} from '@react-navigation/native'
+import { useNavigation, useRoute } from '@react-navigation/native'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import moment from 'moment'
 import _ from 'lodash'
 
-import {DatetimePickerList} from '../../components'
-import {Colors} from '@bluecentury/styles'
-import {Icons} from '@bluecentury/assets'
-import {useEntity, usePlanning} from '@bluecentury/stores'
+import { DatetimePickerList } from '../../components'
+import { Colors } from '@bluecentury/styles'
+import { Icons } from '@bluecentury/assets'
+import { useEntity, usePlanning } from '@bluecentury/stores'
 import {
   formatLocationLabel,
   formatNumber,
@@ -30,8 +30,8 @@ import {
   ROLE_PERMISSION_NAVIGATION_LOG_ADD_FILE,
   titleCase
 } from '@bluecentury/constants'
-import {PROD_URL} from '@bluecentury/env'
-import {LoadingIndicator} from '@bluecentury/components'
+import { PROD_URL } from '@bluecentury/env'
+import { LoadingIndicator } from '@bluecentury/components'
 
 const Details = () => {
   const toast = useToast()
@@ -46,10 +46,11 @@ const Details = () => {
     getNavigationLogActions,
     getNavigationLogCargoHolds,
     getNavigationLogComments,
+    getNavigationLogDocuments,
     updateNavlogDates
   } = usePlanning()
-  const {user, selectedEntity, physicalVesselId} = useEntity()
-  const {navlog}: any = route.params
+  const { user, selectedEntity, physicalVesselId } = useEntity()
+  const { navlog }: any = route.params
   const [dates, setDates] = useState({
     captainDatetimeETA: null,
     announcedDatetime: null,
@@ -70,6 +71,7 @@ const Details = () => {
     getNavigationLogDetails(navlog.id)
     getNavigationLogActions(navlog.id)
     getNavigationLogComments(navlog.id)
+    getNavigationLogDocuments(navlog.id)
     getNavigationLogCargoHolds(physicalVesselId)
   }, [])
 
@@ -83,10 +85,10 @@ const Details = () => {
       body[field] = datetime
         ? moment(datetime).format()
         : Object.entries(navigationLogDetails).find(keyValue => {
-            if (keyValue[0] === field) {
-              return keyValue[1]
-            }
-          })[1]
+          if (keyValue[0] === field) {
+            return keyValue[1]
+          }
+        })[1]
       if (field === 'departureDatetime') {
         body['modifiedByUser'] = {
           id: user?.id
@@ -130,11 +132,11 @@ const Details = () => {
 
   const onDatesChange = (date: Date) => {
     if (selectedDate === 'ETA') {
-      setDates({...dates, captainDatetimeETA: date})
+      setDates({ ...dates, captainDatetimeETA: date })
     } else if (selectedDate === 'NOR') {
-      setDates({...dates, announcedDatetime: date})
+      setDates({ ...dates, announcedDatetime: date })
     } else {
-      setDates({...dates, terminalApprovedDeparture: date})
+      setDates({ ...dates, terminalApprovedDeparture: date })
     }
   }
 
@@ -156,7 +158,7 @@ const Details = () => {
           </Text>
         </HStack>
         {!navigationLogDetails?.captainDatetimeEta &&
-        !navigationLogDetails?.plannedEta ? null : (
+          !navigationLogDetails?.plannedEta ? null : (
           <DatetimePickerList
             title="ETA"
             date={
@@ -168,12 +170,12 @@ const Details = () => {
             onChangeDate={() => {
               setSelectedDate('ETA'), setOpenDatePicker(true)
             }}
-            onClearDate={() => setDates({...dates, captainDatetimeETA: null})}
+            onClearDate={() => setDates({ ...dates, captainDatetimeETA: null })}
           />
         )}
 
         {!navigationLogDetails?.announcedDatetime &&
-        !navigationLogDetails?.plannedEta ? null : (
+          !navigationLogDetails?.plannedEta ? null : (
           <DatetimePickerList
             title="NOR"
             date={
@@ -185,12 +187,12 @@ const Details = () => {
             onChangeDate={() => {
               setSelectedDate('NOR'), setOpenDatePicker(true)
             }}
-            onClearDate={() => setDates({...dates, announcedDatetime: null})}
+            onClearDate={() => setDates({ ...dates, announcedDatetime: null })}
           />
         )}
 
         {!navigationLogDetails?.terminalApprovedDeparture &&
-        !navigationLogDetails?.plannedEta ? null : (
+          !navigationLogDetails?.plannedEta ? null : (
           <DatetimePickerList
             title="DOC"
             date={
@@ -203,7 +205,7 @@ const Details = () => {
               setSelectedDate('DOC'), setOpenDatePicker(true)
             }}
             onClearDate={() =>
-              setDates({...dates, terminalApprovedDeparture: null})
+              setDates({ ...dates, terminalApprovedDeparture: null })
             }
           />
         )}
@@ -212,8 +214,8 @@ const Details = () => {
           bg={
             _.isNull(
               dates.terminalApprovedDeparture ||
-                dates.captainDatetimeETA ||
-                dates.announcedDatetime
+              dates.captainDatetimeETA ||
+              dates.announcedDatetime
             )
               ? Colors.disabled
               : Colors.primary
@@ -223,8 +225,8 @@ const Details = () => {
           disabled={
             _.isNull(
               dates.terminalApprovedDeparture ||
-                dates.captainDatetimeETA ||
-                dates.announcedDatetime
+              dates.captainDatetimeETA ||
+              dates.announcedDatetime
             )
               ? true
               : false
@@ -237,7 +239,7 @@ const Details = () => {
     )
   }
 
-  const CommentCard = ({comment, commentDescription}) => {
+  const CommentCard = ({ comment, commentDescription }) => {
     return (
       <TouchableOpacity
         activeOpacity={0.6}
@@ -313,6 +315,7 @@ const Details = () => {
     getNavigationLogDetails(navlog.id)
     getNavigationLogActions(navlog.id)
     getNavigationLogComments(navlog.id)
+    getNavigationLogDocuments(navlog.id)
     getNavigationLogCargoHolds(physicalVesselId)
   }
 
@@ -320,7 +323,7 @@ const Details = () => {
   return (
     <Box flex="1">
       <ScrollView
-        contentContainerStyle={{flexGrow: 1, paddingBottom: 20}}
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
         scrollEventThrottle={16}
         refreshControl={
           <RefreshControl
@@ -377,59 +380,59 @@ const Details = () => {
         </Text>
         {navigationLogActions?.length > 0
           ? navigationLogActions?.map((action, index) => (
-              <TouchableOpacity
-                activeOpacity={0.7}
-                key={index}
-                onPress={() =>
-                  navigation.navigate('AddEditNavlogAction', {
-                    method: 'edit',
-                    navlogAction: action
-                  })
-                }
+            <TouchableOpacity
+              activeOpacity={0.7}
+              key={index}
+              onPress={() =>
+                navigation.navigate('AddEditNavlogAction', {
+                  method: 'edit',
+                  navlogAction: action
+                })
+              }
+            >
+              <HStack
+                borderWidth={1}
+                borderColor={Colors.light}
+                borderRadius={5}
+                p={ms(10)}
+                mt={ms(10)}
+                bg={Colors.white}
+                shadow={1}
+                alignItems="center"
               >
-                <HStack
-                  borderWidth={1}
-                  borderColor={Colors.light}
-                  borderRadius={5}
-                  p={ms(10)}
-                  mt={ms(10)}
-                  bg={Colors.white}
-                  shadow={1}
-                  alignItems="center"
-                >
-                  <Box flex="1">
-                    <HStack>
-                      <Text fontWeight="medium" color={Colors.text}>
-                        {titleCase(action.type)}
-                      </Text>
-                      {action.type.toLowerCase() !== 'cleaning' &&
+                <Box flex="1">
+                  <HStack>
+                    <Text fontWeight="medium" color={Colors.text}>
+                      {titleCase(action.type)}
+                    </Text>
+                    {action.type.toLowerCase() !== 'cleaning' &&
                       action.navigationBulk ? (
-                        <Text
-                          fontWeight="medium"
-                          color={Colors.text}
-                          ml={ms(5)}
-                        >
-                          {action.navigationBulk.type.nameEN}
-                        </Text>
-                      ) : null}
-
-                      <Text fontWeight="medium" color={Colors.text} ml={ms(5)}>
-                        {action.value && formatNumber(action.value, 0)}
+                      <Text
+                        fontWeight="medium"
+                        color={Colors.text}
+                        ml={ms(5)}
+                      >
+                        {action.navigationBulk.type.nameEN}
                       </Text>
-                    </HStack>
-                    <Text color={Colors.disabled}>{`${moment(
-                      action.start
-                    ).format('DD/MM | HH:mm')} - ${moment(
-                      _.isNull(action.end) ? null : action.end
-                    ).format('DD/MM | HH:mm')}`}</Text>
-                  </Box>
-                  <Image
-                    alt="navlog-action-icon"
-                    source={action.end ? Icons.play : Icons.stop}
-                  />
-                </HStack>
-              </TouchableOpacity>
-            ))
+                    ) : null}
+
+                    <Text fontWeight="medium" color={Colors.text} ml={ms(5)}>
+                      {action.value && formatNumber(action.value, 0)}
+                    </Text>
+                  </HStack>
+                  <Text color={Colors.disabled}>{`${moment(
+                    action.start
+                  ).format('DD/MM | HH:mm')} - ${moment(
+                    _.isNull(action.end) ? null : action.end
+                  ).format('DD/MM | HH:mm')}`}</Text>
+                </Box>
+                <Image
+                  alt="navlog-action-icon"
+                  source={action.end ? Icons.play : Icons.stop}
+                />
+              </HStack>
+            </TouchableOpacity>
+          ))
           : null}
         <Box>
           <Button

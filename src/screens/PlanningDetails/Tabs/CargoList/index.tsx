@@ -1,14 +1,14 @@
 import React from 'react'
-import {Alert} from 'react-native'
-import {Box, Divider, HStack, ScrollView, Text, useToast} from 'native-base'
-import {useNavigation} from '@react-navigation/native'
-import {ms} from 'react-native-size-matters'
+import { Alert } from 'react-native'
+import { Box, Divider, HStack, ScrollView, Text, useToast } from 'native-base'
+import { useNavigation } from '@react-navigation/native'
+import { ms } from 'react-native-size-matters'
 
-import {Colors} from '@bluecentury/styles'
-import {usePlanning} from '@bluecentury/stores'
-import {IconButton, LoadingIndicator} from '@bluecentury/components'
-import {Icons} from '@bluecentury/assets'
-import {formatBulkTypeLabel, formatNumber} from '@bluecentury/constants'
+import { Colors } from '@bluecentury/styles'
+import { usePlanning } from '@bluecentury/stores'
+import { IconButton, LoadingIndicator } from '@bluecentury/components'
+import { Icons } from '@bluecentury/assets'
+import { formatBulkTypeLabel, formatNumber } from '@bluecentury/constants'
 
 const CargoList = () => {
   const navigation = useNavigation()
@@ -76,7 +76,7 @@ const CargoList = () => {
   return (
     <Box flex="1">
       <ScrollView
-        contentContainerStyle={{flexGrow: 1, paddingBottom: 20}}
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
         bg={Colors.white}
         px={ms(12)}
         py={ms(20)}
@@ -108,8 +108,8 @@ const CargoList = () => {
                 mb={ms(10)}
                 shadow={1}
               >
-                <Box>
-                  <Text fontWeight="medium">
+                <Box flex="1" mr={ms(5)}>
+                  <Text fontWeight="medium" >
                     {cargo.type ? formatBulkTypeLabel(cargo.type) : 'N.A.'}
                   </Text>
                   <Text color={Colors.disabled}>
