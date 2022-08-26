@@ -3,10 +3,10 @@ import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import * as API from '@bluecentury/api/vemasys'
-import {TNotification} from '@bluecentury/api/models'
+import {Notification} from '@bluecentury/models'
 
 type NotifState = {
-  notifications: TNotification[]
+  notifications: Notification[]
   isLoadingNotification: boolean
 }
 
@@ -26,7 +26,7 @@ export const useNotif = create(
           isLoadingNotification: true
         })
         try {
-          const response = await API.getNotifications()
+          const response = await API.geNotifications()
           if (Array.isArray(response)) {
             set({
               isLoadingNotification: false,
