@@ -279,68 +279,80 @@ const FinancialInvoiceDetails = ({navigation, route}: Props) => {
       borderTopRightRadius={ms(15)}
       bg={Colors.white}
     >
-      <ScrollView contentContainerStyle={{flexGrow: 1}} px={ms(14)} py={ms(20)}>
-        <CardContent
-          label="Invoice number"
-          value={
-            routeFrom === 'costs'
-              ? invoiceDetails?.receiverReference
-              : invoiceDetails?.senderReference
-          }
-        />
-        <CardContent label="Receiver" value={invoiceDetails?.receiver?.alias} />
-        <CardContent
-          label="Reference"
-          value={invoiceDetails?.senderReference}
-        />
-        <CardContent
-          label="Status"
-          value={
-            routeFrom === 'costs'
-              ? invoiceDetails?.status
-              : invoiceDetails?.outgoingStatus
-          }
-        />
-        <TouchableOpacity onPress={() => setdateToggled(!dateToggled)}>
-          {dateToggled && (
-            <CardContent
-              label="Sent on"
-              value={
-                invoiceDetails?.sentAt === null
-                  ? ''
-                  : moment(invoiceDetails?.sentAt).format('DD MMM YYYY')
-              }
-            />
-          )}
+      <ScrollView contentContainerStyle={{flexGrow: 1}}>
+        <Box px={ms(14)} py={ms(20)}>
           <CardContent
-            label="Due date"
+            label="Invoice number"
             value={
-              invoiceDetails?.dueDate === null
-                ? ''
-                : moment(invoiceDetails?.dueDate).format('DD MMM YYYY')
+              routeFrom === 'costs'
+                ? invoiceDetails?.receiverReference
+                : invoiceDetails?.senderReference
             }
           />
-        </TouchableOpacity>
-        <CardTotal label="Total excl VAT" value={invoiceDetails?.totalAmount} />
-      </ScrollView>
-      {filePath !== '' ? (
-        <Pdf
-          enablePaging
-          source={source}
-          style={{
-            flex: 1,
-            width: Dimensions.get('window').width,
-            height: Dimensions.get('window').height
-          }}
-          trustAllCerts={false}
-        />
-      ) : (
-        <Box flex="1" alignItems="center">
-          <Text style={{fontSize: 16, fontWeight: '700', color: Colors.azure}}>
-            No Available File.
-          </Text>
+          <CardContent
+            label="Receiver"
+            value={invoiceDetails?.receiver?.alias}
+          />
+          <CardContent
+            label="Reference"
+            value={invoiceDetails?.senderReference}
+          />
+          <CardContent
+            label="Status"
+            value={
+              routeFrom === 'costs'
+                ? invoiceDetails?.status
+                : invoiceDetails?.outgoingStatus
+            }
+          />
+          <TouchableOpacity onPress={() => setdateToggled(!dateToggled)}>
+            {dateToggled && (
+              <CardContent
+                label="Sent on"
+                value={
+                  invoiceDetails?.sentAt === null
+                    ? ''
+                    : moment(invoiceDetails?.sentAt).format('DD MMM YYYY')
+                }
+              />
+            )}
+            <CardContent
+              label="Due date"
+              value={
+                invoiceDetails?.dueDate === null
+                  ? ''
+                  : moment(invoiceDetails?.dueDate).format('DD MMM YYYY')
+              }
+            />
+          </TouchableOpacity>
+          <CardTotal
+            label="Total excl VAT"
+            value={invoiceDetails?.totalAmount}
+          />
         </Box>
-      )}
+        {filePath !== '' ? (
+          <Pdf
+            enablePaging
+            source={source}
+            style={{
+              marginTop: -50,
+              backgroundColor: 'transparent',
+              width: Dimensions.get('window').width,
+              height: Dimensions.get('window').height
+            }}
+            trustAllCerts={false}
+          />
+        ) : (
+          <Box flex="1" alignItems="center">
+            <Text
+              style={{fontSize: 16, fontWeight: '700', color: Colors.azure}}
+            >
+              No Available File.
+            </Text>
+          </Box>
+        )}
+      </ScrollView>
+
       <Modal
         isOpen={statusModal}
         animationPreset="slide"

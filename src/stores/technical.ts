@@ -62,7 +62,6 @@ export const useTechnical = create(
       isTechnicalLoading: false,
       bunkering: [],
       gasoilReserviors: [],
-      lastGasoilMeasurements: [],
       engines: [],
       reservoirs: [],
       lastWaterMeasurements: [],
@@ -89,7 +88,10 @@ export const useTechnical = create(
         }
       },
       getVesselGasoilReservoirs: async (physicalVesselId: string) => {
-        set({isTechnicalLoading: true, gasoilReserviors: []})
+        set({
+          isTechnicalLoading: true,
+          gasoilReserviors: []
+        })
         try {
           const response = await API.reloadVesselGasoilReservoirs(
             physicalVesselId
@@ -105,14 +107,15 @@ export const useTechnical = create(
                   reservoir?.vesselZone?.physicalVessel?.id === physicalVesselId
               )
             gasoilR.forEach(async reservoir => {
+              set({isTechnicalLoading: true})
               const lastM = await API.reloadVesselPartLastMeasurements(
                 reservoir.id
               )
               reservoir.lastMeasurement = lastM[0]
-            })
-            set({
-              isTechnicalLoading: false,
-              gasoilReserviors: gasoilR
+              set({
+                isTechnicalLoading: false,
+                gasoilReserviors: gasoilR
+              })
             })
           } else {
             set({
@@ -163,10 +166,10 @@ export const useTechnical = create(
                 engine.id
               )
               engine.lastMeasurement = lastM[0]
-            })
-            set({
-              isTechnicalLoading: false,
-              engines: response
+              set({
+                isTechnicalLoading: false,
+                engines: response
+              })
             })
           } else {
             set({
@@ -189,11 +192,11 @@ export const useTechnical = create(
               set({isTechnicalLoading: true})
               const lastM = await API.reloadVesselPartLastMeasurements(tank.id)
               lastWaterM?.push(lastM[0])
-            })
-            set({
-              isTechnicalLoading: false,
-              reservoirs: waterTank,
-              lastWaterMeasurements: lastWaterM
+              set({
+                isTechnicalLoading: false,
+                reservoirs: waterTank,
+                lastWaterMeasurements: lastWaterM
+              })
             })
           } else {
             set({

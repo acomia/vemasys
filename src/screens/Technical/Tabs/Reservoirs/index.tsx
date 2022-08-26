@@ -68,8 +68,8 @@ const Reservoirs = () => {
               activeOpacity={0.7}
               onPress={() =>
                 navigation.navigate('Measurements', {
-                  reservoir: reservoir,
-                  lastMeasurement: lastWaterMeasurements[index]
+                  data: reservoir,
+                  routeFrom: 'reservoir'
                 })
               }
             >

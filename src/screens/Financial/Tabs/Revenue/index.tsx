@@ -105,7 +105,7 @@ const Revenue = () => {
             {moment(invoice_date).format('DD MMM YYYY')}
           </Text>
         </Box>
-        <Box alignItems="center">
+        <Box alignItems="flex-end">
           <Text color={Colors.danger}>
             €{' '}
             {Platform.OS === 'ios'
@@ -298,7 +298,7 @@ const Revenue = () => {
                     navigation.navigate('FinancialInvoiceDetails', {
                       id: item.id,
                       routeFrom: 'revenue',
-                      title: item.receiverReference
+                      title: item.senderReference
                     })
                   }
                 >
@@ -377,7 +377,7 @@ const Revenue = () => {
             }}
           >
             <CardTotal
-              label="Total costs"
+              label="Total revenue"
               value={
                 invoiceStatistics?.length > 0
                   ? invoiceStatistics[0]?.totalOutgoing || 0

@@ -26,28 +26,12 @@ const ReservoirLevel = ({reservoir, physicalVesselId}: any) => {
   const renderGasoilList = (reservoir: any, index: number) => {
     const gasoilListLength = reservoir.length - 1
     let fillPct = 0
-    let value = 0
-    let capacity = 0
-    let lastMeasurementDate = null
-    // if (lastGasoilMeasurements?.length > 0) {
-    //   value =
-    //     typeof lastGasoilMeasurements[index]?.value === 'undefined'
-    //       ? 0
-    //       : lastGasoilMeasurements[index]?.value
-    //   capacity = reservoir.capacity === null ? 0 : reservoir.capacity
-
-    //   lastMeasurementDate = lastGasoilMeasurements[index]?.date
-    //   let used = capacity - value
-    //   fillPct = (used / capacity) * 100 - 100
-    //   fillPct = fillPct < 0 ? fillPct * -1 : fillPct
-    // }
-    capacity = reservoir?.capacity === null ? 0 : reservoir?.capacity
-    value =
+    const capacity = reservoir?.capacity === null ? 0 : reservoir?.capacity
+    const value =
       typeof reservoir?.lastMeasurement?.value === 'undefined'
         ? 0
         : reservoir?.lastMeasurement?.value
-    lastMeasurementDate = reservoir?.lastMeasurement?.date
-    let used = capacity - value
+    const used = capacity - value
     fillPct = (used / capacity) * 100 - 100
     fillPct = fillPct < 0 ? fillPct * -1 : fillPct
 
@@ -56,7 +40,10 @@ const ReservoirLevel = ({reservoir, physicalVesselId}: any) => {
         <TouchableOpacity
           activeOpacity={0.7}
           onPress={() =>
-            navigation.navigate('Measurements', {reservoir: reservoir})
+            navigation.navigate('Measurements', {
+              data: reservoir,
+              routeFrom: 'reservoir'
+            })
           }
         >
           <Box px={ms(16)} py={ms(5)}>
@@ -73,7 +60,7 @@ const ReservoirLevel = ({reservoir, physicalVesselId}: any) => {
               </Text>
             </HStack>
             <Text flex={1} color={Colors.disabled} fontWeight="medium">
-              {moment(lastMeasurementDate).fromNow()}
+              {moment(reservoir?.lastMeasurement?.date).fromNow()}
             </Text>
             <Progress
               value={isNaN(fillPct) ? 0 : Math.floor(fillPct)}
