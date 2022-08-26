@@ -101,7 +101,7 @@ const Costs = () => {
             {moment(invoice_date).format('DD MMM YYYY')}
           </Text>
         </Box>
-        <Box alignItems="center">
+        <Box alignItems="flex-end">
           <Text color={Colors.danger}>
             €{' '}
             {Platform.OS === 'ios'
