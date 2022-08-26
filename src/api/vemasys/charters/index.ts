@@ -1,14 +1,15 @@
-import _ from 'lodash'
+import orderBy from 'lodash/orderBy'
 import {API} from '@bluecentury/api/apiService'
 import ReactNativeBlobUtil from 'react-native-blob-util'
-import {PROD_URL, API_URL} from '@bluecentury/env'
+import {API_URL} from '@bluecentury/env'
 import {useAuth, useEntity} from '@bluecentury/stores'
 
 const reloadVesselCharters = async () => {
-  return API.get(`v3/charters?isArchived=0`)
+  const isArchived = 0
+  return API.get(`v3/charters?isArchived=${isArchived}`)
     .then(response => {
       if (response.data.length > 0) {
-        return _.orderBy(response.data, 'charterDate', 'desc')
+        return orderBy(response.data, 'charterDate', 'desc')
       } else {
         return []
       }

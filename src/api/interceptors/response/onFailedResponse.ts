@@ -1,7 +1,7 @@
 import axios from 'axios'
 import {useAuth} from '@bluecentury/stores'
 import {API} from '../../apiService'
-import {API_URL} from '@bluecentury/env'
+import {API_URL} from '@vemasys/env'
 
 const UNAUTHENTICATED = 401
 

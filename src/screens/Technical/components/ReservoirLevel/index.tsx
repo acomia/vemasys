@@ -6,7 +6,7 @@ import moment from 'moment'
 import {useNavigation} from '@react-navigation/native'
 
 import {Colors} from '@bluecentury/styles'
-import {PROD_URL} from '@bluecentury/env'
+import {PROD_URL} from '@vemasys/env'
 import {formatNumber} from '@bluecentury/constants'
 import {useTechnical} from '@bluecentury/stores'
 

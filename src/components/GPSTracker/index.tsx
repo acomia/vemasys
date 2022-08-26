@@ -13,58 +13,57 @@ import {ms} from 'react-native-size-matters'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import Geolocation, {GeoPosition} from 'react-native-geolocation-service'
 import {useNetInfo} from '@react-native-community/netinfo'
-import BackgroundTimer from 'react-native-background-timer'
 import moment from 'moment'
 
 import {Colors} from '@bluecentury/styles'
 import {Icons} from '@bluecentury/assets'
-import {useEntity, useMap} from '@bluecentury/stores'
+import {useEntity, useMap, useSettings} from '@bluecentury/stores'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 export const GPSTracker = ({navigation}: Props) => {
-  const {
-    isLoadingMap,
-    isMobileTrackingEnable,
-    sendCurrentPosition,
-    enableMobileTracking
-  } = useMap()
+  const {isMobileTracking, setIsMobileTracking} = useSettings(state => state)
+  const isLoadingMap = useMap(state => state.isLoadingMap)
   const {vesselDetails} = useEntity()
   const [position, setPosition] = useState<GeoPosition>(undefined)
-  const [isMobileTracking, setIsMobileTracking] = useState(false)
   const netInfo = useNetInfo()
 
   useEffect(() => {
-    setIsMobileTracking(isMobileTrackingEnable)
-  }, [])
-
-  useEffect(() => {
     if (isMobileTracking) {
-      Geolocation.getCurrentPosition(
-        position => {
-          setPosition(position)
-          sendCurrentPosition(position)
-        },
-        error => {
-          Alert.alert(`Code ${error.code}`, error.message)
-        },
-        {
-          accuracy: {
-            android: 'high',
-            ios: 'best'
-          },
-          enableHighAccuracy: true,
-          timeout: 15000,
-          maximumAge: 10000,
-          distanceFilter: 0
-        }
-      )
-      BackgroundTimer.runBackgroundTimer(() => {
-        onBackgroundSendCurrentPosition()
-      }, 60000)
-    } else {
-      BackgroundTimer.stopBackgroundTimer()
+      Geolocation.getCurrentPosition(pos => {
+        console.log('Geolocation.getCurrentPosition ', pos)
+        setPosition(pos)
+      })
     }
   }, [isMobileTracking])
+
+  // useEffect(() => {
+  //   if (isMobileTracking) {
+  //     Geolocation.getCurrentPosition(
+  //       position => {
+  //         setPosition(position)
+  //         sendCurrentPosition(position)
+  //       },
+  //       error => {
+  //         Alert.alert(`Code ${error.code}`, error.message)
+  //       },
+  //       {
+  //         accuracy: {
+  //           android: 'high',
+  //           ios: 'best'
+  //         },
+  //         enableHighAccuracy: true,
+  //         timeout: 15000,
+  //         maximumAge: 10000,
+  //         distanceFilter: 0
+  //       }
+  //     )
+  //     BackgroundTimer.runBackgroundTimer(() => {
+  //       onBackgroundSendCurrentPosition()
+  //     }, 60000)
+  //   } else {
+  //     BackgroundTimer.stopBackgroundTimer()
+  //   }
+  // }, [isMobileTracking])
 
   const hasPermissionIOS = async () => {
     const openSetting = () => {
@@ -99,6 +98,7 @@ export const GPSTracker = ({navigation}: Props) => {
   const hasLocationPermission = async () => {
     if (Platform.OS === 'ios') {
       const hasPermission = await hasPermissionIOS()
+      console.log('hasPermissionIOS ', hasPermission)
       return hasPermission
     }
 
@@ -137,36 +137,18 @@ export const GPSTracker = ({navigation}: Props) => {
     return false
   }
 
-  const onSendCurrentPosition = async () => {
-    const hasPermission = await hasLocationPermission()
+  const handleOnValueChange = async (value: boolean) => {
+    console.log('value ', value)
+    if (value) {
+      const hasPermission = await hasLocationPermission()
 
-    if (!hasPermission) {
-      return
-    }
-    setIsMobileTracking(!isMobileTracking)
-    enableMobileTracking()
-  }
-
-  const onBackgroundSendCurrentPosition = () => {
-    Geolocation.getCurrentPosition(
-      position => {
-        setPosition(position)
-        sendCurrentPosition(position)
-      },
-      error => {
-        Alert.alert(`Code ${error.code}`, error.message)
-      },
-      {
-        accuracy: {
-          android: 'high',
-          ios: 'best'
-        },
-        enableHighAccuracy: true,
-        timeout: 15000,
-        maximumAge: 10000,
-        distanceFilter: 0
+      if (!hasPermission) {
+        console.log('hmmm')
+        return
       }
-    )
+    }
+    console.log('test')
+    setIsMobileTracking(value)
   }
 
   const renderTrackerSource = (sourceData: string) => {
@@ -283,7 +265,7 @@ export const GPSTracker = ({navigation}: Props) => {
           <Switch
             size="md"
             value={isMobileTracking}
-            onValueChange={onSendCurrentPosition}
+            onValueChange={handleOnValueChange}
           />
         </HStack>
         <HStack
@@ -349,12 +331,13 @@ export const GPSTracker = ({navigation}: Props) => {
         </HStack>
         <Button
           my={ms(15)}
-          backgroundColor={Colors.light}
+          backgroundColor={Colors.azure}
           onPress={() => navigation.goBack()}
+          _pressed={{
+            bgColor: Colors.primary
+          }}
         >
-          <Text fontWeight="medium" color={Colors.disabled}>
-            Dismiss
-          </Text>
+          Dismiss
         </Button>
       </Box>
     </Box>
