@@ -1,8 +1,9 @@
 import orderBy from 'lodash/orderBy'
 import {API} from '@bluecentury/api/apiService'
 import ReactNativeBlobUtil from 'react-native-blob-util'
-import {API_URL} from '@bluecentury/env'
-import {useAuth, useEntity} from '@bluecentury/stores'
+import {useAuth, useEntity, useSettings} from '@bluecentury/stores'
+
+const API_URL = useSettings.getState().apiUrl
 
 const reloadVesselCharters = async () => {
   const isArchived = 0
