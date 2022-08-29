@@ -28,7 +28,8 @@ import {
   FinancialInvoiceDetails,
   TickerOilPriceDetails,
   AddCrewMember,
-  Entity
+  Entity,
+  SelectEnvironment
 } from '@bluecentury/screens'
 import {Colors} from '@bluecentury/styles'
 import {TrackingListener} from '@bluecentury/helpers/geolocation-tracking-helper'
@@ -63,6 +64,13 @@ export default function RootNavigator() {
     >
       <Group>
         <Screen name="Splash" component={Splash} />
+        <Screen
+          name="SelectEnvironment"
+          component={SelectEnvironment}
+          options={{
+            headerShown: false
+          }}
+        />
         <Screen
           name="Login"
           component={Login}
