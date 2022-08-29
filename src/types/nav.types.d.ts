@@ -1,5 +1,6 @@
 type RootStackParamList = {
   Splash: undefined
+  SelectEnvironment: undefined
   Login: undefined
   SelectEntity: undefined
   Main: undefined
