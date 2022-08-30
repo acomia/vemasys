@@ -242,7 +242,7 @@ export default function Map({navigation}: Props) {
                 {formatLocationLabel(nextLocation?.location)}
               </Text>
               <Text fontSize={ms(12)} fontWeight="medium" color="#ADADAD">
-                Arrived:{' '}
+                Planned:{' '}
                 {moment(nextLocation?.plannedEta).format('DD MMM YYYY | HH:mm')}
               </Text>
             </Box>
