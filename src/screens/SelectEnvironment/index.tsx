@@ -26,7 +26,7 @@ export default function SelectEnvironment() {
     )
   }
   return (
-    <Box flex={1} bgColor={Colors.white} p={5}>
+    <Box flex={1} bgColor={Colors.white} p={5} safeArea>
       <Text fontSize="xl">Select Environment</Text>
       <Divider />
       <VStack space={2} mt={5}>
