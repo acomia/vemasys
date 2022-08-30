@@ -40,17 +40,19 @@ const {Navigator, Screen, Group} =
   createNativeStackNavigator<RootStackParamList>()
 
 export default function RootNavigator() {
-  const isMobileTracking = useSettings(state => state.isMobileTracking)
+  const {isMobileTracking, hasSettingsRehydrated} = useSettings(state => state)
   useEffect(() => {
-    if (isMobileTracking) {
-      TrackingListener({
-        token: useAuth.getState().token as string,
-        selectedUserId: useEntity.getState().entityUserId as string
-      })
-    } else {
-      BackgroundGeolocation.removeAllListeners()
+    if (hasSettingsRehydrated) {
+      if (isMobileTracking) {
+        TrackingListener({
+          token: useAuth.getState().token as string,
+          selectedUserId: useEntity.getState().entityUserId as string
+        })
+      } else {
+        BackgroundGeolocation.removeAllListeners()
+      }
     }
-  }, [isMobileTracking])
+  }, [isMobileTracking, hasSettingsRehydrated])
   return (
     <Navigator
       initialRouteName="Splash"
