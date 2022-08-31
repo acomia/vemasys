@@ -17,6 +17,8 @@ export const FILE_TYPE_JPEG = 'image/jpeg'
 export const ROLE_PERMISSION_USER_EDIT = 'ROLE_PERMISSION_USER_EDIT'
 export const ROLE_PERMISSION_USER_VIEW = 'ROLE_PERMISSION_USER_VIEW'
 export const ROLE_PERMISSION_USER_MANAGE = 'ROLE_PERMISSION_USER_MANAGE'
+export const EXTERNAL_PEGEL_IMAGE_URL =
+  'https://www.elwis.de/DE/dynamisch/gewaesserkunde/wasserstaende'
 
 // Planning constants
 export const VESSEL_PART_CARGO_TYPE = 'Cargo'

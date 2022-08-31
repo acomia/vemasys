@@ -28,7 +28,8 @@ import {
   FinancialInvoiceDetails,
   TickerOilPriceDetails,
   AddCrewMember,
-  Entity
+  Entity,
+  InformationPegelDetails
 } from '@bluecentury/screens'
 import {Colors} from '@bluecentury/styles'
 import {TrackingListener} from '@bluecentury/helpers/geolocation-tracking-helper'
@@ -246,6 +247,14 @@ export default function RootNavigator() {
           options={{
             headerShown: true,
             title: 'Add crew member'
+          }}
+        />
+        <Screen
+          name={'InformationPegelDetails'}
+          component={InformationPegelDetails}
+          options={{
+            headerShown: true,
+            title: 'Pegel details'
           }}
         />
       </Group>
