@@ -28,28 +28,29 @@ import {
   FinancialInvoiceDetails,
   TickerOilPriceDetails,
   AddCrewMember,
-  Entity
+  Entity,
+  InformationPegelDetails
 } from '@bluecentury/screens'
 import {Colors} from '@bluecentury/styles'
 import {TrackingListener} from '@bluecentury/helpers/geolocation-tracking-helper'
 import {useAuth, useEntity, useSettings} from '@bluecentury/stores'
-import BackgroundGeolocation from '@mauron85/react-native-background-geolocation'
+// import BackgroundGeolocation from '@mauron85/react-native-background-geolocation'
 
 const {Navigator, Screen, Group} =
   createNativeStackNavigator<RootStackParamList>()
 
 export default function RootNavigator() {
   const isMobileTracking = useSettings(state => state.isMobileTracking)
-  useEffect(() => {
-    if (isMobileTracking) {
-      TrackingListener({
-        token: useAuth.getState().token as string,
-        selectedUserId: useEntity.getState().entityUserId as string
-      })
-    } else {
-      BackgroundGeolocation.removeAllListeners()
-    }
-  }, [isMobileTracking])
+  // useEffect(() => {
+  //   if (isMobileTracking) {
+  //     TrackingListener({
+  //       token: useAuth.getState().token as string,
+  //       selectedUserId: useEntity.getState().entityUserId as string
+  //     })
+  //   } else {
+  //     BackgroundGeolocation.removeAllListeners()
+  //   }
+  // }, [isMobileTracking])
   return (
     <Navigator
       initialRouteName="Splash"
@@ -246,6 +247,14 @@ export default function RootNavigator() {
           options={{
             headerShown: true,
             title: 'Add crew member'
+          }}
+        />
+        <Screen
+          name={'InformationPegelDetails'}
+          component={InformationPegelDetails}
+          options={{
+            headerShown: true,
+            title: 'Pegel details'
           }}
         />
       </Group>

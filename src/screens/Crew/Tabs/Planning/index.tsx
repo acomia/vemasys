@@ -15,7 +15,7 @@ import {
   ROLE_PERMISSION_USER_VIEW,
   titleCase
 } from '@bluecentury/constants'
-import {PROD_URL} from '@bluecentury/env'
+import {PROD_URL} from '@vemasys/env'
 import {LoadingIndicator} from '@bluecentury/components'
 import {useCrew, useEntity} from '@bluecentury/stores'
 

@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react'
+import {TouchableOpacity, Modal} from 'react-native'
 import {
   Box,
   Divider,
@@ -9,18 +10,27 @@ import {
   ScrollView,
   Text
 } from 'native-base'
-import {useInformation} from '@bluecentury/stores'
 import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons'
-import {Colors} from '@bluecentury/styles'
+import {useNavigation} from '@react-navigation/native'
 import {ms} from 'react-native-size-matters'
+import ImageViewer from 'react-native-image-zoom-viewer'
+import moment from 'moment'
+
+import {useInformation} from '@bluecentury/stores'
 import {Icons} from '@bluecentury/assets'
-import {LoadingIndicator} from '@bluecentury/components'
+import {IconButton, LoadingIndicator} from '@bluecentury/components'
+import {Colors} from '@bluecentury/styles'
+import {EXTERNAL_PEGEL_IMAGE_URL} from '@bluecentury/constants'
 
 const Pegels = () => {
+  const navigation = useNavigation()
   const {isInformationLoading, pegels, streamGauges, getVesselPegels} =
     useInformation()
   const [searchedValue, setSearchedValue] = useState('')
   const [pegelsData, setPegelsData] = useState([])
+  const [imgModal, setImgModal] = useState(false)
+  const [imgSource, setImgSource] = useState([{url: ''}])
+  const [selectedPegel, setSelectedPegel] = useState(null)
 
   useEffect(() => {
     getVesselPegels('')
@@ -43,9 +53,30 @@ const Pegels = () => {
       px={ms(10)}
       py={ms(8)}
     >
-      <Text flex="2" fontWeight="medium">
-        {pegel?.name}
-      </Text>
+      <HStack flex="2" alignItems="center">
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={() =>
+            navigation.navigate('InformationPegelDetails', {pegelId: pegel.id})
+          }
+          style={{
+            borderWidth: 1,
+            borderColor: Colors.light,
+            borderRadius: 5,
+            marginRight: 5
+          }}
+        >
+          <MaterialIcons name="history" size={ms(20)} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={() => onSelectPegel(pegel)}
+        >
+          <Text fontWeight="medium" color={Colors.primary}>
+            {pegel?.name}
+          </Text>
+        </TouchableOpacity>
+      </HStack>
       <HStack flex="1" alignItems="center" justifyContent="space-between">
         <Image
           alt={`Pegels-WaterLevel-${pegel.id}`}
@@ -117,6 +148,26 @@ const Pegels = () => {
     </Text>
   )
 
+  const onSelectPegel = (pegel: any) => {
+    setSelectedPegel(pegel)
+    setImgModal(true)
+    if (pegel.elwisPegelId === null) {
+      let newArr = [
+        {
+          url: `${EXTERNAL_PEGEL_IMAGE_URL}/wasserstaendeUebersichtGrafik.png.php?pegelId=&dfh=0`
+        }
+      ]
+      setImgSource(newArr)
+    } else {
+      let newArr = [
+        {
+          url: `${EXTERNAL_PEGEL_IMAGE_URL}/wasserstaendeUebersichtGrafik.png.php?pegelId=${pegel.elwisPegelId}&dfh=0`
+        }
+      ]
+      setImgSource(newArr)
+    }
+  }
+
   const onSearchPegel = (val: string) => {
     setSearchedValue(val)
     getVesselPegels(val)
@@ -147,6 +198,8 @@ const Pegels = () => {
       />
       <Divider my={ms(15)} />
       <ScrollView
+        minimumZoomScale={1}
+        maximumZoomScale={5}
         contentContainerStyle={{flexGrow: 1, paddingBottom: 20}}
         scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
@@ -178,6 +231,36 @@ const Pegels = () => {
             {renderPegels()}
           </>
         )}
+        {/* Preview external image */}
+        <Modal
+          visible={imgModal}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={() => setImgModal(false)}
+        >
+          <ImageViewer
+            imageUrls={imgSource}
+            renderFooter={() => (
+              <Text
+                color={Colors.white}
+                fontWeight="medium"
+                ml={ms(5)}
+                mb={ms(5)}
+              >
+                Title.vms_Water_Levels: {selectedPegel?.name}
+              </Text>
+            )}
+            renderIndicator={() => <></>}
+          />
+          <IconButton
+            source={Icons.close}
+            onPress={() => setImgModal(false)}
+            size={ms(25)}
+            styles={{position: 'absolute', right: 10, top: 5}}
+            tintColor={Colors.white}
+          />
+        </Modal>
+        {/* End preview external image */}
       </ScrollView>
     </Box>
   )

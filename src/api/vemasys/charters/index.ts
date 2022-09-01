@@ -1,7 +1,7 @@
 import orderBy from 'lodash/orderBy'
 import {API} from '@bluecentury/api/apiService'
 import ReactNativeBlobUtil from 'react-native-blob-util'
-import {API_URL} from '@bluecentury/env'
+import {API_URL} from '@vemasys/env'
 import {useAuth, useEntity} from '@bluecentury/stores'
 
 const reloadVesselCharters = async () => {
