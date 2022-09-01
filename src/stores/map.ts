@@ -7,7 +7,7 @@ import * as API from '@bluecentury/api/vemasys'
 import {initial} from 'lodash'
 
 type MapState = {
-  vesselStatus: {}
+  vesselStatus: any
   prevNavLogs: Array<any>
   plannedNavLogs: Array<any>
   currentNavLogs: Array<any>
@@ -44,7 +44,7 @@ type MapActions = {
 type MapStore = MapState & MapActions
 
 const initialMapState: MapState = {
-  vesselStatus: {},
+  vesselStatus: undefined,
   prevNavLogs: [],
   plannedNavLogs: [],
   currentNavLogs: [],
@@ -267,7 +267,7 @@ export const useMap = create(
             })
           } else {
             set({
-              vesselStatus: {}
+              vesselStatus: undefined
             })
           }
           set({
