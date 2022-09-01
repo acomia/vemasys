@@ -1,4 +1,10 @@
-import React, {useEffect, useLayoutEffect, useRef, useState} from 'react'
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState
+} from 'react'
 import {StyleSheet, TouchableOpacity, Dimensions} from 'react-native'
 import {Box, Text, Button, HStack, Image, VStack} from 'native-base'
 import MapView, {
@@ -25,6 +31,7 @@ import {Colors, MapTheme} from '@bluecentury/styles'
 import {useMap, useEntity, useAuth} from '@bluecentury/stores'
 import {formatLocationLabel} from '@bluecentury/constants'
 import {TrackingListener} from '@bluecentury/helpers/geolocation-tracking-helper'
+import {useFocusEffect} from '@react-navigation/native'
 
 const {width, height} = Dimensions.get('window')
 const windowHeight = height
@@ -35,8 +42,9 @@ const DEFAULT_PADDING = {top: 45, right: 45, bottom: 45, left: 45}
 
 type Props = NativeStackScreenProps<MainStackParamList>
 export default function Map({navigation}: Props) {
-  const {vesselId, selectedVessel, vesselDetails} = useEntity()
+  const {vesselId, selectedVessel} = useEntity()
   const {
+    isLoadingVesselStatus,
     isLoadingCurrentNavLogs,
     isLoadingPlannedNavLogs,
     isLoadingPreviousNavLogs,
@@ -44,16 +52,19 @@ export default function Map({navigation}: Props) {
     getPlannedNavigationLogs,
     getCurrentNavigationLogs,
     getLastCompleteNavigationLogs,
+    getVesselStatus,
     prevNavLogs,
     plannedNavLogs,
     currentNavLogs,
-    lastCompleteNavLogs
+    lastCompleteNavLogs,
+    vesselStatus
   } = useMap()
 
   const isLoadingMap =
     isLoadingCurrentNavLogs ||
     isLoadingPlannedNavLogs ||
-    isLoadingPreviousNavLogs
+    isLoadingPreviousNavLogs ||
+    isLoadingVesselStatus
 
   const LATITUDE = 50.503887
   const LONGITUDE = 4.469936
@@ -68,6 +79,19 @@ export default function Map({navigation}: Props) {
     longitudeDelta: LONGITUDE_DELTA
   })
   const [zoomLevel, setZoomLevel] = useState(null)
+  let refreshId: string | number | NodeJS.Timeout | undefined
+
+  useFocusEffect(
+    useCallback(() => {
+      refreshId = setInterval(() => {
+        // Run updated vessel status
+        console.log('Updated')
+        updateMap()
+      }, 30000)
+      return () => clearInterval(refreshId)
+    }, [])
+  )
+
   useLayoutEffect(() => {
     if (vesselId) {
       getPreviousNavigationLogs(vesselId)
@@ -77,13 +101,6 @@ export default function Map({navigation}: Props) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vesselId])
-
-  // useEffect(() => {
-  //   if (plannedNavLogs && plannedNavLogs.length > 0) {
-  //     getLastCompleteNavigationLogs(vesselId)
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [plannedNavLogs])
 
   useEffect(() => {
     if (currentNavLogs && currentNavLogs.length > 0) {
@@ -97,12 +114,12 @@ export default function Map({navigation}: Props) {
   }, [currentNavLogs])
 
   useEffect(() => {
-    if (vesselDetails) {
-      const {latitude, longitude} = vesselDetails.lastGeolocation
+    if (vesselStatus) {
+      const {latitude, longitude}: VesselGeolocation = vesselStatus
       let camera = {
         center: {
-          latitude: latitude,
-          longitude: longitude
+          latitude: Number(latitude),
+          longitude: Number(longitude)
         },
         zoom: 15,
         heading: 0,
@@ -113,7 +130,14 @@ export default function Map({navigation}: Props) {
       mapRef.current?.animateCamera(camera, {duration: duration})
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vesselDetails])
+  }, [vesselStatus])
+
+  const updateMap = () => {
+    getVesselStatus(vesselId)
+    getPreviousNavigationLogs(vesselId)
+    getPlannedNavigationLogs(vesselId)
+    getCurrentNavigationLogs(vesselId)
+  }
 
   const renderBottomContent = () => (
     <Box backgroundColor="#fff" height={height * 0.8} px={ms(30)} py={ms(20)}>
@@ -255,15 +279,15 @@ export default function Map({navigation}: Props) {
   }
 
   const renderMarkerVessel = () => {
-    const {latitude, longitude, speed}: any = vesselDetails?.lastGeolocation
+    const {latitude, longitude, speed}: VesselGeolocation = vesselStatus
     return (
       <Marker
         key={`Vessel-${currentNavLogs[0]?.location?.id}`}
         coordinate={{
-          latitude: latitude,
-          longitude: longitude
+          latitude: Number(latitude),
+          longitude: Number(longitude)
         }}
-        image={speed > 0 ? Icons.navigating : Icons.anchor}
+        image={Number(speed) > 0 ? Icons.navigating : Icons.anchor}
         style={{zIndex: 1}}
       />
     )
@@ -357,12 +381,12 @@ export default function Map({navigation}: Props) {
   }
 
   const centerMapToCurrentLocation = () => {
-    if (vesselDetails && vesselDetails.lastGeolocation) {
-      const {latitude, longitude} = vesselDetails?.lastGeolocation
+    if (vesselStatus) {
+      const {latitude, longitude}: VesselGeolocation = vesselStatus
       let camera: Camera = {
         center: {
-          latitude: latitude,
-          longitude: longitude
+          latitude: Number(latitude),
+          longitude: Number(longitude)
         },
         zoom: 15,
         heading: 0,
@@ -399,7 +423,7 @@ export default function Map({navigation}: Props) {
             prevNavLogs.find((plan: any) => plan.plannedEta !== null) !==
               undefined &&
             renderMarkerFrom()}
-          {vesselDetails && renderMarkerVessel()}
+          {vesselStatus && renderMarkerVessel()}
           {plannedNavLogs?.length > 0 &&
             plannedNavLogs.find((plan: any) => plan.plannedEta !== null) !==
               undefined &&
@@ -457,7 +481,7 @@ export default function Map({navigation}: Props) {
             backgroundColor="rgba(0,0,0,0.5)"
             zIndex={999}
           >
-            <LoadingIndicator width={200} height={200} />
+            <LoadingIndicator />
           </Box>
         )}
       </Box>

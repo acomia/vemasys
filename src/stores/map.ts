@@ -7,12 +7,14 @@ import * as API from '@bluecentury/api/vemasys'
 import {initial} from 'lodash'
 
 type MapState = {
+  vesselStatus: {}
   prevNavLogs: Array<any>
   plannedNavLogs: Array<any>
   currentNavLogs: Array<any>
   lastCompleteNavLogs: Array<any>
   activeFormations: Array<any>
   isLoadingMap: boolean
+  isLoadingVesselStatus: boolean
   isLoadingPreviousNavLogs: boolean
   isLoadingCurrentNavLogs: boolean
   isLoadingPlannedNavLogs: boolean
@@ -22,9 +24,11 @@ type MapState = {
   tokenHasConnectedToShip: boolean
   isMobileTrackingEnable: boolean
   hasErrorLoadingNavigationLogs: boolean
+  hasErrorLoadingVesselStatus: boolean
 }
 
 type MapActions = {
+  getVesselStatus: (vesselId: string) => void
   getPreviousNavigationLogs: (vesselId: string) => void
   getPlannedNavigationLogs: (vesselId: string) => void
   getCurrentNavigationLogs: (vesselId: string) => void
@@ -40,12 +44,14 @@ type MapActions = {
 type MapStore = MapState & MapActions
 
 const initialMapState: MapState = {
+  vesselStatus: {},
   prevNavLogs: [],
   plannedNavLogs: [],
   currentNavLogs: [],
   lastCompleteNavLogs: [],
   activeFormations: [],
   isLoadingMap: false,
+  isLoadingVesselStatus: false,
   isLoadingCurrentNavLogs: false,
   isLoadingPlannedNavLogs: false,
   isLoadingPreviousNavLogs: false,
@@ -54,7 +60,8 @@ const initialMapState: MapState = {
   hasErrorLoadingCurrentNavLogs: false,
   hasErrorLoadingPlannedNavLogs: false,
   hasErrorLoadingPreviousNavLogs: false,
-  hasErrorLoadingNavigationLogs: false
+  hasErrorLoadingNavigationLogs: false,
+  hasErrorLoadingVesselStatus: false
 }
 
 export const useMap = create(
@@ -246,6 +253,32 @@ export const useMap = create(
       enableMobileTracking: () => {
         const isMobileTrackingEnable = get().isMobileTrackingEnable
         set({isMobileTrackingEnable: !isMobileTrackingEnable})
+      },
+      getVesselStatus: async (vesselId: string) => {
+        set({
+          isLoadingVesselStatus: true,
+          hasErrorLoadingVesselStatus: false
+        })
+        try {
+          const response: any = await API.getVesselStatus(vesselId)
+          if (Array.isArray(response)) {
+            set({
+              vesselStatus: response[0]
+            })
+          } else {
+            set({
+              vesselStatus: {}
+            })
+          }
+          set({
+            isLoadingVesselStatus: false
+          })
+        } catch (error) {
+          set({
+            isLoadingVesselStatus: false,
+            hasErrorLoadingVesselStatus: true
+          })
+        }
       }
     }),
     {
