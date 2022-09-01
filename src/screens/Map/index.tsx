@@ -79,16 +79,16 @@ export default function Map({navigation}: Props) {
     longitudeDelta: LONGITUDE_DELTA
   })
   const [zoomLevel, setZoomLevel] = useState(null)
-  let refreshId: string | number | NodeJS.Timeout | undefined
+  let refreshId = useRef<any>()
 
   useFocusEffect(
     useCallback(() => {
-      refreshId = setInterval(() => {
+      refreshId.current = setInterval(() => {
         // Run updated vessel status
-        console.log('Updated')
+        // console.log('Updated')
         updateMap()
       }, 30000)
-      return () => clearInterval(refreshId)
+      return () => clearInterval(refreshId.current)
     }, [])
   )
 
@@ -133,10 +133,12 @@ export default function Map({navigation}: Props) {
   }, [vesselStatus])
 
   const updateMap = () => {
-    getVesselStatus(vesselId)
-    getPreviousNavigationLogs(vesselId)
-    getPlannedNavigationLogs(vesselId)
-    getCurrentNavigationLogs(vesselId)
+    if (vesselId) {
+      getVesselStatus(vesselId)
+      getPreviousNavigationLogs(vesselId)
+      getPlannedNavigationLogs(vesselId)
+      getCurrentNavigationLogs(vesselId)
+    }
   }
 
   const renderBottomContent = () => (
