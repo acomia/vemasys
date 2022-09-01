@@ -73,16 +73,17 @@ export default function Map({navigation}: Props) {
       getPreviousNavigationLogs(vesselId)
       getPlannedNavigationLogs(vesselId)
       getCurrentNavigationLogs(vesselId)
+      getLastCompleteNavigationLogs(vesselId)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vesselId])
 
-  useEffect(() => {
-    if (plannedNavLogs && plannedNavLogs.length > 0) {
-      getLastCompleteNavigationLogs(plannedNavLogs[0]?.id)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [plannedNavLogs])
+  // useEffect(() => {
+  //   if (plannedNavLogs && plannedNavLogs.length > 0) {
+  //     getLastCompleteNavigationLogs(vesselId)
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [plannedNavLogs])
 
   useEffect(() => {
     if (currentNavLogs && currentNavLogs.length > 0) {
@@ -269,10 +270,7 @@ export default function Map({navigation}: Props) {
   }
 
   const renderLastCompleteNavLogs = (log: any) => {
-    if (
-      !log?.navigationLog?.plannedEta &&
-      !log?.navigationLog?.arrivalDatetime
-    ) {
+    if (!log?.plannedEta && !log?.arrivalDatetime) {
       return null
     }
     return (
@@ -287,9 +285,7 @@ export default function Map({navigation}: Props) {
       >
         <HStack style={{zIndex: 0}}>
           <Box
-            backgroundColor={
-              log?.navigationLog?.arrivalDatetime ? '#44A7B9' : '#F0F0F0'
-            }
+            backgroundColor={log?.arrivalDatetime ? '#44A7B9' : '#F0F0F0'}
             width={ms(20)}
             height={ms(20)}
             borderRadius={ms(20)}
@@ -298,22 +294,20 @@ export default function Map({navigation}: Props) {
             mr={ms(5)}
             style={{zIndex: 0}}
           />
-          <Box
-            backgroundColor="#fff"
-            borderRadius={ms(5)}
-            padding={ms(2)}
-            style={{zIndex: 0}}
-          >
-            {zoomLevel >= 12 && (
+          {zoomLevel >= 12 ? (
+            <Box
+              backgroundColor="#fff"
+              borderRadius={ms(5)}
+              padding={ms(2)}
+              style={{zIndex: 0}}
+            >
               <Text fontWeight="medium">
                 {moment(
-                  log?.navigationLog?.arrivalDatetime
-                    ? log?.navigationLog?.arrivalDatetime
-                    : log?.navigationLog?.plannedEta
+                  log?.arrivalDatetime ? log?.arrivalDatetime : log?.plannedEta
                 ).format('DD MMM YYYY | HH:mm')}
               </Text>
-            )}
-          </Box>
+            </Box>
+          ) : null}
         </HStack>
       </Marker>
     )
@@ -410,9 +404,8 @@ export default function Map({navigation}: Props) {
             plannedNavLogs.find((plan: any) => plan.plannedEta !== null) !==
               undefined &&
             renderMarkerTo()}
-          {lastCompleteNavLogs &&
-            lastCompleteNavLogs.length > 0 &&
-            lastCompleteNavLogs[0]?.waypoints?.map((log: any) =>
+          {lastCompleteNavLogs.length > 0 &&
+            lastCompleteNavLogs?.map((log: any) =>
               renderLastCompleteNavLogs(log)
             )}
         </MapView>

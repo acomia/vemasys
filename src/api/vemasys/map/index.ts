@@ -85,8 +85,11 @@ const getCurrentNavLog = async (vesselId: string) => {
     })
 }
 
-const getLastCompleteNavLogs = async (navLogId: string) => {
-  return API.get(`v3/navigation_logs/${navLogId}/routes`)
+const getLastCompleteNavLogs = async (vesselId: string) => {
+  // return API.get(`v3/navigation_logs/${navLogId}/routes`) /* old app call */
+  return API.get(
+    `v3/navigation_logs?exploitationVessel=${vesselId}&itemsPerPage=10&exists[departureDatetime]=1&exists[plannedETA]=0&order[departureDatetime]=desc`
+  )
     .then(response => {
       if (response.data) {
         return response.data

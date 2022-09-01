@@ -139,25 +139,17 @@ export const useMap = create(
           })
         }
       },
-      getLastCompleteNavigationLogs: async (navLogId: string) => {
+      getLastCompleteNavigationLogs: async (vesselId: string) => {
         set({
           isLoadingMap: true
         })
         try {
-          const response: any = await API.getLastCompleteNavLogs(navLogId)
-
-          if (typeof response === 'object') {
-            if (response.routes.length > 0) {
-              set({
-                isLoadingMap: false,
-                lastCompleteNavLogs: response.routes
-              })
-            } else {
-              set({
-                isLoadingMap: false,
-                lastCompleteNavLogs: []
-              })
-            }
+          const response: any = await API.getLastCompleteNavLogs(vesselId)
+          if (Array.isArray(response)) {
+            set({
+              isLoadingMap: false,
+              lastCompleteNavLogs: response
+            })
           } else {
             set({
               isLoadingMap: false,
