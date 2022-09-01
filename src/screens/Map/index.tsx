@@ -133,10 +133,12 @@ export default function Map({navigation}: Props) {
   }, [vesselStatus])
 
   const updateMap = () => {
-    getVesselStatus(vesselId)
-    getPreviousNavigationLogs(vesselId)
-    getPlannedNavigationLogs(vesselId)
-    getCurrentNavigationLogs(vesselId)
+    if (vesselId) {
+      getVesselStatus(vesselId)
+      getPreviousNavigationLogs(vesselId)
+      getPlannedNavigationLogs(vesselId)
+      getCurrentNavigationLogs(vesselId)
+    }
   }
 
   const renderBottomContent = () => (
