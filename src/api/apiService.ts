@@ -1,10 +1,8 @@
 import axios from 'axios'
-import {API_URL} from '@vemasys/env'
 import {onFailedResponse, onSuccessfulResponse} from './interceptors'
-import {useAuth, useEntity} from '@bluecentury/stores'
+import {useAuth, useEntity, useSettings} from '@bluecentury/stores'
 
 export const API = axios.create({
-  baseURL: API_URL,
   headers: {
     Accept: 'application/json'
     // 'Content-Type': 'application/json'
@@ -15,6 +13,7 @@ export const API = axios.create({
 // API.addResponseTransform(dataToCamelCase)
 API.interceptors.response.use(onSuccessfulResponse, onFailedResponse)
 API.interceptors.request.use(async req => {
+  req.baseURL = useSettings.getState().apiUrl
   const token = useAuth.getState().token
   const entityUserId = useEntity.getState().entityUserId
 
@@ -27,8 +26,9 @@ API.interceptors.request.use(async req => {
     'X-active-entity-user-id': `${entityUserId}`
   }
   if (__DEV__) {
-    console.log('Request Url: ', req.url)
-    console.log('X-active-entity-user-id: ', entityUserId)
+    // console.log('Request Url: ', req.url)
+    // console.log('X-active-entity-user-id: ', entityUserId)
+    console.log('Request Headers: ', req.baseURL)
   }
   return req
 })

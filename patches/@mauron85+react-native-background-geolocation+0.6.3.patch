@@ -1,0 +1,71 @@
+diff --git a/node_modules/@mauron85/react-native-background-geolocation/android/build.gradle b/node_modules/@mauron85/react-native-background-geolocation/android/build.gradle
+index 1a8ffa8..3d85e58 100644
+--- a/node_modules/@mauron85/react-native-background-geolocation/android/build.gradle
++++ b/node_modules/@mauron85/react-native-background-geolocation/android/build.gradle
+@@ -5,7 +5,7 @@ buildscript {
+             url 'https://maven.google.com/'
+             name 'Google'
+         }
+-        jcenter()
++        mavenCentral()
+     }
+     dependencies {
+         classpath 'com.android.tools.build:gradle:3.4.1'
+@@ -23,7 +23,7 @@ allprojects {
+             url 'https://maven.google.com/'
+             name 'Google'
+         }
+-        jcenter()
++        mavenCentral()
+         // repo for react-native
+         // https://mvnrepository.com/artifact/com.facebook.react/react-native?repo=springio-plugins-release
+         maven {
+diff --git a/node_modules/@mauron85/react-native-background-geolocation/android/common/VERSIONS.gradle b/node_modules/@mauron85/react-native-background-geolocation/android/common/VERSIONS.gradle
+index 61f0865..12bbb2d 100644
+--- a/node_modules/@mauron85/react-native-background-geolocation/android/common/VERSIONS.gradle
++++ b/node_modules/@mauron85/react-native-background-geolocation/android/common/VERSIONS.gradle
+@@ -142,7 +142,7 @@ ext {
+ 
+     libs = [
+         reactNative: [group: 'com.facebook.react', name: 'react-native', version: getReactNativeLibVersion()],
+-        permissions: [group: 'com.intentfilter', name: 'android-permissions', version: '0.1.7'],
++        permissions: [group: 'io.github.nishkarsh', name: 'android-permissions', version: '0.1.7'],
+         logback: [group: 'com.github.tony19', name: 'logback-android', version: '1.1.1-9'],
+         slf4j: [group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21'],
+         promise: [group: 'com.github.jparkie', name: 'promise', version: '1.0.3'],
+diff --git a/node_modules/@mauron85/react-native-background-geolocation/android/common/build.gradle b/node_modules/@mauron85/react-native-background-geolocation/android/common/build.gradle
+index 98542b1..7851580 100644
+--- a/node_modules/@mauron85/react-native-background-geolocation/android/common/build.gradle
++++ b/node_modules/@mauron85/react-native-background-geolocation/android/common/build.gradle
+@@ -31,7 +31,7 @@ buildscript {
+             url 'https://maven.google.com/'
+             name 'Google'
+         }
+-        jcenter()
++        mavenCentral()
+     }
+     dependencies {
+         classpath 'com.android.tools.build:gradle:3.4.1'
+@@ -46,7 +46,7 @@ allprojects {
+         maven {
+             url 'https://maven.google.com'
+         }
+-        jcenter()
++        mavenCentral()
+     }
+ }
+ 
+diff --git a/node_modules/@mauron85/react-native-background-geolocation/android/common/src/main/AndroidManifest.xml b/node_modules/@mauron85/react-native-background-geolocation/android/common/src/main/AndroidManifest.xml
+index a3888f3..610837b 100644
+--- a/node_modules/@mauron85/react-native-background-geolocation/android/common/src/main/AndroidManifest.xml
++++ b/node_modules/@mauron85/react-native-background-geolocation/android/common/src/main/AndroidManifest.xml
+@@ -31,7 +31,8 @@
+                 android:resource="@xml/syncadapter"/>
+         </service>
+         <service
+-            android:name="com.marianhello.bgloc.sync.AuthenticatorService">
++            android:name="com.marianhello.bgloc.sync.AuthenticatorService"
++            android:exported="true">
+             <intent-filter>
+                 <action android:name="android.accounts.AccountAuthenticator"/>
+             </intent-filter>
