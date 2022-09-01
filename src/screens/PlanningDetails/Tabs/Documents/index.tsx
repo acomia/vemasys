@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useState} from 'react'
 import {
   Actionsheet,
   Box,
@@ -15,21 +15,14 @@ import {
 import {ms} from 'react-native-size-matters'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import {useNavigation, useRoute} from '@react-navigation/native'
-
 import {Colors} from '@bluecentury/styles'
-import {useAuth, usePlanning} from '@bluecentury/stores'
+import {usePlanning, useSettings} from '@bluecentury/stores'
 import {IconButton, LoadingIndicator} from '@bluecentury/components'
-import DocumentPicker, {
-  DirectoryPickerResponse,
-  DocumentPickerResponse,
-  isInProgress,
-  types
-} from 'react-native-document-picker'
+import DocumentPicker, {isInProgress, types} from 'react-native-document-picker'
 import {Icons} from '@bluecentury/assets'
-import {VEMASYS_PRODUCTION_FILE_URL} from '@bluecentury/constants'
 import {RefreshControl} from 'react-native'
 import moment from 'moment'
-import {UAT_URL} from '@vemasys/env'
+import {Environments} from '@bluecentury/constants'
 
 type Document = {
   id: number
@@ -193,6 +186,22 @@ const Documents = () => {
   const onPullToReload = () => {
     getNavigationLogDocuments(navlog?.id)
   }
+  const handleOnPressUpload = (document: any) => {
+    const env = useSettings.getState().env
+
+    switch (env) {
+      case Environments.PROD:
+        viewDocument(
+          `https://app.vemasys.eu/upload/documents/${document?.path}`
+        )
+        break
+      case Environments.UAT:
+        viewDocument(
+          `https://uat-app.vemasys.eu/upload/documents/${document?.path}`
+        )
+        break
+    }
+  }
 
   if (isPlanningLoading) return <LoadingIndicator />
 
@@ -238,9 +247,7 @@ const Documents = () => {
               </Text>
               <IconButton
                 source={Icons.eye}
-                onPress={() =>
-                  viewDocument(`${UAT_URL}/upload/documents/${document.path}`)
-                }
+                onPress={() => handleOnPressUpload(document)}
                 size={ms(22)}
               />
             </HStack>

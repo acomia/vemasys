@@ -67,6 +67,7 @@ export const useAuth = create(
       logout: async () => {
         set({
           ...initialState,
+          token: undefined,
           hasAuthHydrated: true
         })
       },

@@ -1,9 +1,9 @@
 import {API} from '../../apiService'
 import {VESSEL_PART_CARGO_TYPE} from '@bluecentury/constants'
-import {API_URL, PROD_URL} from '@vemasys/env'
 import axios from 'axios'
-import ReactNativeBlobUtil from 'react-native-blob-util'
-import {useAuth, useEntity} from '@bluecentury/stores'
+import {useAuth, useEntity, useSettings} from '@bluecentury/stores'
+
+const API_URL = useSettings.getState().apiUrl
 
 const reloadNavigationLogDetails = async (navLogId: string) => {
   return API.get(`navigation_logs/${navLogId}`)
