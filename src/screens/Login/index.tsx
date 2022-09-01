@@ -11,16 +11,17 @@ import {
   Button,
   WarningOutlineIcon,
   Center,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  HStack
 } from 'native-base'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import {ms} from 'react-native-size-matters'
 
 import {Colors} from '@bluecentury/styles'
-import {TCredentials} from '@bluecentury/api/models'
+import {Credentials} from '@bluecentury/models'
 import {Images} from '@bluecentury/assets'
 import {_t} from '@bluecentury/constants'
-import {useAuth} from '@bluecentury/stores'
+import {useAuth, useSettings} from '@bluecentury/stores'
 import {CommonActions, useNavigation} from '@react-navigation/native'
 
 const usernameRequired = _t('usernameRequired')
@@ -37,11 +38,12 @@ function Login() {
     hasAuthenticationError,
     errorMessage
   } = useAuth()
-  const [user, setUser] = useState<TCredentials>({username: '', password: ''})
+  const [user, setUser] = useState<Credentials>({username: '', password: ''})
   const [isShowPassword, setIsShowPassword] = useState(false)
   const [isUsernameEmpty, setIsUsernameEmpty] = useState(false)
   const [isPasswordEmpty, setIsPasswordEmpty] = useState(false)
   const passwordRef = useRef<any>()
+  const selectedEnv = useSettings.getState().env ?? 'NONE'
   const handleOnPressLogin = () => {
     if (user.username === '' && user.password === '') {
       setIsPasswordEmpty(true)
@@ -67,16 +69,25 @@ function Login() {
         })
       )
     }
-  })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token])
+  const handleOnPressChangeEnvironment = () => {
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{name: 'SelectEnvironment'}]
+      })
+    )
+  }
   return (
-    <KeyboardAvoidingView
-      h={{
-        base: '100%',
-        lg: 'auto'
-      }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <Box flex="1" safeArea>
+    <Box flex={1} safeArea>
+      <KeyboardAvoidingView
+        h={{
+          base: '100%',
+          lg: 'auto'
+        }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
         <VStack space="10" flex="1" p="5" justifyContent="center">
           <Center>
             <Image
@@ -190,8 +201,32 @@ function Login() {
             {login}
           </Button>
         </VStack>
+      </KeyboardAvoidingView>
+      <Box
+        position="absolute"
+        p={2}
+        bottom={0}
+        right={0}
+        left={0}
+        bgColor="orange.400"
+        safeAreaBottom
+      >
+        <HStack justifyContent="space-between">
+          <Text color={Colors.white} bold>
+            Selected Environment:{' '}
+          </Text>
+          <Button
+            variant="link"
+            colorScheme="gray"
+            p={0}
+            _text={{bold: true}}
+            onPress={handleOnPressChangeEnvironment}
+          >
+            {selectedEnv}
+          </Button>
+        </HStack>
       </Box>
-    </KeyboardAvoidingView>
+    </Box>
   )
 }
 

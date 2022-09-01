@@ -1,6 +1,7 @@
 import React from 'react'
 import {Image} from 'native-base'
 import {Icons, Animated} from '@bluecentury/assets'
+import {ms} from 'react-native-size-matters'
 
 export const NavigationLogType = ({navigationLog}: any) => {
   const renderType = (navigationLog: any) => {
@@ -21,6 +22,8 @@ export const NavigationLogType = ({navigationLog}: any) => {
             alt="navlog-type-img"
             source={isActive ? Animated.waiting : Icons.waiting}
             resizeMode="contain"
+            w={isActive ? ms(50) : null}
+            h={isActive ? ms(50) : null}
           />
         )
       case 'Berth':
@@ -29,6 +32,8 @@ export const NavigationLogType = ({navigationLog}: any) => {
             alt="navlog-type-img"
             source={isActive ? Animated.waiting : Icons.waiting}
             resizeMode="contain"
+            w={isActive ? ms(50) : null}
+            h={isActive ? ms(50) : null}
           />
         )
       case 'Bridge':
@@ -37,6 +42,8 @@ export const NavigationLogType = ({navigationLog}: any) => {
             alt="navlog-type-img"
             source={isActive ? Animated.bridge : Icons.bridge}
             resizeMode="contain"
+            w={isActive ? ms(50) : null}
+            h={isActive ? ms(50) : null}
           />
         )
       case 'Checkpoint':
@@ -45,6 +52,8 @@ export const NavigationLogType = ({navigationLog}: any) => {
             alt="navlog-type-img"
             source={isActive ? Animated.checkpoint : Icons.checkpoint}
             resizeMode="contain"
+            w={isActive ? ms(50) : null}
+            h={isActive ? ms(50) : null}
           />
         )
       case 'Junction':
@@ -53,6 +62,8 @@ export const NavigationLogType = ({navigationLog}: any) => {
             alt="navlog-type-img"
             source={isActive ? Animated.junction : Icons.junction}
             resizeMode="contain"
+            w={isActive ? ms(50) : null}
+            h={isActive ? ms(50) : null}
           />
         )
       case 'Sluice':
@@ -61,6 +72,8 @@ export const NavigationLogType = ({navigationLog}: any) => {
             alt="navlog-type-img"
             source={isActive ? Animated.sluice : Icons.sluice}
             resizeMode="contain"
+            w={isActive ? ms(50) : null}
+            h={isActive ? ms(50) : null}
           />
         )
       case 'Terminal':
@@ -75,6 +88,8 @@ export const NavigationLogType = ({navigationLog}: any) => {
               alt="navlog-type-img"
               source={isActive ? Animated.waiting : Icons.waiting}
               resizeMode="contain"
+              w={isActive ? ms(50) : null}
+              h={isActive ? ms(50) : null}
             />
           )
         } else if (bulkCargo.some(cargo => cargo.isLoading === false)) {
@@ -83,6 +98,8 @@ export const NavigationLogType = ({navigationLog}: any) => {
               alt="navlog-type-img"
               source={isActive ? Animated.nav_unloading : Icons.unloading}
               resizeMode="contain"
+              w={isActive ? ms(50) : null}
+              h={isActive ? ms(50) : null}
             />
           )
         } else {
@@ -91,6 +108,8 @@ export const NavigationLogType = ({navigationLog}: any) => {
               alt="navlog-type-img"
               source={isActive ? Animated.nav_loading : Icons.loading}
               resizeMode="contain"
+              w={isActive ? ms(50) : null}
+              h={isActive ? ms(50) : null}
             />
           )
         }

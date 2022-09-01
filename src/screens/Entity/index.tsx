@@ -1,7 +1,7 @@
-import React, {useEffect} from 'react'
+import React, {useCallback, useEffect} from 'react'
 import {RefreshControl} from 'react-native'
 import {Box, FlatList, Heading, Divider, Button, Image} from 'native-base'
-import {CommonActions} from '@react-navigation/native'
+import {CommonActions, useFocusEffect} from '@react-navigation/native'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {ms} from 'react-native-size-matters'
 import {useEntity, useAuth} from '@bluecentury/stores'
@@ -23,11 +23,13 @@ export default function Entity({navigation}: Props) {
     selectEntityUser
   } = useEntity()
   const {logout, isLoggingOut} = useAuth()
-  useEffect(() => {
-    getUserInfo()
-    getEntityUsers()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  useFocusEffect(
+    useCallback(() => {
+      getUserInfo()
+      getEntityUsers()
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+  )
   const onSelectEntityUser = (entity: any) => {
     selectEntityUser(entity)
     navigation.dispatch(

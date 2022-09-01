@@ -3,7 +3,7 @@ import {Box, ScrollView, Text} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import {Colors} from '@bluecentury/styles'
 import {Linking} from 'react-native'
-import {PROD_URL} from '@bluecentury/env'
+import {PROD_URL} from '@vemasys/env'
 
 const CargoHolds = () => {
   return (

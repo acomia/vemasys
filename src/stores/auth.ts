@@ -2,7 +2,7 @@ import create from 'zustand'
 import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as API from '@bluecentury/api/vemasys'
-import {TCredentials, TUser} from '@bluecentury/api/models'
+import {Credentials, Auth} from 'src/models'
 
 type AuthState = {
   hasAuthHydrated: boolean
@@ -16,7 +16,7 @@ type AuthState = {
 }
 
 type AuthActions = {
-  authenticate: (credentials: TCredentials) => void
+  authenticate: (credentials: Credentials) => void
   setHasHydrated: (state: boolean) => void
   logout: () => void
 }
@@ -47,7 +47,7 @@ export const useAuth = create(
           hasAuthenticationError: false
         })
         try {
-          const response: TUser = await API.login(credentials)
+          const response: Auth = await API.login(credentials)
           set({
             token: response.token,
             refreshToken: response.refreshToken,
@@ -67,6 +67,7 @@ export const useAuth = create(
       logout: async () => {
         set({
           ...initialState,
+          token: undefined,
           hasAuthHydrated: true
         })
       },

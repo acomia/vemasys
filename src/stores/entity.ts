@@ -3,7 +3,7 @@ import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as API from '@bluecentury/api/vemasys'
 import {ENTITY_TYPE_EXPLOITATION_VESSEL} from '@bluecentury/constants'
-import {VesselDetails} from '@bluecentury/types'
+import {EntityUser, Vessel} from '@bluecentury/models'
 
 type EntityState = {
   hasEntityHydrated: boolean
@@ -13,13 +13,13 @@ type EntityState = {
   isLoadingEntityUsers: boolean
   user: Array<any>
   userVessels: Array<any>
-  entityUsers: Array<any>
+  entityUsers: Array<EntityUser>
   entityId: string | undefined
   entityType: string
   entityRole: string
   entityUserId: string | undefined
   vesselId: string | undefined
-  vesselDetails: VesselDetails | undefined
+  vesselDetails: Vessel | undefined
   selectedVessel: {}
   selectedEntity: {}
   physicalVesselId: string

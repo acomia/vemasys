@@ -30,7 +30,7 @@ import {
   ROLE_PERMISSION_NAVIGATION_LOG_ADD_FILE,
   titleCase
 } from '@bluecentury/constants'
-import {PROD_URL} from '@bluecentury/env'
+import {PROD_URL} from '@vemasys/env'
 import {LoadingIndicator} from '@bluecentury/components'
 
 const Details = () => {
@@ -46,6 +46,7 @@ const Details = () => {
     getNavigationLogActions,
     getNavigationLogCargoHolds,
     getNavigationLogComments,
+    getNavigationLogDocuments,
     updateNavlogDates
   } = usePlanning()
   const {user, selectedEntity, physicalVesselId} = useEntity()
@@ -67,10 +68,12 @@ const Details = () => {
   )
 
   useEffect(() => {
-    getNavigationLogDetails(navlog.id)
-    getNavigationLogActions(navlog.id)
-    getNavigationLogComments(navlog.id)
+    getNavigationLogDetails(navlog?.id)
+    getNavigationLogActions(navlog?.id)
+    getNavigationLogComments(navlog?.id)
+    getNavigationLogDocuments(navlog?.id)
     getNavigationLogCargoHolds(physicalVesselId)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleOnSaveDateUpdates = async () => {
@@ -313,6 +316,7 @@ const Details = () => {
     getNavigationLogDetails(navlog.id)
     getNavigationLogActions(navlog.id)
     getNavigationLogComments(navlog.id)
+    getNavigationLogDocuments(navlog.id)
     getNavigationLogCargoHolds(physicalVesselId)
   }
 

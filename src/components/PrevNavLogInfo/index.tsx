@@ -3,19 +3,20 @@ import {StyleSheet, TouchableOpacity} from 'react-native'
 import {Box, Text, Image} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
-import {useNavigation} from '@react-navigation/native'
-
 import {Icons} from '@bluecentury/assets'
-import {useMap} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
 import {formatLocationLabel} from '@bluecentury/constants'
+import {NativeStackNavigationProp} from '@react-navigation/native-stack'
+import {useNavigation} from '@react-navigation/native'
 
-export const PreviousNavLogInfo = () => {
-  const navigation = useNavigation()
-  const {prevNavLogs}: any = useMap()
-  const navigationLog = prevNavLogs?.find(
-    (prev: any) => prev.plannedEta !== null
-  )
+interface Props {
+  logs: Array<any>
+}
+
+export const PreviousNavLogInfo = ({logs}: Props) => {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>()
+  const navigationLog = logs?.find((prev: any) => prev.plannedEta !== null)
 
   return (
     <TouchableOpacity

@@ -85,8 +85,11 @@ const getCurrentNavLog = async (vesselId: string) => {
     })
 }
 
-const getLastCompleteNavLogs = async (navLogId: string) => {
-  return API.get(`v3/navigation_logs/${navLogId}/routes`)
+const getLastCompleteNavLogs = async (vesselId: string) => {
+  // return API.get(`v3/navigation_logs/${navLogId}/routes`) /* old app call */
+  return API.get(
+    `v3/navigation_logs?exploitationVessel=${vesselId}&itemsPerPage=10&exists[departureDatetime]=1&exists[plannedETA]=0&order[departureDatetime]=desc`
+  )
     .then(response => {
       if (response.data) {
         return response.data
@@ -233,6 +236,23 @@ const sendCurrentPosition = async (position: GeoPosition) => {
     })
 }
 
+const getVesselStatus = async (vesselId: string) => {
+  return API.get(
+    `geolocations?itemsPerPage=1&exploitationVessel.id=${vesselId}`
+  )
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Vessel status failed.')
+      }
+    })
+    .catch(error => {
+      console.log('Error: Vessel status', error)
+      return Promise.reject(error)
+    })
+}
+
 export {
   getPreviousNavLog,
   reloadVesselHistoryNavLogs,
@@ -246,5 +266,6 @@ export {
   removeVesselToFormations,
   endVesselFormations,
   getCurrentTrackerSource,
-  sendCurrentPosition
+  sendCurrentPosition,
+  getVesselStatus
 }

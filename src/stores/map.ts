@@ -7,12 +7,14 @@ import * as API from '@bluecentury/api/vemasys'
 import {initial} from 'lodash'
 
 type MapState = {
+  vesselStatus: any
   prevNavLogs: Array<any>
   plannedNavLogs: Array<any>
   currentNavLogs: Array<any>
   lastCompleteNavLogs: Array<any>
   activeFormations: Array<any>
   isLoadingMap: boolean
+  isLoadingVesselStatus: boolean
   isLoadingPreviousNavLogs: boolean
   isLoadingCurrentNavLogs: boolean
   isLoadingPlannedNavLogs: boolean
@@ -22,9 +24,11 @@ type MapState = {
   tokenHasConnectedToShip: boolean
   isMobileTrackingEnable: boolean
   hasErrorLoadingNavigationLogs: boolean
+  hasErrorLoadingVesselStatus: boolean
 }
 
 type MapActions = {
+  getVesselStatus: (vesselId: string) => void
   getPreviousNavigationLogs: (vesselId: string) => void
   getPlannedNavigationLogs: (vesselId: string) => void
   getCurrentNavigationLogs: (vesselId: string) => void
@@ -40,12 +44,14 @@ type MapActions = {
 type MapStore = MapState & MapActions
 
 const initialMapState: MapState = {
+  vesselStatus: undefined,
   prevNavLogs: [],
   plannedNavLogs: [],
   currentNavLogs: [],
   lastCompleteNavLogs: [],
   activeFormations: [],
   isLoadingMap: false,
+  isLoadingVesselStatus: false,
   isLoadingCurrentNavLogs: false,
   isLoadingPlannedNavLogs: false,
   isLoadingPreviousNavLogs: false,
@@ -54,7 +60,8 @@ const initialMapState: MapState = {
   hasErrorLoadingCurrentNavLogs: false,
   hasErrorLoadingPlannedNavLogs: false,
   hasErrorLoadingPreviousNavLogs: false,
-  hasErrorLoadingNavigationLogs: false
+  hasErrorLoadingNavigationLogs: false,
+  hasErrorLoadingVesselStatus: false
 }
 
 export const useMap = create(
@@ -139,25 +146,17 @@ export const useMap = create(
           })
         }
       },
-      getLastCompleteNavigationLogs: async (navLogId: string) => {
+      getLastCompleteNavigationLogs: async (vesselId: string) => {
         set({
           isLoadingMap: true
         })
         try {
-          const response: any = await API.getLastCompleteNavLogs(navLogId)
-
-          if (typeof response === 'object') {
-            if (response.routes.length > 0) {
-              set({
-                isLoadingMap: false,
-                lastCompleteNavLogs: response.routes
-              })
-            } else {
-              set({
-                isLoadingMap: false,
-                lastCompleteNavLogs: []
-              })
-            }
+          const response: any = await API.getLastCompleteNavLogs(vesselId)
+          if (Array.isArray(response)) {
+            set({
+              isLoadingMap: false,
+              lastCompleteNavLogs: response
+            })
           } else {
             set({
               isLoadingMap: false,
@@ -254,6 +253,32 @@ export const useMap = create(
       enableMobileTracking: () => {
         const isMobileTrackingEnable = get().isMobileTrackingEnable
         set({isMobileTrackingEnable: !isMobileTrackingEnable})
+      },
+      getVesselStatus: async (vesselId: string) => {
+        set({
+          isLoadingVesselStatus: true,
+          hasErrorLoadingVesselStatus: false
+        })
+        try {
+          const response: any = await API.getVesselStatus(vesselId)
+          if (Array.isArray(response)) {
+            set({
+              vesselStatus: response[0]
+            })
+          } else {
+            set({
+              vesselStatus: undefined
+            })
+          }
+          set({
+            isLoadingVesselStatus: false
+          })
+        } catch (error) {
+          set({
+            isLoadingVesselStatus: false,
+            hasErrorLoadingVesselStatus: true
+          })
+        }
       }
     }),
     {

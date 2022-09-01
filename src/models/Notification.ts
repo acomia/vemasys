@@ -1,4 +1,4 @@
-export type TNotification = {
+export type Notification = {
   createdAt: string
   icon: string
   id: number

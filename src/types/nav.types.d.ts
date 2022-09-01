@@ -1,5 +1,6 @@
 type RootStackParamList = {
   Splash: undefined
+  SelectEnvironment: undefined
   Login: undefined
   SelectEntity: undefined
   Main: undefined
@@ -21,11 +22,13 @@ type RootStackParamList = {
   AddEditTechnicalTask: {method: string; task?: any}
   TechnicalCertificateList: {certificates: any; title: string}
   TechnicalCertificateDetails: {certificate: any}
-  Measurements: {reservoir: any; lastMeasurement?: []}
+  Measurements: {data: any; routeFrom: string}
   TechnicalRoutinesList: {category: string; title: string}
   TechnicalRoutineDetails: {id: any; title: string}
   FinancialInvoiceDetails: {id: string; routeFrom: string; title: string}
   TickerOilPriceDetails: undefined
+  AddCrewMember: undefined
+  InformationPegelDetails: {pegelId: number}
 }
 
 type MainStackParamList = {

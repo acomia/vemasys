@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import {createNativeStackNavigator} from '@react-navigation/native-stack'
 import MainNavigator from './main-navigator'
 import {GPSTracker} from '@bluecentury/components'
@@ -27,14 +27,33 @@ import {
   TechnicalRoutineDetails,
   FinancialInvoiceDetails,
   TickerOilPriceDetails,
-  Entity
+  AddCrewMember,
+  Entity,
+  InformationPegelDetails,
+  SelectEnvironment
 } from '@bluecentury/screens'
 import {Colors} from '@bluecentury/styles'
+import {TrackingListener} from '@bluecentury/helpers/geolocation-tracking-helper'
+import {useAuth, useEntity, useSettings} from '@bluecentury/stores'
+import BackgroundGeolocation from '@mauron85/react-native-background-geolocation'
 
 const {Navigator, Screen, Group} =
   createNativeStackNavigator<RootStackParamList>()
 
 export default function RootNavigator() {
+  const {isMobileTracking, hasSettingsRehydrated} = useSettings(state => state)
+  useEffect(() => {
+    if (hasSettingsRehydrated) {
+      if (isMobileTracking) {
+        TrackingListener({
+          token: useAuth.getState().token as string,
+          selectedUserId: useEntity.getState().entityUserId as string
+        })
+      } else {
+        BackgroundGeolocation.removeAllListeners()
+      }
+    }
+  }, [isMobileTracking, hasSettingsRehydrated])
   return (
     <Navigator
       initialRouteName="Splash"
@@ -48,6 +67,13 @@ export default function RootNavigator() {
     >
       <Group>
         <Screen name="Splash" component={Splash} />
+        <Screen
+          name="SelectEnvironment"
+          component={SelectEnvironment}
+          options={{
+            headerShown: false
+          }}
+        />
         <Screen
           name="Login"
           component={Login}
@@ -89,7 +115,7 @@ export default function RootNavigator() {
         <Screen
           name={'PDFView'}
           component={PDFView}
-          options={{headerShown: true}}
+          options={{headerShown: true, title: 'PDF Viewer'}}
         />
         <Screen
           name={'NewBunkering'}
@@ -223,6 +249,22 @@ export default function RootNavigator() {
           options={{
             headerShown: true,
             title: 'Ticker oil price details'
+          }}
+        />
+        <Screen
+          name={'AddCrewMember'}
+          component={AddCrewMember}
+          options={{
+            headerShown: true,
+            title: 'Add crew member'
+          }}
+        />
+        <Screen
+          name={'InformationPegelDetails'}
+          component={InformationPegelDetails}
+          options={{
+            headerShown: true,
+            title: 'Pegel details'
           }}
         />
       </Group>

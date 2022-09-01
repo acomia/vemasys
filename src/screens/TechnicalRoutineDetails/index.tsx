@@ -19,7 +19,7 @@ import _ from 'lodash'
 
 import {IconButton, LoadingIndicator} from '@bluecentury/components'
 import {Colors} from '@bluecentury/styles'
-import {PROD_URL} from '@bluecentury/env'
+import {PROD_URL} from '@vemasys/env'
 import {
   hasSelectedEntityUserPermission,
   ROLE_PERMISSION_TASK_MANAGE,
