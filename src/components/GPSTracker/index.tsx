@@ -36,35 +36,6 @@ export const GPSTracker = ({navigation}: Props) => {
     }
   }, [isMobileTracking])
 
-  // useEffect(() => {
-  //   if (isMobileTracking) {
-  //     Geolocation.getCurrentPosition(
-  //       position => {
-  //         setPosition(position)
-  //         sendCurrentPosition(position)
-  //       },
-  //       error => {
-  //         Alert.alert(`Code ${error.code}`, error.message)
-  //       },
-  //       {
-  //         accuracy: {
-  //           android: 'high',
-  //           ios: 'best'
-  //         },
-  //         enableHighAccuracy: true,
-  //         timeout: 15000,
-  //         maximumAge: 10000,
-  //         distanceFilter: 0
-  //       }
-  //     )
-  //     BackgroundTimer.runBackgroundTimer(() => {
-  //       onBackgroundSendCurrentPosition()
-  //     }, 60000)
-  //   } else {
-  //     BackgroundTimer.stopBackgroundTimer()
-  //   }
-  // }, [isMobileTracking])
-
   const hasPermissionIOS = async () => {
     const openSetting = () => {
       Linking.openURL('app-settings:').catch(() => {
@@ -147,7 +118,6 @@ export const GPSTracker = ({navigation}: Props) => {
         return
       }
     }
-    console.log('test')
     setIsMobileTracking(value)
   }
 
