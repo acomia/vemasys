@@ -13,12 +13,10 @@ import {
 import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import {useNavigation} from '@react-navigation/native'
 import {ms} from 'react-native-size-matters'
-import ImageViewer from 'react-native-image-zoom-viewer'
-import moment from 'moment'
 
 import {useInformation} from '@bluecentury/stores'
 import {Icons} from '@bluecentury/assets'
-import {IconButton, LoadingIndicator} from '@bluecentury/components'
+import {LoadingIndicator} from '@bluecentury/components'
 import {Colors} from '@bluecentury/styles'
 import {EXTERNAL_PEGEL_IMAGE_URL} from '@bluecentury/constants'
 
@@ -28,9 +26,6 @@ const Pegels = () => {
     useInformation()
   const [searchedValue, setSearchedValue] = useState('')
   const [pegelsData, setPegelsData] = useState([])
-  const [imgModal, setImgModal] = useState(false)
-  const [imgSource, setImgSource] = useState([{url: ''}])
-  const [selectedPegel, setSelectedPegel] = useState(null)
 
   useEffect(() => {
     getVesselPegels('')
@@ -149,22 +144,16 @@ const Pegels = () => {
   )
 
   const onSelectPegel = (pegel: any) => {
-    setSelectedPegel(pegel)
-    setImgModal(true)
     if (pegel.elwisPegelId === null) {
-      let newArr = [
-        {
-          url: `${EXTERNAL_PEGEL_IMAGE_URL}/wasserstaendeUebersichtGrafik.png.php?pegelId=&dfh=0`
-        }
-      ]
-      setImgSource(newArr)
+      navigation.navigate('ImgViewer', {
+        url: `${EXTERNAL_PEGEL_IMAGE_URL}/wasserstaendeUebersichtGrafik.png.php?pegelId=&dfh=0`,
+        title: pegel.name
+      })
     } else {
-      let newArr = [
-        {
-          url: `${EXTERNAL_PEGEL_IMAGE_URL}/wasserstaendeUebersichtGrafik.png.php?pegelId=${pegel.elwisPegelId}&dfh=0`
-        }
-      ]
-      setImgSource(newArr)
+      navigation.navigate('ImgViewer', {
+        url: `${EXTERNAL_PEGEL_IMAGE_URL}/wasserstaendeUebersichtGrafik.png.php?pegelId=${pegel.elwisPegelId}&dfh=0`,
+        title: pegel.name
+      })
     }
   }
 
@@ -231,36 +220,6 @@ const Pegels = () => {
             {renderPegels()}
           </>
         )}
-        {/* Preview external image */}
-        <Modal
-          visible={imgModal}
-          transparent={true}
-          animationType="slide"
-          onRequestClose={() => setImgModal(false)}
-        >
-          <ImageViewer
-            imageUrls={imgSource}
-            renderFooter={() => (
-              <Text
-                color={Colors.white}
-                fontWeight="medium"
-                ml={ms(5)}
-                mb={ms(5)}
-              >
-                Title.vms_Water_Levels: {selectedPegel?.name}
-              </Text>
-            )}
-            renderIndicator={() => <></>}
-          />
-          <IconButton
-            source={Icons.close}
-            onPress={() => setImgModal(false)}
-            size={ms(25)}
-            styles={{position: 'absolute', right: 10, top: 5}}
-            tintColor={Colors.white}
-          />
-        </Modal>
-        {/* End preview external image */}
       </ScrollView>
     </Box>
   )

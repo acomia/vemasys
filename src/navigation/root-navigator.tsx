@@ -30,7 +30,8 @@ import {
   AddCrewMember,
   Entity,
   InformationPegelDetails,
-  SelectEnvironment
+  SelectEnvironment,
+  ImgViewer
 } from '@bluecentury/screens'
 import {Colors} from '@bluecentury/styles'
 import {TrackingListener} from '@bluecentury/helpers/geolocation-tracking-helper'
@@ -266,6 +267,14 @@ export default function RootNavigator() {
             headerShown: true,
             title: 'Pegel details'
           }}
+        />
+        <Screen
+          name={'ImgViewer'}
+          component={ImgViewer}
+          options={({route}) => ({
+            headerShown: true,
+            title: route.params.title
+          })}
         />
       </Group>
       <Group>

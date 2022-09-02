@@ -29,6 +29,7 @@ type RootStackParamList = {
   TickerOilPriceDetails: undefined
   AddCrewMember: undefined
   InformationPegelDetails: {pegelId: number}
+  ImgViewer: {url: string; title: string}
 }
 
 type MainStackParamList = {
