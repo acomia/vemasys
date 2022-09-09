@@ -279,7 +279,7 @@ export default function CharterDetails({navigation, route}: Props) {
               color={Colors.azure}
               textAlign="left"
             >
-              {charter.vesselReference}
+              {charter.vesselReference || charter.clientReference}
             </Text>
             <Text fontWeight="bold" color={Colors.secondary}>
               {moment(charter.startDate).format('DD MMM YYYY')} -

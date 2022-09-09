@@ -1,6 +1,9 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState} from 'react'import {
+  RefreshControl,
+  StyleSheet,
+  TouchableOpacity
+} from 'react-native'
 import {
-  Flex,
   Text,
   Box,
   FlatList,
@@ -10,26 +13,36 @@ import {
   Icon,
   Divider,
   Center,
-  Image
+  Image,
+  Modal,
+  Button,
+  useToast
 } from 'native-base'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import Pdf from 'react-native-pdf'
 
 import {useCharters, useEntity} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
-import {CharterStatus} from '@bluecentury/components'
+import {CharterStatus, LoadingIndicator} from '@bluecentury/components'
 import {
   CHARTER_CONTRACTOR_STATUS_ARCHIVED,
+  CHARTER_CONTRACTOR_STATUS_REFUSED,
   CHARTER_ORDERER_STATUS_COMPLETED,
   ENTITY_TYPE_EXPLOITATION_GROUP,
   ENTITY_TYPE_EXPLOITATION_VESSEL
 } from '@bluecentury/constants'
-import {Animated} from '@bluecentury/assets'
-import {TouchableOpacity} from 'react-native'
 
 export default function Charters({navigation, route}: any) {
-  const {isCharterLoading, charters, getCharters} = useCharters()
+  const toast = useToast()
+  const {
+    isCharterLoading,
+    charters,
+    getCharters,
+    viewPdf,
+    updateCharterStatus
+  } = useCharters()
   const {entityType} = useEntity()
   const [searchedValue, setSearchValue] = useState('')
   const [chartersData, setChartersData] = useState(
@@ -42,11 +55,35 @@ export default function Charters({navigation, route}: any) {
             c.navigationLogs.length === 0
         )
   )
+  const [reviewPDF, setReviewPDF] = useState(false)
+  const [path, setPath] = useState('')
+  const [selectedCharter, setSelectedCharter] = useState(null)
+  const source = {uri: path, cache: true}
 
   useEffect(() => {
     getCharters()
     return () => {}
   }, [])
+
+  const showToast = (text: string, res: string) => {
+    toast.show({
+      duration: 1000,
+      render: () => {
+        return (
+          <Text
+            bg={res === 'success' ? 'emerald.500' : 'red.500'}
+            px="2"
+            py="1"
+            rounded="sm"
+            mb={5}
+            color={Colors.white}
+          >
+            {text}
+          </Text>
+        )
+      }
+    })
+  }
 
   const isLoaded = (cargo: any[]) => {
     if (cargo && cargo.some(e => e.isLoaded === false)) {
@@ -81,7 +118,7 @@ export default function Charters({navigation, route}: any) {
     return (
       <TouchableOpacity
         activeOpacity={0.7}
-        onPress={() => navigation.navigate('CharterDetails', {charter: item})}
+        onPress={() => onCharterSelected(item)}
       >
         <Box
           key={index}
@@ -100,7 +137,9 @@ export default function Charters({navigation, route}: any) {
             justifyContent="space-between"
           >
             <VStack maxWidth="72%">
-              <Text fontWeight="bold">{item.vesselReference || 'Unknown'}</Text>
+              <Text fontWeight="bold">
+                {item.vesselReference || item.clientReference || 'Unknown'}
+              </Text>
               {item.navigationLogs &&
                 item.navigationLogs.map(
                   (navlog: {bulkCargo: any[]}) =>
@@ -112,7 +151,7 @@ export default function Charters({navigation, route}: any) {
                             key={cargo.id}
                             fontWeight="semibold"
                             color={
-                              item.isCurrentlyActive || isLoaded(item.cargo)
+                              item.isActive || isLoaded(item.cargo)
                                 ? '#29B7EF'
                                 : Colors.disabled
                             }
@@ -124,9 +163,7 @@ export default function Charters({navigation, route}: any) {
                       }
                     })
                 )}
-              <Text
-                color={item.isCurrentlyActive ? Colors.black : Colors.disabled}
-              >
+              <Text color={item.isActive ? Colors.black : Colors.disabled}>
                 {item.charterDate
                   ? moment(item.charterDate).format('DD/MM/YYYY')
                   : 'TBD'}
@@ -141,7 +178,7 @@ export default function Charters({navigation, route}: any) {
             bottom={0}
             width={ms(7)}
             backgroundColor={
-              item.isCurrentlyActive ? Colors.primary_light : Colors.disabled
+              item.isActive ? Colors.primary_light : Colors.disabled
             }
           />
         </Box>
@@ -172,22 +209,45 @@ export default function Charters({navigation, route}: any) {
     setChartersData(searchedCharter)
   }
 
-  if (isCharterLoading) {
-    return (
-      <Center>
-        <Image
-          alt="loading"
-          source={Animated.vemasys_loading}
-          width={ms(150)}
-          height={ms(150)}
-          resizeMode="contain"
-        />
-      </Center>
-    )
+  const onCharterSelected = async (charter: any) => {
+    setSelectedCharter(charter)
+    if (charter.contractorStatus === 'new') {
+      const path = await viewPdf(charter.id)
+      setPath(path)
+      setReviewPDF(true)
+    } else {
+      navigation.navigate('CharterDetails', {charter: charter})
+    }
   }
 
+  const handleOnDecline = async () => {
+    setReviewPDF(false)
+    const status = {
+      status: CHARTER_CONTRACTOR_STATUS_REFUSED,
+      setContractorStatus: false
+    }
+    const update = await updateCharterStatus(selectedCharter?.id, status)
+    if (typeof update === 'string') {
+      getCharters()
+      showToast('Charter declined sucessfully.', 'success')
+    } else {
+      showToast('Charter declined failed.', 'failed')
+    }
+  }
+
+  const handleOnAccept = () => {
+    setReviewPDF(false)
+    navigation.navigate('CharterAcceptSign', {charter: selectedCharter})
+  }
+
+  const onPullToReload = () => {
+    getCharters()
+  }
+
+  if (isCharterLoading) return <LoadingIndicator />
+
   return (
-    <Flex flex={1} safeArea backgroundColor={Colors.white} p={ms(12)}>
+    <Box flex={1} safeArea backgroundColor={Colors.white} p={ms(12)}>
       <Input
         w={{
           base: '100%'
@@ -238,7 +298,101 @@ export default function Charters({navigation, route}: any) {
             No Charters.
           </Text>
         )}
+        refreshControl={
+          <RefreshControl
+            onRefresh={onPullToReload}
+            refreshing={isCharterLoading}
+          />
+        }
       />
-    </Flex>
+
+      <Modal
+        isOpen={reviewPDF}
+        size="full"
+        animationPreset="slide"
+        safeAreaTop={true}
+        onClose={() => setReviewPDF(false)}
+      >
+        <Modal.Content style={styles.bottom} bg="#23272F">
+          <HStack bg={Colors.black} py={ms(10)} px={ms(16)}>
+            <Text
+              flex="1"
+              textAlign="center"
+              color={Colors.white}
+              fontSize={ms(12)}
+              fontWeight="bold"
+            >
+              {path?.replace(
+                '/data/user/0/com.vemasysreactnativeapp/files/ReactNativeBlobUtilTmp_',
+                ''
+              )}
+              .pdf
+            </Text>
+            <TouchableOpacity onPress={() => setReviewPDF(false)}>
+              <Text
+                color={Colors.primary}
+                fontSize={ms(12)}
+                fontWeight="bold"
+                textAlign="right"
+              >
+                Done
+              </Text>
+            </TouchableOpacity>
+          </HStack>
+
+          <Pdf
+            source={source}
+            onLoadComplete={(numberOfPages, filePath) => {
+              console.log(`Number of pages: ${numberOfPages}`)
+            }}
+            onPageChanged={(page, numberOfPages) => {
+              console.log(`Current page: ${page}`)
+            }}
+            onError={error => {
+              console.log(error)
+            }}
+            onPressLink={uri => {
+              console.log(`Link pressed: ${uri}`)
+            }}
+            style={styles.pdf}
+            enablePaging
+            trustAllCerts={false}
+          />
+        </Modal.Content>
+        <Modal.Footer bg={Colors.black}>
+          <Box flex="1">
+            <Button
+              variant="outline"
+              colorScheme="dark"
+              style={{borderColor: Colors.danger}}
+              mb={ms(8)}
+              onPress={handleOnDecline}
+            >
+              Decline
+            </Button>
+            <Button bg={Colors.primary} onPress={handleOnAccept}>
+              Accept
+            </Button>
+          </Box>
+        </Modal.Footer>
+      </Modal>
+    </Box>
   )
 }
+
+const styles = StyleSheet.create({
+  pdf: {
+    marginTop: 0,
+    marginBottom: 'auto',
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#23272F',
+    paddingHorizontal: 12
+  },
+  bottom: {
+    borderBottomEndRadius: 0,
+    borderBottomStartRadius: 0,
+    marginBottom: 0,
+    marginTop: 'auto'
+  }
+})

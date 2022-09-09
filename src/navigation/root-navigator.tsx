@@ -31,7 +31,8 @@ import {
   Entity,
   InformationPegelDetails,
   SelectEnvironment,
-  ImgViewer
+  ImgViewer,
+  CharterAcceptSign
 } from '@bluecentury/screens'
 import {Colors} from '@bluecentury/styles'
 import {TrackingListener} from '@bluecentury/helpers/geolocation-tracking-helper'
@@ -275,6 +276,14 @@ export default function RootNavigator() {
             headerShown: true,
             title: route.params.title
           })}
+        />
+        <Screen
+          name={'CharterAcceptSign'}
+          component={CharterAcceptSign}
+          options={{
+            headerShown: true,
+            title: 'Signature'
+          }}
         />
       </Group>
       <Group>
