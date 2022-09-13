@@ -1,19 +1,15 @@
-import {API_URL} from '@vemasys/env'
 import BackgroundGeolocation from '@mauron85/react-native-background-geolocation'
-import {Alert} from 'react-native'
+import {Alert, Platform} from 'react-native'
+import {useSettings} from '@bluecentury/stores'
 
-interface Props {
-  token: string
-  selectedUserId: string
-}
-
-export const TrackingListener = ({token, selectedUserId}: Props) => {
+export function InitializeTrackingService() {
+  // Configuration
   BackgroundGeolocation.configure({
     desiredAccuracy: BackgroundGeolocation.HIGH_ACCURACY,
     stationaryRadius: 50,
     distanceFilter: 50,
-    notificationTitle: 'Background tracking',
-    notificationText: 'enabled',
+    notificationTitle: 'VEMASYS Tracking',
+    notificationText: 'Enabled',
     debug: true,
     startOnBoot: false,
     stopOnTerminate: true,
@@ -21,20 +17,7 @@ export const TrackingListener = ({token, selectedUserId}: Props) => {
     interval: 10000,
     fastestInterval: 5000,
     activitiesInterval: 10000,
-    stopOnStillActivity: false,
-    url: API_URL + 'tracking_device/ingest_events/api_tracker',
-    httpHeaders: {
-      'Jwt-Auth': `Bearer ${token}`,
-      'X-active-entity-user-id': `${selectedUserId}`
-    },
-    // customize post properties
-    postTemplate: {
-      lat: '@latitude',
-      lon: '@longitude',
-      foo: 'bar', // you can also add your own properties
-      heading: 1,
-      speed: 1
-    }
+    stopOnStillActivity: false
   })
 
   BackgroundGeolocation.on('location', location => {
@@ -42,12 +25,14 @@ export const TrackingListener = ({token, selectedUserId}: Props) => {
     // handle your locations here
     // to perform long running operation on iOS
     // you need to create background task
-    BackgroundGeolocation.startTask(taskKey => {
-      // execute long running task
-      // eg. ajax post location
-      // IMPORTANT: task has to be ended by endTask
-      BackgroundGeolocation.endTask(taskKey)
-    })
+    if (Platform.OS === 'ios') {
+      BackgroundGeolocation.startTask(taskKey => {
+        // execute long running task
+        // eg. ajax post location
+        // IMPORTANT: task has to be ended by endTask
+        BackgroundGeolocation.endTask(taskKey)
+      })
+    }
   })
 
   BackgroundGeolocation.on('stationary', stationaryLocation => {
@@ -129,11 +114,17 @@ export const TrackingListener = ({token, selectedUserId}: Props) => {
     )
 
     // you don't need to check status before start (this is just the example)
-    if (!status.isRunning) {
-      BackgroundGeolocation.start() //triggers start on start event
+    if (useSettings.getState().isMobileTracking) {
+      BackgroundGeolocation.start()
+    } else {
+      BackgroundGeolocation.stop()
     }
   })
 
   // you can also just start without checking for status
   // BackgroundGeolocation.start();
+}
+
+export function StopTrackingService() {
+  BackgroundGeolocation.removeAllListeners()
 }
