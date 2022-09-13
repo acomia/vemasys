@@ -1,6 +1,7 @@
 import {GeoPosition} from 'react-native-geolocation-service'
 import {API} from '@bluecentury/api/apiService'
 import {queryString} from '@bluecentury/utils'
+import {Location} from '@mauron85/react-native-background-geolocation'
 
 const getPreviousNavLog = async (
   vesselId: string,
@@ -217,12 +218,12 @@ const getCurrentTrackerSource = async (vesselId: string) => {
     })
 }
 
-const sendCurrentPosition = async (position: GeoPosition) => {
-  return API.post(`tracking_device/ingest_events/api_tracker`, {
-    latitude: position?.coords?.latitude,
-    longitude: position?.coords?.longitude,
-    heading: position?.coords?.heading < 0 ? 1 : position?.coords?.heading,
-    speed: position?.coords?.speed < 0 ? 1 : position?.coords?.speed
+const sendCurrentPosition = async (position: Location) => {
+  return API.post('tracking_device/ingest_events/api_tracker', {
+    latitude: position?.latitude,
+    longitude: position?.longitude,
+    heading: 1,
+    speed: position?.speed < 0 ? 1 : position?.speed
   })
     .then(response => {
       if (response.data) {

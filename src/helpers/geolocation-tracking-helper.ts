@@ -1,6 +1,6 @@
+import {useMap} from '@bluecentury/stores'
 import BackgroundGeolocation from '@mauron85/react-native-background-geolocation'
 import {Alert, Platform} from 'react-native'
-import {useSettings} from '@bluecentury/stores'
 
 export function InitializeTrackingService() {
   // Configuration
@@ -21,24 +21,27 @@ export function InitializeTrackingService() {
   })
 
   BackgroundGeolocation.on('location', location => {
-    console.log('location ', location)
-    // handle your locations here
-    // to perform long running operation on iOS
-    // you need to create background task
+    console.log('Vessel is moving...')
     if (Platform.OS === 'ios') {
       BackgroundGeolocation.startTask(taskKey => {
-        // execute long running task
-        // eg. ajax post location
-        // IMPORTANT: task has to be ended by endTask
+        useMap.getState().sendCurrentPosition(location)
         BackgroundGeolocation.endTask(taskKey)
       })
+    } else {
+      useMap.getState().sendCurrentPosition(location)
     }
   })
 
   BackgroundGeolocation.on('stationary', stationaryLocation => {
-    // handle stationary locations here
-    // Actions.sendLocation(stationaryLocation)
-    console.log('stationarylocations ', stationaryLocation)
+    console.log('Vessel is currently stationary...')
+    if (Platform.OS === 'ios') {
+      BackgroundGeolocation.startTask(taskKey => {
+        useMap.getState().sendCurrentPosition(stationaryLocation)
+        BackgroundGeolocation.endTask(taskKey)
+      })
+    } else {
+      useMap.getState().sendCurrentPosition(stationaryLocation)
+    }
   })
 
   BackgroundGeolocation.on('error', error => {
@@ -112,17 +115,7 @@ export function InitializeTrackingService() {
     console.log(
       '[INFO] BackgroundGeolocation auth status: ' + status.authorization
     )
-
-    // you don't need to check status before start (this is just the example)
-    if (useSettings.getState().isMobileTracking) {
-      BackgroundGeolocation.start()
-    } else {
-      BackgroundGeolocation.stop()
-    }
   })
-
-  // you can also just start without checking for status
-  // BackgroundGeolocation.start();
 }
 
 export function StopTrackingService() {
