@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect} from 'react'
 import {ImageSourcePropType} from 'react-native'
-import {Box, HStack, View} from 'native-base'
+import {Box, HStack} from 'native-base'
 import {createDrawerNavigator} from '@react-navigation/drawer'
 import {
   CommonActions,
@@ -24,8 +24,12 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {Screens} from '@bluecentury/constants'
 import {ms} from 'react-native-size-matters'
 import {Colors} from '@bluecentury/styles'
-import {useAuth, useMap} from '@bluecentury/stores'
+import {useAuth, useMap, useSettings} from '@bluecentury/stores'
 import {navigationRef} from './navigationRef'
+import {
+  InitializeTrackingService,
+  StopTrackingService
+} from '@bluecentury/helpers'
 
 const {Navigator, Screen} = createDrawerNavigator<MainStackParamList>()
 
@@ -33,15 +37,24 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Main'>
 
 export default function MainNavigator({navigation}: Props) {
   const token = useAuth(state => state.token)
-  const {activeFormations, getActiveFormations} = useMap()
+  const activeFormations = useMap(state => state.activeFormations)
+  const getActiveFormations = useMap(state => state.getActiveFormations)
   let scanIcon: ImageSourcePropType = Icons.qr
   let scanNavigateTo: () => void
 
   useFocusEffect(
     useCallback(() => {
       getActiveFormations()
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
   )
+
+  useEffect(() => {
+    InitializeTrackingService()
+    return () => {
+      StopTrackingService()
+    }
+  }, [])
 
   useEffect(() => {
     if (typeof token === 'undefined') {
