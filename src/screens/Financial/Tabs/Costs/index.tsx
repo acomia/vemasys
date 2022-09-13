@@ -264,21 +264,12 @@ const Costs = () => {
             })}
           </Select>
         </Box>
-        <Box
-          style={{
-            flex: 1,
-            paddingHorizontal: 15,
-            paddingVertical: 25,
-            backgroundColor: '#fff'
-          }}
-        >
+        <Box flex="1" px={ms(15)} py={ms(25)} bg={Colors.white}>
           <Text
-            style={{
-              fontSize: 20,
-              fontWeight: 'bold',
-              color: '#23475C',
-              marginBottom: 20
-            }}
+            fontSize={ms(20)}
+            fontWeight="bold"
+            color={Colors.azure}
+            mb={ms(20)}
           >
             Incoming Invoices
           </Text>

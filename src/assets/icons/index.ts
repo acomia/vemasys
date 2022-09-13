@@ -82,5 +82,6 @@ export const Icons = {
   water_rise: require('./water-rise.png'),
   chart_line_up: require('./chart-line.png'),
   chart__line_down: require('./chart-line-down.png'),
-  user_plus: require('./user-plus.png')
+  user_plus: require('./user-plus.png'),
+  refused: require('./refused.png')
 }

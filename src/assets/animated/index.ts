@@ -9,5 +9,6 @@ export const Animated = {
   bridge: require('./bridge.gif'),
   checkpoint: require('./checkpoint.gif'),
   junction: require('./junction.gif'),
-  invoice: require('./invoice.gif')
+  invoice: require('./invoice.gif'),
+  signature: require('./signature.gif')
 }
