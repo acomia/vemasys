@@ -7,7 +7,18 @@ import {
   ToastAndroid,
   Image as RNImage
 } from 'react-native'
-import {HStack, Text, Box, Button, Image, Switch, Divider} from 'native-base'
+import {
+  HStack,
+  Text,
+  Box,
+  Button,
+  Image,
+  Switch,
+  Divider,
+  Actionsheet,
+  useDisclose,
+  AlertDialog
+} from 'native-base'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {ms} from 'react-native-size-matters'
 import Icon from 'react-native-vector-icons/FontAwesome5'
@@ -21,11 +32,12 @@ import {useEntity, useMap, useSettings} from '@bluecentury/stores'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 export const GPSTracker = ({navigation}: Props) => {
-  const {isMobileTracking, setIsMobileTracking} = useSettings(state => state)
+  const isMobileTracking = useSettings(state => state.isMobileTracking)
   const isLoadingMap = useMap(state => state.isLoadingMap)
-  const {vesselDetails} = useEntity()
-  const [position, setPosition] = useState<GeoPosition>(undefined)
+  const vesselDetails = useEntity(state => state.vesselDetails)
   const netInfo = useNetInfo()
+  const [position, setPosition] = useState<GeoPosition>()
+  const [isOpen, setIsOpen] = React.useState(false)
 
   useEffect(() => {
     if (isMobileTracking) {
@@ -108,25 +120,30 @@ export const GPSTracker = ({navigation}: Props) => {
     return false
   }
 
-  const handleOnValueChange = async (value: boolean) => {
-    console.log('value ', value)
-    if (value) {
-      const hasPermission = await hasLocationPermission()
+  const handleOnValueChange = () => {
+    // console.log('value ', value)
+    // if (value) {
+    //   const hasPermission = await hasLocationPermission()
 
-      if (!hasPermission) {
-        console.log('hmmm')
-        return
-      }
-    }
-    setIsMobileTracking(value)
+    //   if (!hasPermission) {
+    //     console.log('hmmm')
+    //     return
+    //   }
+    // }
+    // setIsMobileTracking(value)
+    // navigation.goBack()
+    // setIsOpen(!isOpen)
+    navigation.navigate('TrackingServiceDialog')
   }
 
-  const renderTrackerSource = (sourceData: string) => {
+  const renderTrackerSource = (sourceData: string | undefined) => {
     let source = null
-    if (sourceData.includes('ais')) {
-      source = Icons.mobile_tracker
-    } else if (sourceData.includes('vematrack')) {
-      source = Icons.mobile_tracker
+    if (typeof sourceData !== 'undefined') {
+      if (sourceData.includes('ais')) {
+        source = Icons.mobile_tracker
+      } else if (sourceData.includes('vematrack')) {
+        source = Icons.mobile_tracker
+      }
     }
     return source
   }
@@ -235,7 +252,9 @@ export const GPSTracker = ({navigation}: Props) => {
           <Switch
             size="md"
             value={isMobileTracking}
-            onValueChange={handleOnValueChange}
+            onTouchStart={handleOnValueChange}
+            onToggle={handleOnValueChange}
+            // onValueChange={handleOnValueChange}
           />
         </HStack>
         <HStack
