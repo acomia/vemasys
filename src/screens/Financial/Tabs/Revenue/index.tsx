@@ -268,21 +268,12 @@ const Revenue = () => {
             })}
           </Select>
         </Box>
-        <Box
-          style={{
-            flex: 1,
-            paddingHorizontal: 15,
-            paddingVertical: 25,
-            backgroundColor: '#fff'
-          }}
-        >
+        <Box flex="1" px={ms(15)} py={ms(25)} bg={Colors.white}>
           <Text
-            style={{
-              fontSize: 20,
-              fontWeight: 'bold',
-              color: '#23475C',
-              marginBottom: 20
-            }}
+            fontSize={ms(20)}
+            fontWeight="bold"
+            color={Colors.azure}
+            mb={ms(20)}
           >
             Outgoing Invoices
           </Text>
@@ -354,7 +345,7 @@ const Revenue = () => {
                 label="Sent"
                 value={
                   invoiceStatistics?.length > 0
-                    ? invoiceStatistics[0]?.paidOutgoing || 0
+                    ? invoiceStatistics[0]?.unpaidOutgoing || 0
                     : 0
                 }
               />
@@ -362,7 +353,7 @@ const Revenue = () => {
                 label="Payment confirmed"
                 value={
                   invoiceStatistics?.length > 0
-                    ? invoiceStatistics[0]?.unpaidOutgoing || 0
+                    ? invoiceStatistics[0]?.paidOutgoing || 0
                     : 0
                 }
               />
