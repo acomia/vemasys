@@ -29,7 +29,7 @@ const HistoryLogbook = ({routeIndex}: any) => {
 
   useEffect(() => {
     getVesselHistoryNavLogs(vesselId, currentPage)
-  }, [currentPage])
+  }, [vesselId, currentPage])
 
   useEffect(() => {
     setIsPageChange(false)

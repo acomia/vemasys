@@ -14,16 +14,20 @@ import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import {Icons, Animated} from '@bluecentury/assets'
-import {useNotif, useAuth} from '@bluecentury/stores'
+import {useNotif, useAuth, useEntity} from '@bluecentury/stores'
+import {FleetHeader, LoadingIndicator} from '@bluecentury/components'
+import {ENTITY_TYPE_EXPLOITATION_GROUP} from '@bluecentury/constants'
 
 const screenWidth = Dimensions.get('screen').width
 
 export default function Notification() {
+  const {entityType, entityUsers, selectFleetVessel, vesselId} = useEntity()
   const {isLoadingNotification, notifications, getAllNotifications} = useNotif()
+
   useEffect(() => {
     getAllNotifications()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [vesselId])
 
   let groupByDate = Object.values(
     notifications.reduce((acc: any, item) => {
@@ -132,22 +136,29 @@ export default function Notification() {
     getAllNotifications()
   }
 
-  if (isLoadingNotification) {
-    return (
-      <Center>
-        <Image
-          alt="loading"
-          source={Animated.vemasys_loading}
-          width={ms(150)}
-          height={ms(150)}
-          resizeMode="contain"
-        />
-      </Center>
+  const onReloadFleetNavLogs = (index: number, vessel: any) => {
+    const selectedEntityVessel = entityUsers.find(
+      e => e?.entity?.exploitationVessel?.id === vessel?.id
     )
+
+    if (typeof selectedEntityVessel === 'object' && selectedEntityVessel?.id) {
+      selectFleetVessel(index, selectedEntityVessel)
+    } else {
+      selectFleetVessel(index, vessel)
+    }
   }
 
+  if (isLoadingNotification) return <LoadingIndicator />
+
   return (
-    <Flex flex={1}>
+    <Box flex={1}>
+      {entityType === ENTITY_TYPE_EXPLOITATION_GROUP && (
+        <FleetHeader
+          onPress={(index: number, vessel: any) =>
+            onReloadFleetNavLogs(index, vessel)
+          }
+        />
+      )}
       <Box
         flex={1}
         backgroundColor={'#fff'}
@@ -172,6 +183,6 @@ export default function Notification() {
           showsVerticalScrollIndicator={false}
         />
       </Box>
-    </Flex>
+    </Box>
   )
 }

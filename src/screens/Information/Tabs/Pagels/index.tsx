@@ -14,7 +14,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import {useNavigation} from '@react-navigation/native'
 import {ms} from 'react-native-size-matters'
 
-import {useInformation} from '@bluecentury/stores'
+import {useEntity, useInformation} from '@bluecentury/stores'
 import {Icons} from '@bluecentury/assets'
 import {LoadingIndicator} from '@bluecentury/components'
 import {Colors} from '@bluecentury/styles'
@@ -24,12 +24,13 @@ const Pegels = () => {
   const navigation = useNavigation()
   const {isInformationLoading, pegels, streamGauges, getVesselPegels} =
     useInformation()
+  const {vesselId} = useEntity()
   const [searchedValue, setSearchedValue] = useState('')
   const [pegelsData, setPegelsData] = useState([])
 
   useEffect(() => {
     getVesselPegels('')
-  }, [])
+  }, [vesselId])
 
   useEffect(() => {
     setPegelsData(pegels)

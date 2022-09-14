@@ -26,7 +26,7 @@ const PlanningLogbook = () => {
 
   useEffect(() => {
     getVesselPlannedNavLogs(vesselId)
-  }, [])
+  }, [vesselId])
 
   plannedNavigationLogs.sort(
     (a: any, b: any) =>

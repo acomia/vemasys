@@ -3,19 +3,20 @@ import {Platform, RefreshControl} from 'react-native'
 import {Box, HStack, ScrollView, Select, Skeleton, Text} from 'native-base'
 import {ms} from 'react-native-size-matters'
 
-import {useFinancial} from '@bluecentury/stores'
+import {useEntity, useFinancial} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
 
 const Overview = () => {
   const {isFinancialLoading, invoiceStatistics, getInvoiceStatistics} =
     useFinancial()
+  const {vesselId} = useEntity()
   const [selectedYear, setSelectedYear] = useState(
     new Date().getFullYear().toString()
   )
 
   useEffect(() => {
     getInvoiceStatistics(selectedYear)
-  }, [])
+  }, [vesselId])
 
   const Card = ({title, children}: any) => {
     return (

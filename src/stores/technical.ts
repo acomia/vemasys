@@ -161,7 +161,7 @@ export const useTechnical = create(
         try {
           const response = await API.reloadVesselEngines(physicalVesselId)
           if (Array.isArray(response)) {
-            response.forEach(async engine => {
+            response.forEach(async (engine, index: number) => {
               const lastM = await API.reloadVesselPartLastMeasurements(
                 engine.id
               )
