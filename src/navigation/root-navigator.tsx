@@ -30,7 +30,9 @@ import {
   AddCrewMember,
   Entity,
   InformationPegelDetails,
-  SelectEnvironment
+  SelectEnvironment,
+  ImgViewer,
+  CharterAcceptSign
 } from '@bluecentury/screens'
 import {Colors} from '@bluecentury/styles'
 import {TrackingListener} from '@bluecentury/helpers/geolocation-tracking-helper'
@@ -265,6 +267,22 @@ export default function RootNavigator() {
           options={{
             headerShown: true,
             title: 'Pegel details'
+          }}
+        />
+        <Screen
+          name={'ImgViewer'}
+          component={ImgViewer}
+          options={({route}) => ({
+            headerShown: true,
+            title: route.params.title
+          })}
+        />
+        <Screen
+          name={'CharterAcceptSign'}
+          component={CharterAcceptSign}
+          options={{
+            headerShown: true,
+            title: 'Signature'
           }}
         />
       </Group>
