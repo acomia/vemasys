@@ -24,12 +24,16 @@ import {
   PlannedNavLogInfo,
   CurrentNavLogInfo,
   LoadingIndicator,
-  IconButton
+  IconButton,
+  FleetHeader
 } from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {Colors, MapTheme} from '@bluecentury/styles'
 import {useMap, useEntity, useAuth} from '@bluecentury/stores'
-import {formatLocationLabel} from '@bluecentury/constants'
+import {
+  ENTITY_TYPE_EXPLOITATION_GROUP,
+  formatLocationLabel
+} from '@bluecentury/constants'
 import {TrackingListener} from '@bluecentury/helpers/geolocation-tracking-helper'
 import {useFocusEffect} from '@react-navigation/native'
 
@@ -42,7 +46,8 @@ const DEFAULT_PADDING = {top: 45, right: 45, bottom: 45, left: 45}
 
 type Props = NativeStackScreenProps<MainStackParamList>
 export default function Map({navigation}: Props) {
-  const {vesselId, selectedVessel} = useEntity()
+  const {vesselId, selectedVessel, entityType, selectFleetVessel, entityUsers} =
+    useEntity()
   const {
     isLoadingVesselStatus,
     isLoadingCurrentNavLogs,
@@ -85,7 +90,6 @@ export default function Map({navigation}: Props) {
     useCallback(() => {
       refreshId.current = setInterval(() => {
         // Run updated vessel status
-        // console.log('Updated')
         updateMap()
       }, 30000)
       return () => clearInterval(refreshId.current)
@@ -94,6 +98,7 @@ export default function Map({navigation}: Props) {
 
   useLayoutEffect(() => {
     if (vesselId) {
+      getVesselStatus(vesselId)
       getPreviousNavigationLogs(vesselId)
       getPlannedNavigationLogs(vesselId)
       getCurrentNavigationLogs(vesselId)
@@ -295,13 +300,13 @@ export default function Map({navigation}: Props) {
     )
   }
 
-  const renderLastCompleteNavLogs = (log: any) => {
+  const renderLastCompleteNavLogs = (log: any, index: number) => {
     if (!log?.plannedEta && !log?.arrivalDatetime) {
       return null
     }
     return (
       <Marker
-        key={log.location?.id}
+        key={`CompletedLogs-${index}-${log.location?.id}`}
         pinColor={'#F0f0f0'}
         coordinate={{
           latitude: log.location?.latitude,
@@ -410,9 +415,28 @@ export default function Map({navigation}: Props) {
     setZoomLevel(zoom)
   }
 
+  const onReloadFleetNavLogs = (index: number, vessel: any) => {
+    const selectedEntityVessel = entityUsers.find(
+      e => e?.entity?.exploitationVessel?.id === vessel?.id
+    )
+
+    if (typeof selectedEntityVessel === 'object' && selectedEntityVessel?.id) {
+      selectFleetVessel(index, selectedEntityVessel)
+    } else {
+      selectFleetVessel(index, vessel)
+    }
+  }
+
   return (
-    <Box flex={1} bg={Colors.light}>
-      <Box flex={1}>
+    <Box flex="1" bg={Colors.light}>
+      {entityType === ENTITY_TYPE_EXPLOITATION_GROUP && (
+        <FleetHeader
+          onPress={(index: number, vessel: any) =>
+            onReloadFleetNavLogs(index, vessel)
+          }
+        />
+      )}
+      <Box flex="1">
         <MapView
           ref={mapRef}
           provider={PROVIDER_GOOGLE} // remove if not using Google Maps
@@ -431,8 +455,8 @@ export default function Map({navigation}: Props) {
               undefined &&
             renderMarkerTo()}
           {lastCompleteNavLogs.length > 0 &&
-            lastCompleteNavLogs?.map((log: any) =>
-              renderLastCompleteNavLogs(log)
+            lastCompleteNavLogs?.map((log: any, index: number) =>
+              renderLastCompleteNavLogs(log, index)
             )}
         </MapView>
         <Box position="absolute" right="0">

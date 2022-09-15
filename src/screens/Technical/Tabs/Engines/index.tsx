@@ -19,7 +19,7 @@ const Engines = () => {
 
   useEffect(() => {
     getVesselEngines(physicalVesselId)
-  }, [])
+  }, [physicalVesselId])
 
   // const vesselZones = _.uniq(_.map(engines, 'vesselZone.title'))
   // const partTypes = _.uniq(_.map(engines, 'type.title'))
@@ -104,7 +104,7 @@ const Engines = () => {
     setPullRefresh(false)
   }
 
-  if (isTechnicalLoading) return <LoadingIndicator />
+  // if (isTechnicalLoading) return <LoadingIndicator />
 
   return (
     <Box flex="1" bg={Colors.white}>
@@ -124,57 +124,62 @@ const Engines = () => {
         >
           Engines
         </Text>
-        {vesselZones.length > 0 ? (
-          vesselZones.map((engine: any, index: number) => {
-            const groupByPart = Object.values(
-              engine.data.reduce((acc: any, item) => {
-                const part = item.name
-                if (!acc[part])
-                  acc[part] = {
-                    part: part,
-                    data: []
-                  }
-                acc[part].data.push(item)
-                return acc
-              }, {})
-            )
-            return (
-              <Box
-                key={index}
-                borderRadius={ms(5)}
-                borderWidth={1}
-                borderColor={Colors.border}
-                mb={ms(25)}
-              >
-                {/* Engine Header */}
+        {
+          vesselZones.length > 0 ? (
+            vesselZones.map((engine: any, index: number) => {
+              const groupByPart = Object.values(
+                engine.data.reduce((acc: any, item) => {
+                  const part = item.name
+                  if (!acc[part])
+                    acc[part] = {
+                      part: part,
+                      data: []
+                    }
+                  acc[part].data.push(item)
+                  return acc
+                }, {})
+              )
+              return (
                 <Box
-                  backgroundColor={Colors.border}
-                  px={ms(16)}
-                  py={ms(10)}
-                  justifyContent="center"
+                  key={index}
+                  borderRadius={ms(5)}
+                  borderWidth={1}
+                  borderColor={Colors.border}
+                  mb={ms(25)}
                 >
-                  <Text color={Colors.azure} fontWeight="medium">
-                    {_.startCase(_.toLower(engine.zones))}
-                  </Text>
-                </Box>
+                  {/* Engine Header */}
+                  <Box
+                    backgroundColor={Colors.border}
+                    px={ms(16)}
+                    py={ms(10)}
+                    justifyContent="center"
+                  >
+                    <Text color={Colors.azure} fontWeight="medium">
+                      {_.startCase(_.toLower(engine.zones))}
+                    </Text>
+                  </Box>
 
-                {groupByPart.map((partType: any, index: number) =>
-                  renderEngineList(partType, index)
-                )}
-              </Box>
-            )
-          })
-        ) : (
-          <Text
-            color={Colors.text}
-            fontWeight="semibold"
-            fontSize={ms(15)}
-            textAlign="center"
-            mt={ms(20)}
-          >
-            No available data.
-          </Text>
-        )}
+                  {groupByPart.map((partType: any, index: number) =>
+                    renderEngineList(partType, index)
+                  )}
+                </Box>
+              )
+            })
+          ) : (
+            <LoadingIndicator />
+          )
+          // (
+          //   <Text
+          //     color={Colors.text}
+          //     fontWeight="semibold"
+          //     fontSize={ms(15)}
+          //     textAlign="center"
+          //     mt={ms(20)}
+          //   >
+          //     No available data.
+          //   </Text>
+          // )
+        }
       </ScrollView>
     </Box>
   )

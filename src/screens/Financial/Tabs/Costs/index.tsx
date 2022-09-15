@@ -5,7 +5,7 @@ import moment from 'moment'
 import {ms} from 'react-native-size-matters'
 import {Shadow} from 'react-native-shadow-2'
 
-import {useFinancial} from '@bluecentury/stores'
+import {useEntity, useFinancial} from '@bluecentury/stores'
 import {useNavigation} from '@react-navigation/native'
 import {LoadingIndicator} from '@bluecentury/components'
 import {Colors} from '@bluecentury/styles'
@@ -14,6 +14,7 @@ const Costs = () => {
   const navigation = useNavigation()
   const {isFinancialLoading, invoiceStatistics, incomingInvoices, getInvoices} =
     useFinancial()
+  const {vesselId} = useEntity()
   const [selectedYear, setSelectedYear] = useState(
     new Date().getFullYear().toString()
   )
@@ -23,7 +24,7 @@ const Costs = () => {
 
   useEffect(() => {
     getInvoices('Incoming', selectedYear, page)
-  }, [page])
+  }, [page, vesselId])
 
   useEffect(() => {
     setIsPageChange(false)

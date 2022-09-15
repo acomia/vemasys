@@ -32,7 +32,7 @@ const Rules = () => {
 
   useEffect(() => {
     getVesselRules(vesselId, '')
-  }, [])
+  }, [vesselId])
 
   useEffect(() => {
     setRulesData(rules)
@@ -151,9 +151,7 @@ const Rules = () => {
           </Text>
         </HStack>
         <Divider mt={ms(5)} mb={ms(15)} />
-        {isInformationLoading ? (
-          <LoadingIndicator />
-        ) : (
+        {rules?.length > 0 ? (
           <FlatList
             data={rulesData}
             renderItem={renderRules}
@@ -162,6 +160,8 @@ const Rules = () => {
             ListEmptyComponent={renderEmpty}
             showsVerticalScrollIndicator={false}
           />
+        ) : (
+          <LoadingIndicator />
         )}
       </Box>
       {/* <Box bg={Colors.white}>

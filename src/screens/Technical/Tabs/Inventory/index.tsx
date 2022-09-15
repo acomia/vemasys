@@ -43,7 +43,7 @@ const Inventory = () => {
   useEffect(() => {
     getVesselInventory(vesselId)
     getConsumableTypes()
-  }, [])
+  }, [vesselId])
 
   useEffect(() => {
     setInventoryData(inventory)

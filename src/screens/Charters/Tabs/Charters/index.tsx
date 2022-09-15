@@ -40,7 +40,7 @@ export default function Charters({navigation, route}: any) {
     viewPdf,
     updateCharterStatus
   } = useCharters()
-  const {entityType} = useEntity()
+  const {entityType, vesselId} = useEntity()
   const [searchedValue, setSearchValue] = useState('')
   const [chartersData, setChartersData] = useState(
     route === 'charters'
@@ -59,8 +59,7 @@ export default function Charters({navigation, route}: any) {
 
   useEffect(() => {
     getCharters()
-    return () => {}
-  }, [])
+  }, [vesselId])
 
   const showToast = (text: string, res: string) => {
     toast.show({

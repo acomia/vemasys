@@ -37,7 +37,7 @@ const Planning = () => {
   useEffect(() => {
     getCrewColors()
     createCrewMatrix()
-  }, [])
+  }, [vesselId])
 
   const getCrewColors = () => {
     if (!crew || !crew.length) return
