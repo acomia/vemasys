@@ -324,7 +324,7 @@ const Details = () => {
   return (
     <Box flex="1">
       <ScrollView
-        contentContainerStyle={{flexGrow: 1, paddingBottom: 20}}
+        contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
         scrollEventThrottle={16}
         refreshControl={
           <RefreshControl

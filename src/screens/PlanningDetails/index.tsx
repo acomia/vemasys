@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from 'react'
-import { useWindowDimensions } from 'react-native'
-import { Box, Text } from 'native-base'
-import { TabView, TabBar, SceneMap } from 'react-native-tab-view'
+import React, {useEffect, useState} from 'react'
+import {useWindowDimensions} from 'react-native'
+import {Box, Text} from 'native-base'
+import {TabView, TabBar, SceneMap} from 'react-native-tab-view'
 
-import { Details, CargoList, CargoHolds, Documents } from './Tabs'
-import { Colors } from '@bluecentury/styles'
-import { ms } from 'react-native-size-matters'
-import { planningDetailsTabs } from '@bluecentury/constants'
-import { usePlanning } from '@bluecentury/stores'
+import {Details, CargoList, CargoHolds, Documents} from './Tabs'
+import {Colors} from '@bluecentury/styles'
+import {ms} from 'react-native-size-matters'
+import {planningDetailsTabs} from '@bluecentury/constants'
+import {usePlanning} from '@bluecentury/stores'
 
 export default function PlanningDetails() {
   const layout = useWindowDimensions()
-  const { navigationLogDetails } = usePlanning()
+  const {navigationLogDetails} = usePlanning()
   const [index, setIndex] = useState(0)
   const [routes, setRoutes] = useState(planningDetailsTabs)
 
@@ -36,13 +36,13 @@ export default function PlanningDetails() {
     documents: Documents
   })
 
-  const LazyPlaceholder = ({ route }) => (
+  const LazyPlaceholder = ({route}) => (
     <Box flex="1" alignItems="center" justifyContent="center">
       <Text>Loading {route.title}…</Text>
     </Box>
   )
 
-  const renderLazyPlaceholder = ({ route }) => <LazyPlaceholder route={route} />
+  const renderLazyPlaceholder = ({route}) => <LazyPlaceholder route={route} />
 
   const renderTabBar = props => (
     <TabBar
@@ -54,9 +54,9 @@ export default function PlanningDetails() {
         width: ms(50),
         marginLeft: 30
       }}
-      style={{ backgroundColor: Colors.primary }}
-      tabStyle={{ width: ms(110), height: ms(40) }}
-      renderLabel={({ route, color }) => (
+      style={{backgroundColor: Colors.primary}}
+      tabStyle={{width: ms(110), height: ms(40)}}
+      renderLabel={({route, color}) => (
         <Text color={color} fontWeight="bold" textAlign="justify">
           {route.title}
         </Text>
@@ -68,12 +68,12 @@ export default function PlanningDetails() {
   return (
     <TabView
       lazy
-      navigationState={{ index, routes }}
+      navigationState={{index, routes}}
       renderScene={renderScene}
       renderTabBar={renderTabBar}
       renderLazyPlaceholder={renderLazyPlaceholder}
       onIndexChange={setIndex}
-      initialLayout={{ width: layout.width }}
+      initialLayout={{width: layout.width}}
     />
   )
 }

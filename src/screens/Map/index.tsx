@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState
 } from 'react'
-import {StyleSheet, TouchableOpacity, Dimensions} from 'react-native'
+import {StyleSheet, TouchableOpacity, Dimensions, Platform} from 'react-native'
 import {Box, Text, Button, HStack, Image, VStack} from 'native-base'
 import MapView, {
   PROVIDER_GOOGLE,
@@ -489,7 +489,10 @@ export default function Map({navigation}: Props) {
         <BottomSheet
           ref={sheetRef}
           initialSnap={1}
-          snapPoints={[ms(410), ms(150)]}
+          snapPoints={[
+            ms(Platform.OS === 'ios' ? 420 : 410),
+            ms(Platform.OS === 'ios' ? 170 : 150)
+          ]}
           borderRadius={20}
           renderContent={renderBottomContent}
           onOpenEnd={() => setSnapStatus(1)}
