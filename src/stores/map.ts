@@ -35,7 +35,7 @@ type MapActions = {
   verifyTrackingDeviceToken: (id: string, token: string, method: string) => void
   endVesselFormations: (formationId: string, vesselId: string) => void
   removeVesselFromFormations: (formationId: string, vesselId: string) => void
-  sendCurrentPosition: (position: Location) => void
+  sendCurrentPosition: (entityId: string, position: Location) => void
   enableMobileTracking: () => void
 }
 
@@ -213,11 +213,13 @@ export const useMap = create(
           set({isLoadingMap: false})
         }
       },
-      sendCurrentPosition: async (position: Location) => {
-        console.log('position ', position)
+      sendCurrentPosition: async (entityId, position) => {
         try {
           set({isLoadingMap: true})
-          const response: any = await API.sendCurrentPosition(position)
+          const response: any = await API.sendCurrentPosition(
+            entityId,
+            position
+          )
           console.log('response ', response)
           if (response) {
             set({isLoadingMap: false})

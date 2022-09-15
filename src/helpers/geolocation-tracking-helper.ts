@@ -1,4 +1,4 @@
-import {useMap} from '@bluecentury/stores'
+import {useEntity, useMap} from '@bluecentury/stores'
 import BackgroundGeolocation from '@mauron85/react-native-background-geolocation'
 import {Alert, Platform} from 'react-native'
 
@@ -21,26 +21,27 @@ export function InitializeTrackingService() {
   })
 
   BackgroundGeolocation.on('location', location => {
-    console.log('Vessel is moving...')
+    const entityId = useEntity.getState().entityId as string
     if (Platform.OS === 'ios') {
       BackgroundGeolocation.startTask(taskKey => {
-        useMap.getState().sendCurrentPosition(location)
+        useMap.getState().sendCurrentPosition(entityId, location)
         BackgroundGeolocation.endTask(taskKey)
       })
     } else {
-      useMap.getState().sendCurrentPosition(location)
+      useMap.getState().sendCurrentPosition(entityId, location)
     }
   })
 
   BackgroundGeolocation.on('stationary', stationaryLocation => {
+    const entityId = useEntity.getState().entityId as string
     console.log('Vessel is currently stationary...')
     if (Platform.OS === 'ios') {
       BackgroundGeolocation.startTask(taskKey => {
-        useMap.getState().sendCurrentPosition(stationaryLocation)
+        useMap.getState().sendCurrentPosition(entityId, stationaryLocation)
         BackgroundGeolocation.endTask(taskKey)
       })
     } else {
-      useMap.getState().sendCurrentPosition(stationaryLocation)
+      useMap.getState().sendCurrentPosition(entityId, stationaryLocation)
     }
   })
 
