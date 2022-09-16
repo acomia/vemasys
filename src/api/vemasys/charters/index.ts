@@ -8,6 +8,13 @@ type UpdateStatus = {
   setContractorStatus?: boolean
 }
 
+type Signature = {
+  user: string
+  signature: string
+  signedDate: Date
+  charter: string
+}
+
 const reloadVesselCharters = async () => {
   const isArchived = 0
   return API.get(`v3/charters?isArchived=${isArchived}`)
@@ -49,4 +56,18 @@ const updateCharterStatus = async (charterId: string, status: UpdateStatus) => {
     })
 }
 
-export {reloadVesselCharters, viewPdfFile, updateCharterStatus}
+const uploadSignature = async (signature: Signature) => {
+  return API.post(`signatures`, signature)
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Charter upload signature failed.')
+      }
+    })
+    .catch(error => {
+      console.error('Error: Charter upload signature API', error)
+    })
+}
+
+export {reloadVesselCharters, viewPdfFile, updateCharterStatus, uploadSignature}
