@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, {useEffect, useState} from 'react'
 import {
   Box,
   ScrollView,
@@ -13,26 +13,20 @@ import {
   Modal,
   Divider
 } from 'native-base'
-import { Shadow } from 'react-native-shadow-2'
-import { ms } from 'react-native-size-matters'
-import { NativeStackScreenProps } from '@react-navigation/native-stack'
+import {Shadow} from 'react-native-shadow-2'
+import {ms} from 'react-native-size-matters'
+import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import * as ImagePicker from 'react-native-image-picker'
 
-import { Colors } from '@bluecentury/styles'
-import {
-  useAuth,
-  useEntity,
-  usePlanning,
-  useTechnical
-} from '@bluecentury/stores'
-import { IconButton, LoadingIndicator } from '@bluecentury/components'
-import { Alert, TouchableOpacity } from 'react-native'
-import { Icons } from '@bluecentury/assets'
-import { VEMASYS_PRODUCTION_FILE_URL } from '@bluecentury/constants'
+import {Colors} from '@bluecentury/styles'
+import {useEntity, usePlanning} from '@bluecentury/stores'
+import {IconButton, LoadingIndicator} from '@bluecentury/components'
+import {Alert, TouchableOpacity} from 'react-native'
+import {Icons} from '@bluecentury/assets'
 
 type Props = NativeStackScreenProps<RootStackParamList>
-const AddEditComment = ({ navigation, route }: Props) => {
-  const { comment, method, routeFrom }: any = route.params
+const AddEditComment = ({navigation, route}: Props) => {
+  const {comment, method, routeFrom}: any = route.params
   const toast = useToast()
   const {
     isPlanningLoading,
@@ -43,8 +37,7 @@ const AddEditComment = ({ navigation, route }: Props) => {
     deleteComment,
     uploadImgFile
   }: any = usePlanning()
-  const { user }: any = useEntity()
-  const { token } = useAuth()
+  const {user}: any = useEntity()
   const descriptionText = comment?.description
     ?.replace(/(\\)/g, '')
     .match(/([^<br>]+)/)[0]
@@ -65,7 +58,7 @@ const AddEditComment = ({ navigation, route }: Props) => {
             source={Icons.trash}
             onPress={deleteCommentConfirmation}
             size={ms(20)}
-            styles={{ marginLeft: 20 }}
+            styles={{marginLeft: 20}}
           />
         ) : null
     })
@@ -102,56 +95,79 @@ const AddEditComment = ({ navigation, route }: Props) => {
     let res
     if (method === 'edit') {
       if (routeFrom === 'Planning') {
-        imgFile.map(async (file: any, index: number) => {
-          const upload = await uploadImgFile(file)
-          if (typeof upload === 'object') {
-            let tempComment
-            setDescription((description: string) => {
-              tempComment =
-                description + '-' + '\n' + `<img src='${upload.path}' >`
-              return description + '-' + '\n' + `<img src='${upload.path}' >`
-            })
-            if (index === imgFile.length - 1) {
-              res = await updateComment(comment?.id, description)
-              if (typeof res === 'object') {
-                showToast('Comment updated.', 'success')
-                getNavigationLogComments(navigationLogDetails?.id)
-              } else {
-                showToast('Comment update failed.', 'failed')
+        if (imgFile.length > 0) {
+          imgFile.map(async (file: any, index: number) => {
+            const upload = await uploadImgFile(file)
+            if (typeof upload === 'object') {
+              let tempComment
+              setDescription((description: string) => {
+                tempComment =
+                  description + '-' + '\n' + `<img src='${upload.path}' >`
+                return description + '-' + '\n' + `<img src='${upload.path}' >`
+              })
+              if (index === imgFile.length - 1) {
+                res = await updateComment(comment?.id, description)
+                if (typeof res === 'object') {
+                  showToast('Comment updated.', 'success')
+                  getNavigationLogComments(navigationLogDetails?.id)
+                } else {
+                  showToast('Comment update failed.', 'failed')
+                }
               }
             }
+          })
+        } else {
+          res = await updateComment(comment?.id, description)
+          if (typeof res === 'object') {
+            showToast('Comment updated.', 'success')
+            getNavigationLogComments(navigationLogDetails?.id)
+          } else {
+            showToast('Comment update failed.', 'failed')
           }
-        })
-
+        }
       } else if (routeFrom === 'Technical') {
       }
     } else {
       if (routeFrom === 'Planning') {
-        imgFile.map(async (file: any, index: number) => {
-          const upload = await uploadImgFile(file)
-          if (typeof upload === 'object') {
-            let tempComment
-            setDescription((description: string) => {
-              tempComment =
-                description + '-' + '\n' + `<img src='${upload.path}' >`
-              return description + '-' + '\n' + `<img src='${upload.path}' >`
-            })
+        if (imgFile.length > 0) {
+          imgFile.map(async (file: any, index: number) => {
+            const upload = await uploadImgFile(file)
+            if (typeof upload === 'object') {
+              let tempComment
+              setDescription((description: string) => {
+                tempComment =
+                  description + '-' + '\n' + `<img src='${upload.path}' >`
+                return description + '-' + '\n' + `<img src='${upload.path}' >`
+              })
 
-            if (index === imgFile.length - 1) {
-              res = await createNavlogComment(
-                navigationLogDetails?.id,
-                tempComment,
-                user?.id
-              )
-              if (typeof res === 'object') {
-                showToast('New comment added.', 'success')
-                getNavigationLogComments(navigationLogDetails?.id)
-              } else {
-                showToast('New comment failed.', 'failed')
+              if (index === imgFile.length - 1) {
+                res = await createNavlogComment(
+                  navigationLogDetails?.id,
+                  tempComment,
+                  user?.id
+                )
+                if (typeof res === 'object') {
+                  showToast('New comment added.', 'success')
+                  getNavigationLogComments(navigationLogDetails?.id)
+                } else {
+                  showToast('New comment failed.', 'failed')
+                }
               }
             }
+          })
+        } else {
+          res = await createNavlogComment(
+            navigationLogDetails?.id,
+            description,
+            user?.id
+          )
+          if (typeof res === 'object') {
+            showToast('New comment added.', 'success')
+            getNavigationLogComments(navigationLogDetails?.id)
+          } else {
+            showToast('New comment failed.', 'failed')
           }
-        })
+        }
       } else if (routeFrom === 'Technical') {
       }
     }
@@ -238,7 +254,7 @@ const AddEditComment = ({ navigation, route }: Props) => {
   return (
     <Box flex={1}>
       <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
+        contentContainerStyle={{flexGrow: 1}}
         px={ms(12)}
         py={ms(20)}
         bg={Colors.white}
@@ -255,7 +271,7 @@ const AddEditComment = ({ navigation, route }: Props) => {
             numberOfLines={6}
             h="200"
             placeholder=""
-            style={{ backgroundColor: '#F7F7F7' }}
+            style={{backgroundColor: '#F7F7F7'}}
             value={description}
             onChangeText={e => {
               setDescription(e)
@@ -282,7 +298,7 @@ const AddEditComment = ({ navigation, route }: Props) => {
                 >
                   <Image
                     alt="file-upload"
-                    source={{ uri: file.uri }}
+                    source={{uri: file.uri}}
                     w={ms(136)}
                     h={ms(114)}
                     mr={ms(10)}
@@ -397,7 +413,7 @@ const AddEditComment = ({ navigation, route }: Props) => {
         <Modal.Content>
           <Image
             alt="file-preview"
-            source={{ uri: selectedImg.uri }}
+            source={{uri: selectedImg.uri}}
             resizeMode="contain"
             w="100%"
             h="100%"

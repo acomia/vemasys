@@ -3,8 +3,6 @@ import {VESSEL_PART_CARGO_TYPE} from '@bluecentury/constants'
 import axios from 'axios'
 import {useAuth, useEntity, useSettings} from '@bluecentury/stores'
 
-const API_URL = useSettings.getState().apiUrl
-
 const reloadNavigationLogDetails = async (navLogId: string) => {
   return API.get(`navigation_logs/${navLogId}`)
     .then(response => {
@@ -218,6 +216,7 @@ const uploadImgFile = async (file: ImageFile) => {
 
   const token = useAuth.getState().token
   const entityUserId = useEntity.getState().entityUserId
+  const API_URL = useSettings.getState().apiUrl
   try {
     const res = await axios.post(`${API_URL}v2/files`, formData, {
       headers: {
