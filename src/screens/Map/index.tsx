@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState
-} from 'react'
+import React, {useEffect, useLayoutEffect, useRef, useState} from 'react'
 import {StyleSheet, TouchableOpacity, Dimensions, Platform} from 'react-native'
 import {Box, Text, Button, HStack, Image, VStack} from 'native-base'
 import MapView, {
@@ -18,6 +12,7 @@ import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
+import {useIsFocused} from '@react-navigation/native'
 
 import {
   PreviousNavLogInfo,
@@ -28,17 +23,14 @@ import {
   FleetHeader
 } from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
-import {Colors, MapTheme} from '@bluecentury/styles'
+import {Colors} from '@bluecentury/styles'
 import {useMap, useEntity, useAuth} from '@bluecentury/stores'
 import {
   ENTITY_TYPE_EXPLOITATION_GROUP,
   formatLocationLabel
 } from '@bluecentury/constants'
-import {TrackingListener} from '@bluecentury/helpers/geolocation-tracking-helper'
-import {useFocusEffect} from '@react-navigation/native'
 
 const {width, height} = Dimensions.get('window')
-const windowHeight = height
 const ASPECT_RATIO = width / height
 const LATITUDE_DELTA = 0.0922
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO
@@ -46,6 +38,7 @@ const DEFAULT_PADDING = {top: 45, right: 45, bottom: 45, left: 45}
 
 type Props = NativeStackScreenProps<MainStackParamList>
 export default function Map({navigation}: Props) {
+  const focused = useIsFocused()
   const {vesselId, selectedVessel, entityType, selectFleetVessel, entityUsers} =
     useEntity()
   const {
@@ -86,16 +79,6 @@ export default function Map({navigation}: Props) {
   const [zoomLevel, setZoomLevel] = useState(null)
   let refreshId = useRef<any>()
 
-  useFocusEffect(
-    useCallback(() => {
-      refreshId.current = setInterval(() => {
-        // Run updated vessel status
-        updateMap()
-      }, 30000)
-      return () => clearInterval(refreshId.current)
-    }, [])
-  )
-
   useLayoutEffect(() => {
     if (vesselId) {
       getVesselStatus(vesselId)
@@ -104,8 +87,16 @@ export default function Map({navigation}: Props) {
       getCurrentNavigationLogs(vesselId)
       getLastCompleteNavigationLogs(vesselId)
     }
+
+    if (focused) {
+      refreshId.current = setInterval(() => {
+        // Run updated vessel status
+        updateMap()
+      }, 30000)
+    }
+    return () => clearInterval(refreshId.current)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vesselId])
+  }, [vesselId, focused])
 
   useEffect(() => {
     if (currentNavLogs && currentNavLogs.length > 0) {
@@ -139,10 +130,10 @@ export default function Map({navigation}: Props) {
 
   const updateMap = () => {
     if (vesselId) {
-      getVesselStatus(vesselId)
       getPreviousNavigationLogs(vesselId)
       getPlannedNavigationLogs(vesselId)
       getCurrentNavigationLogs(vesselId)
+      getVesselStatus(vesselId)
     }
   }
 
