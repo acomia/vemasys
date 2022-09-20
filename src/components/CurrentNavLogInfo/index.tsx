@@ -32,7 +32,7 @@ export const CurrentNavLogInfo = () => {
         {vesselStatus?.speed > 0 ? (
           <Text fontWeight="700">
             Navigating at{' '}
-            <Text color="#29B7EF">{vesselStatus?.speed} xx km/h</Text>
+            <Text color="#29B7EF">{vesselStatus?.speed} km/h</Text>
           </Text>
         ) : currentNavLogs?.length !== 0 ? (
           <>

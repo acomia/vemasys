@@ -15,7 +15,7 @@ import {Animated} from '@bluecentury/assets'
 import Signature, {SignatureViewRef} from 'react-native-signature-canvas'
 import {Shadow} from 'react-native-shadow-2'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
-import {useCharters} from '@bluecentury/stores'
+import {useCharters, useEntity} from '@bluecentury/stores'
 import {CHARTER_CONTRACTOR_STATUS_ACCEPTED} from '@bluecentury/constants'
 import {LoadingIndicator} from '@bluecentury/components'
 
@@ -24,11 +24,12 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
   const {charter} = route.params
   const ref = useRef<SignatureViewRef>(null)
   const toast = useToast()
-  const {isCharterLoading, updateCharterStatus, getCharters} = useCharters()
+  const {isCharterLoading, updateCharterStatus, getCharters, uploadSignature} =
+    useCharters()
+  const {user} = useEntity()
   const [scrollEnabled, setScrollEnabled] = useState(true)
 
   const handleSignature = async signature => {
-    console.log(signature)
     const status = {
       status: CHARTER_CONTRACTOR_STATUS_ACCEPTED,
       setContractorStatus: true
@@ -39,6 +40,18 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
       showToast('Charter accepted sucessfully.', 'success')
     } else {
       showToast('Charter accepted failed.', 'failed')
+    }
+    const signData = {
+      user: user.id,
+      signature: signature,
+      signedDate: new Date().toLocaleDateString(),
+      charter: charter.id
+    }
+    const sign = await uploadSignature(signData)
+    if (typeof sign === 'object') {
+      showToast('Signature upload sucessfully.', 'warning')
+    } else {
+      showToast('Signature upload failed.', 'failed')
     }
   }
 

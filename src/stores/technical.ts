@@ -12,7 +12,6 @@ type TechnicalState = {
   bunkeringSuppliers?: [] | undefined
   engines: [] | undefined
   reservoirs: [] | undefined
-  lastWaterMeasurements: any[] | undefined
   tasksCategory?: [] | undefined
   tasksByCategory?: [] | undefined
   routinesCategory?: [] | undefined
@@ -64,7 +63,6 @@ export const useTechnical = create(
       gasoilReserviors: [],
       engines: [],
       reservoirs: [],
-      lastWaterMeasurements: [],
       tasksCategory: [],
       tasksByCategory: [],
       certificates: [],
@@ -187,15 +185,13 @@ export const useTechnical = create(
           const response = await API.reloadVesselReservoirs(physicalVesselId)
           if (Array.isArray(response)) {
             const waterTank = response.filter(res => res.type.title !== 'Fuel')
-            let lastWaterM: any[] = []
-            waterTank.forEach(async (tank, index) => {
+            waterTank.forEach(async tank => {
               set({isTechnicalLoading: true})
               const lastM = await API.reloadVesselPartLastMeasurements(tank.id)
-              lastWaterM?.push(lastM[0])
+              tank.lastMeasurement = lastM[0]
               set({
                 isTechnicalLoading: false,
-                reservoirs: waterTank,
-                lastWaterMeasurements: lastWaterM
+                reservoirs: waterTank
               })
             })
           } else {

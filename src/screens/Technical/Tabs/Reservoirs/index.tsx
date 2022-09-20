@@ -12,12 +12,7 @@ import {LoadingIndicator} from '@bluecentury/components'
 
 const Reservoirs = () => {
   const navigation = useNavigation()
-  const {
-    isTechnicalLoading,
-    reservoirs,
-    lastWaterMeasurements,
-    getVesselReservoirs
-  } = useTechnical()
+  const {reservoirs, getVesselReservoirs} = useTechnical()
   const {physicalVesselId} = useEntity()
   const [pullRefresh, setPullRefresh] = useState(false)
 
@@ -30,8 +25,6 @@ const Reservoirs = () => {
     getVesselReservoirs(physicalVesselId)
     setPullRefresh(false)
   }
-
-  // if (isTechnicalLoading) return <LoadingIndicator />
 
   return (
     <Box flex="1">
@@ -48,21 +41,18 @@ const Reservoirs = () => {
           Water Tanks
         </Text>
         {reservoirs?.length > 0 ? (
-          reservoirs?.map((reservoir, index) => {
+          reservoirs?.map((reservoir: any, index) => {
             let fillPct = 0
-            let value = 0
-            let capacity = 0
-            if (lastWaterMeasurements?.length > 0) {
-              // console.log('lastM', lastWaterMeasurements[index], reservoir.id)
-              value =
-                typeof lastWaterMeasurements[index]?.value === 'undefined'
-                  ? 0
-                  : lastWaterMeasurements[index]?.value
-              capacity = reservoir.capacity === null ? 0 : reservoir.capacity
-              let used = capacity - value
-              fillPct = (used / capacity) * 100 - 100
-              fillPct = fillPct < 0 ? fillPct * -1 : fillPct
-            }
+            const capacity =
+              reservoir?.capacity === null ? 0 : reservoir?.capacity
+            const value =
+              typeof reservoir?.lastMeasurement?.value === 'undefined'
+                ? 0
+                : reservoir?.lastMeasurement?.value
+            const used = capacity - value
+            fillPct = (used / capacity) * 100 - 100
+            fillPct = fillPct < 0 ? fillPct * -1 : fillPct
+
             return (
               <TouchableOpacity
                 key={index}
@@ -92,7 +82,7 @@ const Reservoirs = () => {
                         {reservoir.name}:
                       </Text>
                       <Text color={Colors.azure}>
-                        {moment(lastWaterMeasurements[index]?.date).fromNow()}
+                        {moment(reservoir?.lastMeasurement?.date).fromNow()}
                       </Text>
                     </VStack>
                     <Text
