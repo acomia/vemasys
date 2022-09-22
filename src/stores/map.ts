@@ -1,10 +1,8 @@
 import create from 'zustand'
 import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import {GeoPosition} from 'react-native-geolocation-service'
-
 import * as API from '@bluecentury/api/vemasys'
-import {initial} from 'lodash'
+import {Location} from '@mauron85/react-native-background-geolocation'
 
 type MapState = {
   vesselStatus: any
@@ -37,7 +35,7 @@ type MapActions = {
   verifyTrackingDeviceToken: (id: string, token: string, method: string) => void
   endVesselFormations: (formationId: string, vesselId: string) => void
   removeVesselFromFormations: (formationId: string, vesselId: string) => void
-  sendCurrentPosition: (position: GeoPosition) => void
+  sendCurrentPosition: (entityId: string, position: Location) => void
   enableMobileTracking: () => void
 }
 
@@ -215,14 +213,19 @@ export const useMap = create(
           set({isLoadingMap: false})
         }
       },
-      sendCurrentPosition: async (position: GeoPosition) => {
+      sendCurrentPosition: async (entityId, position) => {
         try {
           set({isLoadingMap: true})
-          const response: any = await API.sendCurrentPosition(position)
+          const response: any = await API.sendCurrentPosition(
+            entityId,
+            position
+          )
+          console.log('response ', response)
           if (response) {
             set({isLoadingMap: false})
           }
         } catch (error) {
+          console.log('error ', error)
           set({isLoadingMap: false})
         }
       },
