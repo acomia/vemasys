@@ -55,15 +55,15 @@ export default function RootNavigator() {
       <Group>
         <Screen name="Splash" component={Splash} />
         <Screen
-          name="SelectEnvironment"
-          component={SelectEnvironment}
+          name="Login"
+          component={Login}
           options={{
             headerShown: false
           }}
         />
         <Screen
-          name="Login"
-          component={Login}
+          name="SelectEnvironment"
+          component={SelectEnvironment}
           options={{
             headerShown: false
           }}

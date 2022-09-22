@@ -23,6 +23,8 @@ import {Images} from '@bluecentury/assets'
 import {_t} from '@bluecentury/constants'
 import {useAuth, useSettings} from '@bluecentury/stores'
 import {CommonActions, useNavigation} from '@react-navigation/native'
+import {VersionBuildLabel} from '@bluecentury/components/version-build-label'
+import {useSafeAreaInsets} from 'react-native-safe-area-context'
 
 const usernameRequired = _t('usernameRequired')
 const passwordRequired = _t('passwordRequired')
@@ -30,6 +32,7 @@ const allFieldsRequired = _t('allFieldsRequired')
 const login = _t('login')
 
 function Login() {
+  const insets = useSafeAreaInsets()
   const navigation = useNavigation()
   const {
     isAuthenticatingUser,
@@ -43,7 +46,6 @@ function Login() {
   const [isUsernameEmpty, setIsUsernameEmpty] = useState(false)
   const [isPasswordEmpty, setIsPasswordEmpty] = useState(false)
   const passwordRef = useRef<any>()
-  const selectedEnv = useSettings.getState().env ?? 'NONE'
   const handleOnPressLogin = () => {
     if (user.username === '' && user.password === '') {
       setIsPasswordEmpty(true)
@@ -71,14 +73,6 @@ function Login() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token])
-  const handleOnPressChangeEnvironment = () => {
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [{name: 'SelectEnvironment'}]
-      })
-    )
-  }
   return (
     <Box flex={1} safeArea>
       <KeyboardAvoidingView
@@ -202,29 +196,10 @@ function Login() {
           </Button>
         </VStack>
       </KeyboardAvoidingView>
-      <Box
-        position="absolute"
-        p={2}
-        bottom={0}
-        right={0}
-        left={0}
-        bgColor="orange.400"
-        safeAreaBottom
-      >
-        <HStack justifyContent="space-between">
-          <Text color={Colors.white} bold>
-            Selected Environment:{' '}
-          </Text>
-          <Button
-            variant="link"
-            colorScheme="gray"
-            p={0}
-            _text={{bold: true}}
-            onPress={handleOnPressChangeEnvironment}
-          >
-            {selectedEnv}
-          </Button>
-        </HStack>
+      <Box position="absolute" bottom={0} left={0} right={0} safeAreaBottom>
+        <Center pb={insets.bottom > 0 ? 0 : 5}>
+          <VersionBuildLabel />
+        </Center>
       </Box>
     </Box>
   )
