@@ -15,12 +15,14 @@ export function VersionBuildLabel() {
   const {env} = useSettings()
   const [count, setCount] = useState(0)
 
+  // resets the count back to 0 when screen is focused
   useFocusEffect(
     useCallback(() => {
       setCount(0)
     }, [])
   )
-
+  // monitors count, if it reaches 10 it will navigate to
+  // select environment screen
   useEffect(() => {
     if (count === 10) {
       navigation.dispatch(
@@ -31,13 +33,12 @@ export function VersionBuildLabel() {
       )
     }
   })
-
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const incrementCount = useCallback(
+    // use throttling function
     _.throttle(_count => setCount(_count), 500),
     []
   )
-
   const handleOnPressChangeEnvironment = () => {
     incrementCount(count + 1)
   }
