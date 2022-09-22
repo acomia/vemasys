@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React from 'react'
 import {createNativeStackNavigator} from '@react-navigation/native-stack'
 import MainNavigator from './main-navigator'
 import {GPSTracker} from '@bluecentury/components'
@@ -32,30 +32,15 @@ import {
   InformationPegelDetails,
   SelectEnvironment,
   ImgViewer,
-  CharterAcceptSign
+  CharterAcceptSign,
+  TrackingServiceDialog
 } from '@bluecentury/screens'
 import {Colors} from '@bluecentury/styles'
-import {TrackingListener} from '@bluecentury/helpers/geolocation-tracking-helper'
-import {useAuth, useEntity, useSettings} from '@bluecentury/stores'
-import BackgroundGeolocation from '@mauron85/react-native-background-geolocation'
 
 const {Navigator, Screen, Group} =
   createNativeStackNavigator<RootStackParamList>()
 
 export default function RootNavigator() {
-  const {isMobileTracking, hasSettingsRehydrated} = useSettings(state => state)
-  useEffect(() => {
-    if (hasSettingsRehydrated) {
-      if (isMobileTracking) {
-        TrackingListener({
-          token: useAuth.getState().token as string,
-          selectedUserId: useEntity.getState().entityUserId as string
-        })
-      } else {
-        BackgroundGeolocation.removeAllListeners()
-      }
-    }
-  }, [isMobileTracking, hasSettingsRehydrated])
   return (
     <Navigator
       initialRouteName="Splash"
@@ -286,15 +271,17 @@ export default function RootNavigator() {
           }}
         />
       </Group>
-      <Group>
+      <Group
+        screenOptions={{
+          presentation: 'containedTransparentModal',
+          animation: 'slide_from_bottom'
+        }}
+      >
         <Screen
-          name="GPSTracker"
-          component={GPSTracker}
-          options={{
-            presentation: 'transparentModal',
-            animation: 'slide_from_bottom'
-          }}
+          name="TrackingServiceDialog"
+          component={TrackingServiceDialog}
         />
+        <Screen name="GPSTracker" component={GPSTracker} />
       </Group>
     </Navigator>
   )
