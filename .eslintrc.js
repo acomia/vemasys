@@ -13,8 +13,9 @@ module.exports = {
         semi: 'off',
         'comma-dangle': 'off',
         'react-hooks/exhaustive-deps': 'warn',
-        curly: ['error', 'multi-line']
-      }
-    }
-  ]
+        curly: ['error', 'multi-line'],
+        radix: 'off',
+      },
+    },
+  ],
 }
