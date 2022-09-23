@@ -303,9 +303,10 @@ export default function Map({navigation}: Props) {
           latitude: log.location?.latitude,
           longitude: log.location?.longitude
         }}
+        // eslint-disable-next-line react-native/no-inline-styles
         style={{zIndex: 0}}
       >
-        <HStack style={{zIndex: 0}}>
+        <HStack zIndex={0}>
           <Box
             backgroundColor={log?.arrivalDatetime ? '#44A7B9' : '#F0F0F0'}
             width={ms(20)}
@@ -323,10 +324,10 @@ export default function Map({navigation}: Props) {
               padding={ms(2)}
               style={{zIndex: 0}}
             >
-              <Text fontWeight="medium">
+              <Text fontSize="xs" px={2}>
                 {moment(
                   log?.arrivalDatetime ? log?.arrivalDatetime : log?.plannedEta
-                ).format('DD MMM YYYY | HH:mm')}
+                ).format('MMM DD, y | HH:mm ')}
               </Text>
             </Box>
           ) : null}
