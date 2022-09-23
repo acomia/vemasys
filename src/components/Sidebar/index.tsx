@@ -9,13 +9,9 @@ import {Screens} from '@bluecentury/constants'
 const Sidebar = (props: DrawerContentComponentProps) => {
   const {state, navigation} = props
   const currentRoute = state.routeNames[state.index]
-
-  console.log('currentRoute ', currentRoute)
-
   const handlePressMenu = (name: string) => {
     navigation.navigate(name)
   }
-
   return (
     <Box flex={1} safeArea p={ms(10)} w={240}>
       <VStack flex={1}>
@@ -66,7 +62,7 @@ const Sidebar = (props: DrawerContentComponentProps) => {
           active={currentRoute === ''}
           onPress={() => handlePressMenu(Screens.Financial)}
           iconSource={Icons.card}
-          disabled
+          // disabled
         >
           Financial
         </MenuButton>
