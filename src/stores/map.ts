@@ -151,9 +151,22 @@ export const useMap = create(
         try {
           const response: any = await API.getLastCompleteNavLogs(vesselId)
           if (Array.isArray(response)) {
+            let logs = response.reduce((prev, curr) => {
+              if (prev.length === 0) {
+                return [...prev, curr]
+              }
+              if (
+                prev.findIndex(
+                  value => value.location.name === curr.location.name
+                ) !== -1
+              ) {
+                return [...prev]
+              }
+              return [...prev, curr]
+            }, [])
             set({
               isLoadingMap: false,
-              lastCompleteNavLogs: response
+              lastCompleteNavLogs: logs
             })
           } else {
             set({
