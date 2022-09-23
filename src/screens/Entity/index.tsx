@@ -10,10 +10,13 @@ import {Colors} from '@bluecentury/styles'
 import {EntityCard, LoadingIndicator} from '@bluecentury/components'
 import {Shadow} from 'react-native-shadow-2'
 import {resetAllStates} from '@bluecentury/utils'
+import {useSafeAreaInsets} from 'react-native-safe-area-context'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 
-export default function Entity({navigation}: Props) {
+export default function Entity({route, navigation}: Props) {
+  const insets = useSafeAreaInsets()
+  const paddingTop = route.name === 'ChangeRole' ? 2 : ms(insets.top + 2)
   const {
     entityUsers,
     entityUserId,
@@ -48,7 +51,7 @@ export default function Entity({navigation}: Props) {
     logout()
   }
   return (
-    <Box flex={1} bg={Colors.light} pt={2}>
+    <Box flex={1} bg={Colors.light} pt={paddingTop}>
       <Box
         bg={Colors.white}
         flex={1}

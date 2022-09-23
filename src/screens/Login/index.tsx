@@ -33,11 +33,9 @@ const login = _t('login')
 
 function Login() {
   const insets = useSafeAreaInsets()
-  const navigation = useNavigation()
   const {
     isAuthenticatingUser,
     authenticate,
-    token,
     hasAuthenticationError,
     errorMessage
   } = useAuth()
@@ -62,17 +60,6 @@ function Login() {
     authenticate(user)
   }
   const handleOnSubmitEditingPassword = () => handleOnPressLogin()
-  useEffect(() => {
-    if (token) {
-      navigation.dispatch(
-        CommonActions.reset({
-          index: 0,
-          routes: [{name: 'Splash'}]
-        })
-      )
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token])
   return (
     <Box flex={1} safeArea>
       <KeyboardAvoidingView

@@ -113,9 +113,6 @@ export function InitializeTrackingService() {
       '[INFO] BackgroundGeolocation services enabled',
       status.locationServicesEnabled
     )
-    console.log(
-      '[INFO] BackgroundGeolocation auth status: ' + status.authorization
-    )
   })
 }
 

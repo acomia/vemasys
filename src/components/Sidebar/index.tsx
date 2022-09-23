@@ -10,6 +10,8 @@ const Sidebar = (props: DrawerContentComponentProps) => {
   const {state, navigation} = props
   const currentRoute = state.routeNames[state.index]
 
+  console.log('currentRoute ', currentRoute)
+
   const handlePressMenu = (name: string) => {
     navigation.navigate(name)
   }
@@ -26,35 +28,35 @@ const Sidebar = (props: DrawerContentComponentProps) => {
           my={ms(20)}
         />
         <MenuButton
-          active={currentRoute === 'Notification'}
+          active={currentRoute === Screens.Notifications}
           onPress={() => handlePressMenu(Screens.Notifications)}
           iconSource={Icons.notification}
         >
           Notifications
         </MenuButton>
         <MenuButton
-          active={currentRoute === 'MapView'}
+          active={currentRoute === Screens.MapView}
           onPress={() => handlePressMenu(Screens.MapView)}
           iconSource={Icons.map}
         >
           Map View
         </MenuButton>
         <MenuButton
-          active={currentRoute === ''}
+          active={currentRoute === Screens.Planning}
           onPress={() => handlePressMenu(Screens.Planning)}
           iconSource={Icons.calendar}
         >
           Planning
         </MenuButton>
         <MenuButton
-          active={currentRoute === ''}
+          active={currentRoute === Screens.Charters}
           onPress={() => handlePressMenu(Screens.Charters)}
           iconSource={Icons.fileContract}
         >
           Charters
         </MenuButton>
         <MenuButton
-          active={currentRoute === ''}
+          active={currentRoute === Screens.Technical}
           onPress={() => handlePressMenu(Screens.Technical)}
           iconSource={Icons.tools}
         >
@@ -64,13 +66,15 @@ const Sidebar = (props: DrawerContentComponentProps) => {
           active={currentRoute === ''}
           onPress={() => handlePressMenu(Screens.Financial)}
           iconSource={Icons.card}
+          disabled
         >
           Financial
         </MenuButton>
         <MenuButton
-          active={currentRoute === ''}
+          active={currentRoute === Screens.Information}
           onPress={() => handlePressMenu(Screens.Information)}
           iconSource={Icons.infoCircle}
+          disabled
         >
           Information
         </MenuButton>
@@ -78,6 +82,7 @@ const Sidebar = (props: DrawerContentComponentProps) => {
           active={currentRoute === Screens.ToDo}
           onPress={() => handlePressMenu(Screens.ToDo)}
           iconSource={Icons.clipboardCheck}
+          disabled
         >
           To Do
         </MenuButton>
@@ -85,6 +90,7 @@ const Sidebar = (props: DrawerContentComponentProps) => {
           active={currentRoute === Screens.Crew}
           onPress={() => handlePressMenu(Screens.Crew)}
           iconSource={Icons.userHardHat}
+          disabled
         >
           Crew
         </MenuButton>
@@ -92,6 +98,7 @@ const Sidebar = (props: DrawerContentComponentProps) => {
           active={currentRoute === Screens.QSHE}
           onPress={() => handlePressMenu(Screens.QSHE)}
           iconSource={Icons.hardHat}
+          disabled
         >
           QSHE
         </MenuButton>
@@ -111,6 +118,7 @@ const Sidebar = (props: DrawerContentComponentProps) => {
           active={currentRoute === Screens.Settings}
           onPress={() => handlePressMenu(Screens.Settings)}
           iconSource={Icons.cog}
+          disabled
         >
           Settings
         </MenuButton>
