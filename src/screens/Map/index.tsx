@@ -12,7 +12,7 @@ import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
-import {useIsFocused} from '@react-navigation/native'
+import {CommonActions, useIsFocused} from '@react-navigation/native'
 
 import {
   PreviousNavLogInfo,
@@ -191,7 +191,7 @@ export default function Map({navigation}: Props) {
           longitude: previousLocation?.location?.longitude
         }}
         title={`From: ${previousLocation?.location?.name}`}
-        style={{zIndex: 1}}
+        zIndex={1}
       >
         <Callout
           onPress={() =>
@@ -240,14 +240,16 @@ export default function Map({navigation}: Props) {
           longitude: nextLocation?.location?.longitude
         }}
         title={`To: ${nextLocation?.location?.name}`}
-        style={{zIndex: 1}}
+        zIndex={1}
       >
         <Callout
           onPress={() =>
-            navigation.navigate('PlanningDetails', {
-              navlog: nextLocation,
-              title: formatLocationLabel(nextLocation?.location)
-            })
+            navigation.dispatch(
+              CommonActions.navigate('PlanningDetails', {
+                navlog: nextLocation,
+                title: formatLocationLabel(nextLocation?.location)
+              })
+            )
           }
         >
           <HStack borderRadius={ms(5)} alignItems="center" px={ms(5)}>
@@ -286,7 +288,7 @@ export default function Map({navigation}: Props) {
           longitude: Number(longitude)
         }}
         image={Number(speed) > 0 ? Icons.navigating : Icons.anchor}
-        style={{zIndex: 1}}
+        zIndex={1}
       />
     )
   }
@@ -303,8 +305,7 @@ export default function Map({navigation}: Props) {
           latitude: log.location?.latitude,
           longitude: log.location?.longitude
         }}
-        // eslint-disable-next-line react-native/no-inline-styles
-        style={{zIndex: 0}}
+        zIndex={0}
       >
         <HStack zIndex={0}>
           <Box
@@ -315,14 +316,14 @@ export default function Map({navigation}: Props) {
             borderColor={'#fff'}
             borderWidth={ms(2)}
             mr={ms(5)}
-            style={{zIndex: 0}}
+            zIndex={0}
           />
-          {zoomLevel >= 12 ? (
+          {zoomLevel && zoomLevel >= 12 ? (
             <Box
               backgroundColor="#fff"
               borderRadius={ms(5)}
               padding={ms(2)}
-              style={{zIndex: 0}}
+              zIndex={0}
             >
               <Text fontSize="xs" px={2}>
                 {moment(
