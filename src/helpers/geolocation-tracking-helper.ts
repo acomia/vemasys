@@ -10,14 +10,16 @@ export function InitializeTrackingService() {
     distanceFilter: 50,
     notificationTitle: 'VEMASYS Tracking',
     notificationText: 'Enabled',
-    debug: true,
+    debug: __DEV__ ? true : false,
     startOnBoot: false,
     stopOnTerminate: true,
     locationProvider: BackgroundGeolocation.ACTIVITY_PROVIDER,
     interval: 10000,
     fastestInterval: 5000,
     activitiesInterval: 10000,
-    stopOnStillActivity: false
+    stopOnStillActivity: false,
+    saveBatteryOnBackground: false
+    // notificationsEnabled: false
   })
 
   BackgroundGeolocation.on('location', location => {
