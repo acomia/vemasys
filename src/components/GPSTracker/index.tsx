@@ -8,7 +8,7 @@ import {
   Image,
   Switch,
   Icon,
-  Divider
+  Divider,
 } from 'native-base'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {ms} from 'react-native-size-matters'
@@ -19,7 +19,7 @@ import {Colors} from '@bluecentury/styles'
 import {Icons} from '@bluecentury/assets'
 import {useEntity, useMap, useSettings} from '@bluecentury/stores'
 import BackgroundGeolocation, {
-  Location
+  Location,
 } from '@mauron85/react-native-background-geolocation'
 
 type Props = NativeStackScreenProps<RootStackParamList>
@@ -135,6 +135,7 @@ export const GPSTracker = ({navigation}: Props) => {
               marginLeft={3}
               source={renderTrackerSourceImage()}
               tintColor="#44A7B9"
+              alt="tracker-source-image"
             />
             <Text ml={ms(10)}>{renderTrackerSourceText()}</Text>
           </HStack>
@@ -236,7 +237,7 @@ export const GPSTracker = ({navigation}: Props) => {
           backgroundColor={Colors.azure}
           onPress={() => navigation.goBack()}
           _pressed={{
-            bgColor: Colors.primary
+            bgColor: Colors.primary,
           }}
         >
           Dismiss
