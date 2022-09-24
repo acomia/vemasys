@@ -8,7 +8,7 @@ import moment from 'moment'
 import {Colors} from '@bluecentury/styles'
 import {formatNumber} from '@bluecentury/constants'
 import {useEntity, useTechnical} from '@bluecentury/stores'
-import {LoadingIndicator} from '@bluecentury/components'
+import {LoadingAnimated} from '@bluecentury/components'
 
 const Reservoirs = () => {
   const navigation = useNavigation()
@@ -60,7 +60,7 @@ const Reservoirs = () => {
                 onPress={() =>
                   navigation.navigate('Measurements', {
                     data: reservoir,
-                    routeFrom: 'reservoir'
+                    routeFrom: 'reservoir',
                   })
                 }
               >
@@ -115,7 +115,7 @@ const Reservoirs = () => {
             )
           })
         ) : (
-          <LoadingIndicator />
+          <LoadingAnimated />
         )}
       </ScrollView>
     </Box>

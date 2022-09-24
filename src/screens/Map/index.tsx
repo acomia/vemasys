@@ -5,7 +5,7 @@ import MapView, {
   PROVIDER_GOOGLE,
   Marker,
   Callout,
-  Camera
+  Camera,
 } from 'react-native-maps'
 import BottomSheet from 'reanimated-bottom-sheet'
 import {ms} from 'react-native-size-matters'
@@ -18,16 +18,16 @@ import {
   PreviousNavLogInfo,
   PlannedNavLogInfo,
   CurrentNavLogInfo,
-  LoadingIndicator,
+  LoadingAnimated,
   IconButton,
-  FleetHeader
+  FleetHeader,
 } from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
 import {useMap, useEntity, useAuth} from '@bluecentury/stores'
 import {
   ENTITY_TYPE_EXPLOITATION_GROUP,
-  formatLocationLabel
+  formatLocationLabel,
 } from '@bluecentury/constants'
 
 const {width, height} = Dimensions.get('window')
@@ -55,7 +55,7 @@ export default function Map({navigation}: Props) {
     plannedNavLogs,
     currentNavLogs,
     lastCompleteNavLogs,
-    vesselStatus
+    vesselStatus,
   } = useMap()
 
   const isLoadingMap =
@@ -74,7 +74,7 @@ export default function Map({navigation}: Props) {
     latitude: LATITUDE,
     longitude: LONGITUDE,
     latitudeDelta: LATITUDE_DELTA,
-    longitudeDelta: LONGITUDE_DELTA
+    longitudeDelta: LONGITUDE_DELTA,
   })
   const [zoomLevel, setZoomLevel] = useState(null)
   let refreshId = useRef<any>()
@@ -103,7 +103,7 @@ export default function Map({navigation}: Props) {
       setRegion({
         ...region,
         latitude: currentNavLogs[0]?.location?.latitude,
-        longitude: currentNavLogs[0]?.location?.longitude
+        longitude: currentNavLogs[0]?.location?.longitude,
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -115,12 +115,12 @@ export default function Map({navigation}: Props) {
       let camera = {
         center: {
           latitude: Number(latitude),
-          longitude: Number(longitude)
+          longitude: Number(longitude),
         },
         zoom: 15,
         heading: 0,
         pitch: 0,
-        altitude: 5
+        altitude: 5,
       }
       let duration = 1000 * 3
       mapRef.current?.animateCamera(camera, {duration: duration})
@@ -145,7 +145,7 @@ export default function Map({navigation}: Props) {
           width: 80,
           height: 3,
           backgroundColor: '#23475C',
-          borderRadius: 5
+          borderRadius: 5,
         }}
         onPress={() => sheetRef?.current?.snapTo(0)}
       />
@@ -188,7 +188,7 @@ export default function Map({navigation}: Props) {
         pinColor={'#6BBF87'}
         coordinate={{
           latitude: previousLocation?.location?.latitude,
-          longitude: previousLocation?.location?.longitude
+          longitude: previousLocation?.location?.longitude,
         }}
         title={`From: ${previousLocation?.location?.name}`}
         zIndex={1}
@@ -197,7 +197,7 @@ export default function Map({navigation}: Props) {
           onPress={() =>
             navigation.navigate('PlanningDetails', {
               navlog: previousLocation,
-              title: formatLocationLabel(previousLocation?.location)
+              title: formatLocationLabel(previousLocation?.location),
             })
           }
         >
@@ -237,7 +237,7 @@ export default function Map({navigation}: Props) {
         pinColor={'#29B7EF'}
         coordinate={{
           latitude: nextLocation?.location?.latitude,
-          longitude: nextLocation?.location?.longitude
+          longitude: nextLocation?.location?.longitude,
         }}
         title={`To: ${nextLocation?.location?.name}`}
         zIndex={1}
@@ -247,7 +247,7 @@ export default function Map({navigation}: Props) {
             navigation.dispatch(
               CommonActions.navigate('PlanningDetails', {
                 navlog: nextLocation,
-                title: formatLocationLabel(nextLocation?.location)
+                title: formatLocationLabel(nextLocation?.location),
               })
             )
           }
@@ -285,7 +285,7 @@ export default function Map({navigation}: Props) {
         key={`Vessel-${currentNavLogs[0]?.location?.id}`}
         coordinate={{
           latitude: Number(latitude),
-          longitude: Number(longitude)
+          longitude: Number(longitude),
         }}
         image={Number(speed) > 0 ? Icons.navigating : Icons.anchor}
         zIndex={1}
@@ -303,7 +303,7 @@ export default function Map({navigation}: Props) {
         pinColor={'#F0f0f0'}
         coordinate={{
           latitude: log.location?.latitude,
-          longitude: log.location?.longitude
+          longitude: log.location?.longitude,
         }}
         zIndex={0}
       >
@@ -354,29 +354,29 @@ export default function Map({navigation}: Props) {
       markers = [
         {
           latitude: previousLocation[0]?.location?.latitude,
-          longitude: previousLocation[0]?.location?.longitude
+          longitude: previousLocation[0]?.location?.longitude,
         },
         {
           latitude: nextLocation[0]?.location?.latitude,
-          longitude: nextLocation[0]?.location?.longitude
+          longitude: nextLocation[0]?.location?.longitude,
         },
         {
           latitude: currentNavLogs[0]?.location?.latitude,
-          longitude: currentNavLogs[0]?.location?.longitude
-        }
+          longitude: currentNavLogs[0]?.location?.longitude,
+        },
       ]
     } else {
       markers = [
         {
           latitude: LATITUDE,
-          longitude: LONGITUDE
-        }
+          longitude: LONGITUDE,
+        },
       ]
     }
 
     mapRef?.current?.fitToCoordinates(markers, {
       edgePadding: DEFAULT_PADDING,
-      animated: true
+      animated: true,
     })
   }
 
@@ -386,12 +386,12 @@ export default function Map({navigation}: Props) {
       let camera: Camera = {
         center: {
           latitude: Number(latitude),
-          longitude: Number(longitude)
+          longitude: Number(longitude),
         },
         zoom: 15,
         heading: 0,
         pitch: 0,
-        altitude: 5
+        altitude: 5,
       }
       let duration = 1000 * 3
       mapRef.current?.animateCamera(camera, {duration: duration})
@@ -484,7 +484,7 @@ export default function Map({navigation}: Props) {
           initialSnap={1}
           snapPoints={[
             ms(Platform.OS === 'ios' ? 420 : 410),
-            ms(Platform.OS === 'ios' ? 170 : 150)
+            ms(Platform.OS === 'ios' ? 170 : 150),
           ]}
           borderRadius={20}
           renderContent={renderBottomContent}
@@ -503,7 +503,7 @@ export default function Map({navigation}: Props) {
             backgroundColor="rgba(0,0,0,0.5)"
             zIndex={999}
           >
-            <LoadingIndicator />
+            <LoadingAnimated />
           </Box>
         )}
       </Box>

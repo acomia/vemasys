@@ -11,7 +11,7 @@ import {
   useToast,
   Image,
   Modal,
-  Divider
+  Divider,
 } from 'native-base'
 import {Shadow} from 'react-native-shadow-2'
 import {ms} from 'react-native-size-matters'
@@ -20,7 +20,7 @@ import * as ImagePicker from 'react-native-image-picker'
 
 import {Colors} from '@bluecentury/styles'
 import {useEntity, usePlanning} from '@bluecentury/stores'
-import {IconButton, LoadingIndicator} from '@bluecentury/components'
+import {IconButton, LoadingAnimated} from '@bluecentury/components'
 import {Alert, TouchableOpacity} from 'react-native'
 import {Icons} from '@bluecentury/assets'
 
@@ -35,7 +35,7 @@ const AddEditComment = ({navigation, route}: Props) => {
     getNavigationLogComments,
     navigationLogDetails,
     deleteComment,
-    uploadImgFile
+    uploadImgFile,
   }: any = usePlanning()
   const {user}: any = useEntity()
   const descriptionText = comment?.description
@@ -60,7 +60,7 @@ const AddEditComment = ({navigation, route}: Props) => {
             size={ms(20)}
             styles={{marginLeft: 20}}
           />
-        ) : null
+        ) : null,
     })
   }, [])
 
@@ -83,7 +83,7 @@ const AddEditComment = ({navigation, route}: Props) => {
       },
       onCloseComplete() {
         res === 'success' ? navigation.goBack() : null
-      }
+      },
     })
   }
 
@@ -180,13 +180,13 @@ const AddEditComment = ({navigation, route}: Props) => {
       [
         {
           text: 'Cancel',
-          style: 'cancel'
+          style: 'cancel',
         },
         {
           text: 'Yes, delete it',
           onPress: async () => onDeleteComment(),
-          style: 'destructive'
-        }
+          style: 'destructive',
+        },
       ]
     )
   }
@@ -208,7 +208,7 @@ const AddEditComment = ({navigation, route}: Props) => {
   const launchImageLibrary = () => {
     let options: ImagePicker.ImageLibraryOptions = {
       mediaType: 'photo',
-      selectionLimit: 0
+      selectionLimit: 0,
     }
 
     ImagePicker.launchImageLibrary(options, response => {
@@ -219,8 +219,8 @@ const AddEditComment = ({navigation, route}: Props) => {
             id: asset.id,
             uri: asset.uri,
             fileName: asset.fileName,
-            type: asset.type
-          }
+            type: asset.type,
+          },
         ])
       })
     })
@@ -232,7 +232,7 @@ const AddEditComment = ({navigation, route}: Props) => {
     setSelectedImg({
       uri: image.uri,
       fileName: image.fileName,
-      type: image.type
+      type: image.type,
     })
   }
 
@@ -249,7 +249,7 @@ const AddEditComment = ({navigation, route}: Props) => {
     setImgFile(filtered)
   }
 
-  if (isPlanningLoading) return <LoadingIndicator />
+  if (isPlanningLoading) return <LoadingAnimated />
 
   return (
     <Box flex={1}>
@@ -322,7 +322,7 @@ const AddEditComment = ({navigation, route}: Props) => {
         <Shadow
           distance={25}
           viewStyle={{
-            width: '100%'
+            width: '100%',
           }}
         >
           <HStack>

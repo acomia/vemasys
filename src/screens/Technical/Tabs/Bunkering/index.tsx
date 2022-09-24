@@ -7,7 +7,7 @@ import {useNavigation} from '@react-navigation/native'
 
 import {useEntity, useTechnical} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
-import {LoadingIndicator} from '@bluecentury/components'
+import {LoadingAnimated} from '@bluecentury/components'
 import {ReservoirLevel, BunkeringList} from '../../components'
 
 const Bunkering = () => {
@@ -17,7 +17,7 @@ const Bunkering = () => {
     bunkering,
     gasoilReserviors,
     getVesselBunkering,
-    getVesselGasoilReservoirs
+    getVesselGasoilReservoirs,
   } = useTechnical()
 
   const [pullRefresh, setPullRefresh] = useState(false)
@@ -54,7 +54,7 @@ const Bunkering = () => {
             physicalVesselId={physicalVesselId}
           />
         ) : (
-          <LoadingIndicator />
+          <LoadingAnimated />
         )}
         <Text
           color={Colors.azure}
@@ -68,7 +68,7 @@ const Bunkering = () => {
         {bunkering?.length > 0 ? (
           <BunkeringList bunkering={bunkering} />
         ) : (
-          <LoadingIndicator />
+          <LoadingAnimated />
         )}
       </ScrollView>
       {/* Add Bunkering Button */}
@@ -76,7 +76,7 @@ const Bunkering = () => {
         <Shadow
           distance={25}
           viewStyle={{
-            width: '100%'
+            width: '100%',
           }}
         >
           <Button

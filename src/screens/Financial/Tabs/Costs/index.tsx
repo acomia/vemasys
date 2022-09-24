@@ -7,7 +7,7 @@ import {Shadow} from 'react-native-shadow-2'
 
 import {useEntity, useFinancial} from '@bluecentury/stores'
 import {useNavigation} from '@react-navigation/native'
-import {LoadingIndicator} from '@bluecentury/components'
+import {LoadingAnimated} from '@bluecentury/components'
 import {Colors} from '@bluecentury/styles'
 
 const Costs = () => {
@@ -108,7 +108,7 @@ const Costs = () => {
             {Platform.OS === 'ios'
               ? Number(amount).toLocaleString('en-GB', {
                   maximumFractionDigits: 2,
-                  minimumFractionDigits: 2
+                  minimumFractionDigits: 2,
                 })
               : Number(amount)
                   .toFixed(2)
@@ -175,7 +175,7 @@ const Costs = () => {
                 {Platform.OS === 'ios'
                   ? Number(value).toLocaleString('en-GB', {
                       maximumFractionDigits: 2,
-                      minimumFractionDigits: 2
+                      minimumFractionDigits: 2,
                     })
                   : Number(value)
                       .toFixed(2)
@@ -228,7 +228,7 @@ const Costs = () => {
               {Platform.OS === 'ios'
                 ? Number(value).toLocaleString('en-GB', {
                     maximumFractionDigits: 2,
-                    minimumFractionDigits: 2
+                    minimumFractionDigits: 2,
                   })
                 : Number(value)
                     .toFixed(2)
@@ -275,7 +275,7 @@ const Costs = () => {
             Incoming Invoices
           </Text>
           {isFinancialLoading && !isPageChange ? (
-            <LoadingIndicator />
+            <LoadingAnimated />
           ) : (
             <FlatList
               data={incomingInvoices}
@@ -286,7 +286,7 @@ const Costs = () => {
                     navigation.navigate('FinancialInvoiceDetails', {
                       id: item.id,
                       routeFrom: 'costs',
-                      title: item.receiverReference
+                      title: item.receiverReference,
                     })
                   }
                 >
@@ -323,13 +323,13 @@ const Costs = () => {
           justifyContent="center"
           style={{zIndex: 999}}
         >
-          <LoadingIndicator />
+          <LoadingAnimated />
         </Box>
       ) : totalEnabled ? (
         <Box bg={Colors.white}>
           <Shadow
             viewStyle={{
-              width: '100%'
+              width: '100%',
             }}
           >
             <TouchableOpacity
@@ -360,7 +360,7 @@ const Costs = () => {
         <Box bg={Colors.white}>
           <Shadow
             viewStyle={{
-              width: '100%'
+              width: '100%',
             }}
           >
             <CardTotal

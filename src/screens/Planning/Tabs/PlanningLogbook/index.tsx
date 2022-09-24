@@ -1,26 +1,26 @@
 import React, {useEffect, useState} from 'react'
-import {RefreshControl, TouchableOpacity} from 'react-native'
+import {RefreshControl, TouchableOpacity, View} from 'react-native'
 import {Box, HStack, Image, ScrollView, Text} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import {useNavigation} from '@react-navigation/native'
-
+import styled from 'styled-components'
 import {Colors} from '@bluecentury/styles'
 import {Icons} from '@bluecentury/assets'
 import {useEntity, usePlanning} from '@bluecentury/stores'
 import {
   calculateTotalIn,
   calculateTotalOut,
-  formatLocationLabel
+  formatLocationLabel,
 } from '@bluecentury/constants'
-import {LoadingIndicator, NavigationLogType} from '@bluecentury/components'
+import {LoadingAnimated, NavigationLogType} from '@bluecentury/components'
 
 const PlanningLogbook = () => {
   const navigation = useNavigation()
   const {
     isPlanningLoading,
     plannedNavigationLogs,
-    getVesselPlannedNavLogs
+    getVesselPlannedNavLogs,
   }: any = usePlanning()
   const {vesselId} = useEntity()
 
@@ -43,7 +43,7 @@ const PlanningLogbook = () => {
         onPress={() =>
           navigation.navigate('PlanningDetails', {
             navlog: navigationLog,
-            title: formatLocationLabel(navigationLog?.location)
+            title: formatLocationLabel(navigationLog?.location),
           })
         }
       >
@@ -62,11 +62,12 @@ const PlanningLogbook = () => {
 
           <Box
             px={ms(16)}
-            py={ms(5)}
-            borderWidth="1"
-            borderTopWidth="0"
+            py={ms(10)}
+            pt={3}
+            borderWidth={3}
             borderColor={Colors.border}
             borderStyle="dashed"
+            mt={-3}
           >
             <HStack alignItems="center" my={ms(5)}>
               <Box flex="1">
@@ -121,7 +122,7 @@ const PlanningLogbook = () => {
     getVesselPlannedNavLogs(vesselId)
   }
 
-  if (isPlanningLoading) return <LoadingIndicator />
+  if (isPlanningLoading) return <LoadingAnimated />
 
   return (
     <Box flex="1" bg={Colors.white}>

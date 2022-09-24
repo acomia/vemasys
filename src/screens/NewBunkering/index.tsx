@@ -11,7 +11,7 @@ import {
   WarningOutlineIcon,
   TextArea,
   HStack,
-  useToast
+  useToast,
 } from 'native-base'
 import {useNavigation} from '@react-navigation/native'
 import {Shadow} from 'react-native-shadow-2'
@@ -22,7 +22,7 @@ import moment from 'moment'
 
 import {Colors} from '@bluecentury/styles'
 import {useTechnical} from '@bluecentury/stores'
-import {LoadingIndicator} from '@bluecentury/components'
+import {LoadingAnimated} from '@bluecentury/components'
 import {_t} from '@bluecentury/constants'
 
 const allFieldsRequired = _t('allFieldsRequired')
@@ -36,7 +36,7 @@ export default function NewBunkering() {
     isTechnicalLoading,
     bunkeringSuppliers,
     getVesselBunkeringSuppliers,
-    createVesselBunkering
+    createVesselBunkering,
   } = useTechnical()
 
   const [openDatePicker, setOpenDatePicker] = useState(false)
@@ -44,7 +44,7 @@ export default function NewBunkering() {
     date: new Date(),
     bunkeringId: '',
     amount: '',
-    description: ''
+    description: '',
   })
   const [isSupplierEmpty, setIsSupplierEmpty] = useState(false)
   const [isAmountEmpty, setIsAmountEmpty] = useState(false)
@@ -95,7 +95,7 @@ export default function NewBunkering() {
         },
         onCloseComplete() {
           navigation.goBack()
-        }
+        },
       })
     } else {
       toast.show({
@@ -106,12 +106,12 @@ export default function NewBunkering() {
               Bunkering failed.
             </Box>
           )
-        }
+        },
       })
     }
   }
 
-  if (isTechnicalLoading) return <LoadingIndicator />
+  if (isTechnicalLoading) return <LoadingAnimated />
 
   return (
     <Box flex={1}>
@@ -133,7 +133,7 @@ export default function NewBunkering() {
             borderRadius: 5,
             backgroundColor: '#F7F7F7',
             paddingHorizontal: 12,
-            marginBottom: 25
+            marginBottom: 25,
           }}
           onPress={() => setOpenDatePicker(true)}
         >
@@ -230,7 +230,7 @@ export default function NewBunkering() {
         <Shadow
           distance={25}
           viewStyle={{
-            width: '100%'
+            width: '100%',
           }}
         >
           <HStack>

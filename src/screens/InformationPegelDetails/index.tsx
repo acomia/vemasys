@@ -6,13 +6,13 @@ import {
   VictoryLine,
   VictoryChart,
   VictoryZoomContainer,
-  VictoryAxis
+  VictoryAxis,
 } from 'victory-native'
 import moment from 'moment'
 import {ms} from 'react-native-size-matters'
 
 import {useInformation} from '@bluecentury/stores'
-import {LoadingIndicator} from '@bluecentury/components'
+import {LoadingAnimated} from '@bluecentury/components'
 import {Colors} from '@bluecentury/styles'
 
 type Props = NativeStackScreenProps<RootStackParamList>
@@ -30,9 +30,9 @@ const InformationPegelDetails = ({navigation, route}: Props) => {
     const chartData = {
       axis: [
         {x: 0, y: 0},
-        {x: 1, y: 1}
+        {x: 1, y: 1},
       ],
-      initialZoomDomain: [0, 1]
+      initialZoomDomain: [0, 1],
     }
 
     if (!history || history.length === 0) {
@@ -60,7 +60,7 @@ const InformationPegelDetails = ({navigation, route}: Props) => {
             }
             return {
               x: new Date(measurement.measureTime),
-              y
+              y,
             }
           }
         )
@@ -77,9 +77,9 @@ const InformationPegelDetails = ({navigation, route}: Props) => {
                   moment(lastDataPoint.x).subtract(3, 'days'),
                   moment(firstDataPoint)
                 ),
-                moment(lastDataPoint.x)
+                moment(lastDataPoint.x),
               ],
-              y: [lowerBoundry - 10, upperBoundry + 10]
+              y: [lowerBoundry - 10, upperBoundry + 10],
             }
           : chartData.initialZoomDomain
     }
@@ -105,7 +105,7 @@ const InformationPegelDetails = ({navigation, route}: Props) => {
     getPegelDetails(pegelId)
   }
 
-  if (isInformationLoading) return <LoadingIndicator />
+  if (isInformationLoading) return <LoadingAnimated />
 
   return (
     <Box flex="1" px={ms(12)} py={ms(15)} bg={Colors.white}>
@@ -123,7 +123,7 @@ const InformationPegelDetails = ({navigation, route}: Props) => {
         {chartData && typeof chartData === 'object' && !isInformationLoading ? (
           <VictoryChart
             scale={{
-              x: 'time'
+              x: 'time',
             }}
             height={height}
             width={width}
@@ -138,15 +138,15 @@ const InformationPegelDetails = ({navigation, route}: Props) => {
               data={chartData.axis}
               style={{
                 data: {
-                  stroke: Colors.primary
-                }
+                  stroke: Colors.primary,
+                },
               }}
             />
             <VictoryAxis
               dependentAxis
               label="Water level (cm)"
               style={{
-                axisLabel: {padding: 40}
+                axisLabel: {padding: 40},
               }}
             />
             <VictoryAxis label="Timestamp" />

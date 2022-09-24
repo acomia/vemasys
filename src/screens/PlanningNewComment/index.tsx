@@ -8,7 +8,7 @@ import {
   WarningOutlineIcon,
   TextArea,
   HStack,
-  useToast
+  useToast,
 } from 'native-base'
 import {useNavigation} from '@react-navigation/native'
 import {Shadow} from 'react-native-shadow-2'
@@ -16,7 +16,7 @@ import {ms} from 'react-native-size-matters'
 
 import {Colors} from '@bluecentury/styles'
 import {useEntity, usePlanning, useTechnical} from '@bluecentury/stores'
-import {LoadingIndicator} from '@bluecentury/components'
+import {LoadingAnimated} from '@bluecentury/components'
 
 export default function PlanningNewComment() {
   const navigation = useNavigation()
@@ -25,7 +25,7 @@ export default function PlanningNewComment() {
     isPlanningLoading,
     createNavlogComment,
     navigationLogDetails,
-    getNavigationLogComments
+    getNavigationLogComments,
   } = usePlanning()
   const {user} = useEntity()
 
@@ -63,7 +63,7 @@ export default function PlanningNewComment() {
         },
         onCloseComplete() {
           navigation.goBack()
-        }
+        },
       })
     } else {
       toast.show({
@@ -74,12 +74,12 @@ export default function PlanningNewComment() {
               New comment failed.
             </Box>
           )
-        }
+        },
       })
     }
   }
 
-  if (isPlanningLoading) return <LoadingIndicator />
+  if (isPlanningLoading) return <LoadingAnimated />
 
   return (
     <Box flex={1}>
@@ -115,7 +115,7 @@ export default function PlanningNewComment() {
         <Shadow
           distance={25}
           viewStyle={{
-            width: '100%'
+            width: '100%',
           }}
         >
           <HStack>

@@ -13,10 +13,10 @@ import {
   ROLE_PERMISSION_USER_EDIT,
   ROLE_PERMISSION_USER_MANAGE,
   ROLE_PERMISSION_USER_VIEW,
-  titleCase
+  titleCase,
 } from '@bluecentury/constants'
 import {PROD_URL} from '@vemasys/env'
-import {LoadingIndicator} from '@bluecentury/components'
+import {LoadingAnimated} from '@bluecentury/components'
 import {useCrew, useEntity} from '@bluecentury/stores'
 
 const Planning = () => {
@@ -27,7 +27,7 @@ const Planning = () => {
     [
       ROLE_PERMISSION_USER_VIEW,
       ROLE_PERMISSION_USER_EDIT,
-      ROLE_PERMISSION_USER_MANAGE
+      ROLE_PERMISSION_USER_MANAGE,
     ]
   )
 
@@ -80,7 +80,7 @@ const Planning = () => {
     const dates: any = {}
 
     const daysInMonth = [
-      ...Array(moment(new Date()).endOf('month').date()).keys()
+      ...Array(moment(new Date()).endOf('month').date()).keys(),
     ].map(k => k + 1)
 
     daysInMonth.forEach(day => {
@@ -100,7 +100,7 @@ const Planning = () => {
         currentObject.periods.push({
           startingDay,
           endingDay,
-          color: isWorking ? colors[c.id] : colors[c.id] + '11'
+          color: isWorking ? colors[c.id] : colors[c.id] + '11',
         })
       })
 
@@ -149,7 +149,7 @@ const Planning = () => {
                   <Avatar
                     size="30px"
                     source={{
-                      uri: `${PROD_URL}/${user.icon}`
+                      uri: `${PROD_URL}/${user.icon}`,
                     }}
                   />
                 ) : (
@@ -176,7 +176,7 @@ const Planning = () => {
     )
   }
 
-  if (isCrewLoading) return <LoadingIndicator />
+  if (isCrewLoading) return <LoadingAnimated />
 
   return (
     <Box flex="1" bg={Colors.white}>

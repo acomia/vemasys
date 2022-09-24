@@ -10,17 +10,17 @@ import {useEntity, usePlanning} from '@bluecentury/stores'
 import {
   calculateTotalIn,
   calculateTotalOut,
-  formatLocationLabel
+  formatLocationLabel,
 } from '@bluecentury/constants'
 import {RefreshControl, TouchableOpacity} from 'react-native'
-import {LoadingIndicator, NavigationLogType} from '@bluecentury/components'
+import {LoadingAnimated, NavigationLogType} from '@bluecentury/components'
 
 const HistoryLogbook = ({routeIndex}: any) => {
   const navigation = useNavigation()
   const {
     isPlanningLoading,
     historyNavigationLogs,
-    getVesselHistoryNavLogs
+    getVesselHistoryNavLogs,
   }: any = usePlanning()
   const {vesselId} = useEntity()
   const [currentPage, setCurrentPage] = useState(1)
@@ -148,7 +148,7 @@ const HistoryLogbook = ({routeIndex}: any) => {
           onPress={() =>
             navigation.navigate('PlanningDetails', {
               navlog: navigationLog,
-              title: formatLocationLabel(navigationLog?.location)
+              title: formatLocationLabel(navigationLog?.location),
             })
           }
         >
@@ -180,10 +180,11 @@ const HistoryLogbook = ({routeIndex}: any) => {
               <Box
                 px={ms(16)}
                 py={ms(5)}
-                borderWidth="1"
-                borderTopWidth="0"
+                pt={3}
+                borderWidth={3}
                 borderColor={Colors.border}
                 borderStyle="dashed"
+                mt={-3}
               >
                 <HStack alignItems="center" my={ms(5)}>
                   <Box flex="1">
@@ -241,7 +242,7 @@ const HistoryLogbook = ({routeIndex}: any) => {
   const shouldLoadNextPage = ({
     layoutMeasurement,
     contentOffset,
-    contentSize
+    contentSize,
   }: any) => {
     return layoutMeasurement.height + contentOffset.y >= contentSize.height - 50
   }
@@ -257,7 +258,7 @@ const HistoryLogbook = ({routeIndex}: any) => {
     getVesselHistoryNavLogs(vesselId, 1)
   }
 
-  if (isPlanningLoading && !isPageChange) return <LoadingIndicator />
+  if (isPlanningLoading && !isPageChange) return <LoadingAnimated />
 
   return (
     <Box flex="1" bg={Colors.white}>
@@ -306,7 +307,7 @@ const HistoryLogbook = ({routeIndex}: any) => {
       </ScrollView>
       {isPageChange && (
         <Box h={ms(30)} justifyContent="center" style={{zIndex: 999}}>
-          <LoadingIndicator />
+          <LoadingAnimated />
         </Box>
       )}
     </Box>

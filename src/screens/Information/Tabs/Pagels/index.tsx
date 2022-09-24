@@ -8,7 +8,7 @@ import {
   Image,
   Input,
   ScrollView,
-  Text
+  Text,
 } from 'native-base'
 import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import {useNavigation} from '@react-navigation/native'
@@ -16,7 +16,7 @@ import {ms} from 'react-native-size-matters'
 
 import {useEntity, useInformation} from '@bluecentury/stores'
 import {Icons} from '@bluecentury/assets'
-import {LoadingIndicator} from '@bluecentury/components'
+import {LoadingAnimated} from '@bluecentury/components'
 import {Colors} from '@bluecentury/styles'
 import {EXTERNAL_PEGEL_IMAGE_URL} from '@bluecentury/constants'
 
@@ -59,7 +59,7 @@ const Pegels = () => {
             borderWidth: 1,
             borderColor: Colors.light,
             borderRadius: 5,
-            marginRight: 5
+            marginRight: 5,
           }}
         >
           <MaterialIcons name="history" size={ms(20)} />
@@ -148,12 +148,12 @@ const Pegels = () => {
     if (pegel.elwisPegelId === null) {
       navigation.navigate('ImgViewer', {
         url: `${EXTERNAL_PEGEL_IMAGE_URL}/wasserstaendeUebersichtGrafik.png.php?pegelId=&dfh=0`,
-        title: pegel.name
+        title: pegel.name,
       })
     } else {
       navigation.navigate('ImgViewer', {
         url: `${EXTERNAL_PEGEL_IMAGE_URL}/wasserstaendeUebersichtGrafik.png.php?pegelId=${pegel.elwisPegelId}&dfh=0`,
-        title: pegel.name
+        title: pegel.name,
       })
     }
   }
@@ -167,7 +167,7 @@ const Pegels = () => {
     <Box flex="1" px={ms(12)} py={ms(15)} bg={Colors.white}>
       <Input
         w={{
-          base: '100%'
+          base: '100%',
         }}
         backgroundColor="#F7F7F7"
         InputLeftElement={
@@ -214,7 +214,7 @@ const Pegels = () => {
           ? renderEmpty()
           : null}
         {isInformationLoading ? (
-          <LoadingIndicator />
+          <LoadingAnimated />
         ) : (
           <>
             {renderStreamGauges()}

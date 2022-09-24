@@ -6,7 +6,7 @@ import {useNavigation} from '@react-navigation/native'
 
 import {useEntity, useTechnical} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
-import {LoadingIndicator} from '@bluecentury/components'
+import {LoadingAnimated} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 
 const {width} = Dimensions.get('window')
@@ -27,26 +27,26 @@ const Certificates = () => {
       label: 'All Certificates',
       icon: Icons.all_certificate,
       count: certificates?.length,
-      data: certificates
+      data: certificates,
     },
     {
       label: 'Valid',
       icon: Icons.status_check_alt,
       count: certificates?.filter(cert => cert.remainingDays >= 0).length,
-      data: certificates?.filter(cert => cert.remainingDays >= 0)
+      data: certificates?.filter(cert => cert.remainingDays >= 0),
     },
     {
       label: 'Expiring',
       icon: Icons.status_exclamation_alt,
       count: certificates?.filter(cert => cert.remainingDays == 31).length,
-      data: certificates?.filter(cert => cert.remainingDays == 31)
+      data: certificates?.filter(cert => cert.remainingDays == 31),
     },
     {
       label: 'Expired',
       icon: Icons.status_x_alt,
       count: certificates?.filter(cert => cert.remainingDays < 0).length,
-      data: certificates?.filter(cert => cert.remainingDays < 0)
-    }
+      data: certificates?.filter(cert => cert.remainingDays < 0),
+    },
   ]
 
   const onPullRefresh = () => {
@@ -55,14 +55,14 @@ const Certificates = () => {
     setPullRefresh(false)
   }
 
-  // if (isTechnicalLoading) return <LoadingIndicator />
+  // if (isTechnicalLoading) return <LoadingAnimated />
 
   return (
     <Box flex="1">
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
-          paddingBottom: 20
+          paddingBottom: 20,
         }}
         scrollEventThrottle={16}
         refreshControl={
@@ -94,7 +94,7 @@ const Certificates = () => {
                   onPress={() =>
                     navigation.navigate('TechnicalCertificateList', {
                       certificates: certCard.data,
-                      title: certCard.label
+                      title: certCard.label,
                     })
                   }
                 >
@@ -129,7 +129,7 @@ const Certificates = () => {
               )
             })
           ) : (
-            <LoadingIndicator />
+            <LoadingAnimated />
           )}
         </HStack>
       </ScrollView>

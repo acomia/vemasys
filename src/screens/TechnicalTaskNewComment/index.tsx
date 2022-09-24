@@ -8,14 +8,14 @@ import {
   WarningOutlineIcon,
   TextArea,
   HStack,
-  useToast
+  useToast,
 } from 'native-base'
 import {Shadow} from 'react-native-shadow-2'
 import {ms} from 'react-native-size-matters'
 
 import {Colors} from '@bluecentury/styles'
 import {useEntity, usePlanning, useTechnical} from '@bluecentury/stores'
-import {LoadingIndicator} from '@bluecentury/components'
+import {LoadingAnimated} from '@bluecentury/components'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 
 type Props = NativeStackScreenProps<RootStackParamList>
@@ -53,7 +53,7 @@ export default function TechnicalTaskNewComment({navigation, route}: Props) {
         },
         onCloseComplete() {
           navigation.goBack()
-        }
+        },
       })
     } else {
       toast.show({
@@ -64,12 +64,12 @@ export default function TechnicalTaskNewComment({navigation, route}: Props) {
               New comment failed.
             </Box>
           )
-        }
+        },
       })
     }
   }
 
-  if (isTechnicalLoading) return <LoadingIndicator />
+  if (isTechnicalLoading) return <LoadingAnimated />
 
   return (
     <Box flex={1}>
@@ -105,7 +105,7 @@ export default function TechnicalTaskNewComment({navigation, route}: Props) {
         <Shadow
           distance={25}
           viewStyle={{
-            width: '100%'
+            width: '100%',
           }}
         >
           <HStack>

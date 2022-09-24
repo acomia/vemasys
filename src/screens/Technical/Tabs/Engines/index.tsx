@@ -7,7 +7,7 @@ import {useNavigation} from '@react-navigation/native'
 
 import {useEntity, useTechnical} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
-import {LoadingIndicator} from '@bluecentury/components'
+import {LoadingAnimated} from '@bluecentury/components'
 import {formatNumber} from '@bluecentury/constants'
 import {RefreshControl, TouchableOpacity} from 'react-native'
 
@@ -29,7 +29,7 @@ const Engines = () => {
       if (!acc[zones])
         acc[zones] = {
           zones: zones,
-          data: []
+          data: [],
         }
       acc[zones].data.push(item)
       return acc
@@ -46,7 +46,7 @@ const Engines = () => {
           onPress={() =>
             navigation.navigate('Measurements', {
               data: partType,
-              routeFrom: 'engine'
+              routeFrom: 'engine',
             })
           }
         >
@@ -104,7 +104,7 @@ const Engines = () => {
     setPullRefresh(false)
   }
 
-  // if (isTechnicalLoading) return <LoadingIndicator />
+  // if (isTechnicalLoading) return <LoadingAnimated />
 
   return (
     <Box flex="1" bg={Colors.white}>
@@ -133,7 +133,7 @@ const Engines = () => {
                   if (!acc[part])
                     acc[part] = {
                       part: part,
-                      data: []
+                      data: [],
                     }
                   acc[part].data.push(item)
                   return acc
@@ -166,7 +166,7 @@ const Engines = () => {
               )
             })
           ) : (
-            <LoadingIndicator />
+            <LoadingAnimated />
           )
           // (
           //   <Text

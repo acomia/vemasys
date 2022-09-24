@@ -7,7 +7,7 @@ import {
   Image,
   ScrollView,
   Text,
-  useToast
+  useToast,
 } from 'native-base'
 import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
@@ -17,7 +17,7 @@ import {Shadow} from 'react-native-shadow-2'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {useCharters, useEntity} from '@bluecentury/stores'
 import {CHARTER_CONTRACTOR_STATUS_ACCEPTED} from '@bluecentury/constants'
-import {LoadingIndicator} from '@bluecentury/components'
+import {LoadingAnimated} from '@bluecentury/components'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const CharterAcceptSign = ({navigation, route}: Props) => {
@@ -32,7 +32,7 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
   const handleSignature = async signature => {
     const status = {
       status: CHARTER_CONTRACTOR_STATUS_ACCEPTED,
-      setContractorStatus: true
+      setContractorStatus: true,
     }
     const update = await updateCharterStatus(charter?.id, status)
     if (typeof update === 'string') {
@@ -45,7 +45,7 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
       user: user.id,
       signature: signature,
       signedDate: new Date().toLocaleDateString(),
-      charter: charter.id
+      charter: charter.id,
     }
     const sign = await uploadSignature(signData)
     if (typeof sign === 'object') {
@@ -96,11 +96,11 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
       },
       onCloseComplete() {
         res === 'success' ? navigation.goBack() : null
-      }
+      },
     })
   }
 
-  if (isCharterLoading) return <LoadingIndicator />
+  if (isCharterLoading) return <LoadingAnimated />
 
   return (
     <Box flex={1}>
@@ -118,7 +118,7 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
           style={{
             width: 280,
             height: 280,
-            alignSelf: 'center'
+            alignSelf: 'center',
           }}
           resizeMode="contain"
         />
@@ -141,7 +141,7 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
         <Shadow
           distance={25}
           viewStyle={{
-            width: '100%'
+            width: '100%',
           }}
         >
           <HStack>
