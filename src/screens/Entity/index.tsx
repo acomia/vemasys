@@ -20,6 +20,7 @@ import {resetAllStates} from '@bluecentury/utils'
 import {useSafeAreaInsets} from 'react-native-safe-area-context'
 import {CustomAlert} from '@bluecentury/components/custom-alert'
 import {EntityUser} from '@bluecentury/models'
+import {LoadingAnimated} from '@bluecentury/components/loading-animated'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 
@@ -108,7 +109,7 @@ export default function Entity({route, navigation}: Props) {
           </Button>
         </HStack>
         <Divider mb="5" />
-        {isLoadingEntityUsers && <LoadingIndicator />}
+        {isLoadingEntityUsers && <LoadingAnimated />}
         <FlatList
           data={entityItems}
           renderItem={({item}: any) => {
