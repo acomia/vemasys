@@ -91,9 +91,9 @@ const Measurements = ({navigation, route}: Props) => {
     let fillPct = 0
     const capacity = data?.capacity === null ? 0 : data?.capacity
     const value =
-      typeof lastMeasurements[0]?.value === 'undefined'
-        ? 0
-        : lastMeasurements[0]?.value
+      Array.isArray(lastMeasurements) && lastMeasurements
+        ? lastMeasurements[0]?.value
+        : 0
     const used = capacity - value
     fillPct = (used / capacity) * 100 - 100
     fillPct = fillPct < 0 ? fillPct * -1 : fillPct
@@ -141,7 +141,11 @@ const Measurements = ({navigation, route}: Props) => {
           mt={ms(5)}
         >
           <Text color={Colors.disabled} fontWeight="medium">
-            {moment(lastMeasurements[0]?.date).fromNow()}
+            {moment(
+              Array.isArray(lastMeasurements) && lastMeasurements
+                ? lastMeasurements[0]?.date
+                : new Date()
+            ).fromNow()}
           </Text>
         </Skeleton>
         <Skeleton
@@ -195,7 +199,13 @@ const Measurements = ({navigation, route}: Props) => {
             startColor={Colors.light}
           >
             <Text color={Colors.azure} fontSize={ms(16)} fontWeight="bold">
-              {formatNumber(lastMeasurements[0]?.value, 0)} h
+              {formatNumber(
+                Array.isArray(lastMeasurements) && lastMeasurements
+                  ? lastMeasurements[0]?.value
+                  : 0,
+                0
+              )}{' '}
+              h
             </Text>
           </Skeleton>
         </HStack>
@@ -208,7 +218,11 @@ const Measurements = ({navigation, route}: Props) => {
           mt={ms(5)}
         >
           <Text color={Colors.disabled} fontWeight="medium">
-            {moment(lastMeasurements[0]?.date).format('DD/MM/YYYY')}
+            {moment(
+              Array.isArray(lastMeasurements) && lastMeasurements
+                ? lastMeasurements[0]?.date
+                : new Date()
+            ).format('DD/MM/YYYY')}
           </Text>
         </Skeleton>
       </Box>

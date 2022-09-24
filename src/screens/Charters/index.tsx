@@ -7,12 +7,18 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {ChartersScreen, TimeChartersSreen} from './Tabs'
 import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
-import {chartersTabs} from '@bluecentury/constants'
+import {
+  chartersTabs,
+  ENTITY_TYPE_EXPLOITATION_GROUP
+} from '@bluecentury/constants'
+import {FleetHeader} from '@bluecentury/components'
+import {useEntity} from '@bluecentury/stores'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 export default function Charters({navigation}: Props) {
   const layout = useWindowDimensions()
 
+  const {entityType, selectFleetVessel, entityUsers} = useEntity()
   const [index, setIndex] = useState(0)
   const [routes] = useState(chartersTabs)
 
@@ -52,15 +58,36 @@ export default function Charters({navigation}: Props) {
     />
   )
 
+  const onReloadFleetNavLogs = (index: number, vessel: any) => {
+    const selectedEntityVessel = entityUsers.find(
+      e => e?.entity?.exploitationVessel?.id === vessel?.id
+    )
+
+    if (typeof selectedEntityVessel === 'object' && selectedEntityVessel?.id) {
+      selectFleetVessel(index, selectedEntityVessel)
+    } else {
+      selectFleetVessel(index, vessel)
+    }
+  }
+
   return (
-    <TabView
-      lazy
-      navigationState={{index, routes}}
-      renderScene={renderScene}
-      renderTabBar={renderTabBar}
-      renderLazyPlaceholder={renderLazyPlaceholder}
-      onIndexChange={setIndex}
-      initialLayout={{width: layout.width}}
-    />
+    <Box flex="1">
+      {entityType === ENTITY_TYPE_EXPLOITATION_GROUP && (
+        <FleetHeader
+          onPress={(index: number, vessel: any) =>
+            onReloadFleetNavLogs(index, vessel)
+          }
+        />
+      )}
+      <TabView
+        lazy
+        navigationState={{index, routes}}
+        renderScene={renderScene}
+        renderTabBar={renderTabBar}
+        renderLazyPlaceholder={renderLazyPlaceholder}
+        onIndexChange={setIndex}
+        initialLayout={{width: layout.width}}
+      />
+    </Box>
   )
 }

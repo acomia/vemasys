@@ -25,7 +25,7 @@ const Bunkering = () => {
   useEffect(() => {
     getVesselBunkering(vesselId)
     getVesselGasoilReservoirs(physicalVesselId)
-  }, [])
+  }, [vesselId])
 
   const onPullToReload = () => {
     setPullRefresh(true)

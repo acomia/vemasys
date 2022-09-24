@@ -5,5 +5,5 @@ module.exports = {
   endOfLine: 'lf',
   semi: false,
   tabwidth: 2,
-  trailingComma: 'none'
+  trailingComma: "es5"
 }

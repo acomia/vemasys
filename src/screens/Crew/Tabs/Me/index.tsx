@@ -25,7 +25,7 @@ const Me = () => {
   useEffect(() => {
     getCrew(vesselId)
     getCrewPlanning(vesselId)
-  }, [])
+  }, [vesselId])
 
   const getSelfPlanningDates = () => {
     if (!planning || !planning.length) return

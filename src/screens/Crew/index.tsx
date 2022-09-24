@@ -6,11 +6,11 @@ import {TabView, TabBar, SceneMap} from 'react-native-tab-view'
 
 import {Me, Planning} from './Tabs'
 import {Colors} from '@bluecentury/styles'
-import {crewTabs} from '@bluecentury/constants'
+import {crewTabs, ENTITY_TYPE_EXPLOITATION_GROUP} from '@bluecentury/constants'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
-import {IconButton} from '@bluecentury/components'
+import {FleetHeader, IconButton} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
-import {useMap} from '@bluecentury/stores'
+import {useEntity, useMap} from '@bluecentury/stores'
 
 const renderScene = SceneMap({
   me: Me,
@@ -20,6 +20,7 @@ const renderScene = SceneMap({
 type Props = NativeStackScreenProps<RootStackParamList>
 export default function Crew({navigation}: Props) {
   const {activeFormations} = useMap()
+  const {entityType, entityUsers, selectFleetVessel} = useEntity()
   const layout = useWindowDimensions()
   const [index, setIndex] = useState(0)
   const [routes] = useState(crewTabs)
@@ -85,15 +86,36 @@ export default function Crew({navigation}: Props) {
     />
   )
 
+  const onReloadFleetNavLogs = (index: number, vessel: any) => {
+    const selectedEntityVessel = entityUsers.find(
+      e => e?.entity?.exploitationVessel?.id === vessel?.id
+    )
+
+    if (typeof selectedEntityVessel === 'object' && selectedEntityVessel?.id) {
+      selectFleetVessel(index, selectedEntityVessel)
+    } else {
+      selectFleetVessel(index, vessel)
+    }
+  }
+
   return (
-    <TabView
-      lazy
-      navigationState={{index, routes}}
-      renderScene={renderScene}
-      renderTabBar={renderTabBar}
-      renderLazyPlaceholder={renderLazyPlaceholder}
-      onIndexChange={setIndex}
-      initialLayout={{width: layout.width}}
-    />
+    <Box flex="1">
+      {entityType === ENTITY_TYPE_EXPLOITATION_GROUP && (
+        <FleetHeader
+          onPress={(index: number, vessel: any) =>
+            onReloadFleetNavLogs(index, vessel)
+          }
+        />
+      )}
+      <TabView
+        lazy
+        navigationState={{index, routes}}
+        renderScene={renderScene}
+        renderTabBar={renderTabBar}
+        renderLazyPlaceholder={renderLazyPlaceholder}
+        onIndexChange={setIndex}
+        initialLayout={{width: layout.width}}
+      />
+    </Box>
   )
 }

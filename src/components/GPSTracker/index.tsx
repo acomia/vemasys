@@ -1,134 +1,71 @@
 import React, {useEffect, useState} from 'react'
+import {Image as RNImage} from 'react-native'
 import {
-  Linking,
-  Alert,
-  Platform,
-  PermissionsAndroid,
-  ToastAndroid,
-  Image as RNImage
-} from 'react-native'
-import {HStack, Text, Box, Button, Image, Switch, Divider} from 'native-base'
+  HStack,
+  Text,
+  Box,
+  Button,
+  Image,
+  Switch,
+  Icon,
+  Divider,
+} from 'native-base'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {ms} from 'react-native-size-matters'
-import Icon from 'react-native-vector-icons/FontAwesome5'
-import Geolocation, {GeoPosition} from 'react-native-geolocation-service'
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import {useNetInfo} from '@react-native-community/netinfo'
 import moment from 'moment'
-
 import {Colors} from '@bluecentury/styles'
 import {Icons} from '@bluecentury/assets'
 import {useEntity, useMap, useSettings} from '@bluecentury/stores'
+import BackgroundGeolocation, {
+  Location,
+} from '@mauron85/react-native-background-geolocation'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 export const GPSTracker = ({navigation}: Props) => {
-  const {isMobileTracking, setIsMobileTracking} = useSettings(state => state)
+  const isMobileTracking = useSettings(state => state.isMobileTracking)
   const isLoadingMap = useMap(state => state.isLoadingMap)
-  const {vesselDetails} = useEntity()
-  const [position, setPosition] = useState<GeoPosition>(undefined)
+  const vesselDetails = useEntity(state => state.vesselDetails)
   const netInfo = useNetInfo()
+  const [position, setPosition] = useState<Location>()
 
   useEffect(() => {
     if (isMobileTracking) {
-      Geolocation.getCurrentPosition(pos => {
-        console.log('Geolocation.getCurrentPosition ', pos)
-        setPosition(pos)
+      console.log('isMobileTracking ', isMobileTracking)
+      BackgroundGeolocation.checkStatus(status => {
+        if (!status.isRunning) {
+          BackgroundGeolocation.start()
+        }
       })
+      BackgroundGeolocation.getCurrentLocation(loc => setPosition(loc))
     }
   }, [isMobileTracking])
 
-  const hasPermissionIOS = async () => {
-    const openSetting = () => {
-      Linking.openURL('app-settings:').catch(() => {
-        Alert.alert('Unable to open settings')
-      })
-    }
-    const status = await Geolocation.requestAuthorization('whenInUse')
-
-    if (status === 'granted') {
-      return true
-    }
-
-    if (status === 'denied') {
-      Alert.alert('Location permission denied')
-    }
-
-    if (status === 'disabled') {
-      Alert.alert(
-        `Turn on Location Services to allow Vemasys to determine your location.`,
-        '',
-        [
-          {text: 'Go to Settings', onPress: openSetting},
-          {text: "Don't Use Location", onPress: () => {}}
-        ]
-      )
-    }
-
-    return false
+  const handleOnValueChange = () => {
+    navigation.navigate('TrackingServiceDialog')
   }
 
-  const hasLocationPermission = async () => {
-    if (Platform.OS === 'ios') {
-      const hasPermission = await hasPermissionIOS()
-      console.log('hasPermissionIOS ', hasPermission)
-      return hasPermission
-    }
-
-    if (Platform.OS === 'android' && Platform.Version < 23) {
-      return true
-    }
-
-    const hasPermission = await PermissionsAndroid.check(
-      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-    )
-
-    if (hasPermission) {
-      return true
-    }
-
-    const status = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-    )
-
-    if (status === PermissionsAndroid.RESULTS.GRANTED) {
-      return true
-    }
-
-    if (status === PermissionsAndroid.RESULTS.DENIED) {
-      ToastAndroid.show(
-        'Location permission denied by user.',
-        ToastAndroid.LONG
-      )
-    } else if (status === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) {
-      ToastAndroid.show(
-        'Location permission revoked by user.',
-        ToastAndroid.LONG
-      )
-    }
-
-    return false
+  const renderTrackerSourceImage = () => {
+    const sourceData = vesselDetails?.lastGeolocation?.sourceOfData
+    if (isMobileTracking) return Icons.mobile_tracker
+    if (typeof sourceData === 'undefined') return null
+    if (sourceData.includes('ais')) return Icons.ais_tracker
+    if (sourceData.includes('vematrack')) return Icons.vemasys_tracker
+    return Icons.mobile_tracker
   }
 
-  const handleOnValueChange = async (value: boolean) => {
-    console.log('value ', value)
-    if (value) {
-      const hasPermission = await hasLocationPermission()
-
-      if (!hasPermission) {
-        console.log('hmmm')
-        return
-      }
-    }
-    setIsMobileTracking(value)
-  }
-
-  const renderTrackerSource = (sourceData: string) => {
-    let source = null
-    if (sourceData.includes('ais')) {
-      source = Icons.mobile_tracker
-    } else if (sourceData.includes('vematrack')) {
-      source = Icons.mobile_tracker
-    }
-    return source
+  const renderTrackerSourceText = () => {
+    const sourceData = vesselDetails?.lastGeolocation?.sourceOfData
+    if (isMobileTracking) return 'Current device'
+    if (typeof sourceData === 'undefined') return 'Unknown'
+    if (sourceData.includes('ais')) return 'AIS Hub'
+    if (sourceData.includes('vematrack sp')) return 'Vematrack SP'
+    if (sourceData.includes('vematrack')) return 'Vematrack'
+    if (sourceData.includes('astra')) return 'ASTRA Paging'
+    if (sourceData.includes('marine')) return 'Marine Traffic'
+    if (sourceData.includes('api tracker vt')) return 'API Tracker VT'
+    if (sourceData.includes('api')) return 'API'
   }
 
   return (
@@ -169,7 +106,7 @@ export const GPSTracker = ({navigation}: Props) => {
             <Text fontWeight="medium" ml={ms(15)}>
               {!isMobileTracking
                 ? moment(vesselDetails?.lastGeolocation?.locationTime).fromNow()
-                : moment(position?.timestamp).fromNow()}
+                : moment(position?.time).fromNow()}
             </Text>
           </Box>
         </HStack>
@@ -194,21 +131,13 @@ export const GPSTracker = ({navigation}: Props) => {
             height="100%"
             alignItems="center"
           >
-            <RNImage
-              source={
-                isMobileTracking
-                  ? Icons.mobile_tracker
-                  : renderTrackerSource(
-                      vesselDetails?.lastGeolocation?.sourceOfData
-                    )
-              }
-              style={{tintColor: '#44A7B9', marginLeft: 20}}
+            <Image
+              marginLeft={3}
+              source={renderTrackerSourceImage()}
+              tintColor="#44A7B9"
+              alt="tracker-source-image"
             />
-            <Text ml={ms(10)}>
-              {!isMobileTracking
-                ? vesselDetails?.lastGeolocation?.sourceOfData
-                : 'Mobile phone'}
-            </Text>
+            <Text ml={ms(10)}>{renderTrackerSourceText()}</Text>
           </HStack>
         </HStack>
         <HStack
@@ -235,7 +164,9 @@ export const GPSTracker = ({navigation}: Props) => {
           <Switch
             size="md"
             value={isMobileTracking}
-            onValueChange={handleOnValueChange}
+            onTouchStart={handleOnValueChange}
+            onToggle={handleOnValueChange}
+            // onValueChange={handleOnValueChange}
           />
         </HStack>
         <HStack
@@ -260,12 +191,14 @@ export const GPSTracker = ({navigation}: Props) => {
             alignItems="center"
             justifyContent="space-between"
           >
-            <Text ml={ms(15)}>{netInfo.type}</Text>
+            <Text ml={ms(15)} textTransform="capitalize">
+              {netInfo.type}
+            </Text>
             <Icon
-              name="signal"
+              as={<FontAwesome5 name="signal" />}
               size={ms(16)}
               color={Colors.primary}
-              style={{marginLeft: 15}}
+              ml={ms(25)}
             />
           </HStack>
         </HStack>
@@ -295,7 +228,7 @@ export const GPSTracker = ({navigation}: Props) => {
                 ? `${vesselDetails?.lastGeolocation?.latitude} | ${vesselDetails?.lastGeolocation?.longitude}`
                 : isLoadingMap
                 ? 'Loading...'
-                : `${position?.coords?.latitude} | ${position?.coords?.longitude}`}
+                : `${position?.latitude} | ${position?.longitude}`}
             </Text>
           </Box>
         </HStack>
@@ -304,7 +237,7 @@ export const GPSTracker = ({navigation}: Props) => {
           backgroundColor={Colors.azure}
           onPress={() => navigation.goBack()}
           _pressed={{
-            bgColor: Colors.primary
+            bgColor: Colors.primary,
           }}
         >
           Dismiss

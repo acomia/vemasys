@@ -1,20 +1,16 @@
-import {API_URL} from '@vemasys/env'
+import {useEntity, useMap} from '@bluecentury/stores'
 import BackgroundGeolocation from '@mauron85/react-native-background-geolocation'
-import {Alert} from 'react-native'
+import {Alert, Platform} from 'react-native'
 
-interface Props {
-  token: string
-  selectedUserId: string
-}
-
-export const TrackingListener = ({token, selectedUserId}: Props) => {
+export function InitializeTrackingService() {
+  // Configuration
   BackgroundGeolocation.configure({
     desiredAccuracy: BackgroundGeolocation.HIGH_ACCURACY,
     stationaryRadius: 50,
     distanceFilter: 50,
-    notificationTitle: 'Background tracking',
-    notificationText: 'enabled',
-    debug: true,
+    notificationTitle: 'VEMASYS Tracking',
+    notificationText: 'Enabled',
+    debug: __DEV__ ? true : false,
     startOnBoot: false,
     stopOnTerminate: true,
     locationProvider: BackgroundGeolocation.ACTIVITY_PROVIDER,
@@ -22,38 +18,33 @@ export const TrackingListener = ({token, selectedUserId}: Props) => {
     fastestInterval: 5000,
     activitiesInterval: 10000,
     stopOnStillActivity: false,
-    url: API_URL + 'tracking_device/ingest_events/api_tracker',
-    httpHeaders: {
-      'Jwt-Auth': `Bearer ${token}`,
-      'X-active-entity-user-id': `${selectedUserId}`
-    },
-    // customize post properties
-    postTemplate: {
-      lat: '@latitude',
-      lon: '@longitude',
-      foo: 'bar', // you can also add your own properties
-      heading: 1,
-      speed: 1
-    }
+    saveBatteryOnBackground: false
+    // notificationsEnabled: false
   })
 
   BackgroundGeolocation.on('location', location => {
-    console.log('location ', location)
-    // handle your locations here
-    // to perform long running operation on iOS
-    // you need to create background task
-    BackgroundGeolocation.startTask(taskKey => {
-      // execute long running task
-      // eg. ajax post location
-      // IMPORTANT: task has to be ended by endTask
-      BackgroundGeolocation.endTask(taskKey)
-    })
+    const entityId = useEntity.getState().entityId as string
+    if (Platform.OS === 'ios') {
+      BackgroundGeolocation.startTask(taskKey => {
+        useMap.getState().sendCurrentPosition(entityId, location)
+        BackgroundGeolocation.endTask(taskKey)
+      })
+    } else {
+      useMap.getState().sendCurrentPosition(entityId, location)
+    }
   })
 
   BackgroundGeolocation.on('stationary', stationaryLocation => {
-    // handle stationary locations here
-    // Actions.sendLocation(stationaryLocation)
-    console.log('stationarylocations ', stationaryLocation)
+    const entityId = useEntity.getState().entityId as string
+    console.log('Vessel is currently stationary...')
+    if (Platform.OS === 'ios') {
+      BackgroundGeolocation.startTask(taskKey => {
+        useMap.getState().sendCurrentPosition(entityId, stationaryLocation)
+        BackgroundGeolocation.endTask(taskKey)
+      })
+    } else {
+      useMap.getState().sendCurrentPosition(entityId, stationaryLocation)
+    }
   })
 
   BackgroundGeolocation.on('error', error => {
@@ -124,16 +115,9 @@ export const TrackingListener = ({token, selectedUserId}: Props) => {
       '[INFO] BackgroundGeolocation services enabled',
       status.locationServicesEnabled
     )
-    console.log(
-      '[INFO] BackgroundGeolocation auth status: ' + status.authorization
-    )
-
-    // you don't need to check status before start (this is just the example)
-    if (!status.isRunning) {
-      BackgroundGeolocation.start() //triggers start on start event
-    }
   })
+}
 
-  // you can also just start without checking for status
-  // BackgroundGeolocation.start();
+export function StopTrackingService() {
+  BackgroundGeolocation.removeAllListeners()
 }

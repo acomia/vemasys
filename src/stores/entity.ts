@@ -23,33 +23,14 @@ type EntityState = {
   selectedVessel: {}
   selectedEntity: {}
   physicalVesselId: string
-  navigationLog: any
-  cargoEntryId: string
-  reservoirId: string
-  engineId: string
-  taskId: string
-  bunkeringId: string
-  certificateId: string
-  pegelId: string
-  userCertificateId: string
-  pdfUrl: string
-  searchedUser: any
-  engineGauge: any
   fleetVessel: number
-  navigationLogId: string
-  cargoEntry: any
-  navigationLogActionId: string
-  cargoHoldId: string
-  crewMember: any
-  userCertificate: any
-  imageUrl: string
-  consumableTypeId: string
 }
 
 type EntityActions = {
   getUserInfo: () => void
   getEntityUsers: () => void
   selectEntityUser: (entity: any) => void
+  selectFleetVessel?: (index: number, entity: any) => void
   setHasHydrated: (state: boolean) => void
   reset: () => void
 }
@@ -74,27 +55,7 @@ const initialEntityState: EntityState = {
   selectedVessel: {},
   selectedEntity: {},
   physicalVesselId: '',
-  navigationLog: null,
-  cargoEntryId: '',
-  reservoirId: '',
-  engineId: '',
-  taskId: '',
-  bunkeringId: '',
-  certificateId: '',
-  pegelId: '',
-  userCertificateId: '',
-  pdfUrl: '',
-  searchedUser: null,
-  engineGauge: null,
-  fleetVessel: 0,
-  navigationLogId: '',
-  cargoEntry: null,
-  navigationLogActionId: '',
-  cargoHoldId: '',
-  crewMember: null,
-  userCertificate: null,
-  imageUrl: '',
-  consumableTypeId: ''
+  fleetVessel: 0
 }
 
 export const useEntity = create(
@@ -148,18 +109,24 @@ export const useEntity = create(
         }
       },
       selectEntityUser: async (entity: any) => {
+        set({fleetVessel: 0})
         const entityRole = entity.role.title
         const entityType = entity.entity.type.title
         const physicalVesselId =
-          entity.entity.exploitationVessel &&
+          ENTITY_TYPE_EXPLOITATION_VESSEL === entityType &&
           entity.entity.exploitationVessel.physicalVessel
             ? entity.entity.exploitationVessel.physicalVessel.id
-            : null
-
+            : entity.entity.exploitationGroup.exploitationVessels[0]
+                .physicalVessel.id
         const vesselId =
           ENTITY_TYPE_EXPLOITATION_VESSEL === entityType
             ? entity.entity.exploitationVessel.id
             : entity.entity.exploitationGroup.exploitationVessels[0].id
+
+        const selectedVessel =
+          ENTITY_TYPE_EXPLOITATION_VESSEL === entityType
+            ? entity.entity
+            : entity.entity.exploitationGroup.exploitationVessels[0].entity
 
         set({
           entityId: entity.entity.id,
@@ -168,13 +135,49 @@ export const useEntity = create(
           physicalVesselId: physicalVesselId,
           entityType: entityType,
           vesselId: vesselId,
-          selectedVessel: entity.entity,
+          selectedVessel: selectedVessel,
           selectedEntity: entity
         })
         try {
-          const response = await API.getVesselNavigationDetails(
-            entity.entity.exploitationVessel.id
-          )
+          const response = await API.getVesselNavigationDetails(vesselId)
+          set({
+            vesselDetails: response
+          })
+        } catch (error) {
+          set({
+            isLoadingEntityUsers: false
+          })
+        }
+      },
+      selectFleetVessel: async (index: number, entity: any) => {
+        const physicalVesselId =
+          typeof entity.entity.exploitationVessel === 'object' &&
+          entity.entity.exploitationVessel.physicalVessel
+            ? entity.entity.exploitationVessel.physicalVessel.id
+            : entity.physicalVessel.id
+        const vesselId =
+          typeof entity.entity.exploitationVessel === 'object'
+            ? entity.entity.exploitationVessel.id
+            : entity.id
+        const entityId =
+          typeof entity.entity.exploitationVessel === 'object'
+            ? entity.entity.id
+            : get().entityId
+        const entityUserId =
+          typeof entity.entity.exploitationVessel === 'object'
+            ? entity.id
+            : get().entityUserId
+
+        set({
+          fleetVessel: index,
+          entityId: entityId,
+          entityUserId: entityUserId,
+          physicalVesselId: physicalVesselId,
+          vesselId: vesselId,
+          selectedVessel: entity.entity
+        })
+        try {
+          const response = await API.getVesselNavigationDetails(vesselId)
           set({
             vesselDetails: response
           })

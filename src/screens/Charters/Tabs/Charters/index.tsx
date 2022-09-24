@@ -1,5 +1,10 @@
 import React, {useEffect, useState} from 'react'
-import {RefreshControl, StyleSheet, TouchableOpacity} from 'react-native'
+import {
+  RefreshControl,
+  StyleSheet,
+  TouchableOpacity,
+  Platform
+} from 'react-native'
 import {
   Text,
   Box,
@@ -40,7 +45,7 @@ export default function Charters({navigation, route}: any) {
     viewPdf,
     updateCharterStatus
   } = useCharters()
-  const {entityType} = useEntity()
+  const {entityType, vesselId} = useEntity()
   const [searchedValue, setSearchValue] = useState('')
   const [chartersData, setChartersData] = useState(
     route === 'charters'
@@ -59,8 +64,7 @@ export default function Charters({navigation, route}: any) {
 
   useEffect(() => {
     getCharters()
-    return () => {}
-  }, [])
+  }, [vesselId])
 
   const showToast = (text: string, res: string) => {
     toast.show({
@@ -120,10 +124,12 @@ export default function Charters({navigation, route}: any) {
         <Box
           key={index}
           borderWidth={1}
-          borderColor={Colors.primary_light}
+          borderColor={status === 'completed' ? Colors.secondary : Colors.grey}
           borderRadius={ms(5)}
           mb={ms(10)}
-          borderStyle={status === 'draft' ? 'dashed' : 'solid'}
+          borderStyle={
+            status === 'draft' || status === 'new' ? 'dashed' : 'solid'
+          }
           overflow="hidden"
         >
           <HStack
@@ -174,9 +180,7 @@ export default function Charters({navigation, route}: any) {
             top={0}
             bottom={0}
             width={ms(7)}
-            backgroundColor={
-              item.isActive ? Colors.primary_light : Colors.disabled
-            }
+            bg={status === 'completed' ? Colors.secondary : Colors.grey}
           />
         </Box>
       </TouchableOpacity>
@@ -311,7 +315,7 @@ export default function Charters({navigation, route}: any) {
         onClose={() => setReviewPDF(false)}
       >
         <Modal.Content style={styles.bottom} bg="#23272F">
-          <HStack bg={Colors.black} py={ms(10)} px={ms(16)}>
+          {/* <HStack bg={Colors.black} py={ms(10)} px={ms(16)}>
             <Text
               flex="1"
               textAlign="center"
@@ -324,18 +328,26 @@ export default function Charters({navigation, route}: any) {
                 ''
               )}
               .pdf
+            </Text> */}
+          <TouchableOpacity
+            onPress={() => setReviewPDF(false)}
+            style={{
+              alignItems: 'flex-end',
+              backgroundColor: Colors.black,
+              paddingHorizontal: ms(16),
+              paddingVertical: ms(10)
+            }}
+          >
+            <Text
+              color={Colors.primary}
+              fontSize={ms(12)}
+              fontWeight="bold"
+              textAlign="right"
+            >
+              Done
             </Text>
-            <TouchableOpacity onPress={() => setReviewPDF(false)}>
-              <Text
-                color={Colors.primary}
-                fontSize={ms(12)}
-                fontWeight="bold"
-                textAlign="right"
-              >
-                Done
-              </Text>
-            </TouchableOpacity>
-          </HStack>
+          </TouchableOpacity>
+          {/* </HStack> */}
 
           <Pdf
             source={source}
@@ -379,17 +391,17 @@ export default function Charters({navigation, route}: any) {
 
 const styles = StyleSheet.create({
   pdf: {
-    marginTop: 0,
-    marginBottom: 'auto',
     width: '100%',
     height: '100%',
     backgroundColor: '#23272F',
-    paddingHorizontal: 12
+    paddingHorizontal: 12,
+    marginBottom: Platform.OS === 'ios' ? 0 : 40
   },
   bottom: {
     borderBottomEndRadius: 0,
     borderBottomStartRadius: 0,
     marginBottom: 0,
-    marginTop: 'auto'
+    marginTop: 'auto',
+    maxHeight: '80%'
   }
 })

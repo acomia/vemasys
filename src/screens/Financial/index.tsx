@@ -6,10 +6,16 @@ import {TabView, TabBar, SceneMap} from 'react-native-tab-view'
 import {Overview, Costs, Revenue, Scan} from './Tabs'
 import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
-import {financialTabs} from '@bluecentury/constants'
+import {
+  ENTITY_TYPE_EXPLOITATION_GROUP,
+  financialTabs
+} from '@bluecentury/constants'
+import {useEntity} from '@bluecentury/stores'
+import {FleetHeader} from '@bluecentury/components'
 
 export default function Financial() {
   const layout = useWindowDimensions()
+  const {entityType, entityUsers, selectFleetVessel} = useEntity()
   const [index, setIndex] = useState(0)
   const [routes] = useState(financialTabs)
 
@@ -49,15 +55,36 @@ export default function Financial() {
     />
   )
 
+  const onReloadFleetNavLogs = (index: number, vessel: any) => {
+    const selectedEntityVessel = entityUsers.find(
+      e => e?.entity?.exploitationVessel?.id === vessel?.id
+    )
+
+    if (typeof selectedEntityVessel === 'object' && selectedEntityVessel?.id) {
+      selectFleetVessel(index, selectedEntityVessel)
+    } else {
+      selectFleetVessel(index, vessel)
+    }
+  }
+
   return (
-    <TabView
-      lazy
-      navigationState={{index, routes}}
-      renderScene={renderScene}
-      renderTabBar={renderTabBar}
-      renderLazyPlaceholder={renderLazyPlaceholder}
-      onIndexChange={setIndex}
-      initialLayout={{width: layout.width}}
-    />
+    <Box flex="1">
+      {entityType === ENTITY_TYPE_EXPLOITATION_GROUP && (
+        <FleetHeader
+          onPress={(index: number, vessel: any) =>
+            onReloadFleetNavLogs(index, vessel)
+          }
+        />
+      )}
+      <TabView
+        lazy
+        navigationState={{index, routes}}
+        renderScene={renderScene}
+        renderTabBar={renderTabBar}
+        renderLazyPlaceholder={renderLazyPlaceholder}
+        onIndexChange={setIndex}
+        initialLayout={{width: layout.width}}
+      />
+    </Box>
   )
 }

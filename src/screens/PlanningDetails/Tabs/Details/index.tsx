@@ -324,7 +324,7 @@ const Details = () => {
   return (
     <Box flex="1">
       <ScrollView
-        contentContainerStyle={{flexGrow: 1, paddingBottom: 20}}
+        contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
         scrollEventThrottle={16}
         refreshControl={
           <RefreshControl
@@ -455,18 +455,17 @@ const Details = () => {
             Comments
           </Text>
           {navigationLogComments?.length > 0 ? (
-            <Text
+            <Box
               bg={Colors.azure}
-              color={Colors.white}
+              borderRadius={ms(20)}
               width={ms(22)}
               height={ms(22)}
               ml={ms(10)}
-              borderRadius={ms(20)}
-              fontWeight="bold"
-              textAlign="center"
             >
-              {navigationLogComments?.length}
-            </Text>
+              <Text color={Colors.white} fontWeight="bold" textAlign="center">
+                {navigationLogComments?.length}
+              </Text>
+            </Box>
           ) : null}
         </HStack>
 

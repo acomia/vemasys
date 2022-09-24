@@ -31,6 +31,7 @@ type RootStackParamList = {
   InformationPegelDetails: {pegelId: number}
   ImgViewer: {url: string; title: string}
   CharterAcceptSign: {charter: {} | undefined}
+  TrackingServiceDialog: undefined
 }
 
 type MainStackParamList = {
