@@ -10,7 +10,7 @@ import {
   ScrollView,
   Select,
   Text,
-  useToast
+  useToast,
 } from 'native-base'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import moment from 'moment'
@@ -18,14 +18,14 @@ import {ms} from 'react-native-size-matters'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import _ from 'lodash'
 
-import {IconButton, LoadingIndicator} from '@bluecentury/components'
+import {IconButton, LoadingAnimated} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
 import {PROD_URL} from '@vemasys/env'
 import {
   hasSelectedEntityUserPermission,
   ROLE_PERMISSION_TASK_MANAGE,
-  VEMASYS_PRODUCTION_FILE_URL
+  VEMASYS_PRODUCTION_FILE_URL,
 } from '@bluecentury/constants'
 import {useEntity, useTechnical} from '@bluecentury/stores'
 
@@ -43,11 +43,11 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
   const options = [
     {
       value: 'todo',
-      label: 'Todo'
+      label: 'Todo',
     },
     {value: 'in_progress', label: 'In Progress'},
     {value: 'done', label: 'Done'},
-    {value: 'cancel', label: 'Cancel'}
+    {value: 'cancel', label: 'Cancel'},
   ]
 
   useEffect(() => {
@@ -61,7 +61,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
                 onPress={() =>
                   navigation.navigate('AddEditTechnicalTask', {
                     method: 'edit',
-                    task: task
+                    task: task,
                   })
                 }
                 size={ms(20)}
@@ -75,7 +75,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
             </>
           ) : null}
         </HStack>
-      )
+      ),
     })
   }, [])
 
@@ -229,7 +229,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
             source={{
               uri: comment?.user?.icon?.path
                 ? `${PROD_URL}/upload/documents/${comment?.user?.icon?.path}`
-                : ''
+                : '',
             }}
           />
           <Box ml={ms(10)}>
@@ -281,7 +281,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
             source={Icons.eye}
             onPress={() =>
               navigation.navigate('PDFView', {
-                path: `${VEMASYS_PRODUCTION_FILE_URL}/${file.path}`
+                path: `${VEMASYS_PRODUCTION_FILE_URL}/${file.path}`,
               })
             }
             size={ms(22)}
@@ -300,8 +300,8 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
         {
           text: 'Yes',
           style: 'destructive',
-          onPress: () => handleDeleteTask()
-        }
+          onPress: () => handleDeleteTask(),
+        },
       ],
       {cancelable: true}
     )
@@ -329,7 +329,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
         },
         onCloseComplete() {
           navigation.goBack()
-        }
+        },
       })
     } else {
       toast.show({
@@ -340,12 +340,12 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
               Delete failed.
             </Box>
           )
-        }
+        },
       })
     }
   }
 
-  if (isTechnicalLoading) return <LoadingIndicator />
+  if (isTechnicalLoading) return <LoadingAnimated />
 
   return (
     <Box

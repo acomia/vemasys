@@ -14,13 +14,12 @@ import {ms} from 'react-native-size-matters'
 import {useEntity, useAuth, useSettings} from '@bluecentury/stores'
 import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
-import {EntityCard, LoadingIndicator} from '@bluecentury/components'
+import {EntityCard, LoadingAnimated} from '@bluecentury/components'
 import {Shadow} from 'react-native-shadow-2'
 import {resetAllStates} from '@bluecentury/utils'
 import {useSafeAreaInsets} from 'react-native-safe-area-context'
 import {CustomAlert} from '@bluecentury/components/custom-alert'
 import {EntityUser} from '@bluecentury/models'
-import {LoadingAnimated} from '@bluecentury/components/loading-animated'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 

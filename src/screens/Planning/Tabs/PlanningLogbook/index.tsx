@@ -11,16 +11,16 @@ import {useEntity, usePlanning} from '@bluecentury/stores'
 import {
   calculateTotalIn,
   calculateTotalOut,
-  formatLocationLabel
+  formatLocationLabel,
 } from '@bluecentury/constants'
-import {LoadingIndicator, NavigationLogType} from '@bluecentury/components'
+import {LoadingAnimated, NavigationLogType} from '@bluecentury/components'
 
 const PlanningLogbook = () => {
   const navigation = useNavigation()
   const {
     isPlanningLoading,
     plannedNavigationLogs,
-    getVesselPlannedNavLogs
+    getVesselPlannedNavLogs,
   }: any = usePlanning()
   const {vesselId} = useEntity()
 
@@ -43,7 +43,7 @@ const PlanningLogbook = () => {
         onPress={() =>
           navigation.navigate('PlanningDetails', {
             navlog: navigationLog,
-            title: formatLocationLabel(navigationLog?.location)
+            title: formatLocationLabel(navigationLog?.location),
           })
         }
       >
@@ -121,7 +121,7 @@ const PlanningLogbook = () => {
     getVesselPlannedNavLogs(vesselId)
   }
 
-  if (isPlanningLoading) return <LoadingIndicator />
+  if (isPlanningLoading) return <LoadingAnimated />
 
   return (
     <Box flex="1" bg={Colors.white}>

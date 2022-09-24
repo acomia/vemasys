@@ -3,7 +3,7 @@ import {
   RefreshControl,
   StyleSheet,
   TouchableOpacity,
-  Platform
+  Platform,
 } from 'react-native'
 import {
   Text,
@@ -18,7 +18,7 @@ import {
   Image,
   Modal,
   Button,
-  useToast
+  useToast,
 } from 'native-base'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
@@ -27,13 +27,13 @@ import Pdf from 'react-native-pdf'
 
 import {useCharters, useEntity} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
-import {CharterStatus, LoadingIndicator} from '@bluecentury/components'
+import {CharterStatus, LoadingAnimated} from '@bluecentury/components'
 import {
   CHARTER_CONTRACTOR_STATUS_ARCHIVED,
   CHARTER_CONTRACTOR_STATUS_REFUSED,
   CHARTER_ORDERER_STATUS_COMPLETED,
   ENTITY_TYPE_EXPLOITATION_GROUP,
-  ENTITY_TYPE_EXPLOITATION_VESSEL
+  ENTITY_TYPE_EXPLOITATION_VESSEL,
 } from '@bluecentury/constants'
 
 export default function Charters({navigation, route}: any) {
@@ -43,7 +43,7 @@ export default function Charters({navigation, route}: any) {
     charters,
     getCharters,
     viewPdf,
-    updateCharterStatus
+    updateCharterStatus,
   } = useCharters()
   const {entityType, vesselId} = useEntity()
   const [searchedValue, setSearchValue] = useState('')
@@ -82,7 +82,7 @@ export default function Charters({navigation, route}: any) {
             {text}
           </Text>
         )
-      }
+      },
     })
   }
 
@@ -225,7 +225,7 @@ export default function Charters({navigation, route}: any) {
     setReviewPDF(false)
     const status = {
       status: CHARTER_CONTRACTOR_STATUS_REFUSED,
-      setContractorStatus: false
+      setContractorStatus: false,
     }
     const update = await updateCharterStatus(selectedCharter?.id, status)
     if (typeof update === 'string') {
@@ -245,13 +245,13 @@ export default function Charters({navigation, route}: any) {
     getCharters()
   }
 
-  if (isCharterLoading) return <LoadingIndicator />
+  if (isCharterLoading) return <LoadingAnimated />
 
   return (
     <Box flex={1} safeArea backgroundColor={Colors.white} p={ms(12)}>
       <Input
         w={{
-          base: '100%'
+          base: '100%',
         }}
         backgroundColor="#F7F7F7"
         InputLeftElement={
@@ -335,7 +335,7 @@ export default function Charters({navigation, route}: any) {
               alignItems: 'flex-end',
               backgroundColor: Colors.black,
               paddingHorizontal: ms(16),
-              paddingVertical: ms(10)
+              paddingVertical: ms(10),
             }}
           >
             <Text
@@ -395,13 +395,13 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: '#23272F',
     paddingHorizontal: 12,
-    marginBottom: Platform.OS === 'ios' ? 0 : 40
+    marginBottom: Platform.OS === 'ios' ? 0 : 40,
   },
   bottom: {
     borderBottomEndRadius: 0,
     borderBottomStartRadius: 0,
     marginBottom: 0,
     marginTop: 'auto',
-    maxHeight: '80%'
-  }
+    maxHeight: '80%',
+  },
 })

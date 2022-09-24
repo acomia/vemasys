@@ -9,7 +9,7 @@ import {
   Image,
   Input,
   ScrollView,
-  Text
+  Text,
 } from 'native-base'
 import {useEntity, useInformation} from '@bluecentury/stores'
 import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons'
@@ -17,7 +17,7 @@ import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
 import ReactNativeBlobUtil from 'react-native-blob-util'
 import {Icons} from '@bluecentury/assets'
-import {IconButton, LoadingIndicator} from '@bluecentury/components'
+import {IconButton, LoadingAnimated} from '@bluecentury/components'
 import {Shadow} from 'react-native-shadow-2'
 import moment from 'moment'
 import {VEMASYS_PRODUCTION_FILE_URL} from '@bluecentury/constants'
@@ -79,7 +79,7 @@ const Rules = () => {
             source={Icons.eye}
             onPress={() =>
               navigation.navigate('PDFView', {
-                path: filePath
+                path: filePath,
               })
             }
             size={ms(20)}
@@ -118,7 +118,7 @@ const Rules = () => {
       <Box flex="1" px={ms(12)} py={ms(15)} bg={Colors.white}>
         <Input
           w={{
-            base: '100%'
+            base: '100%',
           }}
           backgroundColor="#F7F7F7"
           InputLeftElement={
@@ -161,7 +161,7 @@ const Rules = () => {
             showsVerticalScrollIndicator={false}
           />
         ) : (
-          <LoadingIndicator />
+          <LoadingAnimated />
         )}
       </Box>
       {/* <Box bg={Colors.white}>

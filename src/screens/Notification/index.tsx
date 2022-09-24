@@ -8,14 +8,14 @@ import {
   HStack,
   Text,
   VStack,
-  Center
+  Center,
 } from 'native-base'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import {Icons, Animated} from '@bluecentury/assets'
 import {useNotif, useAuth, useEntity} from '@bluecentury/stores'
-import {FleetHeader, LoadingIndicator} from '@bluecentury/components'
+import {FleetHeader, LoadingAnimated} from '@bluecentury/components'
 import {ENTITY_TYPE_EXPLOITATION_GROUP} from '@bluecentury/constants'
 
 const screenWidth = Dimensions.get('screen').width
@@ -35,7 +35,7 @@ export default function Notification() {
       if (!acc[date])
         acc[date] = {
           date: date,
-          data: []
+          data: [],
         }
       acc[date].data.push(item)
       return acc
@@ -148,7 +148,7 @@ export default function Notification() {
     }
   }
 
-  if (isLoadingNotification) return <LoadingIndicator />
+  if (isLoadingNotification) return <LoadingAnimated />
 
   return (
     <Box flex={1}>

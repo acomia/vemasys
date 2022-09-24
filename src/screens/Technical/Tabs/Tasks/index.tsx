@@ -6,7 +6,7 @@ import {useNavigation} from '@react-navigation/native'
 
 import {Colors} from '@bluecentury/styles'
 import {useEntity, useTechnical} from '@bluecentury/stores'
-import {LoadingIndicator} from '@bluecentury/components'
+import {LoadingAnimated} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 
 const {width} = Dimensions.get('window')
@@ -27,14 +27,14 @@ const Tasks = () => {
     setPullRefresh(false)
   }
 
-  // if (isTechnicalLoading) return <LoadingIndicator />
+  // if (isTechnicalLoading) return <LoadingAnimated />
 
   return (
     <Box flex="1">
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
-          paddingBottom: 20
+          paddingBottom: 20,
         }}
         scrollEventThrottle={16}
         refreshControl={
@@ -87,7 +87,7 @@ const Tasks = () => {
                   onPress={() =>
                     navigation.navigate('TechnicalTasksList', {
                       category: task.key,
-                      title: task.label
+                      title: task.label,
                     })
                   }
                 >
@@ -117,7 +117,7 @@ const Tasks = () => {
               )
             })
           ) : (
-            <LoadingIndicator />
+            <LoadingAnimated />
           )}
         </HStack>
       </ScrollView>
