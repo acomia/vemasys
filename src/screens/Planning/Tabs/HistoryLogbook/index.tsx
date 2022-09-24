@@ -180,10 +180,11 @@ const HistoryLogbook = ({routeIndex}: any) => {
               <Box
                 px={ms(16)}
                 py={ms(5)}
-                borderWidth="1"
-                borderTopWidth="0"
+                pt={3}
+                borderWidth={3}
                 borderColor={Colors.border}
                 borderStyle="dashed"
+                mt={-3}
               >
                 <HStack alignItems="center" my={ms(5)}>
                   <Box flex="1">
