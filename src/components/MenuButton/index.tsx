@@ -24,7 +24,11 @@ const MenuButton = ({active, children, iconSource, ...props}: Props) => {
           }
         },
         _text: {
-          color: active ? Colors.white : Colors.text,
+          color: active
+            ? Colors.white
+            : props.disabled
+            ? 'gray.400'
+            : Colors.text,
           fontWeight: '500',
           paddingLeft: ms(15)
         }
@@ -38,7 +42,9 @@ const MenuButton = ({active, children, iconSource, ...props}: Props) => {
           source={iconSource}
           size={ms(20)}
           resizeMode="contain"
-          tintColor={active ? Colors.white : Colors.text}
+          tintColor={
+            active ? Colors.white : props.disabled ? 'gray.400' : Colors.text
+          }
         />
       }
       {...props}

@@ -1,11 +1,11 @@
-import React, {useEffect, useRef} from 'react'
-import {AlertDialog, Box, Button, Text} from 'native-base'
-import {useSettings} from '@bluecentury/stores'
-import {Colors} from '@bluecentury/styles'
+import React, {useRef} from 'react'
+import {AlertDialog, Button, Text} from 'native-base'
+import {useEntity, useSettings} from '@bluecentury/stores'
 import {useNavigation} from '@react-navigation/native'
 
 export default function TrackingServiceDialog() {
   const navigation = useNavigation()
+  const {selectedVessel} = useEntity()
   const {isMobileTracking, setIsMobileTracking} = useSettings()
   const onClose = () => navigation.goBack()
   const handleOnToggleTrackingService = () => {
@@ -22,9 +22,13 @@ export default function TrackingServiceDialog() {
     >
       <AlertDialog.Content>
         <AlertDialog.CloseButton />
-        <AlertDialog.Header>Tracking Service</AlertDialog.Header>
+        <AlertDialog.Header>Tracking</AlertDialog.Header>
         <AlertDialog.Body>
-          <Text>This will {status} tracking service of this device.</Text>
+          <Text>
+            This will {status} tracking service in this device and will{' '}
+            {isMobileTracking ? 'stop' : 'start'} sending GPS coordinates for{' '}
+            {selectedVessel?.alias}.
+          </Text>
         </AlertDialog.Body>
         <AlertDialog.Footer>
           <Button.Group space={2}>

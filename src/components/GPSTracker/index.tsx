@@ -8,7 +8,7 @@ import {
   Image,
   Switch,
   Icon,
-  Divider
+  Divider,
 } from 'native-base'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {ms} from 'react-native-size-matters'
@@ -19,7 +19,7 @@ import {Colors} from '@bluecentury/styles'
 import {Icons} from '@bluecentury/assets'
 import {useEntity, useMap, useSettings} from '@bluecentury/stores'
 import BackgroundGeolocation, {
-  Location
+  Location,
 } from '@mauron85/react-native-background-geolocation'
 
 type Props = NativeStackScreenProps<RootStackParamList>
@@ -46,16 +46,26 @@ export const GPSTracker = ({navigation}: Props) => {
     navigation.navigate('TrackingServiceDialog')
   }
 
-  const renderTrackerSource = (sourceData: string | undefined) => {
-    let source = null
-    if (typeof sourceData !== 'undefined') {
-      if (sourceData.includes('ais')) {
-        source = Icons.mobile_tracker
-      } else if (sourceData.includes('vematrack')) {
-        source = Icons.mobile_tracker
-      }
-    }
-    return source
+  const renderTrackerSourceImage = () => {
+    const sourceData = vesselDetails?.lastGeolocation?.sourceOfData
+    if (isMobileTracking) return Icons.mobile_tracker
+    if (typeof sourceData === 'undefined') return null
+    if (sourceData.includes('ais')) return Icons.ais_tracker
+    if (sourceData.includes('vematrack')) return Icons.vemasys_tracker
+    return Icons.mobile_tracker
+  }
+
+  const renderTrackerSourceText = () => {
+    const sourceData = vesselDetails?.lastGeolocation?.sourceOfData
+    if (isMobileTracking) return 'Current device'
+    if (typeof sourceData === 'undefined') return 'Unknown'
+    if (sourceData.includes('ais')) return 'AIS Hub'
+    if (sourceData.includes('vematrack sp')) return 'Vematrack SP'
+    if (sourceData.includes('vematrack')) return 'Vematrack'
+    if (sourceData.includes('astra')) return 'ASTRA Paging'
+    if (sourceData.includes('marine')) return 'Marine Traffic'
+    if (sourceData.includes('api tracker vt')) return 'API Tracker VT'
+    if (sourceData.includes('api')) return 'API'
   }
 
   return (
@@ -121,21 +131,13 @@ export const GPSTracker = ({navigation}: Props) => {
             height="100%"
             alignItems="center"
           >
-            <RNImage
-              source={
-                isMobileTracking
-                  ? Icons.mobile_tracker
-                  : renderTrackerSource(
-                      vesselDetails?.lastGeolocation?.sourceOfData
-                    )
-              }
-              style={{tintColor: '#44A7B9', marginLeft: 20}}
+            <Image
+              marginLeft={3}
+              source={renderTrackerSourceImage()}
+              tintColor="#44A7B9"
+              alt="tracker-source-image"
             />
-            <Text ml={ms(10)}>
-              {isMobileTracking
-                ? 'Current device'
-                : vesselDetails?.lastGeolocation?.sourceOfData}
-            </Text>
+            <Text ml={ms(10)}>{renderTrackerSourceText()}</Text>
           </HStack>
         </HStack>
         <HStack
@@ -189,7 +191,9 @@ export const GPSTracker = ({navigation}: Props) => {
             alignItems="center"
             justifyContent="space-between"
           >
-            <Text ml={ms(15)}>{netInfo.type}</Text>
+            <Text ml={ms(15)} textTransform="capitalize">
+              {netInfo.type}
+            </Text>
             <Icon
               as={<FontAwesome5 name="signal" />}
               size={ms(16)}
@@ -233,7 +237,7 @@ export const GPSTracker = ({navigation}: Props) => {
           backgroundColor={Colors.azure}
           onPress={() => navigation.goBack()}
           _pressed={{
-            bgColor: Colors.primary
+            bgColor: Colors.primary,
           }}
         >
           Dismiss
