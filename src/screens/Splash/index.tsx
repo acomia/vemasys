@@ -7,8 +7,9 @@ import {useAuth, useEntity, useSettings} from '@bluecentury/stores'
 import {
   CommonActions,
   NavigationProp,
-  useNavigation
+  useNavigation,
 } from '@react-navigation/native'
+import {resetAllStates} from '@bluecentury/utils'
 
 export default function Splash() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>()
@@ -29,6 +30,7 @@ export default function Splash() {
     if (hasAuthHydrated && hasEntityHydrated) {
       // non-authenticated
       if (typeof token === 'undefined') {
+        resetAllStates()
         navigation.navigate('Login')
         return
       }
@@ -43,7 +45,7 @@ export default function Splash() {
       navigation.dispatch(
         CommonActions.reset({
           index: 0,
-          routes: [{name: 'Main'}]
+          routes: [{name: 'Main'}],
         })
       )
     }
