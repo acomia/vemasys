@@ -8,7 +8,7 @@
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "postinstall": "npx patch-package && jetify"
+    "postinstall": "patch-package --use-yarn && jetify"
   },
   "dependencies": {
     "@mauron85/react-native-background-geolocation": "^0.6.3",
