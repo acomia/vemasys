@@ -69,3 +69,17 @@ index a3888f3..610837b 100644
              <intent-filter>
                  <action android:name="android.accounts.AccountAuthenticator"/>
              </intent-filter>
+diff --git a/node_modules/@mauron85/react-native-background-geolocation/android/lib/src/main/AndroidManifest.xml b/node_modules/@mauron85/react-native-background-geolocation/android/lib/src/main/AndroidManifest.xml
+index 4065e38..08b4fb1 100644
+--- a/node_modules/@mauron85/react-native-background-geolocation/android/lib/src/main/AndroidManifest.xml
++++ b/node_modules/@mauron85/react-native-background-geolocation/android/lib/src/main/AndroidManifest.xml
+@@ -31,7 +31,8 @@
+                 android:resource="@xml/syncadapter"/>
+         </service>
+         <service
+-            android:name="com.marianhello.bgloc.sync.AuthenticatorService">
++            android:name="com.marianhello.bgloc.sync.AuthenticatorService"
++            android:exported="true">
+             <intent-filter>
+                 <action android:name="android.accounts.AccountAuthenticator"/>
+             </intent-filter>
