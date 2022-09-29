@@ -16,5 +16,7 @@ export const Colors = {
   border: '#BEE3F8',
   // text color
   text: '#23272F',
-  highlighted_text: '#29B7EF'
+  highlighted_text: '#29B7EF',
+  //shadow color
+  shadow: '#2e3134',
 }

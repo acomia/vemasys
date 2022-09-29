@@ -11,6 +11,13 @@ export const Icons = {
   hardHat: require('./hard-hat.png'),
   userCircle: require('./user-circle.png'),
   cog: require('./cog.png'),
+  user: require('./user.png'),
+  ship: require('./ship.png'),
+  adjust: require('./adjust.png'),
+  english: require('./England_flag.png'),
+  german: require('./German_flag.png'),
+  french: require('./French_flag.png'),
+  dutch: require('./Dutch_flag.png'),
   // prev
   menu: require('./menu.png'),
   completed: require('./completed.png'),
@@ -83,5 +90,5 @@ export const Icons = {
   chart_line_up: require('./chart-line.png'),
   chart__line_down: require('./chart-line-down.png'),
   user_plus: require('./user-plus.png'),
-  refused: require('./refused.png')
+  refused: require('./refused.png'),
 }
