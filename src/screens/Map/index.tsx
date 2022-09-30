@@ -79,13 +79,17 @@ export default function Map({navigation}: Props) {
   const [zoomLevel, setZoomLevel] = useState(null)
   let refreshId = useRef<any>()
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (vesselId) {
-      getVesselStatus(vesselId)
-      getPreviousNavigationLogs(vesselId)
-      getPlannedNavigationLogs(vesselId)
-      getCurrentNavigationLogs(vesselId)
-      getLastCompleteNavigationLogs(vesselId)
+      const init = async () => {
+        await getVesselStatus(vesselId)
+        await getPreviousNavigationLogs(vesselId)
+        await getPlannedNavigationLogs(vesselId)
+        await getCurrentNavigationLogs(vesselId)
+        await getLastCompleteNavigationLogs(vesselId)
+      }
+
+      init()
     }
 
     if (focused) {
@@ -128,12 +132,12 @@ export default function Map({navigation}: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vesselStatus])
 
-  const updateMap = () => {
+  const updateMap = async () => {
     if (vesselId) {
-      getPreviousNavigationLogs(vesselId)
-      getPlannedNavigationLogs(vesselId)
-      getCurrentNavigationLogs(vesselId)
-      getVesselStatus(vesselId)
+      await getPreviousNavigationLogs(vesselId)
+      await getPlannedNavigationLogs(vesselId)
+      await getCurrentNavigationLogs(vesselId)
+      await getVesselStatus(vesselId)
     }
   }
 

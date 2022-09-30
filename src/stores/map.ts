@@ -3,6 +3,7 @@ import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as API from '@bluecentury/api/vemasys'
 import {Location} from '@mauron85/react-native-background-geolocation'
+import {getVesselStatus} from '@bluecentury/api/vemasys'
 
 type MapState = {
   vesselStatus: any
@@ -26,11 +27,11 @@ type MapState = {
 }
 
 type MapActions = {
-  getVesselStatus: (vesselId: string) => void
-  getPreviousNavigationLogs: (vesselId: string) => void
-  getPlannedNavigationLogs: (vesselId: string) => void
-  getCurrentNavigationLogs: (vesselId: string) => void
-  getLastCompleteNavigationLogs: (navLogId: string) => void
+  getVesselStatus: (vesselId: string) => Promise<void>
+  getPreviousNavigationLogs: (vesselId: string) => Promise<void>
+  getPlannedNavigationLogs: (vesselId: string) => Promise<void>
+  getCurrentNavigationLogs: (vesselId: string) => Promise<void>
+  getLastCompleteNavigationLogs: (navLogId: string) => Promise<void>
   getActiveFormations: () => void
   verifyTrackingDeviceToken: (id: string, token: string, method: string) => void
   endVesselFormations: (formationId: string, vesselId: string) => void
