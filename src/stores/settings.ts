@@ -6,6 +6,7 @@ import {Environments} from '@bluecentury/constants'
 type TEnv = keyof typeof Environments
 
 type SettingsState = {
+  isRemainLoggedIn: boolean
   env: string | undefined
   apiUrl: string | undefined
   isDarkMode: boolean
@@ -20,6 +21,7 @@ type SettingsActions = {
   setLanguage: (lang: string) => void
   setIsMobileTracking: (val: boolean) => void
   setHasHydrated: (val: boolean) => void
+  setIsRemainLoggedIn: (isRemainLoggedIn: boolean) => void
 }
 
 type SettingsStore = SettingsState & SettingsActions
@@ -27,6 +29,7 @@ type SettingsStore = SettingsState & SettingsActions
 export const useSettings = create(
   persist<SettingsStore>(
     set => ({
+      isRemainLoggedIn: false,
       env: undefined,
       apiUrl: undefined,
       isDarkMode: false,
@@ -35,7 +38,7 @@ export const useSettings = create(
       hasSettingsRehydrated: false,
       setDarkMode: async darkMode => {
         set({
-          isDarkMode: darkMode
+          isDarkMode: darkMode,
         })
       },
       setLanguage: lang => {
@@ -43,26 +46,29 @@ export const useSettings = create(
       },
       setIsMobileTracking: val => {
         set({
-          isMobileTracking: val
+          isMobileTracking: val,
         })
       },
       setEnv: env => {
         const url = Environments[env]
         set({
           env: env,
-          apiUrl: url
+          apiUrl: url,
         })
+      },
+      setIsRemainLoggedIn: isRemainLoggedIn => {
+        set({isRemainLoggedIn: isRemainLoggedIn})
       },
       setHasHydrated: val => {
         set({hasSettingsRehydrated: val})
-      }
+      },
     }),
     {
       name: 'settings-storage',
       getStorage: () => AsyncStorage,
       onRehydrateStorage: () => state => {
         state?.setHasHydrated(true)
-      }
+      },
     }
   )
 )

@@ -3,6 +3,7 @@ import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as API from '@bluecentury/api/vemasys'
 import {Credentials, Auth} from 'src/models'
+import * as Keychain from 'react-native-keychain'
 
 type AuthState = {
   hasAuthHydrated: boolean
@@ -31,7 +32,7 @@ const initialState: AuthState = {
   errorMessage: '',
   hasAuthenticationError: false,
   isLoggingOut: false,
-  hasErrorLogout: false
+  hasErrorLogout: false,
 }
 
 export const useAuth = create(
@@ -44,7 +45,7 @@ export const useAuth = create(
           refreshToken: undefined,
           isAuthenticatingUser: true,
           isLoggingOut: false,
-          hasAuthenticationError: false
+          hasAuthenticationError: false,
         })
         try {
           const response: Auth = await API.login(credentials)
@@ -52,15 +53,19 @@ export const useAuth = create(
             token: response.token,
             refreshToken: response.refreshToken,
             isAuthenticatingUser: false,
-            hasAuthenticationError: false
+            hasAuthenticationError: false,
           })
+          await Keychain.setGenericPassword(
+            credentials.username,
+            credentials.password
+          )
         } catch (error: any) {
           set({
             token: undefined,
             refreshToken: undefined,
             errorMessage: error,
             isAuthenticatingUser: false,
-            hasAuthenticationError: true
+            hasAuthenticationError: true,
           })
         }
       },
@@ -68,21 +73,21 @@ export const useAuth = create(
         set({
           ...initialState,
           token: undefined,
-          hasAuthHydrated: true
+          hasAuthHydrated: true,
         })
       },
       setHasHydrated: state => {
         set({
-          hasAuthHydrated: state
+          hasAuthHydrated: state,
         })
-      }
+      },
     }),
     {
       name: 'auth-storage',
       getStorage: () => AsyncStorage,
       onRehydrateStorage: () => state => {
         state?.setHasHydrated(true)
-      }
+      },
     }
   )
 )
