@@ -4,9 +4,9 @@ import {useAuth, useEntity, useSettings} from '@bluecentury/stores'
 
 export const API = axios.create({
   headers: {
-    Accept: 'application/json'
+    Accept: 'application/json',
     // 'Content-Type': 'application/json'
-  }
+  },
 })
 
 // API.interceptors.request.use(paramsToSnakeCase)
@@ -23,7 +23,7 @@ API.interceptors.request.use(async req => {
   req.headers = {
     ...req.headers,
     'Jwt-Auth': `Bearer ${token}`,
-    'X-active-entity-user-id': `${entityUserId}`
+    'X-active-entity-user-id': `${entityUserId}`,
   }
   if (__DEV__) {
     // console.log('Request Url: ', req.url)

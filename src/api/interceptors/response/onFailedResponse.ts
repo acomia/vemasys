@@ -1,7 +1,8 @@
 import axios from 'axios'
-import {useAuth} from '@bluecentury/stores'
+import {useAuth, useSettings} from '@bluecentury/stores'
 import {API} from '../../apiService'
 import {API_URL} from '@vemasys/env'
+import * as Keychain from 'react-native-keychain'
 
 const UNAUTHENTICATED = 401
 
@@ -29,12 +30,35 @@ export const onFailedResponse = async (error: any) => {
       if (res) {
         API.defaults.headers.common = {
           ...API.defaults.headers.common,
-          'Jwt-Auth': res.data.token
+          'Jwt-Auth': res.data.token,
         }
         return API(failedRequest)
       }
     } catch (err) {
       console.log('Error: Failed to Refresh Token ', err)
+      if (useSettings.getState().isRemainLoggedIn) {
+        const credentials = await Keychain.getGenericPassword()
+        if (credentials) {
+          console.log('credentials ')
+          const {username, password} = credentials
+          const res = await axios.post(`${API_URL}login_check`, {
+            username: username,
+            password: password,
+          })
+          console.log('res using stored', res.data.token)
+          if (res) {
+            API.defaults.headers.common = {
+              ...API.defaults.headers.common,
+              'Jwt-Auth': res.data.token,
+            }
+            useAuth.getState().setUser({
+              token: res.data.token,
+              refreshToken: res.data.refreshToken,
+            })
+            return API(failedRequest)
+          }
+        }
+      }
       useAuth.getState().logout()
       return Promise.reject(err)
     }
