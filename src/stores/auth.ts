@@ -18,6 +18,7 @@ type AuthState = {
 
 type AuthActions = {
   authenticate: (credentials: Credentials) => void
+  setUser: (obj: any) => void
   setHasHydrated: (state: boolean) => void
   logout: () => void
 }
@@ -68,6 +69,12 @@ export const useAuth = create(
             hasAuthenticationError: true,
           })
         }
+      },
+      setUser: obj => {
+        set({
+          token: obj.token,
+          refreshToken: obj.refreshToken,
+        })
       },
       logout: async () => {
         set({
