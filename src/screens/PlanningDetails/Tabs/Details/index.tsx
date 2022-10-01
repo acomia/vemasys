@@ -172,7 +172,8 @@ const Details = () => {
             date={navigationLogDetails.plannedEta}
             locked={navigationLogDetails?.locked}
             onChangeDate={() => {
-              setSelectedDate('PLN'), setOpenDatePicker(true)
+              setSelectedDate('PLN')
+              setOpenDatePicker(true)
             }}
             onClearDate={() => setDates({...dates, plannedEta: null})}
           />
@@ -188,7 +189,8 @@ const Details = () => {
             }
             locked={navigationLogDetails?.locked}
             onChangeDate={() => {
-              setSelectedDate('ETA'), setOpenDatePicker(true)
+              setSelectedDate('ETA')
+              setOpenDatePicker(true)
             }}
             onClearDate={() => setDates({...dates, captainDatetimeETA: null})}
           />
@@ -205,7 +207,8 @@ const Details = () => {
             }
             locked={navigationLogDetails?.locked}
             onChangeDate={() => {
-              setSelectedDate('NOR'), setOpenDatePicker(true)
+              setSelectedDate('NOR')
+              setOpenDatePicker(true)
             }}
             onClearDate={() => setDates({...dates, announcedDatetime: null})}
           />
@@ -222,7 +225,8 @@ const Details = () => {
             }
             locked={navigationLogDetails?.locked}
             onChangeDate={() => {
-              setSelectedDate('DOC'), setOpenDatePicker(true)
+              setSelectedDate('DOC')
+              setOpenDatePicker(true)
             }}
             onClearDate={() =>
               setDates({...dates, terminalApprovedDeparture: null})
