@@ -140,12 +140,19 @@ const Details = () => {
   }
 
   const onDatesChange = (date: Date) => {
-    if (selectedDate === 'ETA') {
-      setDates({...dates, captainDatetimeETA: date})
-    } else if (selectedDate === 'NOR') {
-      setDates({...dates, announcedDatetime: date})
-    } else {
-      setDates({...dates, terminalApprovedDeparture: date})
+    switch (selectedDate) {
+      case 'PLN':
+        setDates({...dates, plannedEta: date})
+        return
+      case 'ETA':
+        setDates({...dates, captainDatetimeETA: date})
+        return
+      case 'NOR':
+        setDates({...dates, announcedDatetime: date})
+        return
+      case 'DOC':
+        setDates({...dates, terminalApprovedDeparture: date})
+        return
     }
   }
 
@@ -166,73 +173,66 @@ const Details = () => {
             {formatLocationLabel(navigationLogDetails?.location)}
           </Text>
         </HStack>
-        {navigationLogDetails?.plannedEta && (
-          <DatetimePickerList
-            title="PLN"
-            date={navigationLogDetails.plannedEta}
-            locked={navigationLogDetails?.locked}
-            onChangeDate={() => {
-              setSelectedDate('PLN')
-              setOpenDatePicker(true)
-            }}
-            onClearDate={() => setDates({...dates, plannedEta: null})}
-          />
-        )}
-        {!navigationLogDetails?.captainDatetimeEta &&
-        !navigationLogDetails?.plannedEta ? null : (
-          <DatetimePickerList
-            title="ETA"
-            date={
-              _.isNull(dates.captainDatetimeETA)
-                ? navigationLogDetails?.captainDatetimeEta
-                : dates.captainDatetimeETA
-            }
-            locked={navigationLogDetails?.locked}
-            onChangeDate={() => {
-              setSelectedDate('ETA')
-              setOpenDatePicker(true)
-            }}
-            onClearDate={() => setDates({...dates, captainDatetimeETA: null})}
-          />
-        )}
+        <DatetimePickerList
+          title="PLN"
+          date={
+            dates.plannedEta
+              ? dates.plannedEta
+              : navigationLogDetails?.plannedEta
+          }
+          locked={navigationLogDetails?.locked}
+          onChangeDate={() => {
+            setSelectedDate('PLN')
+            setOpenDatePicker(true)
+          }}
+          onClearDate={() => setDates({...dates, plannedEta: null})}
+        />
+        <DatetimePickerList
+          title="ETA"
+          date={
+            _.isNull(dates.captainDatetimeETA)
+              ? navigationLogDetails?.captainDatetimeEta
+              : dates.captainDatetimeETA
+          }
+          locked={navigationLogDetails?.locked}
+          onChangeDate={() => {
+            setSelectedDate('ETA')
+            setOpenDatePicker(true)
+          }}
+          onClearDate={() => setDates({...dates, captainDatetimeETA: null})}
+        />
 
-        {!navigationLogDetails?.announcedDatetime &&
-        !navigationLogDetails?.plannedEta ? null : (
-          <DatetimePickerList
-            title="NOR"
-            date={
-              _.isNull(dates.announcedDatetime)
-                ? navigationLogDetails?.announcedDatetime
-                : dates.announcedDatetime
-            }
-            locked={navigationLogDetails?.locked}
-            onChangeDate={() => {
-              setSelectedDate('NOR')
-              setOpenDatePicker(true)
-            }}
-            onClearDate={() => setDates({...dates, announcedDatetime: null})}
-          />
-        )}
+        <DatetimePickerList
+          title="NOR"
+          date={
+            _.isNull(dates.announcedDatetime)
+              ? navigationLogDetails?.announcedDatetime
+              : dates.announcedDatetime
+          }
+          locked={navigationLogDetails?.locked}
+          onChangeDate={() => {
+            setSelectedDate('NOR')
+            setOpenDatePicker(true)
+          }}
+          onClearDate={() => setDates({...dates, announcedDatetime: null})}
+        />
 
-        {!navigationLogDetails?.terminalApprovedDeparture &&
-        !navigationLogDetails?.plannedEta ? null : (
-          <DatetimePickerList
-            title="DOC"
-            date={
-              _.isNull(dates.terminalApprovedDeparture)
-                ? navigationLogDetails?.terminalApprovedDeparture
-                : dates.terminalApprovedDeparture
-            }
-            locked={navigationLogDetails?.locked}
-            onChangeDate={() => {
-              setSelectedDate('DOC')
-              setOpenDatePicker(true)
-            }}
-            onClearDate={() =>
-              setDates({...dates, terminalApprovedDeparture: null})
-            }
-          />
-        )}
+        <DatetimePickerList
+          title="DOC"
+          date={
+            _.isNull(dates.terminalApprovedDeparture)
+              ? navigationLogDetails?.terminalApprovedDeparture
+              : dates.terminalApprovedDeparture
+          }
+          locked={navigationLogDetails?.locked}
+          onChangeDate={() => {
+            setSelectedDate('DOC')
+            setOpenDatePicker(true)
+          }}
+          onClearDate={() =>
+            setDates({...dates, terminalApprovedDeparture: null})
+          }
+        />
 
         <Button
           bg={
@@ -526,7 +526,8 @@ const Details = () => {
           date={new Date()}
           mode="datetime"
           onConfirm={date => {
-            setOpenDatePicker(false), onDatesChange(date)
+            setOpenDatePicker(false)
+            onDatesChange(date)
           }}
           onCancel={() => {
             setOpenDatePicker(false)

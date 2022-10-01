@@ -8075,9 +8075,9 @@ react-native-maps@^0.31.1:
     deprecated-react-native-prop-types "^2.3.0"
 
 react-native-pager-view@^5.4.24:
-  version "5.4.24"
-  resolved "https://registry.yarnpkg.com/react-native-pager-view/-/react-native-pager-view-5.4.24.tgz#8626e757ddc55e41eca66d2f8a8a75aec54591ee"
-  integrity sha512-dRMB7i3B+mu4NCeIN6gqbR/kC/rr2wzqO0gisXDdJwJr78G24sWoTNpLEDFo3G8TFHY9nTMutVl5CUvkN2dp6g==
+  version "5.4.25"
+  resolved "https://registry.yarnpkg.com/react-native-pager-view/-/react-native-pager-view-5.4.25.tgz#cd639d5387a7f3d5581b55a33c5faa1cbc200f97"
+  integrity sha512-3drrYwaLat2fYszymZe3nHMPASJ4aJMaxiejfA1V5SK3OygYmdtmV2u5prX7TnjueJzGSyyaCYEr2JlrRt4YPg==
 
 react-native-pdf@^6.5.0:
   version "6.5.0"
@@ -8149,10 +8149,10 @@ react-native-swipe-gestures@^1.0.5:
   resolved "https://registry.yarnpkg.com/react-native-swipe-gestures/-/react-native-swipe-gestures-1.0.5.tgz#a172cb0f3e7478ccd681fd36b8bfbcdd098bde7c"
   integrity sha512-Ns7Bn9H/Tyw278+5SQx9oAblDZ7JixyzeOczcBK8dipQk2pD7Djkcfnf1nB/8RErAmMLL9iXgW0QHqiII8AhKw==
 
-react-native-tab-view@^3.1.1:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/react-native-tab-view/-/react-native-tab-view-3.1.1.tgz#1f8d7a835ab4f5b1b1407ec8dddc1053b53fa3c6"
-  integrity sha512-M5pRN6utQfytKWoKlKVzg5NbkYu308qNoW1khGTtEOTs1k14p2dHJ/BWOJoJYHKbPVUyZldbG9MFT7gUl4YHnw==
+react-native-tab-view@3.2.1:
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/react-native-tab-view/-/react-native-tab-view-3.2.1.tgz#1da975203ef30996c412f9c2808bb81e12c3376f"
+  integrity sha512-/3htrnDJ8hXXO6M5tDKgGPan5NhiVG4oN6SH8LgQtbAO2y+YI104sjlbPOxhLUBpbj43tOQerUtJF7ENcHEPaw==
 
 react-native-vector-icons@^9.1.0:
   version "9.1.0"
