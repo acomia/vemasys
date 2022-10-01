@@ -13,7 +13,7 @@ import {
 } from 'native-base'
 import {ms} from 'react-native-size-matters'
 import DatePicker from 'react-native-date-picker'
-import {useNavigation, useRoute} from '@react-navigation/native'
+import {NavigationProp, useNavigation, useRoute} from '@react-navigation/native'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import moment from 'moment'
 import _ from 'lodash'
@@ -33,9 +33,16 @@ import {
 import {PROD_URL} from '@vemasys/env'
 import {LoadingAnimated} from '@bluecentury/components'
 
+type Dates = {
+  plannedEta: Date | null
+  captainDatetimeETA: Date | null
+  announcedDatetime: Date | null
+  terminalApprovedDeparture: Date | null
+}
+
 const Details = () => {
   const toast = useToast()
-  const navigation = useNavigation()
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>()
   const route = useRoute()
   const {
     isPlanningLoading,
@@ -51,7 +58,8 @@ const Details = () => {
   } = usePlanning()
   const {user, selectedEntity, physicalVesselId} = useEntity()
   const {navlog}: any = route.params
-  const [dates, setDates] = useState({
+  const [dates, setDates] = useState<Dates>({
+    plannedEta: null,
     captainDatetimeETA: null,
     announcedDatetime: null,
     terminalApprovedDeparture: null,
@@ -158,6 +166,17 @@ const Details = () => {
             {formatLocationLabel(navigationLogDetails?.location)}
           </Text>
         </HStack>
+        {navigationLogDetails?.plannedEta && (
+          <DatetimePickerList
+            title="PLN"
+            date={navigationLogDetails.plannedEta}
+            locked={navigationLogDetails?.locked}
+            onChangeDate={() => {
+              setSelectedDate('PLN'), setOpenDatePicker(true)
+            }}
+            onClearDate={() => setDates({...dates, plannedEta: null})}
+          />
+        )}
         {!navigationLogDetails?.captainDatetimeEta &&
         !navigationLogDetails?.plannedEta ? null : (
           <DatetimePickerList
