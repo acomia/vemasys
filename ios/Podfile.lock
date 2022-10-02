@@ -294,6 +294,8 @@ PODS:
     - React-Core
   - react-native-document-picker (8.1.1):
     - React-Core
+  - react-native-document-scanner (1.4.3):
+    - React
   - react-native-document-scanner-plugin (0.1.0):
     - React-Core
   - react-native-geolocation-service (5.3.0-beta.4):
@@ -308,7 +310,7 @@ PODS:
     - React-Core
   - react-native-netinfo (9.0.0):
     - React-Core
-  - react-native-pager-view (5.4.24):
+  - react-native-pager-view (5.4.25):
     - React-Core
   - react-native-pdf (6.5.0):
     - React-Core
@@ -469,6 +471,7 @@ DEPENDENCIES:
   - react-native-config (from `../node_modules/react-native-config`)
   - react-native-date-picker (from `../node_modules/react-native-date-picker`)
   - react-native-document-picker (from `../node_modules/react-native-document-picker`)
+  - react-native-document-scanner (from `../node_modules/react-native-document-scanner`)
   - react-native-document-scanner-plugin (from `../node_modules/react-native-document-scanner-plugin`)
   - react-native-geolocation-service (from `../node_modules/react-native-geolocation-service`)
   - react-native-google-maps (from `../node_modules/react-native-maps`)
@@ -576,6 +579,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-date-picker"
   react-native-document-picker:
     :path: "../node_modules/react-native-document-picker"
+  react-native-document-scanner:
+    :path: "../node_modules/react-native-document-scanner"
   react-native-document-scanner-plugin:
     :path: "../node_modules/react-native-document-scanner-plugin"
   react-native-geolocation-service:
@@ -680,13 +685,14 @@ SPEC CHECKSUMS:
   react-native-config: 6502b1879f97ed5ac570a029961fc35ea606cd14
   react-native-date-picker: 9088350e06918f7d842a34c171acadc66583cb94
   react-native-document-picker: f68191637788994baed5f57d12994aa32cf8bf88
+  react-native-document-scanner: ff13091b7685b2bb29ffecce968ef0a15af9eb80
   react-native-document-scanner-plugin: 8e214453beeecd752e70803073681d3360c1a6a8
   react-native-geolocation-service: c0efb872258ed9240f1003a70fca9e9757e5c785
   react-native-google-maps: 8231ffa015bf8b222c2e2661fa9163cdb609a224
   react-native-image-picker: cffb727cf2f59bd5c0408e30b3dbe0b935f88835
   react-native-maps: 8b8bfada2c86205a7f5a07dd1f92f29b33ea83aa
   react-native-netinfo: 5b664b2945a8f02102b296f0f812bddd6827ed9c
-  react-native-pager-view: 95d0418c3c74279840abec6926653d32447bafb6
+  react-native-pager-view: da490aa1f902c9a5aeecf0909cc975ad0e92e53e
   react-native-pdf: de35db0d8f1e5d37e65e887554f7d4bd062af56b
   react-native-safe-area-context: ebf8c413eb8b5f7c392a036a315eb7b46b96845f
   react-native-webview: d33e2db8925d090871ffeb232dfa50cb3a727581
