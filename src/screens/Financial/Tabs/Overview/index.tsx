@@ -88,7 +88,7 @@ const Overview = () => {
                     Platform.OS === 'ios'
                       ? Number(value).toLocaleString('en-GB', {
                           maximumFractionDigits: 2,
-                          minimumFractionDigits: 2
+                          minimumFractionDigits: 2,
                         })
                       : Number(value)
                           .toFixed(2)
@@ -184,18 +184,18 @@ const Overview = () => {
             </Card> */}
           <Card title={'Total'}>
             <CardContent
-              status="Total costs"
-              value={
-                invoiceStatistics?.length > 0
-                  ? invoiceStatistics[0]?.totalIncoming || 0
-                  : 0
-              }
-            />
-            <CardContent
               status="Total turnover"
               value={
                 invoiceStatistics?.length > 0
                   ? invoiceStatistics[0]?.totalOutgoing || 0
+                  : 0
+              }
+            />
+            <CardContent
+              status="Total costs"
+              value={
+                invoiceStatistics?.length > 0
+                  ? invoiceStatistics[0]?.totalIncoming || 0
                   : 0
               }
             />
@@ -262,7 +262,7 @@ const Overview = () => {
                           : 0
                       ).toLocaleString('en-GB', {
                         maximumFractionDigits: 2,
-                        minimumFractionDigits: 2
+                        minimumFractionDigits: 2,
                       })
                     : Number(
                         invoiceStatistics?.length > 0
