@@ -395,8 +395,6 @@ PODS:
     - React
   - RNKeychain (8.1.1):
     - React-Core
-  - RNPermissions (3.6.1):
-    - React-Core
   - RNReanimated (2.8.0):
     - DoubleConversion
     - FBLazyVector
@@ -500,7 +498,6 @@ DEPENDENCIES:
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNImageToPdf (from `../node_modules/react-native-image-to-pdf`)
   - RNKeychain (from `../node_modules/react-native-keychain`)
-  - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - "RNSentry (from `../node_modules/@sentry/react-native`)"
@@ -636,8 +633,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-image-to-pdf"
   RNKeychain:
     :path: "../node_modules/react-native-keychain"
-  RNPermissions:
-    :path: "../node_modules/react-native-permissions"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
@@ -717,7 +712,6 @@ SPEC CHECKSUMS:
   RNGestureHandler: 61628a2c859172551aa2100d3e73d1e57878392f
   RNImageToPdf: 43fd91d019b3ee8ae6aba7f2d8c40ca4a55088ff
   RNKeychain: ff836453cba46938e0e9e4c22e43d43fa2c90333
-  RNPermissions: dcdb7b99796bbeda6975a6e79ad519c41b251b1c
   RNReanimated: 64573e25e078ae6bec03b891586d50b9ec284393
   RNScreens: 40a2cb40a02a609938137a1e0acfbf8fc9eebf19
   RNSentry: a0db9b7879436933e78c7a3669e098eeb9c98001
