@@ -206,7 +206,7 @@ const updateComment = async (id: string, description: string) => {
 
 const uploadImgFile = async (file: ImageFile) => {
   const formData = new FormData()
-  const image = {
+  let image = {
     uri: file.uri,
     type: file.type,
     name: file.fileName || `IMG_${Date.now()}`
@@ -217,14 +217,17 @@ const uploadImgFile = async (file: ImageFile) => {
   const token = useAuth.getState().token
   const entityUserId = useEntity.getState().entityUserId
   const API_URL = useSettings.getState().apiUrl
+
   try {
     const res = await axios.post(`${API_URL}v2/files`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
         'Jwt-Auth': `Bearer ${token}`,
-        'X-active-entity-user-id': `${entityUserId}`
-      }
+        'X-active-entity-user-id': `${entityUserId}`,
+      },
     })
+
+    console.log('res.data', res.data)
     return res.data
   } catch (error) {
     console.error('Error: Upload image file data', error)
