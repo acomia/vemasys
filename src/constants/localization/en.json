@@ -5,5 +5,10 @@
   "usernameRequired": "A username is required.",
   "newBunkeringSupplierRequired": "Please select a supplier.",
   "newBunkeringAmountRequired": "An amount is required.",
-  "newBunkeringGreaterAmount": "The amount should be greater than 0."
+  "newBunkeringGreaterAmount": "The amount should be greater than 0.",
+  "newUserFirstname": "Firstname is required.",
+  "newUserLastname": "Lastname is required.",
+  "newUserBday": "Birthdate is required.",
+  "newUserEmail": "Email is required.",
+  "newUserRole": "User role is required."
 }

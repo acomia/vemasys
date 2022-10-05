@@ -52,10 +52,10 @@ export default function PlanningDetails() {
         height: 3,
         borderRadius: 3,
         width: ms(50),
-        marginLeft: 23
+        marginLeft: 30
       }}
       style={{backgroundColor: Colors.primary}}
-      tabStyle={{width: ms(95), height: ms(40)}}
+      tabStyle={{width: ms(110), height: ms(40)}}
       renderLabel={({route, color}) => (
         <Text color={color} fontWeight="bold" textAlign="justify">
           {route.title}

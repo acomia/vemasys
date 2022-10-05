@@ -1,9 +1,11 @@
 import React from 'react'
 import * as Sentry from '@sentry/react-native'
-import {SENTRY_DSN} from '@bluecentury/env'
+import {SENTRY_DSN} from '@vemasys/env'
 import {AppContainer} from '@bluecentury/components'
 import {RootNavigator} from '@bluecentury/navigation'
 import {enableLatestRenderer} from 'react-native-maps'
+import {NativeBaseProvider} from 'native-base'
+import {theme} from '@bluecentury/styles'
 
 enableLatestRenderer()
 
@@ -14,9 +16,11 @@ Sentry.init({
 
 const App = () => {
   return (
-    <AppContainer>
-      <RootNavigator />
-    </AppContainer>
+    <NativeBaseProvider theme={theme}>
+      <AppContainer>
+        <RootNavigator />
+      </AppContainer>
+    </NativeBaseProvider>
   )
 }
 

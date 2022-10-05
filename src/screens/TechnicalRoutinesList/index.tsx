@@ -7,7 +7,7 @@ import moment from 'moment'
 
 import {Colors} from '@bluecentury/styles'
 import {useEntity, useTechnical} from '@bluecentury/stores'
-import {LoadingIndicator} from '@bluecentury/components'
+import {LoadingAnimated} from '@bluecentury/components'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import {Icons} from '@bluecentury/assets'
 
@@ -74,7 +74,7 @@ const TechnicalRoutinesList = ({navigation, route}: Props) => {
     getVesselRoutinesByCategory(vesselId, category)
   }
 
-  if (isTechnicalLoading) return <LoadingIndicator />
+  if (isTechnicalLoading) return <LoadingAnimated />
 
   return (
     <Box
@@ -104,7 +104,7 @@ const TechnicalRoutinesList = ({navigation, route}: Props) => {
                   onPress={() =>
                     navigation.navigate('TechnicalRoutineDetails', {
                       id: routine?.id,
-                      title: routine?.title
+                      title: routine?.title,
                     })
                   }
                 >

@@ -1,18 +1,19 @@
 import create from 'zustand'
 import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import {GeoPosition} from 'react-native-geolocation-service'
-
 import * as API from '@bluecentury/api/vemasys'
-import {initial} from 'lodash'
+import {Location} from '@mauron85/react-native-background-geolocation'
+import {getVesselStatus} from '@bluecentury/api/vemasys'
 
 type MapState = {
+  vesselStatus: any
   prevNavLogs: Array<any>
   plannedNavLogs: Array<any>
   currentNavLogs: Array<any>
   lastCompleteNavLogs: Array<any>
   activeFormations: Array<any>
   isLoadingMap: boolean
+  isLoadingVesselStatus: boolean
   isLoadingPreviousNavLogs: boolean
   isLoadingCurrentNavLogs: boolean
   isLoadingPlannedNavLogs: boolean
@@ -22,30 +23,35 @@ type MapState = {
   tokenHasConnectedToShip: boolean
   isMobileTrackingEnable: boolean
   hasErrorLoadingNavigationLogs: boolean
+  hasErrorLoadingVesselStatus: boolean
 }
 
 type MapActions = {
-  getPreviousNavigationLogs: (vesselId: string) => void
-  getPlannedNavigationLogs: (vesselId: string) => void
-  getCurrentNavigationLogs: (vesselId: string) => void
-  getLastCompleteNavigationLogs: (navLogId: string) => void
+  getVesselStatus: (vesselId: string) => Promise<void>
+  getPreviousNavigationLogs: (vesselId: string) => Promise<void>
+  getPlannedNavigationLogs: (vesselId: string) => Promise<void>
+  getCurrentNavigationLogs: (vesselId: string) => Promise<void>
+  getLastCompleteNavigationLogs: (navLogId: string) => Promise<void>
   getActiveFormations: () => void
   verifyTrackingDeviceToken: (id: string, token: string, method: string) => void
   endVesselFormations: (formationId: string, vesselId: string) => void
   removeVesselFromFormations: (formationId: string, vesselId: string) => void
-  sendCurrentPosition: (position: GeoPosition) => void
+  sendCurrentPosition: (entityId: string, position: Location) => void
   enableMobileTracking: () => void
+  reset: () => void
 }
 
 type MapStore = MapState & MapActions
 
 const initialMapState: MapState = {
+  vesselStatus: undefined,
   prevNavLogs: [],
   plannedNavLogs: [],
   currentNavLogs: [],
   lastCompleteNavLogs: [],
   activeFormations: [],
   isLoadingMap: false,
+  isLoadingVesselStatus: false,
   isLoadingCurrentNavLogs: false,
   isLoadingPlannedNavLogs: false,
   isLoadingPreviousNavLogs: false,
@@ -54,7 +60,8 @@ const initialMapState: MapState = {
   hasErrorLoadingCurrentNavLogs: false,
   hasErrorLoadingPlannedNavLogs: false,
   hasErrorLoadingPreviousNavLogs: false,
-  hasErrorLoadingNavigationLogs: false
+  hasErrorLoadingNavigationLogs: false,
+  hasErrorLoadingVesselStatus: false,
 }
 
 export const useMap = create(
@@ -64,109 +71,114 @@ export const useMap = create(
       getPreviousNavigationLogs: async (vesselId: string) => {
         set({
           isLoadingPreviousNavLogs: true,
-          hasErrorLoadingPreviousNavLogs: false
+          hasErrorLoadingPreviousNavLogs: false,
         })
         try {
           const response: any = await API.getPreviousNavLog(vesselId)
           if (Array.isArray(response)) {
             set({
-              prevNavLogs: response
+              prevNavLogs: response,
             })
           } else {
             set({
-              prevNavLogs: []
+              prevNavLogs: [],
             })
           }
           set({
-            isLoadingPreviousNavLogs: false
+            isLoadingPreviousNavLogs: false,
           })
         } catch (error) {
           set({
             isLoadingPreviousNavLogs: false,
-            hasErrorLoadingPreviousNavLogs: true
+            hasErrorLoadingPreviousNavLogs: true,
           })
         }
       },
       getPlannedNavigationLogs: async (vesselId: string) => {
         set({
           isLoadingPlannedNavLogs: true,
-          hasErrorLoadingPlannedNavLogs: false
+          hasErrorLoadingPlannedNavLogs: false,
         })
         try {
           const response: any = await API.getPlannedNavLog(vesselId)
           if (Array.isArray(response)) {
             set({
-              plannedNavLogs: response
+              plannedNavLogs: response,
             })
           } else {
             set({
-              plannedNavLogs: []
+              plannedNavLogs: [],
             })
           }
           set({
-            isLoadingPlannedNavLogs: false
+            isLoadingPlannedNavLogs: false,
           })
         } catch (error) {
           set({
             isLoadingPlannedNavLogs: false,
-            hasErrorLoadingPlannedNavLogs: true
+            hasErrorLoadingPlannedNavLogs: true,
           })
         }
       },
       getCurrentNavigationLogs: async (vesselId: string) => {
         set({
           isLoadingCurrentNavLogs: true,
-          hasErrorLoadingCurrentNavLogs: false
+          hasErrorLoadingCurrentNavLogs: false,
         })
         try {
           const response: any = await API.getCurrentNavLog(vesselId)
           if (Array.isArray(response)) {
             set({
-              currentNavLogs: response
+              currentNavLogs: response,
             })
           } else {
             set({
-              currentNavLogs: []
+              currentNavLogs: [],
             })
           }
           set({
-            isLoadingCurrentNavLogs: false
+            isLoadingCurrentNavLogs: false,
           })
         } catch (error) {
           set({
             isLoadingCurrentNavLogs: false,
-            hasErrorLoadingCurrentNavLogs: true
+            hasErrorLoadingCurrentNavLogs: true,
           })
         }
       },
-      getLastCompleteNavigationLogs: async (navLogId: string) => {
+      getLastCompleteNavigationLogs: async (vesselId: string) => {
         set({
-          isLoadingMap: true
+          isLoadingMap: true,
         })
         try {
-          const response: any = await API.getLastCompleteNavLogs(navLogId)
+          const response: any = await API.getLastCompleteNavLogs(vesselId)
+          if (Array.isArray(response)) {
+            let logs = response.reduce((prev, curr) => {
+              if (prev.length === 0) return [...prev, curr]
 
-          if (typeof response === 'object') {
-            if (response.routes.length > 0) {
-              set({
-                isLoadingMap: false,
-                lastCompleteNavLogs: response.routes
-              })
-            } else {
-              set({
-                isLoadingMap: false,
-                lastCompleteNavLogs: []
-              })
-            }
+              if (
+                prev.findIndex(
+                  value => value.location.name === curr.location.name
+                ) !== -1
+              ) {
+                return [...prev]
+              }
+
+              return [...prev, curr]
+            }, [])
+            set({
+              isLoadingMap: false,
+              lastCompleteNavLogs: logs,
+            })
           } else {
             set({
               isLoadingMap: false,
-              lastCompleteNavLogs: []
+              lastCompleteNavLogs: [],
             })
           }
         } catch (error) {
           set({
-            isLoadingMap: false
+            isLoadingMap: false,
           })
         }
       },
@@ -175,11 +187,11 @@ export const useMap = create(
           const response = await API.getActiveFormations()
           if (Array.isArray(response)) {
             set({
-              activeFormations: response
+              activeFormations: response,
             })
           } else {
             set({
-              activeFormations: []
+              activeFormations: [],
             })
           }
         } catch (error) {}
@@ -216,14 +228,19 @@ export const useMap = create(
           set({isLoadingMap: false})
         }
       },
-      sendCurrentPosition: async (position: GeoPosition) => {
+      sendCurrentPosition: async (entityId, position) => {
         try {
           set({isLoadingMap: true})
-          const response: any = await API.sendCurrentPosition(position)
+          const response: any = await API.sendCurrentPosition(
+            entityId,
+            position
+          )
+          console.log('response ', response)
           if (response) {
             set({isLoadingMap: false})
           }
         } catch (error) {
+          console.log('error ', error)
           set({isLoadingMap: false})
         }
       },
@@ -254,11 +271,42 @@ export const useMap = create(
       enableMobileTracking: () => {
         const isMobileTrackingEnable = get().isMobileTrackingEnable
         set({isMobileTrackingEnable: !isMobileTrackingEnable})
-      }
+      },
+      getVesselStatus: async (vesselId: string) => {
+        set({
+          isLoadingVesselStatus: true,
+          hasErrorLoadingVesselStatus: false,
+        })
+        try {
+          const response: any = await API.getVesselStatus(vesselId)
+          if (Array.isArray(response)) {
+            set({
+              vesselStatus: response[0],
+            })
+          } else {
+            set({
+              vesselStatus: undefined,
+            })
+          }
+          set({
+            isLoadingVesselStatus: false,
+          })
+        } catch (error) {
+          set({
+            isLoadingVesselStatus: false,
+            hasErrorLoadingVesselStatus: true,
+          })
+        }
+      },
+      reset: () => {
+        set({
+          ...initialMapState,
+        })
+      },
     }),
     {
       name: 'map-storage',
-      getStorage: () => AsyncStorage
+      getStorage: () => AsyncStorage,
     }
   )
 )

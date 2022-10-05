@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {
   Box,
   ScrollView,
@@ -11,7 +11,7 @@ import {
   useToast,
   Image,
   Modal,
-  Divider
+  Divider,
 } from 'native-base'
 import {Shadow} from 'react-native-shadow-2'
 import {ms} from 'react-native-size-matters'
@@ -19,36 +19,50 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import * as ImagePicker from 'react-native-image-picker'
 
 import {Colors} from '@bluecentury/styles'
-import {useEntity, usePlanning, useTechnical} from '@bluecentury/stores'
-import {LoadingIndicator} from '@bluecentury/components'
-import {TouchableOpacity} from 'react-native'
+import {useEntity, usePlanning} from '@bluecentury/stores'
+import {IconButton, LoadingAnimated} from '@bluecentury/components'
+import {Alert, TouchableOpacity} from 'react-native'
+import {Icons} from '@bluecentury/assets'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const AddEditComment = ({navigation, route}: Props) => {
-  const {comment, method, routeFrom} = route.params
+  const {comment, method, routeFrom}: any = route.params
   const toast = useToast()
   const {
     isPlanningLoading,
     createNavlogComment,
     updateComment,
     getNavigationLogComments,
-    navigationLogDetails
-  } = usePlanning()
-  const {uploadFileBySubject} = useTechnical()
-  const {user} = useEntity()
-  console.log('new', comment)
-  const [description, setDescription] = useState(
-    comment !== undefined ? comment?.description?.replace(/(\\)/g, '') : ''
+    navigationLogDetails,
+    deleteComment,
+    uploadImgFile,
+  }: any = usePlanning()
+  const {user}: any = useEntity()
+  const descriptionText = comment?.description
+    ?.replace(/(\\)/g, '')
+    .match(/([^<br>]+)/)[0]
+  const [description, setDescription] = useState<string>(
+    comment !== undefined ? descriptionText : ''
   )
   const [isCommentEmpty, setIsCommentEmpty] = useState(false)
-  const [imgFile, setImgFile] = useState<ImageFile>({
-    id: '',
-    uri: '',
-    fileName: '',
-    type: ''
-  })
+  const [imgFile, setImgFile] = useState<any>([])
+  const [selectedImg, setSelectedImg] = useState<ImageFile>({})
   const [imgModal, setImgModal] = useState(false)
   const [viewImg, setViewImg] = useState(false)
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () =>
+        method === 'edit' ? (
+          <IconButton
+            source={Icons.trash}
+            onPress={deleteCommentConfirmation}
+            size={ms(20)}
+            styles={{marginLeft: 20}}
+          />
+        ) : null,
+    })
+  }, [])
 
   const showToast = (text: string, res: string) => {
     toast.show({
@@ -69,7 +83,7 @@ const AddEditComment = ({navigation, route}: Props) => {
       },
       onCloseComplete() {
         res === 'success' ? navigation.goBack() : null
-      }
+      },
     })
   }
 
@@ -81,72 +95,161 @@ const AddEditComment = ({navigation, route}: Props) => {
     let res
     if (method === 'edit') {
       if (routeFrom === 'Planning') {
-        res = await updateComment(comment?.id, description)
-        if (typeof res === 'object') {
-          getNavigationLogComments(navigationLogDetails?.id)
-          if (imgFile.fileName !== '') {
-            const upload = await uploadFileBySubject(
-              'NavigationLog',
-              imgFile,
-              'shared_within_company',
-              res?.id
-            )
+        if (imgFile.length > 0) {
+          imgFile.map(async (file: any, index: number) => {
+            const upload = await uploadImgFile(file)
             if (typeof upload === 'object') {
-              showToast('comment updated.', 'success')
+              let tempComment
+              setDescription((description: string) => {
+                tempComment =
+                  description + '-' + '\n' + `<img src='${upload.path}' >`
+                return description + '-' + '\n' + `<img src='${upload.path}' >`
+              })
+              if (index === imgFile.length - 1) {
+                res = await updateComment(comment?.id, description)
+                if (typeof res === 'object') {
+                  showToast('Comment updated.', 'success')
+                  getNavigationLogComments(navigationLogDetails?.id)
+                } else {
+                  showToast('Comment update failed.', 'failed')
+                }
+              }
             }
-          } else {
-            showToast('comment updated.', 'success')
-          }
+          })
         } else {
-          showToast('comment update failed.', 'failed')
+          res = await updateComment(comment?.id, description)
+          if (typeof res === 'object') {
+            showToast('Comment updated.', 'success')
+            getNavigationLogComments(navigationLogDetails?.id)
+          } else {
+            showToast('Comment update failed.', 'failed')
+          }
         }
       } else if (routeFrom === 'Technical') {
       }
     } else {
       if (routeFrom === 'Planning') {
-        res = await createNavlogComment(
-          navigationLogDetails?.id,
-          description,
-          user?.id
-        )
-        if (typeof res === 'object') {
-          getNavigationLogComments(navigationLogDetails?.id)
-          const upload = await uploadFileBySubject(
-            'NavigationLog',
-            imgFile,
-            'shared_within_company',
-            res?.id
-          )
-          console.log('new', res?.id)
-          if (typeof upload === 'object') {
-            showToast('New comment added.', 'success')
-          }
+        if (imgFile.length > 0) {
+          imgFile.map(async (file: any, index: number) => {
+            const upload = await uploadImgFile(file)
+            if (typeof upload === 'object') {
+              let tempComment
+              setDescription((description: string) => {
+                tempComment =
+                  description + '-' + '\n' + `<img src='${upload.path}' >`
+                return description + '-' + '\n' + `<img src='${upload.path}' >`
+              })
+
+              if (index === imgFile.length - 1) {
+                res = await createNavlogComment(
+                  navigationLogDetails?.id,
+                  tempComment,
+                  user?.id
+                )
+                if (typeof res === 'object') {
+                  showToast('New comment added.', 'success')
+                  getNavigationLogComments(navigationLogDetails?.id)
+                } else {
+                  showToast('New comment failed.', 'failed')
+                }
+              }
+            }
+          })
         } else {
-          showToast('New comment failed.', 'failed')
+          res = await createNavlogComment(
+            navigationLogDetails?.id,
+            description,
+            user?.id
+          )
+          if (typeof res === 'object') {
+            showToast('New comment added.', 'success')
+            getNavigationLogComments(navigationLogDetails?.id)
+          } else {
+            showToast('New comment failed.', 'failed')
+          }
         }
       } else if (routeFrom === 'Technical') {
       }
     }
   }
 
+  const deleteCommentConfirmation = () => {
+    Alert.alert(
+      'Confirmation required',
+      'Are you sure you want to delete this item? This action cannot be reversed.',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Yes, delete it',
+          onPress: async () => onDeleteComment(),
+          style: 'destructive',
+        },
+      ]
+    )
+  }
+
+  const onDeleteComment = async () => {
+    try {
+      const res = await deleteComment(comment?.id.toString())
+      if (res === 204) {
+        showToast('Comment deleted.', 'success')
+        getNavigationLogComments(navigationLogDetails?.id)
+      } else {
+        showToast('Could not delete comment.', 'failed')
+      }
+    } catch (error) {
+      throw new Error(`Could not delete comment. ${error}`)
+    }
+  }
+
   const launchImageLibrary = () => {
     let options: ImagePicker.ImageLibraryOptions = {
-      mediaType: 'photo'
+      mediaType: 'photo',
+      selectionLimit: 0,
     }
 
     ImagePicker.launchImageLibrary(options, response => {
-      setImgFile({
-        ...imgFile,
-        id: response.assets[0].id,
-        uri: response.assets[0].uri,
-        fileName: response.assets[0].fileName,
-        type: response.assets[0].type
+      response.assets?.map((asset: any) => {
+        setImgFile((prev: any) => [
+          ...prev,
+          {
+            id: asset.id,
+            uri: asset.uri,
+            fileName: asset.fileName,
+            type: asset.type,
+          },
+        ])
       })
     })
     setImgModal(false)
   }
 
-  if (isPlanningLoading) return <LoadingIndicator />
+  const onSelectImage = (image: ImageFile) => {
+    setImgModal(true)
+    setSelectedImg({
+      uri: image.uri,
+      fileName: image.fileName,
+      type: image.type,
+    })
+  }
+
+  const onUploadNewVersion = () => {
+    setImgModal(false)
+    const filtered = imgFile?.filter((img: any) => img.uri !== selectedImg.uri)
+    setImgFile(filtered)
+    launchImageLibrary()
+  }
+
+  const onDeleteImage = () => {
+    setImgModal(false)
+    const filtered = imgFile?.filter((img: any) => img.uri !== selectedImg.uri)
+    setImgFile(filtered)
+  }
+
+  if (isPlanningLoading) return <LoadingAnimated />
 
   return (
     <Box flex={1}>
@@ -170,27 +273,40 @@ const AddEditComment = ({navigation, route}: Props) => {
             placeholder=""
             style={{backgroundColor: '#F7F7F7'}}
             value={description}
-            onChangeText={e => setDescription(e)}
+            onChangeText={e => {
+              setDescription(e)
+              setIsCommentEmpty(false)
+            }}
             autoCompleteType={undefined}
           />
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
             Please fill in the description
           </FormControl.ErrorMessage>
         </FormControl>
-        {imgFile.uri !== '' || imgFile.fileName !== '' ? (
-          <HStack>
-            <TouchableOpacity
-              activeOpacity={0.6}
-              onPress={() => setImgModal(true)}
-            >
-              <Image
-                alt="file-upload"
-                source={{uri: imgFile.uri}}
-                w={ms(136)}
-                h={ms(114)}
-              />
-            </TouchableOpacity>
-          </HStack>
+        {imgFile.length > 0 ? (
+          <ScrollView
+            scrollEventThrottle={16}
+            maxH={ms(120)}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+          >
+            {imgFile.map((file: ImageFile, index: number) => (
+              <HStack key={`File-${index}`}>
+                <TouchableOpacity
+                  activeOpacity={0.6}
+                  onPress={() => onSelectImage(file)}
+                >
+                  <Image
+                    alt="file-upload"
+                    source={{uri: file.uri}}
+                    w={ms(136)}
+                    h={ms(114)}
+                    mr={ms(10)}
+                  />
+                </TouchableOpacity>
+              </HStack>
+            ))}
+          </ScrollView>
         ) : null}
 
         <Button
@@ -206,7 +322,7 @@ const AddEditComment = ({navigation, route}: Props) => {
         <Shadow
           distance={25}
           viewStyle={{
-            width: '100%'
+            width: '100%',
           }}
         >
           <HStack>
@@ -244,7 +360,10 @@ const AddEditComment = ({navigation, route}: Props) => {
                   textAlign="center"
                   fontSize={ms(16)}
                   fontWeight="bold"
-                  onPress={() => setViewImg(true)}
+                  onPress={() => {
+                    setViewImg(true)
+                    setImgModal(false)
+                  }}
                 >
                   View image
                 </Text>
@@ -252,20 +371,14 @@ const AddEditComment = ({navigation, route}: Props) => {
               <Divider my={ms(14)} />
               <TouchableOpacity
                 activeOpacity={0.6}
-                onPress={launchImageLibrary}
+                onPress={onUploadNewVersion}
               >
                 <Text textAlign="center" fontSize={ms(16)} fontWeight="bold">
                   Upload new version
                 </Text>
               </TouchableOpacity>
               <Divider my={ms(14)} />
-              <TouchableOpacity
-                activeOpacity={0.6}
-                onPress={() => {
-                  setImgFile({...imgFile, uri: '', fileName: ''}),
-                    setImgModal(false)
-                }}
-              >
+              <TouchableOpacity activeOpacity={0.6} onPress={onDeleteImage}>
                 <Text
                   textAlign="center"
                   color={Colors.danger}
@@ -300,7 +413,8 @@ const AddEditComment = ({navigation, route}: Props) => {
         <Modal.Content>
           <Image
             alt="file-preview"
-            source={{uri: imgFile.uri}}
+            source={{uri: selectedImg.uri}}
+            resizeMode="contain"
             w="100%"
             h="100%"
           />

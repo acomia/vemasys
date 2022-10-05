@@ -6,16 +6,15 @@ import moment from 'moment'
 import {useNavigation} from '@react-navigation/native'
 
 import {Animated} from '@bluecentury/assets'
-import {useEntity, useMap} from '@bluecentury/stores'
+import {useMap} from '@bluecentury/stores'
 import {formatLocationLabel} from '@bluecentury/constants'
 
 export const CurrentNavLogInfo = () => {
   const navigation = useNavigation()
-  const {currentNavLogs, prevNavLogs}: any = useMap()
-  const {vesselDetails}: any = useEntity()
+  const {currentNavLogs, prevNavLogs, vesselStatus}: any = useMap()
 
   const handleOnPressNavigation = () => {
-    if (vesselDetails?.lastGeolocation?.speed > 0) {
+    if (vesselStatus?.speed > 0) {
     } else {
       navigation.navigate('PlanningDetails', {
         navlog: currentNavLogs[currentNavLogs?.length - 1],
@@ -30,12 +29,10 @@ export const CurrentNavLogInfo = () => {
       onPress={handleOnPressNavigation}
     >
       <Box ml={ms(15)}>
-        {vesselDetails?.lastGeolocation?.speed > 0 ? (
+        {vesselStatus?.speed > 0 ? (
           <Text fontWeight="700">
             Navigating at{' '}
-            <Text color="#29B7EF">
-              {vesselDetails?.lastGeolocation?.speed} xx km/h
-            </Text>
+            <Text color="#29B7EF">{vesselStatus?.speed} km/h</Text>
           </Text>
         ) : currentNavLogs?.length !== 0 ? (
           <>

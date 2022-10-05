@@ -6,14 +6,15 @@ import moment from 'moment'
 import {ms} from 'react-native-size-matters'
 
 import {Colors} from '@bluecentury/styles'
-import {useFinancial} from '@bluecentury/stores'
+import {useEntity, useFinancial} from '@bluecentury/stores'
 import {useNavigation} from '@react-navigation/native'
-import {LoadingIndicator} from '@bluecentury/components'
+import {LoadingAnimated} from '@bluecentury/components'
 
 const Revenue = () => {
   const navigation = useNavigation()
   const {isFinancialLoading, invoiceStatistics, outgoingInvoices, getInvoices} =
     useFinancial()
+  const {vesselId} = useEntity()
   const [selectedYear, setSelectedYear] = useState(
     new Date().getFullYear().toString()
   )
@@ -23,7 +24,7 @@ const Revenue = () => {
 
   useEffect(() => {
     getInvoices('Outgoing', selectedYear, page)
-  }, [page])
+  }, [page, vesselId])
 
   useEffect(() => {
     setIsPageChange(false)
@@ -105,13 +106,13 @@ const Revenue = () => {
             {moment(invoice_date).format('DD MMM YYYY')}
           </Text>
         </Box>
-        <Box alignItems="center">
+        <Box alignItems="flex-end">
           <Text color={Colors.danger}>
             €{' '}
             {Platform.OS === 'ios'
               ? Number(amount).toLocaleString('en-GB', {
                   maximumFractionDigits: 2,
-                  minimumFractionDigits: 2
+                  minimumFractionDigits: 2,
                 })
               : Number(amount)
                   .toFixed(2)
@@ -178,7 +179,7 @@ const Revenue = () => {
                 {Platform.OS === 'ios'
                   ? Number(value).toLocaleString('en-GB', {
                       maximumFractionDigits: 2,
-                      minimumFractionDigits: 2
+                      minimumFractionDigits: 2,
                     })
                   : Number(value)
                       .toFixed(2)
@@ -231,7 +232,7 @@ const Revenue = () => {
               {Platform.OS === 'ios'
                 ? Number(value).toLocaleString('en-GB', {
                     maximumFractionDigits: 2,
-                    minimumFractionDigits: 2
+                    minimumFractionDigits: 2,
                   })
                 : Number(value)
                     .toFixed(2)
@@ -268,26 +269,17 @@ const Revenue = () => {
             })}
           </Select>
         </Box>
-        <Box
-          style={{
-            flex: 1,
-            paddingHorizontal: 15,
-            paddingVertical: 25,
-            backgroundColor: '#fff'
-          }}
-        >
+        <Box flex="1" px={ms(15)} py={ms(25)} bg={Colors.white}>
           <Text
-            style={{
-              fontSize: 20,
-              fontWeight: 'bold',
-              color: '#23475C',
-              marginBottom: 20
-            }}
+            fontSize={ms(20)}
+            fontWeight="bold"
+            color={Colors.azure}
+            mb={ms(20)}
           >
             Outgoing Invoices
           </Text>
           {isFinancialLoading && !isPageChange ? (
-            <LoadingIndicator />
+            <LoadingAnimated />
           ) : (
             <FlatList
               data={outgoingInvoices}
@@ -298,7 +290,7 @@ const Revenue = () => {
                     navigation.navigate('FinancialInvoiceDetails', {
                       id: item.id,
                       routeFrom: 'revenue',
-                      title: item.receiverReference
+                      title: item.senderReference,
                     })
                   }
                 >
@@ -336,13 +328,13 @@ const Revenue = () => {
           justifyContent="center"
           style={{zIndex: 999}}
         >
-          <LoadingIndicator />
+          <LoadingAnimated />
         </Box>
       ) : totalEnabled ? (
         <Box bg={Colors.white}>
           <Shadow
             viewStyle={{
-              width: '100%'
+              width: '100%',
             }}
           >
             <TouchableOpacity
@@ -354,7 +346,7 @@ const Revenue = () => {
                 label="Sent"
                 value={
                   invoiceStatistics?.length > 0
-                    ? invoiceStatistics[0]?.paidOutgoing || 0
+                    ? invoiceStatistics[0]?.unpaidOutgoing || 0
                     : 0
                 }
               />
@@ -362,7 +354,7 @@ const Revenue = () => {
                 label="Payment confirmed"
                 value={
                   invoiceStatistics?.length > 0
-                    ? invoiceStatistics[0]?.unpaidOutgoing || 0
+                    ? invoiceStatistics[0]?.paidOutgoing || 0
                     : 0
                 }
               />
@@ -373,11 +365,11 @@ const Revenue = () => {
         <Box bg={Colors.white}>
           <Shadow
             viewStyle={{
-              width: '100%'
+              width: '100%',
             }}
           >
             <CardTotal
-              label="Total costs"
+              label="Total revenue"
               value={
                 invoiceStatistics?.length > 0
                   ? invoiceStatistics[0]?.totalOutgoing || 0

@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react'
+import {TouchableOpacity, Modal} from 'react-native'
 import {
   Box,
   Divider,
@@ -7,24 +8,29 @@ import {
   Image,
   Input,
   ScrollView,
-  Text
+  Text,
 } from 'native-base'
-import {useInformation} from '@bluecentury/stores'
 import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons'
-import {Colors} from '@bluecentury/styles'
+import {useNavigation} from '@react-navigation/native'
 import {ms} from 'react-native-size-matters'
+
+import {useEntity, useInformation} from '@bluecentury/stores'
 import {Icons} from '@bluecentury/assets'
-import {LoadingIndicator} from '@bluecentury/components'
+import {LoadingAnimated} from '@bluecentury/components'
+import {Colors} from '@bluecentury/styles'
+import {EXTERNAL_PEGEL_IMAGE_URL} from '@bluecentury/constants'
 
 const Pegels = () => {
+  const navigation = useNavigation()
   const {isInformationLoading, pegels, streamGauges, getVesselPegels} =
     useInformation()
+  const {vesselId} = useEntity()
   const [searchedValue, setSearchedValue] = useState('')
   const [pegelsData, setPegelsData] = useState([])
 
   useEffect(() => {
     getVesselPegels('')
-  }, [])
+  }, [vesselId])
 
   useEffect(() => {
     setPegelsData(pegels)
@@ -43,9 +49,30 @@ const Pegels = () => {
       px={ms(10)}
       py={ms(8)}
     >
-      <Text flex="2" fontWeight="medium">
-        {pegel?.name}
-      </Text>
+      <HStack flex="2" alignItems="center">
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={() =>
+            navigation.navigate('InformationPegelDetails', {pegelId: pegel.id})
+          }
+          style={{
+            borderWidth: 1,
+            borderColor: Colors.light,
+            borderRadius: 5,
+            marginRight: 5,
+          }}
+        >
+          <MaterialIcons name="history" size={ms(20)} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={() => onSelectPegel(pegel)}
+        >
+          <Text fontWeight="medium" color={Colors.primary}>
+            {pegel?.name}
+          </Text>
+        </TouchableOpacity>
+      </HStack>
       <HStack flex="1" alignItems="center" justifyContent="space-between">
         <Image
           alt={`Pegels-WaterLevel-${pegel.id}`}
@@ -117,6 +144,20 @@ const Pegels = () => {
     </Text>
   )
 
+  const onSelectPegel = (pegel: any) => {
+    if (pegel.elwisPegelId === null) {
+      navigation.navigate('ImgViewer', {
+        url: `${EXTERNAL_PEGEL_IMAGE_URL}/wasserstaendeUebersichtGrafik.png.php?pegelId=&dfh=0`,
+        title: pegel.name,
+      })
+    } else {
+      navigation.navigate('ImgViewer', {
+        url: `${EXTERNAL_PEGEL_IMAGE_URL}/wasserstaendeUebersichtGrafik.png.php?pegelId=${pegel.elwisPegelId}&dfh=0`,
+        title: pegel.name,
+      })
+    }
+  }
+
   const onSearchPegel = (val: string) => {
     setSearchedValue(val)
     getVesselPegels(val)
@@ -126,7 +167,7 @@ const Pegels = () => {
     <Box flex="1" px={ms(12)} py={ms(15)} bg={Colors.white}>
       <Input
         w={{
-          base: '100%'
+          base: '100%',
         }}
         backgroundColor="#F7F7F7"
         InputLeftElement={
@@ -147,6 +188,8 @@ const Pegels = () => {
       />
       <Divider my={ms(15)} />
       <ScrollView
+        minimumZoomScale={1}
+        maximumZoomScale={5}
         contentContainerStyle={{flexGrow: 1, paddingBottom: 20}}
         scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
@@ -171,7 +214,7 @@ const Pegels = () => {
           ? renderEmpty()
           : null}
         {isInformationLoading ? (
-          <LoadingIndicator />
+          <LoadingAnimated />
         ) : (
           <>
             {renderStreamGauges()}

@@ -9,8 +9,6 @@ interface Props {
 
 export default function AppContainer({children}: Props) {
   return (
-    <NavigationContainer ref={navigationRef}>
-      <NativeBaseProvider theme={theme}>{children}</NativeBaseProvider>
-    </NavigationContainer>
+    <NavigationContainer ref={navigationRef}>{children}</NavigationContainer>
   )
 }

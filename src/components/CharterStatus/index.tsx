@@ -1,6 +1,6 @@
 import React from 'react'
 import {StyleSheet} from 'react-native'
-import {Badge, Center, Image, Text} from 'native-base'
+import {Badge, Center, HStack, Image, Text} from 'native-base'
 import {ms} from 'react-native-size-matters'
 
 import {
@@ -34,13 +34,13 @@ export const CharterStatus = ({entityType, charter}: any) => {
   }
 
   const renderIcon = (status: string) => {
-    const {isCurrentlyActive} = charter
+    const {isActive} = charter
 
     switch (status) {
       case 'planned':
         return Icons.planned
       case 'en_route':
-        if (isCurrentlyActive) {
+        if (isActive) {
           return Animated.nav_navigating
         } else {
           return Icons.en_route
@@ -54,23 +54,25 @@ export const CharterStatus = ({entityType, charter}: any) => {
       case 'accepted':
         return Icons.accepted
       case 'loading':
-        if (isCurrentlyActive) {
+        if (isActive) {
           return Animated.nav_loading
         } else {
           return Icons.loading
         }
       case 'unloading':
-        if (isCurrentlyActive) {
+        if (isActive) {
           return Animated.nav_unloading
         } else {
           return Icons.unloading
         }
       case 'loaded_en_route':
-        if (isCurrentlyActive) {
+        if (isActive) {
           return Animated.loaded_enroute
         } else {
           return Icons.laoded_enroute
         }
+      case 'refused':
+        return Icons.refused
       default:
         return Icons.submitted
     }
@@ -79,60 +81,85 @@ export const CharterStatus = ({entityType, charter}: any) => {
   const status = getStatus(charter, entityType)
   return (
     <Center>
-      <Image
-        alt="charter-status-icon"
-        source={renderIcon(status)}
-        width={ms(30)}
-        height={ms(30)}
-        mb={ms(5)}
-        resizeMode="contain"
-      />
-      <Badge style={[styles.badge, styles[`${status}Status`]]}>
-        <Text
-          fontWeight="bold"
-          fontSize={ms(12)}
-          color={status === 'draft' ? Colors.azure : Colors.white}
-        >
-          {status}
-        </Text>
-      </Badge>
+      {status === 'new' ? (
+        <HStack alignItems="center" mr={ms(10)}>
+          <Image
+            alt="charter-status-icon"
+            source={Icons.status_x_alt}
+            width={ms(30)}
+            height={ms(30)}
+            mr={ms(10)}
+            resizeMode="contain"
+          />
+          <Image
+            alt="charter-status-icon"
+            source={Icons.status_check_alt}
+            width={ms(30)}
+            height={ms(30)}
+            resizeMode="contain"
+          />
+        </HStack>
+      ) : (
+        <Image
+          alt="charter-status-icon"
+          source={renderIcon(status)}
+          width={ms(30)}
+          height={ms(30)}
+          mb={ms(5)}
+          resizeMode="contain"
+        />
+      )}
+      {status === 'new' ? null : (
+        <Badge style={[styles.badge, styles[`${status}Status`]]}>
+          <Text
+            fontWeight="bold"
+            fontSize={ms(12)}
+            color={status === 'draft' ? Colors.azure : Colors.white}
+          >
+            {status}
+          </Text>
+        </Badge>
+      )}
     </Center>
   )
 }
 
 const styles = StyleSheet.create({
   draftStatus: {
-    backgroundColor: '#BEE3F8'
+    backgroundColor: Colors.border
   },
   plannedStatus: {
-    backgroundColor: '#BEE3F8'
+    backgroundColor: Colors.border
   },
   inboxStatus: {
-    backgroundColor: '#BEE3F8'
+    backgroundColor: Colors.border
   },
   submittedStatus: {
-    backgroundColor: '#BEE3F8'
+    backgroundColor: Colors.border
   },
   newStatus: {
-    backgroundColor: '#29B7EF'
+    backgroundColor: Colors.highlighted_text
   },
   en_routeStatus: {
-    backgroundColor: '#23475C'
+    backgroundColor: Colors.azure
   },
   loaded_en_routeStatus: {
-    backgroundColor: '#23475C'
+    backgroundColor: Colors.azure
   },
   loadingStatus: {
-    backgroundColor: '#23475C'
+    backgroundColor: Colors.azure
   },
   unloadingStatus: {
-    backgroundColor: '#23475C'
+    backgroundColor: Colors.azure
   },
   completedStatus: {
-    backgroundColor: '#6BBF87'
+    backgroundColor: Colors.secondary
   },
   acceptedStatus: {
-    backgroundColor: '#29B7EF'
+    backgroundColor: Colors.highlighted_text
+  },
+  refusedStatus: {
+    backgroundColor: Colors.danger
   },
   badge: {
     borderRadius: 5,

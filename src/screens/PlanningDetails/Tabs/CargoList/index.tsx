@@ -6,7 +6,7 @@ import {ms} from 'react-native-size-matters'
 
 import {Colors} from '@bluecentury/styles'
 import {usePlanning} from '@bluecentury/stores'
-import {IconButton, LoadingIndicator} from '@bluecentury/components'
+import {IconButton, LoadingAnimated} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {formatBulkTypeLabel, formatNumber} from '@bluecentury/constants'
 
@@ -17,7 +17,7 @@ const CargoList = () => {
     isPlanningLoading,
     navigationLogDetails,
     getNavigationLogDetails,
-    deleteBulkCargo
+    deleteBulkCargo,
   } = usePlanning()
 
   const showToast = (text: string, res: string) => {
@@ -36,7 +36,7 @@ const CargoList = () => {
             {text}
           </Text>
         )
-      }
+      },
     })
   }
 
@@ -47,13 +47,13 @@ const CargoList = () => {
       [
         {
           text: 'Cancel',
-          style: 'cancel'
+          style: 'cancel',
         },
         {
           text: 'Yes, delete it',
           onPress: async () => onDeleteBulkCargoEntry(cargo),
-          style: 'destructive'
-        }
+          style: 'destructive',
+        },
       ]
     )
   }
@@ -72,7 +72,7 @@ const CargoList = () => {
     }
   }
 
-  if (isPlanningLoading) return <LoadingIndicator />
+  if (isPlanningLoading) return <LoadingAnimated />
   return (
     <Box flex="1">
       <ScrollView
@@ -108,7 +108,7 @@ const CargoList = () => {
                 mb={ms(10)}
                 shadow={1}
               >
-                <Box>
+                <Box flex="1" mr={ms(5)}>
                   <Text fontWeight="medium">
                     {cargo.type ? formatBulkTypeLabel(cargo.type) : 'N.A.'}
                   </Text>
@@ -126,7 +126,7 @@ const CargoList = () => {
                     onPress={() =>
                       navigation.navigate('AddEditBulkCargo', {
                         cargo: cargo,
-                        method: 'edit'
+                        method: 'edit',
                       })
                     }
                     size={ms(22)}
@@ -158,7 +158,7 @@ const CargoList = () => {
             size={ms(50)}
             onPress={() =>
               navigation.navigate('AddEditBulkCargo', {
-                method: 'add'
+                method: 'add',
               })
             }
           />

@@ -8,7 +8,7 @@ import {
   Icon,
   ScrollView,
   Select,
-  Text
+  Text,
 } from 'native-base'
 import {Shadow} from 'react-native-shadow-2'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
@@ -22,7 +22,7 @@ import {useEntity, usePlanning} from '@bluecentury/stores'
 import DatePicker from 'react-native-date-picker'
 import {titleCase} from '@bluecentury/constants'
 import {uniqueId} from 'lodash'
-import {LoadingIndicator} from '@bluecentury/components'
+import {LoadingAnimated} from '@bluecentury/components'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const AddEditNavlogAction = ({navigation, route}: Props) => {
@@ -31,7 +31,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
     isPlanningLoading,
     navigationLogActions,
     navigationLogCargoHolds,
-    navigationLogDetails
+    navigationLogDetails,
   } = usePlanning()
 
   const cargoChoices =
@@ -39,7 +39,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
       ? navigationLogDetails?.bulkCargo?.map(
           (c: {type: {nameEn: any}; id: any}) => ({
             label: c.type.nameEn,
-            value: c.id
+            value: c.id,
           })
         )
       : []
@@ -59,8 +59,10 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
               cargoHoldTransactions: navigationLogCargoHolds.map(cargoHold => ({
                 id: cargoHold.id,
                 amount:
-                  cht.cargoHold.id == cargoHold.id ? cht.amount.toString() : '0'
-              }))
+                  cht.cargoHold.id == cargoHold.id
+                    ? cht.amount.toString()
+                    : '0',
+              })),
             }
           })
         : [
@@ -72,10 +74,10 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
                 : 0,
               cargoHoldTransactions: navigationLogCargoHolds.map(cargoHold => ({
                 id: cargoHold.id,
-                amount: '0'
-              }))
-            }
-          ]
+                amount: '0',
+              })),
+            },
+          ],
   })
 
   const [cargoHoldActions, setCargoHoldActions] = useState([])
@@ -86,14 +88,14 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
   const navigationLogActionTypes = [
     {value: 'loading', label: 'Loading'},
     {value: 'unloading', label: 'Unloading'},
-    {value: 'cleaning', label: 'Cleaning'}
+    {value: 'cleaning', label: 'Cleaning'},
   ]
 
   const cargoHoldsToTransactions = (cargoHolds: any[]) => {
     return cargoHolds
       ? cargoHolds.map(cargoHold => ({
           id: cargoHold.id,
-          amount: '0'
+          amount: '0',
         }))
       : []
   }
@@ -117,7 +119,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
           activeOpacity={0.7}
           style={{
             flex: 1,
-            marginLeft: 10
+            marginLeft: 10,
           }}
           onPress={onChangeDate}
         >
@@ -198,13 +200,13 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
     )
     const newCargoHolds = {
       navigationBulk,
-      cargoHoldTransactions: cargohHoldTransactions
+      cargoHoldTransactions: cargohHoldTransactions,
     }
 
     setCargoHoldActions([...cargoHoldActions, newCargoHolds])
   }
 
-  if (isPlanningLoading) return <LoadingIndicator />
+  if (isPlanningLoading) return <LoadingAnimated />
   return (
     <Box flex="1">
       <ScrollView
@@ -297,7 +299,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
       <Box bg={Colors.white}>
         <Shadow
           viewStyle={{
-            width: '100%'
+            width: '100%',
           }}
         >
           <HStack>

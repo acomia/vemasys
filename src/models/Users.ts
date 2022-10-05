@@ -1,4 +1,4 @@
-export type TUser = {
+export type Auth = {
   refreshToken: string
   token: string
 }

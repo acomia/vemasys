@@ -10,20 +10,20 @@ import {
   ScrollView,
   Select,
   Text,
-  useToast
+  useToast,
 } from 'native-base'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import moment from 'moment'
 import {ms} from 'react-native-size-matters'
 import _ from 'lodash'
 
-import {IconButton, LoadingIndicator} from '@bluecentury/components'
+import {IconButton, LoadingAnimated} from '@bluecentury/components'
 import {Colors} from '@bluecentury/styles'
-import {PROD_URL} from '@bluecentury/env'
+import {PROD_URL} from '@vemasys/env'
 import {
   hasSelectedEntityUserPermission,
   ROLE_PERMISSION_TASK_MANAGE,
-  VEMASYS_PRODUCTION_FILE_URL
+  VEMASYS_PRODUCTION_FILE_URL,
 } from '@bluecentury/constants'
 import {useEntity, useTechnical} from '@bluecentury/stores'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
@@ -165,7 +165,7 @@ const TechnicalRoutineDetails = ({navigation, route}: Props) => {
             source={{
               uri: comment?.user?.icon?.path
                 ? `${PROD_URL}/upload/documents/${comment?.user?.icon?.path}`
-                : ''
+                : '',
             }}
           />
           <Box ml={ms(10)}>
@@ -185,7 +185,7 @@ const TechnicalRoutineDetails = ({navigation, route}: Props) => {
     )
   }
 
-  if (isTechnicalLoading) return <LoadingIndicator />
+  if (isTechnicalLoading) return <LoadingAnimated />
 
   return (
     <Box

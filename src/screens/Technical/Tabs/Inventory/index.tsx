@@ -10,7 +10,7 @@ import {
   Input,
   Modal,
   Text,
-  useToast
+  useToast,
 } from 'native-base'
 import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
@@ -19,7 +19,7 @@ import {Icons} from '@bluecentury/assets'
 import {useEntity, useTechnical} from '@bluecentury/stores'
 import {TouchableOpacity} from 'react-native'
 import {formatConsumableLabel} from '@bluecentury/constants'
-import {LoadingIndicator} from '@bluecentury/components'
+import {LoadingAnimated} from '@bluecentury/components'
 
 const Inventory = () => {
   const toast = useToast()
@@ -29,7 +29,7 @@ const Inventory = () => {
     consumableTypes,
     getVesselInventory,
     getConsumableTypes,
-    updateVesselInventoryItem
+    updateVesselInventoryItem,
   }: any = useTechnical()
   const {vesselId} = useEntity()
   const [searched, setSearched] = useState('')
@@ -43,7 +43,7 @@ const Inventory = () => {
   useEffect(() => {
     getVesselInventory(vesselId)
     getConsumableTypes()
-  }, [])
+  }, [vesselId])
 
   useEffect(() => {
     setInventoryData(inventory)
@@ -65,7 +65,7 @@ const Inventory = () => {
             {text}
           </Text>
         )
-      }
+      },
     })
   }
 
@@ -85,7 +85,7 @@ const Inventory = () => {
             {text}
           </Text>
         )
-      }
+      },
     })
   }
 
@@ -93,7 +93,7 @@ const Inventory = () => {
     <HStack justifyContent="space-between">
       <Input
         w={{
-          base: '78%'
+          base: '78%',
         }}
         backgroundColor="#F7F7F7"
         InputLeftElement={
@@ -309,7 +309,7 @@ const Inventory = () => {
         {renderInventoryListHeaderSection()}
         <Divider my={ms(10)} />
         {isTechnicalLoading ? (
-          <LoadingIndicator />
+          <LoadingAnimated />
         ) : (
           <FlatList
             data={inventoryData}

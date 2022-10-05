@@ -1,5 +1,5 @@
 import {Icons} from '@bluecentury/assets'
-import {PROD_URL} from '@bluecentury/env'
+import {PROD_URL} from '@vemasys/env'
 
 // General
 export const ENTITY_TYPE_EXPLOITATION_VESSEL = 'ExploitationVessel'
@@ -14,6 +14,11 @@ export const ROLE_PERMISSION_NAVIGATION_LOG_ADD_FILE =
 export const VEMASYS_PRODUCTION_FILE_URL = `${PROD_URL}/upload/documents`
 export const FILE_TYPE_PDF = 'application/pdf'
 export const FILE_TYPE_JPEG = 'image/jpeg'
+export const ROLE_PERMISSION_USER_EDIT = 'ROLE_PERMISSION_USER_EDIT'
+export const ROLE_PERMISSION_USER_VIEW = 'ROLE_PERMISSION_USER_VIEW'
+export const ROLE_PERMISSION_USER_MANAGE = 'ROLE_PERMISSION_USER_MANAGE'
+export const EXTERNAL_PEGEL_IMAGE_URL =
+  'https://www.elwis.de/DE/dynamisch/gewaesserkunde/wasserstaende'
 
 // Planning constants
 export const VESSEL_PART_CARGO_TYPE = 'Cargo'
@@ -90,3 +95,10 @@ export const informationTabs = [
   {key: 'rules', title: 'Rules'},
   {key: 'tickerOilPrices', title: 'Ticker Oil Prices'}
 ]
+
+// Crew constants
+export const crewTabs = [
+  {key: 'me', title: 'Me'},
+  {key: 'planning', title: 'Planning'}
+]
+export const VESSEL_CREW_PLANNING_ONBOARD = 'onboard'

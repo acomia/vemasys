@@ -8,13 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* VemasysV2Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* VemasysV2Tests.m */; };
-		0C80B921A6F3F58F76C31292 /* libPods-VemasysV2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-VemasysV2.a */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		29626B39284F989300F9BC9D /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = 29626B38284F989300F9BC9D /* Fonts */; };
-		7699B88040F8A987B510C191 /* libPods-VemasysV2-VemasysV2Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-VemasysV2-VemasysV2Tests.a */; };
+		7A2CFFDE192A51E6CE819A20 /* libPods-VemasysV2-VemasysV2Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A7988668BF91817C8ACE529 /* libPods-VemasysV2-VemasysV2Tests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		9C1AEC1BEC63C4247829EDD4 /* libPods-VemasysV2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D54F195C6143212A99DD9C54 /* libPods-VemasysV2.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,14 +37,14 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = VemasysV2/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = VemasysV2/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = VemasysV2/main.m; sourceTree = "<group>"; };
-		19F6CBCC0A4E27FBF8BF4A61 /* libPods-VemasysV2-VemasysV2Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-VemasysV2-VemasysV2Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		29626B38284F989300F9BC9D /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Fonts; path = "../node_modules/react-native-vector-icons/Fonts"; sourceTree = "<group>"; };
-		3B4392A12AC88292D35C810B /* Pods-VemasysV2.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VemasysV2.debug.xcconfig"; path = "Target Support Files/Pods-VemasysV2/Pods-VemasysV2.debug.xcconfig"; sourceTree = "<group>"; };
-		5709B34CF0A7D63546082F79 /* Pods-VemasysV2.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VemasysV2.release.xcconfig"; path = "Target Support Files/Pods-VemasysV2/Pods-VemasysV2.release.xcconfig"; sourceTree = "<group>"; };
-		5B7EB9410499542E8C5724F5 /* Pods-VemasysV2-VemasysV2Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VemasysV2-VemasysV2Tests.debug.xcconfig"; path = "Target Support Files/Pods-VemasysV2-VemasysV2Tests/Pods-VemasysV2-VemasysV2Tests.debug.xcconfig"; sourceTree = "<group>"; };
-		5DCACB8F33CDC322A6C60F78 /* libPods-VemasysV2.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-VemasysV2.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2A0887DE65138CD25DD6F09D /* Pods-VemasysV2.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VemasysV2.debug.xcconfig"; path = "Target Support Files/Pods-VemasysV2/Pods-VemasysV2.debug.xcconfig"; sourceTree = "<group>"; };
+		2CEC0478303217E37124BD41 /* Pods-VemasysV2.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VemasysV2.release.xcconfig"; path = "Target Support Files/Pods-VemasysV2/Pods-VemasysV2.release.xcconfig"; sourceTree = "<group>"; };
+		2E444E5F704C5DDCBC55BA98 /* Pods-VemasysV2-VemasysV2Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VemasysV2-VemasysV2Tests.debug.xcconfig"; path = "Target Support Files/Pods-VemasysV2-VemasysV2Tests/Pods-VemasysV2-VemasysV2Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = VemasysV2/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		89C6BE57DB24E9ADA2F236DE /* Pods-VemasysV2-VemasysV2Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VemasysV2-VemasysV2Tests.release.xcconfig"; path = "Target Support Files/Pods-VemasysV2-VemasysV2Tests/Pods-VemasysV2-VemasysV2Tests.release.xcconfig"; sourceTree = "<group>"; };
+		8A7988668BF91817C8ACE529 /* libPods-VemasysV2-VemasysV2Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-VemasysV2-VemasysV2Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D4F065FCFD9538BDC81DBDD8 /* Pods-VemasysV2-VemasysV2Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VemasysV2-VemasysV2Tests.release.xcconfig"; path = "Target Support Files/Pods-VemasysV2-VemasysV2Tests/Pods-VemasysV2-VemasysV2Tests.release.xcconfig"; sourceTree = "<group>"; };
+		D54F195C6143212A99DD9C54 /* libPods-VemasysV2.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-VemasysV2.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -53,7 +53,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7699B88040F8A987B510C191 /* libPods-VemasysV2-VemasysV2Tests.a in Frameworks */,
+				7A2CFFDE192A51E6CE819A20 /* libPods-VemasysV2-VemasysV2Tests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -61,7 +61,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0C80B921A6F3F58F76C31292 /* libPods-VemasysV2.a in Frameworks */,
+				9C1AEC1BEC63C4247829EDD4 /* libPods-VemasysV2.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -103,8 +103,8 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				5DCACB8F33CDC322A6C60F78 /* libPods-VemasysV2.a */,
-				19F6CBCC0A4E27FBF8BF4A61 /* libPods-VemasysV2-VemasysV2Tests.a */,
+				D54F195C6143212A99DD9C54 /* libPods-VemasysV2.a */,
+				8A7988668BF91817C8ACE529 /* libPods-VemasysV2-VemasysV2Tests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -143,10 +143,10 @@
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				3B4392A12AC88292D35C810B /* Pods-VemasysV2.debug.xcconfig */,
-				5709B34CF0A7D63546082F79 /* Pods-VemasysV2.release.xcconfig */,
-				5B7EB9410499542E8C5724F5 /* Pods-VemasysV2-VemasysV2Tests.debug.xcconfig */,
-				89C6BE57DB24E9ADA2F236DE /* Pods-VemasysV2-VemasysV2Tests.release.xcconfig */,
+				2A0887DE65138CD25DD6F09D /* Pods-VemasysV2.debug.xcconfig */,
+				2CEC0478303217E37124BD41 /* Pods-VemasysV2.release.xcconfig */,
+				2E444E5F704C5DDCBC55BA98 /* Pods-VemasysV2-VemasysV2Tests.debug.xcconfig */,
+				D4F065FCFD9538BDC81DBDD8 /* Pods-VemasysV2-VemasysV2Tests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -158,12 +158,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "VemasysV2Tests" */;
 			buildPhases = (
-				A55EABD7B0C7F3A422A6CC61 /* [CP] Check Pods Manifest.lock */,
+				ED0C60CC21A06A17698E22E9 /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				F6A41C54EA430FDDC6A6ED99 /* [CP] Copy Pods Resources */,
-				CC06AB642BB9EE8B72243EE9 /* [CP] Embed Pods Frameworks */,
+				F7F9447629F4579EC5B78217 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -179,15 +178,14 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "VemasysV2" */;
 			buildPhases = (
-				C38B50BA6285516D6DCD4F65 /* [CP] Check Pods Manifest.lock */,
+				C120A013AEC9F6D91CFFC7D9 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				E235C05ADACE081382539298 /* [CP] Copy Pods Resources */,
-				6E2BECB55CCA00CF526B2F91 /* [CP] Embed Pods Frameworks */,
 				939CAC0B569D4FAA9981050B /* Upload Debug Symbols to Sentry */,
+				02582BDD7D2417E6EF409EEA /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -269,21 +267,21 @@
 			shellPath = /bin/sh;
 			shellScript = "export SENTRY_PROPERTIES=sentry.properties\nexport EXTRA_PACKAGER_ARGS=\"--sourcemap-output $DERIVED_FILE_DIR/main.jsbundle.map\"\nexport EXTRA_PACKAGER_ARGS=\"--sourcemap-output $DERIVED_FILE_DIR/main.jsbundle.map\"\nexport EXTRA_PACKAGER_ARGS=\"--sourcemap-output $DERIVED_FILE_DIR/main.jsbundle.map\"\nexport EXTRA_PACKAGER_ARGS=\"--sourcemap-output $DERIVED_FILE_DIR/main.jsbundle.map\"\nexport EXTRA_PACKAGER_ARGS=\"--sourcemap-output $DERIVED_FILE_DIR/main.jsbundle.map\"\nexport EXTRA_PACKAGER_ARGS=\"--sourcemap-output $DERIVED_FILE_DIR/main.jsbundle.map\"\nset -e\n\nexport NODE_BINARY=node\n../node_modules/@sentry/cli/bin/sentry-cli react-native xcode ../node_modules/react-native/scripts/react-native-xcode.sh\n";
 		};
-		6E2BECB55CCA00CF526B2F91 /* [CP] Embed Pods Frameworks */ = {
+		02582BDD7D2417E6EF409EEA /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-VemasysV2/Pods-VemasysV2-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-VemasysV2/Pods-VemasysV2-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			name = "[CP] Embed Pods Frameworks";
+			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-VemasysV2/Pods-VemasysV2-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-VemasysV2/Pods-VemasysV2-resources-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-VemasysV2/Pods-VemasysV2-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-VemasysV2/Pods-VemasysV2-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		939CAC0B569D4FAA9981050B /* Upload Debug Symbols to Sentry */ = {
@@ -300,29 +298,7 @@
 			shellPath = /bin/sh;
 			shellScript = "export SENTRY_PROPERTIES=sentry.properties\n../node_modules/@sentry/cli/bin/sentry-cli upload-dsym";
 		};
-		A55EABD7B0C7F3A422A6CC61 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-VemasysV2-VemasysV2Tests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		C38B50BA6285516D6DCD4F65 /* [CP] Check Pods Manifest.lock */ = {
+		C120A013AEC9F6D91CFFC7D9 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -344,41 +320,29 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		CC06AB642BB9EE8B72243EE9 /* [CP] Embed Pods Frameworks */ = {
+		ED0C60CC21A06A17698E22E9 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-VemasysV2-VemasysV2Tests/Pods-VemasysV2-VemasysV2Tests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			name = "[CP] Embed Pods Frameworks";
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-VemasysV2-VemasysV2Tests/Pods-VemasysV2-VemasysV2Tests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-VemasysV2-VemasysV2Tests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-VemasysV2-VemasysV2Tests/Pods-VemasysV2-VemasysV2Tests-frameworks.sh\"\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		E235C05ADACE081382539298 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-VemasysV2/Pods-VemasysV2-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-VemasysV2/Pods-VemasysV2-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-VemasysV2/Pods-VemasysV2-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		F6A41C54EA430FDDC6A6ED99 /* [CP] Copy Pods Resources */ = {
+		F7F9447629F4579EC5B78217 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -447,7 +411,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5B7EB9410499542E8C5724F5 /* Pods-VemasysV2-VemasysV2Tests.debug.xcconfig */;
+			baseConfigurationReference = 2E444E5F704C5DDCBC55BA98 /* Pods-VemasysV2-VemasysV2Tests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				DEVELOPMENT_TEAM = 27SDM3N78T;
@@ -475,7 +439,7 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 89C6BE57DB24E9ADA2F236DE /* Pods-VemasysV2-VemasysV2Tests.release.xcconfig */;
+			baseConfigurationReference = D4F065FCFD9538BDC81DBDD8 /* Pods-VemasysV2-VemasysV2Tests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
@@ -500,14 +464,16 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3B4392A12AC88292D35C810B /* Pods-VemasysV2.debug.xcconfig */;
+			baseConfigurationReference = 2A0887DE65138CD25DD6F09D /* Pods-VemasysV2.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 15;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 27SDM3N78T;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = VemasysV2/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -529,13 +495,14 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5709B34CF0A7D63546082F79 /* Pods-VemasysV2.release.xcconfig */;
+			baseConfigurationReference = 2CEC0478303217E37124BD41 /* Pods-VemasysV2.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 15;
 				DEVELOPMENT_TEAM = 27SDM3N78T;
 				INFOPLIST_FILE = VemasysV2/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

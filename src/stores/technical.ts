@@ -12,7 +12,6 @@ type TechnicalState = {
   bunkeringSuppliers?: [] | undefined
   engines: [] | undefined
   reservoirs: [] | undefined
-  lastWaterMeasurements: any[] | undefined
   tasksCategory?: [] | undefined
   tasksByCategory?: [] | undefined
   routinesCategory?: [] | undefined
@@ -62,10 +61,8 @@ export const useTechnical = create(
       isTechnicalLoading: false,
       bunkering: [],
       gasoilReserviors: [],
-      lastGasoilMeasurements: [],
       engines: [],
       reservoirs: [],
-      lastWaterMeasurements: [],
       tasksCategory: [],
       tasksByCategory: [],
       certificates: [],
@@ -89,7 +86,10 @@ export const useTechnical = create(
         }
       },
       getVesselGasoilReservoirs: async (physicalVesselId: string) => {
-        set({isTechnicalLoading: true, gasoilReserviors: []})
+        set({
+          isTechnicalLoading: true,
+          gasoilReserviors: []
+        })
         try {
           const response = await API.reloadVesselGasoilReservoirs(
             physicalVesselId
@@ -105,14 +105,15 @@ export const useTechnical = create(
                   reservoir?.vesselZone?.physicalVessel?.id === physicalVesselId
               )
             gasoilR.forEach(async reservoir => {
+              set({isTechnicalLoading: true})
               const lastM = await API.reloadVesselPartLastMeasurements(
                 reservoir.id
               )
               reservoir.lastMeasurement = lastM[0]
-            })
-            set({
-              isTechnicalLoading: false,
-              gasoilReserviors: gasoilR
+              set({
+                isTechnicalLoading: false,
+                gasoilReserviors: gasoilR
+              })
             })
           } else {
             set({
@@ -158,15 +159,15 @@ export const useTechnical = create(
         try {
           const response = await API.reloadVesselEngines(physicalVesselId)
           if (Array.isArray(response)) {
-            response.forEach(async engine => {
+            response.forEach(async (engine, index: number) => {
               const lastM = await API.reloadVesselPartLastMeasurements(
                 engine.id
               )
               engine.lastMeasurement = lastM[0]
-            })
-            set({
-              isTechnicalLoading: false,
-              engines: response
+              set({
+                isTechnicalLoading: false,
+                engines: response
+              })
             })
           } else {
             set({
@@ -184,16 +185,14 @@ export const useTechnical = create(
           const response = await API.reloadVesselReservoirs(physicalVesselId)
           if (Array.isArray(response)) {
             const waterTank = response.filter(res => res.type.title !== 'Fuel')
-            let lastWaterM: any[] = []
-            waterTank.forEach(async (tank, index) => {
+            waterTank.forEach(async tank => {
               set({isTechnicalLoading: true})
               const lastM = await API.reloadVesselPartLastMeasurements(tank.id)
-              lastWaterM?.push(lastM[0])
-            })
-            set({
-              isTechnicalLoading: false,
-              reservoirs: waterTank,
-              lastWaterMeasurements: lastWaterM
+              tank.lastMeasurement = lastM[0]
+              set({
+                isTechnicalLoading: false,
+                reservoirs: waterTank
+              })
             })
           } else {
             set({

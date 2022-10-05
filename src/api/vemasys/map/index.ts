@@ -1,6 +1,7 @@
 import {GeoPosition} from 'react-native-geolocation-service'
 import {API} from '@bluecentury/api/apiService'
 import {queryString} from '@bluecentury/utils'
+import {Location} from '@mauron85/react-native-background-geolocation'
 
 const getPreviousNavLog = async (
   vesselId: string,
@@ -12,9 +13,9 @@ const getPreviousNavLog = async (
 
   const params = {
     isCompleted: 1,
-    // 'exists[plannedETA]': 1,
-    // 'exists[departureDatetime]': 1,
-    // 'order[plannedETA]': 'desc',
+    'exists[plannedETA]': 1,
+    'exists[departureDatetime]': 1,
+    'order[plannedETA]': 'desc',
     exploitationVessel: vesselId,
     itemsPerPage: itemsPerPage || 5,
     page: page || 1
@@ -85,8 +86,11 @@ const getCurrentNavLog = async (vesselId: string) => {
     })
 }
 
-const getLastCompleteNavLogs = async (navLogId: string) => {
-  return API.get(`v3/navigation_logs/${navLogId}/routes`)
+const getLastCompleteNavLogs = async (vesselId: string) => {
+  // return API.get(`v3/navigation_logs/${navLogId}/routes`) /* old app call */
+  return API.get(
+    `v3/navigation_logs?exploitationVessel=${vesselId}&itemsPerPage=10&exists[departureDatetime]=1&exists[plannedETA]=0&order[departureDatetime]=desc`
+  )
     .then(response => {
       if (response.data) {
         return response.data
@@ -214,12 +218,13 @@ const getCurrentTrackerSource = async (vesselId: string) => {
     })
 }
 
-const sendCurrentPosition = async (position: GeoPosition) => {
-  return API.post(`tracking_device/ingest_events/api_tracker`, {
-    latitude: position?.coords?.latitude,
-    longitude: position?.coords?.longitude,
-    heading: position?.coords?.heading < 0 ? 1 : position?.coords?.heading,
-    speed: position?.coords?.speed < 0 ? 1 : position?.coords?.speed
+const sendCurrentPosition = async (entityId: string, position: Location) => {
+  return API.post('tracking_device/ingest_events/api_tracker', {
+    entity: entityId,
+    latitude: position?.latitude,
+    longitude: position?.longitude,
+    heading: 1,
+    speed: position?.speed < 0 ? 1 : position?.speed
   })
     .then(response => {
       if (response.data) {
@@ -230,6 +235,23 @@ const sendCurrentPosition = async (position: GeoPosition) => {
     })
     .catch(error => {
       console.error('Error: Tracking source', error)
+    })
+}
+
+const getVesselStatus = async (vesselId: string) => {
+  return API.get(
+    `geolocations?itemsPerPage=1&exploitationVessel.id=${vesselId}`
+  )
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Vessel status failed.')
+      }
+    })
+    .catch(error => {
+      console.log('Error: Vessel status', error)
+      return Promise.reject(error)
     })
 }
 
@@ -246,5 +268,6 @@ export {
   removeVesselToFormations,
   endVesselFormations,
   getCurrentTrackerSource,
-  sendCurrentPosition
+  sendCurrentPosition,
+  getVesselStatus
 }

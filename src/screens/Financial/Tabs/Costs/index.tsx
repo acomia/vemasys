@@ -5,15 +5,16 @@ import moment from 'moment'
 import {ms} from 'react-native-size-matters'
 import {Shadow} from 'react-native-shadow-2'
 
-import {useFinancial} from '@bluecentury/stores'
+import {useEntity, useFinancial} from '@bluecentury/stores'
 import {useNavigation} from '@react-navigation/native'
-import {LoadingIndicator} from '@bluecentury/components'
+import {LoadingAnimated} from '@bluecentury/components'
 import {Colors} from '@bluecentury/styles'
 
 const Costs = () => {
   const navigation = useNavigation()
   const {isFinancialLoading, invoiceStatistics, incomingInvoices, getInvoices} =
     useFinancial()
+  const {vesselId} = useEntity()
   const [selectedYear, setSelectedYear] = useState(
     new Date().getFullYear().toString()
   )
@@ -23,7 +24,7 @@ const Costs = () => {
 
   useEffect(() => {
     getInvoices('Incoming', selectedYear, page)
-  }, [page])
+  }, [page, vesselId])
 
   useEffect(() => {
     setIsPageChange(false)
@@ -101,13 +102,13 @@ const Costs = () => {
             {moment(invoice_date).format('DD MMM YYYY')}
           </Text>
         </Box>
-        <Box alignItems="center">
+        <Box alignItems="flex-end">
           <Text color={Colors.danger}>
             €{' '}
             {Platform.OS === 'ios'
               ? Number(amount).toLocaleString('en-GB', {
                   maximumFractionDigits: 2,
-                  minimumFractionDigits: 2
+                  minimumFractionDigits: 2,
                 })
               : Number(amount)
                   .toFixed(2)
@@ -174,7 +175,7 @@ const Costs = () => {
                 {Platform.OS === 'ios'
                   ? Number(value).toLocaleString('en-GB', {
                       maximumFractionDigits: 2,
-                      minimumFractionDigits: 2
+                      minimumFractionDigits: 2,
                     })
                   : Number(value)
                       .toFixed(2)
@@ -227,7 +228,7 @@ const Costs = () => {
               {Platform.OS === 'ios'
                 ? Number(value).toLocaleString('en-GB', {
                     maximumFractionDigits: 2,
-                    minimumFractionDigits: 2
+                    minimumFractionDigits: 2,
                   })
                 : Number(value)
                     .toFixed(2)
@@ -264,26 +265,17 @@ const Costs = () => {
             })}
           </Select>
         </Box>
-        <Box
-          style={{
-            flex: 1,
-            paddingHorizontal: 15,
-            paddingVertical: 25,
-            backgroundColor: '#fff'
-          }}
-        >
+        <Box flex="1" px={ms(15)} py={ms(25)} bg={Colors.white}>
           <Text
-            style={{
-              fontSize: 20,
-              fontWeight: 'bold',
-              color: '#23475C',
-              marginBottom: 20
-            }}
+            fontSize={ms(20)}
+            fontWeight="bold"
+            color={Colors.azure}
+            mb={ms(20)}
           >
             Incoming Invoices
           </Text>
           {isFinancialLoading && !isPageChange ? (
-            <LoadingIndicator />
+            <LoadingAnimated />
           ) : (
             <FlatList
               data={incomingInvoices}
@@ -294,7 +286,7 @@ const Costs = () => {
                     navigation.navigate('FinancialInvoiceDetails', {
                       id: item.id,
                       routeFrom: 'costs',
-                      title: item.receiverReference
+                      title: item.receiverReference,
                     })
                   }
                 >
@@ -331,13 +323,13 @@ const Costs = () => {
           justifyContent="center"
           style={{zIndex: 999}}
         >
-          <LoadingIndicator />
+          <LoadingAnimated />
         </Box>
       ) : totalEnabled ? (
         <Box bg={Colors.white}>
           <Shadow
             viewStyle={{
-              width: '100%'
+              width: '100%',
             }}
           >
             <TouchableOpacity
@@ -368,7 +360,7 @@ const Costs = () => {
         <Box bg={Colors.white}>
           <Shadow
             viewStyle={{
-              width: '100%'
+              width: '100%',
             }}
           >
             <CardTotal

@@ -7,6 +7,7 @@ import * as API from '@bluecentury/api/vemasys'
 type InformationState = {
   isInformationLoading: boolean
   pegels: [] | undefined
+  pegelDetails: [] | undefined
   streamGauges: [] | undefined
   rules: any[] | undefined
   tickerOilPrices: any[] | undefined
@@ -16,6 +17,7 @@ type InformationActions = {
   getVesselPegels?: (name: string) => void
   getVesselRules?: (vesselId: string, name: string) => void
   getVesselTickerOilPrices?: () => void
+  getPegelDetails?: (pegelId: number) => void
 }
 
 type InformationStore = InformationActions & InformationState
@@ -25,6 +27,7 @@ export const useInformation = create(
     (set, get) => ({
       isInformationLoading: false,
       pegels: [],
+      pegelDetails: [],
       streamGauges: [],
       rules: [],
       tickerOilPrices: [],
@@ -105,6 +108,30 @@ export const useInformation = create(
             set({
               isInformationLoading: false,
               tickerOilPrices: []
+            })
+          }
+        } catch (error) {
+          set({
+            isInformationLoading: false
+          })
+        }
+      },
+      getPegelDetails: async (pegelId: number) => {
+        set({
+          isInformationLoading: true,
+          pegelDetails: []
+        })
+        try {
+          const response = await API.reloadPegelDetails(pegelId)
+          if (Array.isArray(response)) {
+            set({
+              isInformationLoading: false,
+              pegelDetails: response
+            })
+          } else {
+            set({
+              isInformationLoading: false,
+              pegelDetails: []
             })
           }
         } catch (error) {

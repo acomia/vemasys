@@ -3,6 +3,7 @@ package com.vemasysreactnativeapp;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
+import com.anyline.RNImageToPDF.RNImageToPdfPackage;
 
 public class MainActivity extends ReactActivity {
 

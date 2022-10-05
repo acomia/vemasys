@@ -27,7 +27,13 @@ import {
   TechnicalRoutineDetails,
   FinancialInvoiceDetails,
   TickerOilPriceDetails,
-  Entity
+  AddCrewMember,
+  Entity,
+  InformationPegelDetails,
+  SelectEnvironment,
+  ImgViewer,
+  CharterAcceptSign,
+  TrackingServiceDialog
 } from '@bluecentury/screens'
 import {Colors} from '@bluecentury/styles'
 
@@ -51,6 +57,13 @@ export default function RootNavigator() {
         <Screen
           name="Login"
           component={Login}
+          options={{
+            headerShown: false
+          }}
+        />
+        <Screen
+          name="SelectEnvironment"
+          component={SelectEnvironment}
           options={{
             headerShown: false
           }}
@@ -89,7 +102,7 @@ export default function RootNavigator() {
         <Screen
           name={'PDFView'}
           component={PDFView}
-          options={{headerShown: true}}
+          options={{headerShown: true, title: 'PDF Viewer'}}
         />
         <Screen
           name={'NewBunkering'}
@@ -225,16 +238,50 @@ export default function RootNavigator() {
             title: 'Ticker oil price details'
           }}
         />
-      </Group>
-      <Group>
         <Screen
-          name="GPSTracker"
-          component={GPSTracker}
+          name={'AddCrewMember'}
+          component={AddCrewMember}
           options={{
-            presentation: 'transparentModal',
-            animation: 'slide_from_bottom'
+            headerShown: true,
+            title: 'Add crew member'
           }}
         />
+        <Screen
+          name={'InformationPegelDetails'}
+          component={InformationPegelDetails}
+          options={{
+            headerShown: true,
+            title: 'Pegel details'
+          }}
+        />
+        <Screen
+          name={'ImgViewer'}
+          component={ImgViewer}
+          options={({route}) => ({
+            headerShown: true,
+            title: route.params.title
+          })}
+        />
+        <Screen
+          name={'CharterAcceptSign'}
+          component={CharterAcceptSign}
+          options={{
+            headerShown: true,
+            title: 'Signature'
+          }}
+        />
+      </Group>
+      <Group
+        screenOptions={{
+          presentation: 'containedTransparentModal',
+          animation: 'slide_from_bottom'
+        }}
+      >
+        <Screen
+          name="TrackingServiceDialog"
+          component={TrackingServiceDialog}
+        />
+        <Screen name="GPSTracker" component={GPSTracker} />
       </Group>
     </Navigator>
   )

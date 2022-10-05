@@ -11,17 +11,21 @@ import {
   Button,
   WarningOutlineIcon,
   Center,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  HStack,
+  Checkbox,
 } from 'native-base'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import {ms} from 'react-native-size-matters'
 
 import {Colors} from '@bluecentury/styles'
-import {TCredentials} from '@bluecentury/api/models'
+import {Credentials} from '@bluecentury/models'
 import {Images} from '@bluecentury/assets'
 import {_t} from '@bluecentury/constants'
-import {useAuth} from '@bluecentury/stores'
-import {CommonActions, useNavigation} from '@react-navigation/native'
+import {useAuth, useSettings} from '@bluecentury/stores'
+import {VersionBuildLabel} from '@bluecentury/components/version-build-label'
+import {useSafeAreaInsets} from 'react-native-safe-area-context'
+import * as Keychain from 'react-native-keychain'
 
 const usernameRequired = _t('usernameRequired')
 const passwordRequired = _t('passwordRequired')
@@ -29,15 +33,15 @@ const allFieldsRequired = _t('allFieldsRequired')
 const login = _t('login')
 
 function Login() {
-  const navigation = useNavigation()
+  const insets = useSafeAreaInsets()
   const {
     isAuthenticatingUser,
     authenticate,
-    token,
     hasAuthenticationError,
-    errorMessage
+    errorMessage,
   } = useAuth()
-  const [user, setUser] = useState<TCredentials>({username: '', password: ''})
+  const {isRemainLoggedIn, setIsRemainLoggedIn} = useSettings()
+  const [user, setUser] = useState<Credentials>({username: '', password: ''})
   const [isShowPassword, setIsShowPassword] = useState(false)
   const [isUsernameEmpty, setIsUsernameEmpty] = useState(false)
   const [isPasswordEmpty, setIsPasswordEmpty] = useState(false)
@@ -59,24 +63,27 @@ function Login() {
   }
   const handleOnSubmitEditingPassword = () => handleOnPressLogin()
   useEffect(() => {
-    if (token) {
-      navigation.dispatch(
-        CommonActions.reset({
-          index: 0,
-          routes: [{name: 'Splash'}]
-        })
-      )
-    }
-  })
+    Keychain.getGenericPassword()
+      .then(credentials => {
+        console.log('credentials ', credentials)
+        if (credentials) {
+          const {username, password} = credentials
+          setUser({username: username, password: password})
+        }
+      })
+      .catch(error => {
+        console.log('Error: ', error)
+      })
+  }, [])
   return (
-    <KeyboardAvoidingView
-      h={{
-        base: '100%',
-        lg: 'auto'
-      }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <Box flex="1" safeArea>
+    <Box flex={1} safeArea>
+      <KeyboardAvoidingView
+        h={{
+          base: '100%',
+          lg: 'auto',
+        }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
         <VStack space="10" flex="1" p="5" justifyContent="center">
           <Center>
             <Image
@@ -174,24 +181,38 @@ function Login() {
                 <Text color={Colors.white}>{errorMessage}</Text>
               </Box>
             )}
+            <HStack justifyContent="flex-end">
+              <Checkbox
+                isChecked={isRemainLoggedIn}
+                onChange={v => setIsRemainLoggedIn(v)}
+                value="remain-logged-in"
+              >
+                Remain logged in?
+              </Checkbox>
+            </HStack>
           </VStack>
           <Button
             colorScheme="azure"
             isLoadingText="Logging in"
             isLoading={isAuthenticatingUser}
             _spinner={{
-              color: Colors.white
+              color: Colors.white,
             }}
             _text={{
-              textTransform: 'uppercase'
+              textTransform: 'uppercase',
             }}
             onPress={handleOnPressLogin}
           >
             {login}
           </Button>
         </VStack>
+      </KeyboardAvoidingView>
+      <Box position="absolute" bottom={0} left={0} right={0} safeAreaBottom>
+        <Center pb={insets.bottom > 0 ? 0 : 5}>
+          <VersionBuildLabel />
+        </Center>
       </Box>
-    </KeyboardAvoidingView>
+    </Box>
   )
 }
 

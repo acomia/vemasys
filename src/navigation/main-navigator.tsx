@@ -1,11 +1,11 @@
 import React, {useCallback, useEffect} from 'react'
 import {ImageSourcePropType} from 'react-native'
-import {Box, HStack, View} from 'native-base'
+import {Box, HStack, Pressable} from 'native-base'
 import {createDrawerNavigator} from '@react-navigation/drawer'
 import {
   CommonActions,
   DrawerActions,
-  useFocusEffect
+  useFocusEffect,
 } from '@react-navigation/native'
 import {
   Notification,
@@ -15,7 +15,9 @@ import {
   Charters,
   Technical,
   Financial,
-  Information
+  Information,
+  Crew,
+  Settings,
 } from '@bluecentury/screens'
 import {Sidebar, IconButton} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
@@ -23,24 +25,53 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {Screens} from '@bluecentury/constants'
 import {ms} from 'react-native-size-matters'
 import {Colors} from '@bluecentury/styles'
-import {useAuth, useMap} from '@bluecentury/stores'
+import {useAuth, useMap, useSettings} from '@bluecentury/stores'
 import {navigationRef} from './navigationRef'
+import {
+  InitializeTrackingService,
+  StopTrackingService,
+} from '@bluecentury/helpers'
+import BackgroundGeolocation from '@mauron85/react-native-background-geolocation'
+import {GPSAnimated} from '@bluecentury/components/gps-animated'
 
 const {Navigator, Screen} = createDrawerNavigator<MainStackParamList>()
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Main'>
 
 export default function MainNavigator({navigation}: Props) {
+  const isMobileTracking = useSettings(state => state.isMobileTracking)
   const token = useAuth(state => state.token)
-  const {activeFormations, getActiveFormations} = useMap()
+  const activeFormations = useMap(state => state.activeFormations)
+  const getActiveFormations = useMap(state => state.getActiveFormations)
   let scanIcon: ImageSourcePropType = Icons.qr
   let scanNavigateTo: () => void
 
   useFocusEffect(
     useCallback(() => {
       getActiveFormations()
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
   )
+
+  useEffect(() => {
+    BackgroundGeolocation.checkStatus(status => {
+      if (!status.isRunning && isMobileTracking) {
+        BackgroundGeolocation.start()
+      }
+
+      if (status.isRunning && !isMobileTracking) {
+        BackgroundGeolocation.stop()
+      }
+    })
+  }, [isMobileTracking])
+
+  useEffect(() => {
+    InitializeTrackingService()
+
+    return () => {
+      StopTrackingService()
+    }
+  }, [])
 
   useEffect(() => {
     if (typeof token === 'undefined') {
@@ -49,9 +80,9 @@ export default function MainNavigator({navigation}: Props) {
           index: 0,
           routes: [
             {
-              name: 'Splash'
-            }
-          ]
+              name: 'Splash',
+            },
+          ],
         })
       )
     }
@@ -71,25 +102,26 @@ export default function MainNavigator({navigation}: Props) {
     <Navigator
       screenOptions={{
         drawerStyle: {
-          width: ms(220)
+          width: ms(220),
         },
         headerTitleAlign: 'left',
         headerTitleStyle: {fontSize: 16, fontWeight: 'bold'},
         headerStyle: {backgroundColor: Colors.light},
         headerShadowVisible: false,
         headerRight: () => (
-          <Box flexDirection="row" alignItems="center" mr={ms(20)}>
+          <Box flexDirection="row" alignItems="center" mr={2}>
             <HStack space="3">
               <IconButton
                 source={scanIcon}
                 onPress={() => scanNavigateTo()}
-                size={ms(20)}
+                size={ms(25)}
               />
-              <IconButton
-                source={Icons.gps}
+              <Pressable
+                size={ms(40)}
                 onPress={() => navigation.navigate('GPSTracker')}
-                size={ms(35)}
-              />
+              >
+                <GPSAnimated />
+              </Pressable>
             </HStack>
           </Box>
         ),
@@ -101,9 +133,9 @@ export default function MainNavigator({navigation}: Props) {
               size={ms(20)}
             />
           </Box>
-        )
+        ),
       }}
-      initialRouteName={Screens.Planning}
+      initialRouteName={Screens.MapView}
       drawerContent={props => <Sidebar {...props} />}
     >
       <Screen name={Screens.MapView} component={Map} />
@@ -113,13 +145,15 @@ export default function MainNavigator({navigation}: Props) {
       <Screen name={Screens.Technical} component={Technical} />
       <Screen name={Screens.Financial} component={Financial} />
       <Screen name={Screens.Information} component={Information} />
+      <Screen name={Screens.Crew} component={Crew} />
       <Screen
         name={Screens.ChangeRole}
         component={Entity}
         options={{
-          headerTitle: 'Select your role'
+          headerTitle: 'Select your role',
         }}
       />
+      <Screen name={Screens.Settings} component={Settings} />
     </Navigator>
   )
 }

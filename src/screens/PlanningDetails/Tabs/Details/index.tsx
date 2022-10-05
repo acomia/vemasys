@@ -9,11 +9,11 @@ import {
   Image,
   ScrollView,
   Text,
-  useToast
+  useToast,
 } from 'native-base'
 import {ms} from 'react-native-size-matters'
 import DatePicker from 'react-native-date-picker'
-import {useNavigation, useRoute} from '@react-navigation/native'
+import {NavigationProp, useNavigation, useRoute} from '@react-navigation/native'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import moment from 'moment'
 import _ from 'lodash'
@@ -28,14 +28,21 @@ import {
   hasSelectedEntityUserPermission,
   ROLE_PERMISSION_NAVIGATION_LOG_ADD_COMMENT,
   ROLE_PERMISSION_NAVIGATION_LOG_ADD_FILE,
-  titleCase
+  titleCase,
 } from '@bluecentury/constants'
-import {PROD_URL} from '@bluecentury/env'
-import {LoadingIndicator} from '@bluecentury/components'
+import {PROD_URL} from '@vemasys/env'
+import {LoadingAnimated} from '@bluecentury/components'
+
+type Dates = {
+  plannedEta: Date | null
+  captainDatetimeETA: Date | null
+  announcedDatetime: Date | null
+  terminalApprovedDeparture: Date | null
+}
 
 const Details = () => {
   const toast = useToast()
-  const navigation = useNavigation()
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>()
   const route = useRoute()
   const {
     isPlanningLoading,
@@ -46,14 +53,16 @@ const Details = () => {
     getNavigationLogActions,
     getNavigationLogCargoHolds,
     getNavigationLogComments,
-    updateNavlogDates
+    getNavigationLogDocuments,
+    updateNavlogDates,
   } = usePlanning()
   const {user, selectedEntity, physicalVesselId} = useEntity()
   const {navlog}: any = route.params
-  const [dates, setDates] = useState({
+  const [dates, setDates] = useState<Dates>({
+    plannedEta: null,
     captainDatetimeETA: null,
     announcedDatetime: null,
-    terminalApprovedDeparture: null
+    terminalApprovedDeparture: null,
   })
   const [selectedDate, setSelectedDate] = useState('')
   const [openDatePicker, setOpenDatePicker] = useState(false)
@@ -67,10 +76,12 @@ const Details = () => {
   )
 
   useEffect(() => {
-    getNavigationLogDetails(navlog.id)
-    getNavigationLogActions(navlog.id)
-    getNavigationLogComments(navlog.id)
+    getNavigationLogDetails(navlog?.id)
+    getNavigationLogActions(navlog?.id)
+    getNavigationLogComments(navlog?.id)
+    getNavigationLogDocuments(navlog?.id)
     getNavigationLogCargoHolds(physicalVesselId)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleOnSaveDateUpdates = async () => {
@@ -89,7 +100,7 @@ const Details = () => {
           })[1]
       if (field === 'departureDatetime') {
         body['modifiedByUser'] = {
-          id: user?.id
+          id: user?.id,
         }
         body['modificationDate'] = new Date()
       }
@@ -112,7 +123,7 @@ const Details = () => {
               Updates saved.
             </Text>
           )
-        }
+        },
       })
     } else {
       toast.show({
@@ -123,18 +134,25 @@ const Details = () => {
               Updates failed.
             </Box>
           )
-        }
+        },
       })
     }
   }
 
   const onDatesChange = (date: Date) => {
-    if (selectedDate === 'ETA') {
-      setDates({...dates, captainDatetimeETA: date})
-    } else if (selectedDate === 'NOR') {
-      setDates({...dates, announcedDatetime: date})
-    } else {
-      setDates({...dates, terminalApprovedDeparture: date})
+    switch (selectedDate) {
+      case 'PLN':
+        setDates({...dates, plannedEta: date})
+        return
+      case 'ETA':
+        setDates({...dates, captainDatetimeETA: date})
+        return
+      case 'NOR':
+        setDates({...dates, announcedDatetime: date})
+        return
+      case 'DOC':
+        setDates({...dates, terminalApprovedDeparture: date})
+        return
     }
   }
 
@@ -155,58 +173,66 @@ const Details = () => {
             {formatLocationLabel(navigationLogDetails?.location)}
           </Text>
         </HStack>
-        {!navigationLogDetails?.captainDatetimeEta &&
-        !navigationLogDetails?.plannedEta ? null : (
-          <DatetimePickerList
-            title="ETA"
-            date={
-              _.isNull(dates.captainDatetimeETA)
-                ? navigationLogDetails?.captainDatetimeEta
-                : dates.captainDatetimeETA
-            }
-            locked={navigationLogDetails?.locked}
-            onChangeDate={() => {
-              setSelectedDate('ETA'), setOpenDatePicker(true)
-            }}
-            onClearDate={() => setDates({...dates, captainDatetimeETA: null})}
-          />
-        )}
+        <DatetimePickerList
+          title="PLN"
+          date={
+            dates.plannedEta
+              ? dates.plannedEta
+              : navigationLogDetails?.plannedEta
+          }
+          locked={navigationLogDetails?.locked}
+          onChangeDate={() => {
+            setSelectedDate('PLN')
+            setOpenDatePicker(true)
+          }}
+          onClearDate={() => setDates({...dates, plannedEta: null})}
+        />
+        <DatetimePickerList
+          title="ETA"
+          date={
+            _.isNull(dates.captainDatetimeETA)
+              ? navigationLogDetails?.captainDatetimeEta
+              : dates.captainDatetimeETA
+          }
+          locked={navigationLogDetails?.locked}
+          onChangeDate={() => {
+            setSelectedDate('ETA')
+            setOpenDatePicker(true)
+          }}
+          onClearDate={() => setDates({...dates, captainDatetimeETA: null})}
+        />
 
-        {!navigationLogDetails?.announcedDatetime &&
-        !navigationLogDetails?.plannedEta ? null : (
-          <DatetimePickerList
-            title="NOR"
-            date={
-              _.isNull(dates.announcedDatetime)
-                ? navigationLogDetails?.announcedDatetime
-                : dates.announcedDatetime
-            }
-            locked={navigationLogDetails?.locked}
-            onChangeDate={() => {
-              setSelectedDate('NOR'), setOpenDatePicker(true)
-            }}
-            onClearDate={() => setDates({...dates, announcedDatetime: null})}
-          />
-        )}
+        <DatetimePickerList
+          title="NOR"
+          date={
+            _.isNull(dates.announcedDatetime)
+              ? navigationLogDetails?.announcedDatetime
+              : dates.announcedDatetime
+          }
+          locked={navigationLogDetails?.locked}
+          onChangeDate={() => {
+            setSelectedDate('NOR')
+            setOpenDatePicker(true)
+          }}
+          onClearDate={() => setDates({...dates, announcedDatetime: null})}
+        />
 
-        {!navigationLogDetails?.terminalApprovedDeparture &&
-        !navigationLogDetails?.plannedEta ? null : (
-          <DatetimePickerList
-            title="DOC"
-            date={
-              _.isNull(dates.terminalApprovedDeparture)
-                ? navigationLogDetails?.terminalApprovedDeparture
-                : dates.terminalApprovedDeparture
-            }
-            locked={navigationLogDetails?.locked}
-            onChangeDate={() => {
-              setSelectedDate('DOC'), setOpenDatePicker(true)
-            }}
-            onClearDate={() =>
-              setDates({...dates, terminalApprovedDeparture: null})
-            }
-          />
-        )}
+        <DatetimePickerList
+          title="DOC"
+          date={
+            _.isNull(dates.terminalApprovedDeparture)
+              ? navigationLogDetails?.terminalApprovedDeparture
+              : dates.terminalApprovedDeparture
+          }
+          locked={navigationLogDetails?.locked}
+          onChangeDate={() => {
+            setSelectedDate('DOC')
+            setOpenDatePicker(true)
+          }}
+          onClearDate={() =>
+            setDates({...dates, terminalApprovedDeparture: null})
+          }
+        />
 
         <Button
           bg={
@@ -245,7 +271,7 @@ const Details = () => {
           navigation.navigate('AddEditComment', {
             comment: comment,
             method: 'edit',
-            routeFrom: 'Planning'
+            routeFrom: 'Planning',
           })
         }
       >
@@ -264,7 +290,7 @@ const Details = () => {
               source={{
                 uri: comment?.user?.icon?.path
                   ? `${PROD_URL}/upload/documents/${comment?.user?.icon?.path}`
-                  : ''
+                  : '',
               }}
             />
             <Box ml={ms(10)}>
@@ -313,14 +339,15 @@ const Details = () => {
     getNavigationLogDetails(navlog.id)
     getNavigationLogActions(navlog.id)
     getNavigationLogComments(navlog.id)
+    getNavigationLogDocuments(navlog.id)
     getNavigationLogCargoHolds(physicalVesselId)
   }
 
-  if (isPlanningLoading) return <LoadingIndicator />
+  if (isPlanningLoading) return <LoadingAnimated />
   return (
     <Box flex="1">
       <ScrollView
-        contentContainerStyle={{flexGrow: 1, paddingBottom: 20}}
+        contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
         scrollEventThrottle={16}
         refreshControl={
           <RefreshControl
@@ -383,7 +410,7 @@ const Details = () => {
                 onPress={() =>
                   navigation.navigate('AddEditNavlogAction', {
                     method: 'edit',
-                    navlogAction: action
+                    navlogAction: action,
                   })
                 }
               >
@@ -438,7 +465,7 @@ const Details = () => {
             mt={ms(20)}
             onPress={() =>
               navigation.navigate('AddEditNavlogAction', {
-                method: 'add'
+                method: 'add',
               })
             }
           >
@@ -451,18 +478,17 @@ const Details = () => {
             Comments
           </Text>
           {navigationLogComments?.length > 0 ? (
-            <Text
+            <Box
               bg={Colors.azure}
-              color={Colors.white}
+              borderRadius={ms(20)}
               width={ms(22)}
               height={ms(22)}
               ml={ms(10)}
-              borderRadius={ms(20)}
-              fontWeight="bold"
-              textAlign="center"
             >
-              {navigationLogComments?.length}
-            </Text>
+              <Text color={Colors.white} fontWeight="bold" textAlign="center">
+                {navigationLogComments?.length}
+              </Text>
+            </Box>
           ) : null}
         </HStack>
 
@@ -486,7 +512,7 @@ const Details = () => {
             onPress={() =>
               navigation.navigate('AddEditComment', {
                 method: 'add',
-                routeFrom: 'Planning'
+                routeFrom: 'Planning',
               })
             }
           >
@@ -500,7 +526,8 @@ const Details = () => {
           date={new Date()}
           mode="datetime"
           onConfirm={date => {
-            setOpenDatePicker(false), onDatesChange(date)
+            setOpenDatePicker(false)
+            onDatesChange(date)
           }}
           onCancel={() => {
             setOpenDatePicker(false)

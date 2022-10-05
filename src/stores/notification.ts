@@ -3,10 +3,10 @@ import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import * as API from '@bluecentury/api/vemasys'
-import {TNotification} from '@bluecentury/api/models'
+import {Notification} from '@bluecentury/models'
 
 type NotifState = {
-  notifications: TNotification[]
+  notifications: Notification[]
   isLoadingNotification: boolean
 }
 

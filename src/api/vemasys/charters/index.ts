@@ -1,14 +1,26 @@
-import _ from 'lodash'
+import orderBy from 'lodash/orderBy'
 import {API} from '@bluecentury/api/apiService'
 import ReactNativeBlobUtil from 'react-native-blob-util'
-import {PROD_URL} from '@bluecentury/env'
-import {useAuth} from '@bluecentury/stores'
+import {useAuth, useEntity, useSettings} from '@bluecentury/stores'
+
+type UpdateStatus = {
+  status?: string
+  setContractorStatus?: boolean
+}
+
+type Signature = {
+  user: string
+  signature: string
+  signedDate: Date
+  charter: string
+}
 
 const reloadVesselCharters = async () => {
-  return API.get(`v3/charters?isArchived=0`)
+  const isArchived = 0
+  return API.get(`v3/charters?isArchived=${isArchived}`)
     .then(response => {
       if (response.data.length > 0) {
-        return _.orderBy(response.data, 'charterDate', 'desc')
+        return orderBy(response.data, 'charterDate', 'desc')
       } else {
         return []
       }
@@ -18,35 +30,44 @@ const reloadVesselCharters = async () => {
     })
 }
 
-// const downloadPdf =async (path:string) => {
-//   const options = {
-//     fileCache: true,
-//   }
-//   const {config} = ReactNativeBlobUtil
-//   return await config(options).fetch('GET', `${store.getState().api.restBaseUrl}${path}`, {
-//     'Jwt-Auth': `Bearer ${store.getState().auth.jwt}`,
-//   })
-// }
-
 const viewPdfFile = async (charterId: string) => {
+  const token = useAuth.getState().token
+  const entityUserId = useEntity.getState().entityUserId
+  const API_URL = useSettings.getState().apiUrl
   return await ReactNativeBlobUtil.config({
     fileCache: true
+  }).fetch('GET', `${API_URL}charters/${charterId}/pdf`, {
+    'Jwt-Auth': `Bearer ${token}`,
+    'X-active-entity-user-id': `${entityUserId}`
   })
-    .fetch('GET', `${PROD_URL}/api/charters/${charterId}/pdf`, {
-      'Jwt-Auth': `Bearer ${useAuth.getState().token}`
-    })
-    .then(response => {
-      console.log('path', response)
+}
 
+const updateCharterStatus = async (charterId: string, status: UpdateStatus) => {
+  return API.post(`v2/charters/${charterId}/update_status`, status)
+    .then(response => {
       if (response.data) {
-        return response.path()
+        return response.data
       } else {
-        throw new Error('Charters pdf file failed.')
+        throw new Error('Charter update status failed.')
       }
     })
     .catch(error => {
-      console.error('Error: Charters PDF File', error)
+      console.error('Error: Charter update status API', error)
     })
 }
 
-export {reloadVesselCharters, viewPdfFile}
+const uploadSignature = async (signature: Signature) => {
+  return API.post(`signatures`, signature)
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Charter upload signature failed.')
+      }
+    })
+    .catch(error => {
+      console.error('Error: Charter upload signature API', error)
+    })
+}
+
+export {reloadVesselCharters, viewPdfFile, updateCharterStatus, uploadSignature}

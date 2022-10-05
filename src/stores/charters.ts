@@ -3,6 +3,16 @@ import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import * as API from '@bluecentury/api/vemasys'
+interface IUpdateStatus {
+  status?: string
+  setContractorStatus?: boolean
+}
+interface ISignature {
+  user: string
+  signature: string
+  signedDate: Date
+  charter: string
+}
 
 type ChartersState = {
   charters: [] | undefined
@@ -12,7 +22,9 @@ type ChartersState = {
 
 type ChartersActions = {
   getCharters: () => void
-  viewPdf: (charterId: string) => void
+  viewPdf?: (charterId: string) => void
+  updateCharterStatus?: (charterId: string, status: IUpdateStatus) => void
+  uploadSignature?: (signature: ISignature) => void
 }
 
 type ChartersStore = ChartersState & ChartersActions
@@ -46,7 +58,28 @@ export const useCharters = create(
         set({isCharterLoading: true})
         try {
           const response = await API.viewPdfFile(charterId)
-          set({pdfPath: response, isCharterLoading: false})
+          set({isCharterLoading: false})
+          return response.data
+        } catch (error) {
+          set({isCharterLoading: false})
+        }
+      },
+      updateCharterStatus: async (charterId: string, status: IUpdateStatus) => {
+        set({isCharterLoading: true})
+        try {
+          const response = await API.updateCharterStatus(charterId, status)
+          set({isCharterLoading: false})
+          return response
+        } catch (error) {
+          set({isCharterLoading: false})
+        }
+      },
+      uploadSignature: async (signature: ISignature) => {
+        set({isCharterLoading: true})
+        try {
+          const response = await API.uploadSignature(signature)
+          set({isCharterLoading: false})
+          return response
         } catch (error) {
           set({isCharterLoading: false})
         }

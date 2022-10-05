@@ -1,5 +1,7 @@
 import {API} from '../../apiService'
 import {VESSEL_PART_CARGO_TYPE} from '@bluecentury/constants'
+import axios from 'axios'
+import {useAuth, useEntity, useSettings} from '@bluecentury/stores'
 
 const reloadNavigationLogDetails = async (navLogId: string) => {
   return API.get(`navigation_logs/${navLogId}`)
@@ -202,7 +204,63 @@ const updateComment = async (id: string, description: string) => {
     })
 }
 
-const uploadFile = async (file: string, type: string) => {}
+const uploadImgFile = async (file: ImageFile) => {
+  const formData = new FormData()
+  let image = {
+    uri: file.uri,
+    type: file.type,
+    name: file.fileName || `IMG_${Date.now()}`
+  }
+
+  formData.append('file', image)
+
+  const token = useAuth.getState().token
+  const entityUserId = useEntity.getState().entityUserId
+  const API_URL = useSettings.getState().apiUrl
+
+  try {
+    const res = await axios.post(`${API_URL}v2/files`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Jwt-Auth': `Bearer ${token}`,
+        'X-active-entity-user-id': `${entityUserId}`,
+      },
+    })
+
+    console.log('res.data', res.data)
+    return res.data
+  } catch (error) {
+    console.error('Error: Upload image file data', error)
+  }
+}
+
+const deleteComment = async (id: string) => {
+  return API.delete(`comments/${id}`)
+    .then(response => {
+      if (response.status) {
+        return response.status
+      } else {
+        throw new Error('Delete comment failed.')
+      }
+    })
+    .catch(error => {
+      console.error('Error: Delete comment data', error)
+    })
+}
+
+const uploadVesselNavigationLogFile = async (navLogId: string, body: any) => {
+  return API.put(`navigation_logs/${navLogId}`, body)
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Update navlog datetime failed.')
+      }
+    })
+    .catch(error => {
+      console.error('Error: Update navlog datetime data', error)
+    })
+}
 
 export {
   reloadNavigationLogDetails,
@@ -216,5 +274,8 @@ export {
   updateBulkCargoEntry,
   createNewBulkCargoEntry,
   deleteBulkCargoEntry,
-  updateComment
+  updateComment,
+  uploadImgFile,
+  deleteComment,
+  uploadVesselNavigationLogFile
 }

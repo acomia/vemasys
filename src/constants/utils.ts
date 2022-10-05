@@ -1,6 +1,8 @@
+import {Location} from '@bluecentury/models'
 import {Platform} from 'react-native'
 
-export function formatLocationLabel(location: GeographicPoint) {
+// todo fix Types
+export function formatLocationLabel(location?: GeographicPoint | Location) {
   if (location?.locationName) {
     return `[${location?.locationName}] ${location?.name}`
   }
@@ -29,7 +31,7 @@ export function formatNumber(value: string | number, decimal: number) {
   return Platform.OS === 'ios'
     ? Number(value).toLocaleString('en-GB', {
         maximumFractionDigits: decimal,
-        minimumFractionDigits: decimal
+        minimumFractionDigits: decimal,
       })
     : Number(value)
         .toFixed(decimal)
@@ -110,6 +112,15 @@ export function calculateTotalOut(navigationlog: any): number {
   return totalOut
 }
 
+export const hasSelectedEntityUserSomePermission = (
+  state: any,
+  permissions: any[]
+) => {
+  return permissions.some(permission =>
+    hasSelectedEntityUserPermission(state, permission)
+  )
+}
+
 export const hasSelectedEntityUserPermission = (
   entity: any,
   permission: string
@@ -139,4 +150,17 @@ export const formatConsumableLabel = (consumable: Consumable) => {
   }
 
   return consumable.name
+}
+
+export function getAvailableColors(): string[] {
+  return [
+    '#A0AEC0',
+    '#F56565',
+    '#ED8936',
+    '#ECC94B',
+    '#667EEA',
+    '#ED64A6',
+    '#81E6D9',
+    '#10B981',
+  ]
 }
