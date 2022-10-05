@@ -15,7 +15,7 @@ import {Animated} from '@bluecentury/assets'
 import Signature, {SignatureViewRef} from 'react-native-signature-canvas'
 import {Shadow} from 'react-native-shadow-2'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
-import {useCharters, useEntity} from '@bluecentury/stores'
+import {useCharters, useEntity, useSettings} from '@bluecentury/stores'
 import {CHARTER_CONTRACTOR_STATUS_ACCEPTED} from '@bluecentury/constants'
 import {LoadingAnimated} from '@bluecentury/components'
 
@@ -27,6 +27,7 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
   const {isCharterLoading, updateCharterStatus, getCharters, uploadSignature} =
     useCharters()
   const {user} = useEntity()
+  const {isMobileTracking, setIsMobileTracking} = useSettings()
   const [scrollEnabled, setScrollEnabled] = useState(true)
 
   const handleSignature = async signature => {
@@ -37,6 +38,7 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
     const update = await updateCharterStatus(charter?.id, status)
     if (typeof update === 'string') {
       getCharters()
+      setIsMobileTracking(!isMobileTracking)
       showToast('Charter accepted sucessfully.', 'success')
     } else {
       showToast('Charter accepted failed.', 'failed')
