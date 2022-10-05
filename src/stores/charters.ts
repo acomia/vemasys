@@ -22,9 +22,9 @@ type ChartersState = {
 
 type ChartersActions = {
   getCharters: () => void
-  viewPdf?: (charterId: string) => void
-  updateCharterStatus?: (charterId: string, status: IUpdateStatus) => void
-  uploadSignature?: (signature: ISignature) => void
+  viewPdf: (charterId: string) => void
+  updateCharterStatus: (charterId: string, status: IUpdateStatus) => void
+  uploadSignature: (signature: ISignature) => void
 }
 
 type ChartersStore = ChartersState & ChartersActions
@@ -42,12 +42,12 @@ export const useCharters = create(
           if (Array.isArray(response)) {
             set({
               isCharterLoading: false,
-              charters: response
+              charters: response,
             })
           } else {
             set({
               isCharterLoading: false,
-              charters: []
+              charters: [],
             })
           }
         } catch (error) {
@@ -83,11 +83,11 @@ export const useCharters = create(
         } catch (error) {
           set({isCharterLoading: false})
         }
-      }
+      },
     }),
     {
       name: 'charters-storage',
-      getStorage: () => AsyncStorage
+      getStorage: () => AsyncStorage,
     }
   )
 )

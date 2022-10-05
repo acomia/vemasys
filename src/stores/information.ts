@@ -14,10 +14,10 @@ type InformationState = {
 }
 
 type InformationActions = {
-  getVesselPegels?: (name: string) => void
-  getVesselRules?: (vesselId: string, name: string) => void
-  getVesselTickerOilPrices?: () => void
-  getPegelDetails?: (pegelId: number) => void
+  getVesselPegels: (name: string) => void
+  getVesselRules: (vesselId: string, name: string) => void
+  getVesselTickerOilPrices: () => void
+  getPegelDetails: (pegelId: number) => void
 }
 
 type InformationStore = InformationActions & InformationState
@@ -35,7 +35,7 @@ export const useInformation = create(
         set({
           isInformationLoading: true,
           pegels: [],
-          streamGauges: []
+          streamGauges: [],
         })
         try {
           const response = await API.reloadVesselPegels(name)
@@ -47,7 +47,7 @@ export const useInformation = create(
                 ...river.streamGauges.filter(
                   (sg: {isStreamGaugeReference: any}) =>
                     sg.isStreamGaugeReference
-                )
+                ),
               ]
             })
             streamGaugeReferences?.sort((a: any, b: any) =>
@@ -56,94 +56,94 @@ export const useInformation = create(
             set({
               isInformationLoading: false,
               pegels: response,
-              streamGauges: streamGaugeReferences
+              streamGauges: streamGaugeReferences,
             })
           } else {
             set({
-              isInformationLoading: false
+              isInformationLoading: false,
             })
           }
         } catch (error) {
           set({
-            isInformationLoading: false
+            isInformationLoading: false,
           })
         }
       },
       getVesselRules: async (vesselId: string, name: string) => {
         set({
           isInformationLoading: true,
-          rules: []
+          rules: [],
         })
         try {
           const response = await API.reloadVesselRules(vesselId, name)
           if (Array.isArray(response)) {
             set({
               isInformationLoading: false,
-              rules: response
+              rules: response,
             })
           } else {
             set({
-              isInformationLoading: false
+              isInformationLoading: false,
             })
           }
         } catch (error) {
           set({
-            isInformationLoading: false
+            isInformationLoading: false,
           })
         }
       },
       getVesselTickerOilPrices: async () => {
         set({
           isInformationLoading: true,
-          tickerOilPrices: []
+          tickerOilPrices: [],
         })
         try {
           const response = await API.reloadVesselTickerOilPrices()
           if (Array.isArray(response)) {
             set({
               isInformationLoading: false,
-              tickerOilPrices: response
+              tickerOilPrices: response,
             })
           } else {
             set({
               isInformationLoading: false,
-              tickerOilPrices: []
+              tickerOilPrices: [],
             })
           }
         } catch (error) {
           set({
-            isInformationLoading: false
+            isInformationLoading: false,
           })
         }
       },
       getPegelDetails: async (pegelId: number) => {
         set({
           isInformationLoading: true,
-          pegelDetails: []
+          pegelDetails: [],
         })
         try {
           const response = await API.reloadPegelDetails(pegelId)
           if (Array.isArray(response)) {
             set({
               isInformationLoading: false,
-              pegelDetails: response
+              pegelDetails: response,
             })
           } else {
             set({
               isInformationLoading: false,
-              pegelDetails: []
+              pegelDetails: [],
             })
           }
         } catch (error) {
           set({
-            isInformationLoading: false
+            isInformationLoading: false,
           })
         }
-      }
+      },
     }),
     {
       name: 'information-storage',
-      getStorage: () => AsyncStorage
+      getStorage: () => AsyncStorage,
     }
   )
 )
