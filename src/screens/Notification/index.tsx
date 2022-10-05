@@ -151,7 +151,7 @@ export default function Notification() {
   if (isLoadingNotification) return <LoadingAnimated />
 
   return (
-    <Box flex={1}>
+    <Box flex="1">
       {entityType === ENTITY_TYPE_EXPLOITATION_GROUP && (
         <FleetHeader
           onPress={(index: number, vessel: any) =>
@@ -160,7 +160,7 @@ export default function Notification() {
         />
       )}
       <Box
-        flex={1}
+        flex="1"
         backgroundColor={'#fff'}
         borderTopLeftRadius={ms(15)}
         borderTopRightRadius={ms(15)}

@@ -7,13 +7,13 @@ import {
   ScrollView,
   Skeleton,
   Text,
-  useToast
+  useToast,
 } from 'native-base'
 import ReactNativeBlobUtil from 'react-native-blob-util'
 import {
   incomingStatuses,
   outgoingStatuses,
-  VEMASYS_PRODUCTION_FILE_URL
+  VEMASYS_PRODUCTION_FILE_URL,
 } from '@bluecentury/constants'
 import {Dimensions, Platform, TouchableOpacity} from 'react-native'
 import Pdf from 'react-native-pdf'
@@ -31,7 +31,7 @@ const FinancialInvoiceDetails = ({navigation, route}: Props) => {
     isFinancialLoading,
     invoiceDetails,
     getInvoiceDetails,
-    updateInvoiceStatus
+    updateInvoiceStatus,
   } = useFinancial()
   const [statusModal, setStatusModal] = useState(false)
   const [dateToggled, setdateToggled] = useState(false)
@@ -124,7 +124,7 @@ const FinancialInvoiceDetails = ({navigation, route}: Props) => {
           {label}
         </Text>
         <Box
-          flex={1}
+          flex="1"
           borderLeftWidth={ms(1)}
           borderColor="#E6E6E6"
           height="100%"
@@ -191,7 +191,7 @@ const FinancialInvoiceDetails = ({navigation, route}: Props) => {
           {label}
         </Text>
         <Box
-          flex={1}
+          flex="1"
           borderLeftWidth={ms(1)}
           borderColor="#E6E6E6"
           height="100%"
@@ -215,7 +215,7 @@ const FinancialInvoiceDetails = ({navigation, route}: Props) => {
               {Platform.OS === 'ios'
                 ? Number(value).toLocaleString('en-GB', {
                     maximumFractionDigits: 2,
-                    minimumFractionDigits: 2
+                    minimumFractionDigits: 2,
                   })
                 : Number(value)
                     .toFixed(2)
@@ -243,7 +243,7 @@ const FinancialInvoiceDetails = ({navigation, route}: Props) => {
             {text}
           </Text>
         )
-      }
+      },
     })
   }
 
@@ -338,7 +338,7 @@ const FinancialInvoiceDetails = ({navigation, route}: Props) => {
               marginTop: -50,
               backgroundColor: 'transparent',
               width: Dimensions.get('window').width,
-              height: Dimensions.get('window').height
+              height: Dimensions.get('window').height,
             }}
             trustAllCerts={false}
           />

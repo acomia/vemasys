@@ -12,7 +12,7 @@ export default function SelectEnvironment() {
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
-        routes: [{name: 'Splash'}]
+        routes: [{name: 'Splash'}],
       })
     )
   }
@@ -21,12 +21,12 @@ export default function SelectEnvironment() {
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
-        routes: [{name: 'Splash'}]
+        routes: [{name: 'Splash'}],
       })
     )
   }
   return (
-    <Box flex={1} bgColor={Colors.white} p={5} safeArea>
+    <Box flex="1" bgColor={Colors.white} p={5} safeArea>
       <Text fontSize="xl">Select Environment</Text>
       <Divider />
       <VStack space={2} mt={5}>

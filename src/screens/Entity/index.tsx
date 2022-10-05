@@ -91,10 +91,10 @@ export default function Entity({route, navigation}: Props) {
     logout()
   }
   return (
-    <Box flex={1} bg={Colors.light} pt={paddingTop}>
+    <Box flex="1" bg={Colors.light} pt={paddingTop}>
       <Box
         bg={Colors.white}
-        flex={1}
+        flex="1"
         pt={ms(20)}
         px={ms(20)}
         borderTopRadius="3xl"
