@@ -56,6 +56,7 @@ export const GPSTracker = ({navigation}: Props) => {
   }
 
   const renderTrackerSourceText = () => {
+    //TODO we need to define should we always show 'Current device' as data source if gps tracker is enabled or should we take this data from backend
     const sourceData = vesselDetails?.lastGeolocation?.sourceOfData
     if (isMobileTracking) return 'Current device'
     if (typeof sourceData === 'undefined') return 'Unknown'
@@ -104,9 +105,10 @@ export const GPSTracker = ({navigation}: Props) => {
             justifyContent="center"
           >
             <Text fontWeight="medium" ml={ms(15)}>
-              {!isMobileTracking
-                ? moment(vesselDetails?.lastGeolocation?.locationTime).fromNow()
-                : moment(position?.time).fromNow()}
+              {/*{!isMobileTracking*/}
+              {/*  ? moment(vesselDetails?.lastGeolocation?.locationTime).fromNow()*/}
+              {/*  : moment(position?.time).fromNow()}*/}
+              {moment(vesselDetails?.lastGeolocation?.lastIterationTime).fromNow()}
             </Text>
           </Box>
         </HStack>
@@ -224,11 +226,12 @@ export const GPSTracker = ({navigation}: Props) => {
             justifyContent="center"
           >
             <Text fontWeight="medium" ml={ms(15)}>
-              {!isMobileTracking
-                ? `${vesselDetails?.lastGeolocation?.latitude} | ${vesselDetails?.lastGeolocation?.longitude}`
-                : isLoadingMap
-                ? 'Loading...'
-                : `${position?.latitude} | ${position?.longitude}`}
+              {/*{!isMobileTracking*/}
+              {/*  ? `${vesselDetails?.lastGeolocation?.latitude} | ${vesselDetails?.lastGeolocation?.longitude}`*/}
+              {/*  : isLoadingMap*/}
+              {/*  ? 'Loading...'*/}
+              {/*  : `${position?.latitude} | ${position?.longitude}`}*/}
+              {`${vesselDetails?.lastGeolocation?.latitude} | ${vesselDetails?.lastGeolocation?.longitude}`}
             </Text>
           </Box>
         </HStack>
