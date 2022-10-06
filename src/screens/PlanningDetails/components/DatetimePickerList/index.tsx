@@ -14,7 +14,7 @@ const DatetimePickerList = ({
   date,
   locked,
   onChangeDate,
-  onClearDate
+  onClearDate,
 }: any) => {
   return (
     <HStack alignItems="center" mt={ms(15)}>
@@ -22,7 +22,7 @@ const DatetimePickerList = ({
         {title}
       </Text>
       <HStack
-        flex={1}
+        flex="1"
         bg="#F7F7F7"
         borderRadius={ms(5)}
         p="2"
@@ -38,7 +38,7 @@ const DatetimePickerList = ({
           activeOpacity={locked ? 0 : 0.7}
           style={{
             flex: 1,
-            marginLeft: 10
+            marginLeft: 10,
           }}
           onPress={onChangeDate}
           disabled={locked}

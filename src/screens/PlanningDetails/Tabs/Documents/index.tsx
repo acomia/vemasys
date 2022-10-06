@@ -14,7 +14,7 @@ import {
 } from 'native-base'
 import {ms} from 'react-native-size-matters'
 import Ionicons from 'react-native-vector-icons/Ionicons'
-import {useNavigation, useRoute} from '@react-navigation/native'
+import {NavigationProp, useNavigation, useRoute} from '@react-navigation/native'
 import {Colors} from '@bluecentury/styles'
 import {usePlanning, useSettings} from '@bluecentury/stores'
 import {IconButton, LoadingAnimated} from '@bluecentury/components'
@@ -34,7 +34,7 @@ type Document = {
 
 const Documents = () => {
   const route = useRoute()
-  const navigation = useNavigation()
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>()
   const toast = useToast()
   const {navlog}: any = route.params
   const {
@@ -149,14 +149,10 @@ const Documents = () => {
           </Text>
         )
       },
-      // onCloseComplete() {
-      //   res === 'success' ? navigation.goBack() : null
-      // },
     })
   }
 
   const onScanDocument = () => {
-    // navigation.navigate('PDFDocumentScanner')
     scanDocument()
     onClose()
   }

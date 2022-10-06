@@ -14,10 +14,10 @@ type FinancialState = {
 }
 
 type FinancialActions = {
-  getInvoiceStatistics?: (year: string) => void
-  getInvoices?: (viewPoint: string, year: string, page: number) => void
-  getInvoiceDetails?: (id: string) => void
-  updateInvoiceStatus?: (
+  getInvoiceStatistics: (year: string) => void
+  getInvoices: (viewPoint: string, year: string, page: number) => void
+  getInvoiceDetails: (id: string) => void
+  updateInvoiceStatus: (
     id: string,
     in_status: string,
     out_status: string
@@ -39,30 +39,30 @@ export const useFinancial = create(
         const entityUser = useEntity.getState().entityUsers
         set({
           isFinancialLoading: true,
-          invoiceStatistics: []
+          invoiceStatistics: [],
         })
         try {
           const response = await API.reloadInvoiceStatistics(year)
           if (typeof response === 'object') {
             set({
               isFinancialLoading: false,
-              invoiceStatistics: response?.financialInformations
+              invoiceStatistics: response?.financialInformations,
             })
           } else {
             set({
               isFinancialLoading: false,
-              invoiceStatistics: []
+              invoiceStatistics: [],
             })
           }
         } catch (error) {
           set({
-            isFinancialLoading: false
+            isFinancialLoading: false,
           })
         }
       },
       getInvoices: async (viewPoint: string, year: string, page: number) => {
         set({
-          isFinancialLoading: true
+          isFinancialLoading: true,
         })
         try {
           const response = await API.reloadInvoices(viewPoint, year, page)
@@ -73,7 +73,7 @@ export const useFinancial = create(
                 incomingInvoices:
                   page === 1
                     ? response
-                    : [...get().incomingInvoices, ...response]
+                    : [...get().incomingInvoices, ...response],
               })
             } else {
               set({
@@ -81,42 +81,42 @@ export const useFinancial = create(
                 outgoingInvoices:
                   page === 1
                     ? response
-                    : [...get().outgoingInvoices, ...response]
+                    : [...get().outgoingInvoices, ...response],
               })
             }
           } else {
             set({
               isFinancialLoading: false,
-              incomingInvoices: []
+              incomingInvoices: [],
             })
           }
         } catch (error) {
           set({
-            isFinancialLoading: false
+            isFinancialLoading: false,
           })
         }
       },
       getInvoiceDetails: async (id: string) => {
         set({
           isFinancialLoading: true,
-          invoiceDetails: []
+          invoiceDetails: [],
         })
         try {
           const response = await API.getInvoiceDetails(id)
           if (typeof response === 'object') {
             set({
               isFinancialLoading: false,
-              invoiceDetails: response
+              invoiceDetails: response,
             })
           } else {
             set({
               isFinancialLoading: false,
-              invoiceDetails: []
+              invoiceDetails: [],
             })
           }
         } catch (error) {
           set({
-            isFinancialLoading: false
+            isFinancialLoading: false,
           })
         }
       },
@@ -127,7 +127,7 @@ export const useFinancial = create(
       ) => {
         set({
           isFinancialLoading: true,
-          invoiceDetails: []
+          invoiceDetails: [],
         })
         try {
           const response = await API.updateInvoiceStatus(
@@ -138,25 +138,25 @@ export const useFinancial = create(
 
           if (typeof response === 'object') {
             set({
-              isFinancialLoading: false
+              isFinancialLoading: false,
             })
             return response
           } else {
             set({
-              isFinancialLoading: false
+              isFinancialLoading: false,
             })
             return {}
           }
         } catch (error) {
           set({
-            isFinancialLoading: false
+            isFinancialLoading: false,
           })
         }
-      }
+      },
     }),
     {
       name: 'financial-storage',
-      getStorage: () => AsyncStorage
+      getStorage: () => AsyncStorage,
     }
   )
 )

@@ -70,7 +70,7 @@ export const GPSTracker = ({navigation}: Props) => {
   }
 
   return (
-    <Box flex={1} backgroundColor="rgba(0,0,0,0.5)">
+    <Box flex="1" backgroundColor="rgba(0,0,0,0.5)">
       <Box
         backgroundColor="#fff"
         mb={ms(0)}
@@ -94,11 +94,11 @@ export const GPSTracker = ({navigation}: Props) => {
           mb={ms(10)}
           shadow={2}
         >
-          <Text flex={1} fontWeight="medium">
+          <Text flex="1" fontWeight="medium">
             Last ping
           </Text>
           <Box
-            flex={1}
+            flex="1"
             borderLeftWidth={ms(1)}
             borderColor="#F0F0F0"
             height="100%"
@@ -123,11 +123,11 @@ export const GPSTracker = ({navigation}: Props) => {
           mb={ms(10)}
           shadow={2}
         >
-          <Text flex={1} fontWeight="medium">
+          <Text flex="1" fontWeight="medium">
             Data source
           </Text>
           <HStack
-            flex={1}
+            flex="1"
             borderLeftWidth={ms(1)}
             borderColor="#F0F0F0"
             height="100%"
@@ -160,7 +160,7 @@ export const GPSTracker = ({navigation}: Props) => {
             width={ms(20)}
             height={ms(20)}
           />
-          <Text flex={1} fontWeight="medium">
+          <Text flex="1" fontWeight="medium">
             Set this device as Vessel GPS
           </Text>
           <Switch
@@ -182,11 +182,11 @@ export const GPSTracker = ({navigation}: Props) => {
           mb={ms(10)}
           shadow={2}
         >
-          <Text flex={1} fontWeight="medium">
+          <Text flex="1" fontWeight="medium">
             GPS satelites
           </Text>
           <HStack
-            flex={1}
+            flex="1"
             borderLeftWidth={ms(1)}
             borderColor="#F0F0F0"
             height="100%"
@@ -215,11 +215,11 @@ export const GPSTracker = ({navigation}: Props) => {
           mb={ms(10)}
           shadow={2}
         >
-          <Text flex={1} fontWeight="medium">
+          <Text flex="1" fontWeight="medium">
             Position
           </Text>
           <Box
-            flex={1}
+            flex="1"
             borderLeftWidth={ms(1)}
             borderColor="#F0F0F0"
             height="100%"

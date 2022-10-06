@@ -152,11 +152,11 @@ const Revenue = () => {
           borderRadius={5}
           px={ms(16)}
         >
-          <Text flex={1} fontWeight="medium" color={Colors.white}>
+          <Text flex="1" fontWeight="medium" color={Colors.white}>
             {label}
           </Text>
           <Box
-            flex={1}
+            flex="1"
             borderLeftWidth={ms(1)}
             borderColor="#E6E6E6"
             height="100%"
@@ -205,11 +205,11 @@ const Revenue = () => {
         borderRadius={5}
         px={ms(16)}
       >
-        <Text flex={1} fontWeight="medium" color={Colors.white}>
+        <Text flex="1" fontWeight="medium" color={Colors.white}>
           {label}
         </Text>
         <Box
-          flex={1}
+          flex="1"
           borderLeftWidth={ms(1)}
           borderColor="#E6E6E6"
           height="100%"

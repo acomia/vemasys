@@ -248,7 +248,7 @@ export default function Charters({navigation, route}: any) {
   if (isCharterLoading) return <LoadingAnimated />
 
   return (
-    <Box flex={1} safeArea backgroundColor={Colors.white} p={ms(12)}>
+    <Box flex="1" safeArea backgroundColor={Colors.white} p={ms(12)}>
       <Input
         w={{
           base: '100%',

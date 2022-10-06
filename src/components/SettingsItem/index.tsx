@@ -162,14 +162,7 @@ const SettingsItem = (props: Props) => {
   }
 
   return (
-    <Pressable
-      style={{
-        overflow: 'hidden',
-      }}
-      borderRadius="15"
-      width="100%"
-      pb={ms(12)}
-    >
+    <Pressable overflow="hidden" borderRadius="15" width="100%" pb={ms(12)}>
       <HStack
         justifyContent={'space-between'}
         alignItems="center"
@@ -179,13 +172,7 @@ const SettingsItem = (props: Props) => {
         borderColor={Colors.light}
         borderRadius="15"
         backgroundColor={Colors.white}
-        style={{
-          elevation: 10,
-          shadowColor: Colors.shadow,
-          shadowOpacity: 0.3,
-          shadowRadius: 5,
-          shadowOffset: {width: 1, height: 1},
-        }}
+        shadow="3"
       >
         <HStack alignItems={'center'}>
           {type === 'select' ? (

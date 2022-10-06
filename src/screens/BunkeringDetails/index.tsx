@@ -28,11 +28,11 @@ export default function BunkeringDetails({route, navigation}: Props) {
         mb={ms(10)}
         shadow={3}
       >
-        <Text flex={1} fontWeight="medium">
+        <Text flex="1" fontWeight="medium">
           {title}
         </Text>
         <Box
-          flex={1}
+          flex="1"
           borderLeftWidth={ms(1)}
           borderColor={Colors.light}
           height="100%"
@@ -91,7 +91,7 @@ export default function BunkeringDetails({route, navigation}: Props) {
                 shadow={3}
               >
                 <Text
-                  flex={1}
+                  flex="1"
                   maxW="80%"
                   fontWeight="medium"
                   numberOfLines={1}
@@ -110,7 +110,7 @@ export default function BunkeringDetails({route, navigation}: Props) {
                     source={Icons.eye}
                     onPress={() =>
                       navigation.navigate('PDFView', {
-                        path: `${VEMASYS_PRODUCTION_FILE_URL}/${file.path}`
+                        path: `${VEMASYS_PRODUCTION_FILE_URL}/${file.path}`,
                       })
                     }
                     size={ms(22)}

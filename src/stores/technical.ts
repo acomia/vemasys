@@ -12,15 +12,15 @@ type TechnicalState = {
   bunkeringSuppliers?: [] | undefined
   engines: [] | undefined
   reservoirs: [] | undefined
-  tasksCategory?: [] | undefined
-  tasksByCategory?: [] | undefined
-  routinesCategory?: [] | undefined
-  routinesByCategory?: [] | undefined
-  routineDetails?: [] | undefined
-  certificates?: [] | undefined
-  lastMeasurements?: []
-  inventory?: []
-  consumableTypes?: []
+  tasksCategory: [] | undefined
+  tasksByCategory: [] | undefined
+  routinesCategory: [] | undefined
+  routinesByCategory: [] | undefined
+  routineDetails: [] | undefined
+  certificates: [] | undefined
+  lastMeasurements: []
+  inventory: []
+  consumableTypes: []
 }
 
 type TechnicalActions = {
@@ -73,12 +73,12 @@ export const useTechnical = create(
           if (Array.isArray(response)) {
             set({
               isTechnicalLoading: false,
-              bunkering: response
+              bunkering: response,
             })
           } else {
             set({
               isTechnicalLoading: false,
-              bunkering: []
+              bunkering: [],
             })
           }
         } catch (error) {
@@ -88,7 +88,7 @@ export const useTechnical = create(
       getVesselGasoilReservoirs: async (physicalVesselId: string) => {
         set({
           isTechnicalLoading: true,
-          gasoilReserviors: []
+          gasoilReserviors: [],
         })
         try {
           const response = await API.reloadVesselGasoilReservoirs(
@@ -112,13 +112,13 @@ export const useTechnical = create(
               reservoir.lastMeasurement = lastM[0]
               set({
                 isTechnicalLoading: false,
-                gasoilReserviors: gasoilR
+                gasoilReserviors: gasoilR,
               })
             })
           } else {
             set({
               isTechnicalLoading: false,
-              gasoilReserviors: []
+              gasoilReserviors: [],
             })
           }
         } catch (error) {
@@ -133,12 +133,12 @@ export const useTechnical = create(
           if (Array.isArray(response)) {
             set({
               isTechnicalLoading: false,
-              bunkeringSuppliers: response
+              bunkeringSuppliers: response,
             })
           } else {
             set({
               isTechnicalLoading: false,
-              bunkeringSuppliers: []
+              bunkeringSuppliers: [],
             })
           }
         } catch (error) {
@@ -166,13 +166,13 @@ export const useTechnical = create(
               engine.lastMeasurement = lastM[0]
               set({
                 isTechnicalLoading: false,
-                engines: response
+                engines: response,
               })
             })
           } else {
             set({
               isTechnicalLoading: false,
-              engines: []
+              engines: [],
             })
           }
         } catch (error) {
@@ -191,13 +191,13 @@ export const useTechnical = create(
               tank.lastMeasurement = lastM[0]
               set({
                 isTechnicalLoading: false,
-                reservoirs: waterTank
+                reservoirs: waterTank,
               })
             })
           } else {
             set({
               isTechnicalLoading: false,
-              reservoirs: []
+              reservoirs: [],
             })
           }
         } catch (error) {
@@ -211,12 +211,12 @@ export const useTechnical = create(
           if (Array.isArray(response)) {
             set({
               isTechnicalLoading: false,
-              tasksCategory: response
+              tasksCategory: response,
             })
           } else {
             set({
               isTechnicalLoading: false,
-              tasksCategory: []
+              tasksCategory: [],
             })
           }
         } catch (error) {
@@ -236,12 +236,12 @@ export const useTechnical = create(
           if (Array.isArray(response)) {
             set({
               isTechnicalLoading: false,
-              tasksByCategory: response
+              tasksByCategory: response,
             })
           } else {
             set({
               isTechnicalLoading: false,
-              tasksByCategory: []
+              tasksByCategory: [],
             })
           }
         } catch (error) {
@@ -315,12 +315,12 @@ export const useTechnical = create(
           if (Array.isArray(response)) {
             set({
               isTechnicalLoading: false,
-              routinesCategory: response
+              routinesCategory: response,
             })
           } else {
             set({
               isTechnicalLoading: false,
-              routinesCategory: []
+              routinesCategory: [],
             })
           }
         } catch (error) {
@@ -340,12 +340,12 @@ export const useTechnical = create(
             })
             set({
               isTechnicalLoading: false,
-              certificates: response
+              certificates: response,
             })
           } else {
             set({
               isTechnicalLoading: false,
-              certificates: []
+              certificates: [],
             })
           }
         } catch (error) {
@@ -359,12 +359,12 @@ export const useTechnical = create(
           if (Array.isArray(response)) {
             set({
               isTechnicalLoading: false,
-              lastMeasurements: response
+              lastMeasurements: response,
             })
           } else {
             set({
               isTechnicalLoading: false,
-              lastMeasurements: []
+              lastMeasurements: [],
             })
           }
         } catch (error) {
@@ -376,7 +376,7 @@ export const useTechnical = create(
         try {
           const response = await API.createNewConsumptionMeasure(resId, value)
           set({
-            isTechnicalLoading: false
+            isTechnicalLoading: false,
           })
           return response
         } catch (error) {
@@ -439,12 +439,12 @@ export const useTechnical = create(
           if (Array.isArray(response)) {
             set({
               isTechnicalLoading: false,
-              routinesByCategory: response
+              routinesByCategory: response,
             })
           } else {
             set({
               isTechnicalLoading: false,
-              routinesByCategory: []
+              routinesByCategory: [],
             })
           }
         } catch (error) {
@@ -458,22 +458,22 @@ export const useTechnical = create(
           if (typeof response === 'object') {
             set({
               isTechnicalLoading: false,
-              routineDetails: response
+              routineDetails: response,
             })
           } else {
             set({
               isTechnicalLoading: false,
-              routineDetails: []
+              routineDetails: [],
             })
           }
         } catch (error) {
           set({isTechnicalLoading: false})
         }
-      }
+      },
     }),
     {
       name: 'technical-storage',
-      getStorage: () => AsyncStorage
+      getStorage: () => AsyncStorage,
     }
   )
 )

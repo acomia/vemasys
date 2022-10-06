@@ -263,7 +263,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
         shadow={3}
       >
         <Text
-          flex={1}
+          flex="1"
           maxW="80%"
           fontWeight="medium"
           numberOfLines={1}

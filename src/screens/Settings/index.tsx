@@ -19,7 +19,7 @@ const Settings = (props: DrawerContentComponentProps) => {
 
   return (
     <Box
-      style={{height: '100%'}}
+      flex="1"
       px="13"
       pt="29"
       backgroundColor={Colors.white}
