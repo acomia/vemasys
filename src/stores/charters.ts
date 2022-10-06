@@ -18,6 +18,8 @@ type ChartersState = {
   charters: [] | undefined
   isCharterLoading: boolean
   pdfPath: string
+  updateCharterStatusResponse: string
+  uploadCharterSignatureResponse: {} | null
 }
 
 type ChartersActions = {
@@ -25,6 +27,7 @@ type ChartersActions = {
   viewPdf?: (charterId: string) => void
   updateCharterStatus?: (charterId: string, status: IUpdateStatus) => void
   uploadSignature?: (signature: ISignature) => void
+  resetResponses?: () => void
 }
 
 type ChartersStore = ChartersState & ChartersActions
@@ -35,6 +38,8 @@ export const useCharters = create(
       isCharterLoading: false,
       charters: [],
       pdfPath: '',
+      updateCharterStatusResponse: '',
+      uploadCharterSignatureResponse: null,
       getCharters: async () => {
         set({isCharterLoading: true, charters: []})
         try {
@@ -42,12 +47,12 @@ export const useCharters = create(
           if (Array.isArray(response)) {
             set({
               isCharterLoading: false,
-              charters: response
+              charters: response,
             })
           } else {
             set({
               isCharterLoading: false,
-              charters: []
+              charters: [],
             })
           }
         } catch (error) {
@@ -68,8 +73,7 @@ export const useCharters = create(
         set({isCharterLoading: true})
         try {
           const response = await API.updateCharterStatus(charterId, status)
-          set({isCharterLoading: false})
-          return response
+          set({isCharterLoading: false, updateCharterStatusResponse: response})
         } catch (error) {
           set({isCharterLoading: false})
         }
@@ -78,16 +82,24 @@ export const useCharters = create(
         set({isCharterLoading: true})
         try {
           const response = await API.uploadSignature(signature)
-          set({isCharterLoading: false})
-          return response
+          set({
+            isCharterLoading: false,
+            uploadCharterSignatureResponse: response,
+          })
         } catch (error) {
           set({isCharterLoading: false})
         }
-      }
+      },
+      resetResponses: () => {
+        set({
+          updateCharterStatusResponse: '',
+          uploadCharterSignatureResponse: null,
+        })
+      },
     }),
     {
       name: 'charters-storage',
-      getStorage: () => AsyncStorage
+      getStorage: () => AsyncStorage,
     }
   )
 )

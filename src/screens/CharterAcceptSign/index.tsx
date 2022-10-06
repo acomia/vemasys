@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {
   Box,
   Button,
@@ -6,12 +6,13 @@ import {
   HStack,
   Image,
   ScrollView,
+  Switch,
   Text,
   useToast,
 } from 'native-base'
 import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
-import {Animated} from '@bluecentury/assets'
+import {Animated, Icons} from '@bluecentury/assets'
 import Signature, {SignatureViewRef} from 'react-native-signature-canvas'
 import {Shadow} from 'react-native-shadow-2'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
@@ -24,37 +25,62 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
   const {charter} = route.params
   const ref = useRef<SignatureViewRef>(null)
   const toast = useToast()
-  const {isCharterLoading, updateCharterStatus, getCharters, uploadSignature} =
-    useCharters()
+  const {
+    isCharterLoading,
+    updateCharterStatus,
+    getCharters,
+    uploadSignature,
+    updateCharterStatusResponse,
+    uploadCharterSignatureResponse,
+    resetResponses,
+  } = useCharters()
   const {user} = useEntity()
   const {isMobileTracking, setIsMobileTracking} = useSettings()
   const [scrollEnabled, setScrollEnabled] = useState(true)
+  const [mobileTracker, setMobileTracker] = useState(false)
+  const [sign, setSign] = useState(null)
 
-  const handleSignature = async signature => {
+  useEffect(() => {
+    if (updateCharterStatusResponse !== '') {
+      const signData = {
+        user: user.id,
+        signature: sign,
+        signedDate: new Date().toLocaleDateString(),
+        charter: charter.id,
+      }
+      uploadSignature(signData)
+      if (!isMobileTracking && mobileTracker) {
+        setIsMobileTracking(mobileTracker)
+      }
+      showToast('Charter accepted sucessfully.', 'success')
+    } else {
+      if (updateCharterStatusResponse !== '') {
+        showToast('Charter accepted failed.', 'failed')
+      }
+    }
+  }, [updateCharterStatusResponse])
+
+  useEffect(() => {
+    if (
+      typeof uploadCharterSignatureResponse === 'object' &&
+      uploadCharterSignatureResponse !== null
+    ) {
+      showToast('Charter signature uploaded.', 'success')
+      navigation.goBack()
+    } else {
+      if (uploadCharterSignatureResponse !== null) {
+        showToast('Charter signature upload failed.', 'failed')
+      }
+    }
+  }, [uploadCharterSignatureResponse])
+
+  const handleSignature = signature => {
     const status = {
       status: CHARTER_CONTRACTOR_STATUS_ACCEPTED,
       setContractorStatus: true,
     }
-    const update = await updateCharterStatus(charter?.id, status)
-    if (typeof update === 'string') {
-      getCharters()
-      setIsMobileTracking(!isMobileTracking)
-      showToast('Charter accepted sucessfully.', 'success')
-    } else {
-      showToast('Charter accepted failed.', 'failed')
-    }
-    const signData = {
-      user: user.id,
-      signature: signature,
-      signedDate: new Date().toLocaleDateString(),
-      charter: charter.id,
-    }
-    const sign = await uploadSignature(signData)
-    if (typeof sign === 'object') {
-      showToast('Signature upload sucessfully.', 'warning')
-    } else {
-      showToast('Signature upload failed.', 'failed')
-    }
+    setSign(signature)
+    updateCharterStatus(charter?.id, status)
   }
 
   const handleEmpty = () => {
@@ -75,17 +101,11 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
 
   const showToast = (text: string, res: string) => {
     toast.show({
-      duration: 1000,
+      duration: 2000,
       render: () => {
         return (
           <Text
-            bg={
-              res === 'success'
-                ? 'emerald.500'
-                : 'warning'
-                ? 'warning.400'
-                : 'red.500'
-            }
+            bg={res === 'success' ? 'emerald.500' : 'red.500'}
             px="2"
             py="1"
             rounded="sm"
@@ -97,9 +117,13 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
         )
       },
       onCloseComplete() {
-        res === 'success' ? navigation.goBack() : null
+        res === 'success' ? onSuccess() : null
       },
     })
+  }
+
+  const onSuccess = () => {
+    resetResponses?.()
   }
 
   if (isCharterLoading) return <LoadingAnimated />
@@ -139,6 +163,7 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
           allowed by law.
         </Text>
       </ScrollView>
+
       <Box bg={Colors.white} position="relative">
         <Shadow
           distance={25}
@@ -146,25 +171,55 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
             width: '100%',
           }}
         >
-          <HStack>
-            <Button
-              flex="1"
-              m={ms(16)}
-              variant="ghost"
-              colorScheme="muted"
-              onPress={handleClear}
+          <Box>
+            <HStack
+              bg={Colors.white}
+              borderRadius={5}
+              justifyContent="space-between"
+              alignItems="center"
+              px={ms(12)}
+              py={ms(7)}
+              mx={ms(12)}
+              mt={ms(12)}
+              borderWidth={1}
+              borderColor={Colors.light}
             >
-              Clear
-            </Button>
-            <Button
-              flex="1"
-              m={ms(16)}
-              bg={Colors.primary}
-              onPress={handleOnAcceptAndSign}
-            >
-              Accept and sign
-            </Button>
-          </HStack>
+              <Image
+                alt="my-location"
+                source={Icons.location_alt}
+                mr={ms(10)}
+                width={ms(20)}
+                height={ms(20)}
+              />
+              <Text flex={1} fontWeight="medium">
+                Activate tracking
+              </Text>
+              <Switch
+                size="sm"
+                value={mobileTracker}
+                onToggle={() => setMobileTracker(!mobileTracker)}
+              />
+            </HStack>
+            <HStack p={ms(14)}>
+              <Button
+                flex="1"
+                // m={ms(16)}
+                variant="ghost"
+                colorScheme="muted"
+                onPress={handleClear}
+              >
+                Clear
+              </Button>
+              <Button
+                flex="1"
+                // m={ms(16)}
+                bg={Colors.primary}
+                onPress={handleOnAcceptAndSign}
+              >
+                Accept and sign
+              </Button>
+            </HStack>
+          </Box>
         </Shadow>
       </Box>
     </Box>
