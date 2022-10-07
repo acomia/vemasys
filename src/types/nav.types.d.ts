@@ -30,7 +30,7 @@ type RootStackParamList = {
   AddCrewMember: undefined
   InformationPegelDetails: {pegelId: number}
   ImgViewer: {url: string; title: string}
-  CharterAcceptSign: {charter: {} | undefined}
+  CharterAcceptSign: {charter?: any}
   TrackingServiceDialog: undefined
 }
 
