@@ -8,8 +8,8 @@ interface IUpdateStatus {
 }
 interface ISignature {
   user: string
-  signature: string
-  signedDate: Date
+  signature: StringOrNull
+  signedDate: StringOrNull
   charter: string
 }
 
