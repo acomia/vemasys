@@ -26,7 +26,7 @@ import {
 } from '@bluecentury/constants'
 import {LoadingAnimated} from '@bluecentury/components'
 
-type Props = NativeStackScreenProps<RootStackParamList>
+type Props = NativeStackScreenProps<RootStackParamList, 'CharterAcceptSign'>
 const CharterAcceptSign = ({navigation, route}: Props) => {
   const {charter} = route.params
   const ref = useRef<SignatureViewRef>(null)
@@ -44,7 +44,7 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
   const {isMobileTracking, setIsMobileTracking} = useSettings()
   const [scrollEnabled, setScrollEnabled] = useState(true)
   const [mobileTracker, setMobileTracker] = useState(false)
-  const [sign, setSign] = useState(null)
+  const [sign, setSign] = useState<StringOrNull>(null)
 
   useEffect(() => {
     if (updateCharterStatusResponse === UPDATE_CHARTER_SUCCESS) {
@@ -120,13 +120,9 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
         )
       },
       onCloseComplete() {
-        res === 'success' ? onSuccess() : null
+        res === 'success' ? resetResponses() : null
       },
     })
-  }
-
-  const onSuccess = () => {
-    resetResponses()
   }
 
   if (isCharterLoading) return <LoadingAnimated />
