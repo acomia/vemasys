@@ -22,6 +22,7 @@ type FinancialActions = {
     in_status: string,
     out_status: string
   ) => void
+  addFilesInGroup: (path: string) => void
 }
 
 type FinancialStore = FinancialActions & FinancialState
@@ -153,6 +154,23 @@ export const useFinancial = create(
           })
         }
       },
+      addFilesInGroup: async (path: string) => {
+        set({
+          isFinancialLoading: true,
+        })
+        try {
+          const response = await API.uploadFinancialFile(path)
+          set({
+            isFinancialLoading: false
+          })
+          return response
+        } catch (error) {
+          set({
+            isFinancialLoading: false
+          })
+          console.log('FILE_ADDING_TO_GROUP_ERROR', error)
+        }
+      }
     }),
     {
       name: 'financial-storage',
