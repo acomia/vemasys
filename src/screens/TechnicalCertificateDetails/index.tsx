@@ -33,7 +33,7 @@ const TechnicalCertificateDetails = ({navigation, route}: Props) => {
         shadow={3}
       >
         <Text
-          flex={1}
+          flex="1"
           maxW="80%"
           fontWeight="medium"
           numberOfLines={1}
@@ -51,7 +51,7 @@ const TechnicalCertificateDetails = ({navigation, route}: Props) => {
             source={Icons.eye}
             onPress={() =>
               navigation.navigate('PDFView', {
-                path: `${VEMASYS_PRODUCTION_FILE_URL}/${file.path}`
+                path: `${VEMASYS_PRODUCTION_FILE_URL}/${file.path}`,
               })
             }
             size={ms(22)}

@@ -35,7 +35,7 @@ const Bunkering = () => {
   }
 
   return (
-    <Flex flex={1}>
+    <Flex flex="1">
       <ScrollView
         contentContainerStyle={{flexGrow: 1, paddingBottom: 110}}
         px={ms(12)}

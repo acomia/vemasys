@@ -132,7 +132,7 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
   if (isCharterLoading) return <LoadingAnimated />
 
   return (
-    <Box flex={1}>
+    <Box flex="1">
       <ScrollView
         contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
         backgroundColor={Colors.white}

@@ -14,7 +14,7 @@ import {
 } from 'native-base'
 import {ms} from 'react-native-size-matters'
 import Ionicons from 'react-native-vector-icons/Ionicons'
-import {useNavigation, useRoute} from '@react-navigation/native'
+import {NavigationProp, useNavigation, useRoute} from '@react-navigation/native'
 import {Colors} from '@bluecentury/styles'
 import {usePlanning, useSettings} from '@bluecentury/stores'
 import {IconButton, LoadingAnimated} from '@bluecentury/components'
@@ -23,6 +23,8 @@ import {Icons} from '@bluecentury/assets'
 import {RefreshControl} from 'react-native'
 import moment from 'moment'
 import {Environments} from '@bluecentury/constants'
+import DocumentScanner from 'react-native-document-scanner-plugin'
+import RNImageToPdf from 'react-native-image-to-pdf'
 
 type Document = {
   id: number
@@ -32,7 +34,7 @@ type Document = {
 
 const Documents = () => {
   const route = useRoute()
-  const navigation = useNavigation()
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>()
   const toast = useToast()
   const {navlog}: any = route.params
   const {
@@ -47,6 +49,75 @@ const Documents = () => {
   const [result, setResult] = useState<ImageFile>({})
   const [selectedImg, setSelectedImg] = useState<ImageFile>({})
   const [viewImg, setViewImg] = useState(false)
+  const [scannedImage, setScannedImage] = useState()
+
+  const convertToPdfAndUpload = async (files: string[]) => {
+    // Remove 'file://' from file link is react-native-image-to-pdf requirement
+    const arrayForPdf = files.map(item => {
+      return item.replace('file://', '')
+    })
+
+    const name = `PDF${Date.now()}.pdf`
+
+    // This part converts jpg to pdf and send pdf to backend.
+    // Upload has two steps
+    //  first is file uploading,
+    //  second is creation of connection between uploaded file and certain navlog
+    try {
+      const options = {
+        imagePaths: arrayForPdf,
+        name,
+      }
+
+      const pdf = await RNImageToPdf.createPDFbyImages(options)
+
+      const file = {
+        uri: `file://${pdf.filePath}`,
+        type: 'application/pdf',
+        fileName: name,
+      }
+
+      const upload = await uploadImgFile(file)
+
+      if (typeof upload === 'object') {
+        const description = `${moment().format('YYYY-MM-DD HH:mm:ss')}.pdf`
+
+        const newFile = {
+          path: upload.path,
+          description,
+        }
+        let body = {
+          fileGroup: {
+            files:
+              navigationLogDocuments?.length > 0
+                ? [...navigationLogDocuments?.map(f => ({id: f.id})), newFile]
+                : [newFile],
+          },
+        }
+
+        if (navigationLogDetails?.fileGroup?.id) {
+          body.fileGroup.id = navigationLogDetails?.fileGroup?.id
+        }
+
+        const uploadDocs = await uploadVesselNavigationLogFile(navlog?.id, body)
+        if (typeof uploadDocs === 'object' && uploadDocs.id) {
+          getNavigationLogDocuments(navlog?.id)
+          showToast('File upload successfully.', 'success')
+          setScannedImage(description)
+        } else {
+          showToast('File upload failed.', 'failed')
+        }
+      }
+    } catch (e) {
+      console.log('PDF_ERROR', e)
+    }
+  }
+
+  const scanDocument = async () => {
+    // start the document scanner
+    const {scannedImages} = await DocumentScanner.scanDocument()
+    await convertToPdfAndUpload(scannedImages)
+  }
 
   const handleError = (err: unknown) => {
     if (DocumentPicker.isCancel(err)) {
@@ -78,13 +149,11 @@ const Documents = () => {
           </Text>
         )
       },
-      onCloseComplete() {
-        res === 'success' ? navigation.goBack() : null
-      },
     })
   }
 
   const onScanDocument = () => {
+    scanDocument()
     onClose()
   }
 
@@ -190,14 +259,15 @@ const Documents = () => {
     const env = useSettings.getState().env
 
     switch (env) {
-      case Environments.PROD:
+      case 'PROD':
         viewDocument(
           `https://app.vemasys.eu/upload/documents/${document?.path}`
         )
         break
-      case Environments.UAT:
+      // case Environments.UAT:
+      case 'UAT':
         viewDocument(
-          `https://uat-app.vemasys.eu/upload/documents/${document?.path}`
+          `https://app-uat.vemasys.eu/upload/documents/${document?.path}`
         )
         break
     }
@@ -210,7 +280,7 @@ const Documents = () => {
       <ScrollView
         contentContainerStyle={{flexGrow: 1}}
         px={ms(12)}
-        py={ms(20)}
+        py={ms(8)}
         scrollEventThrottle={16}
         refreshControl={
           <RefreshControl
@@ -231,7 +301,11 @@ const Documents = () => {
           return (
             <HStack
               key={index}
-              bg={Colors.white}
+              bg={
+                document.description !== scannedImage
+                  ? Colors.white
+                  : 'rgba(85,189,55,0.73)'
+              }
               borderRadius={5}
               justifyContent="space-between"
               alignItems="center"
@@ -248,6 +322,7 @@ const Documents = () => {
               <IconButton
                 source={Icons.eye}
                 onPress={() => handleOnPressUpload(document)}
+                //   onPress={() => {console.log('PRESSED')}}
                 size={ms(22)}
               />
             </HStack>

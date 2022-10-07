@@ -252,7 +252,7 @@ const AddEditComment = ({navigation, route}: Props) => {
   if (isPlanningLoading) return <LoadingAnimated />
 
   return (
-    <Box flex={1}>
+    <Box flex="1">
       <ScrollView
         contentContainerStyle={{flexGrow: 1}}
         px={ms(12)}

@@ -54,7 +54,7 @@ const TickerOilPrices = () => {
             alignItems="center"
           >
             <Text
-              flex={1}
+              flex="1"
               color={Colors.azure}
               fontWeight="bold"
               fontSize={ms(16)}

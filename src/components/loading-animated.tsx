@@ -3,7 +3,7 @@ import Lottie from 'lottie-react-native'
 import {Box} from 'native-base'
 import {IComboBoxProps} from 'native-base/lib/typescript/components/composites/Typeahead/types'
 
-export function LoadingAnimated(props: IComboBoxProps) {
+export function LoadingAnimated(props: Partial<IComboBoxProps>) {
   return (
     <Box size="32" alignSelf="center" {...props}>
       <Lottie

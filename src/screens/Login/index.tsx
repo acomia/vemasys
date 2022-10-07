@@ -76,7 +76,7 @@ function Login() {
       })
   }, [])
   return (
-    <Box flex={1} safeArea>
+    <Box flex="1" safeArea>
       <KeyboardAvoidingView
         h={{
           base: '100%',

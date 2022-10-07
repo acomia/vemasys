@@ -18,7 +18,7 @@ export default function Formations({navigation}: Props) {
     activeFormations,
     getActiveFormations,
     endVesselFormations,
-    removeVesselFromFormations
+    removeVesselFromFormations,
   } = useMap()
   const {vesselId} = useEntity()
   const [dropOffModal, setDropOffModal] = useState(false)
@@ -33,7 +33,7 @@ export default function Formations({navigation}: Props) {
     navigation.setOptions({
       headerRight: () => (
         <IconButton source={Icons.qr} onPress={() => navigation.goBack()} />
-      )
+      ),
     })
     getActiveFormations()
   }, [])
@@ -111,7 +111,7 @@ export default function Formations({navigation}: Props) {
           paddingBottom: 30,
           backgroundColor: '#fff',
           borderTopLeftRadius: 15,
-          borderTopRightRadius: 15
+          borderTopRightRadius: 15,
         }}
         ListEmptyComponent={() => (
           <Text
@@ -142,7 +142,7 @@ export default function Formations({navigation}: Props) {
             px={ms(0)}
           >
             <Button
-              flex={1}
+              flex="1"
               backgroundColor={Colors.light}
               mr={ms(5)}
               onPress={() => setDropOffModal(false)}
@@ -150,7 +150,7 @@ export default function Formations({navigation}: Props) {
               Cancel
             </Button>
             <Button
-              flex={1}
+              flex="1"
               backgroundColor={Colors.primary}
               ml={ms(5)}
               onPress={onDropOffPress}

@@ -72,7 +72,7 @@ export default function TechnicalTaskNewComment({navigation, route}: Props) {
   if (isTechnicalLoading) return <LoadingAnimated />
 
   return (
-    <Box flex={1}>
+    <Box flex="1">
       <ScrollView
         contentContainerStyle={{flexGrow: 1}}
         px={ms(12)}

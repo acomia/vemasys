@@ -114,7 +114,7 @@ export default function NewBunkering() {
   if (isTechnicalLoading) return <LoadingAnimated />
 
   return (
-    <Box flex={1}>
+    <Box flex="1">
       <ScrollView
         contentContainerStyle={{flexGrow: 1}}
         px={ms(12)}

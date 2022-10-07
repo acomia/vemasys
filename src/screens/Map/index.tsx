@@ -1,6 +1,15 @@
 import React, {useEffect, useLayoutEffect, useRef, useState} from 'react'
-import {StyleSheet, TouchableOpacity, Dimensions, Platform} from 'react-native'
-import {Box, Text, Button, HStack, Image, VStack} from 'native-base'
+import {StyleSheet, Dimensions, Platform} from 'react-native'
+import {
+  Box,
+  Text,
+  Button,
+  Pressable,
+  HStack,
+  Image,
+  Icon,
+  VStack,
+} from 'native-base'
 import MapView, {
   PROVIDER_GOOGLE,
   Marker,
@@ -10,10 +19,8 @@ import MapView, {
 import BottomSheet from 'reanimated-bottom-sheet'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
-import Icon from 'react-native-vector-icons/FontAwesome5'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {CommonActions, useIsFocused} from '@react-navigation/native'
-
 import {
   PreviousNavLogInfo,
   PlannedNavLogInfo,
@@ -21,6 +28,7 @@ import {
   LoadingAnimated,
   IconButton,
   FleetHeader,
+  MapBottomSheetToggle,
 } from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
@@ -29,6 +37,8 @@ import {
   ENTITY_TYPE_EXPLOITATION_GROUP,
   formatLocationLabel,
 } from '@bluecentury/constants'
+import Feather from 'react-native-vector-icons/Feather'
+import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5'
 
 const {width, height} = Dimensions.get('window')
 const ASPECT_RATIO = width / height
@@ -67,6 +77,7 @@ export default function Map({navigation}: Props) {
   const LATITUDE = 50.503887
   const LONGITUDE = 4.469936
   const sheetRef = useRef<BottomSheet>(null)
+  const snapRef = useRef<boolean>(false)
   const mapRef = useRef<MapView>(null)
   const markerRef = useRef<Marker>(null)
   const [snapStatus, setSnapStatus] = useState(0)
@@ -141,40 +152,41 @@ export default function Map({navigation}: Props) {
     }
   }
 
-  const renderBottomContent = () => (
-    <Box backgroundColor="#fff" height={height * 0.8} px={ms(30)} py={ms(20)}>
-      <TouchableOpacity
-        style={{
-          alignSelf: 'center',
-          width: 80,
-          height: 3,
-          backgroundColor: '#23475C',
-          borderRadius: 5,
-        }}
-        onPress={() => sheetRef?.current?.snapTo(0)}
-      />
-      <Text
-        fontSize={ms(18)}
-        my={ms(10)}
-        fontWeight="700"
-        textAlign="center"
-        color={Colors.azure}
-      >
-        {selectedVessel?.alias || null}
-      </Text>
-      {snapStatus === 1 && <PreviousNavLogInfo logs={prevNavLogs} />}
-      <CurrentNavLogInfo />
-      {snapStatus === 1 && <PlannedNavLogInfo logs={plannedNavLogs} />}
-      {snapStatus === 1 && (
-        <Button
-          bg={Colors.azure}
-          onPress={() => navigation.navigate('Planning')}
+  const handleOnPressBottomSheetArrow = () => {
+    snapRef.current = !snapRef.current
+    sheetRef.current?.snapTo(snapRef.current ? 0 : 1)
+  }
+
+  const renderBottomContent = () => {
+    return (
+      <Box backgroundColor="#fff" height="full" px={ms(30)} py={ms(20)}>
+        <MapBottomSheetToggle
+          onPress={handleOnPressBottomSheetArrow}
+          snapRef={snapRef}
+        />
+        <Text
+          fontSize={ms(18)}
+          my={ms(10)}
+          fontWeight="700"
+          textAlign="center"
+          color={Colors.azure}
         >
-          View Navlog
-        </Button>
-      )}
-    </Box>
-  )
+          {selectedVessel?.alias || null}
+        </Text>
+        {snapStatus === 1 && <PreviousNavLogInfo logs={prevNavLogs} />}
+        <CurrentNavLogInfo />
+        {snapStatus === 1 && <PlannedNavLogInfo logs={plannedNavLogs} />}
+        {snapStatus === 1 && (
+          <Button
+            bg={Colors.azure}
+            onPress={() => navigation.navigate('Planning')}
+          >
+            View Navlog
+          </Button>
+        )}
+      </Box>
+    )
+  }
 
   const renderMarkerFrom = () => {
     const previousLocation = prevNavLogs?.find(
@@ -206,7 +218,12 @@ export default function Map({navigation}: Props) {
           }
         >
           <HStack borderRadius={ms(5)} alignItems="center" px={ms(5)}>
-            <Icon name="check-circle" color="#6BBF87" size={25} solid={true} />
+            <Icon
+              as={<FontAwesome5Icon name="check-circle" />}
+              color="#6BBF87"
+              size={25}
+              solid={true}
+            />
             <Box mx={ms(5)}>
               <Text fontSize={ms(13)} fontWeight="semibold">
                 {formatLocationLabel(previousLocation?.location)}
@@ -218,7 +235,11 @@ export default function Map({navigation}: Props) {
                 )}
               </Text>
             </Box>
-            <Icon name="angle-right" color="#ADADAD" size={25} />
+            <Icon
+              as={<FontAwesome5Icon name="angle-right" />}
+              color="#ADADAD"
+              size={25}
+            />
           </HStack>
         </Callout>
       </Marker>
@@ -275,7 +296,11 @@ export default function Map({navigation}: Props) {
                 {moment(nextLocation?.plannedEta).format('DD MMM YYYY | HH:mm')}
               </Text>
             </Box>
-            <Icon name="angle-right" color="#ADADAD" size={25} />
+            <Icon
+              as={<FontAwesome5Icon name="angle-right" />}
+              color="#ADADAD"
+              size={25}
+            />
           </HStack>
         </Callout>
       </Marker>
@@ -486,14 +511,12 @@ export default function Map({navigation}: Props) {
         <BottomSheet
           ref={sheetRef}
           initialSnap={1}
-          snapPoints={[
-            ms(Platform.OS === 'ios' ? 420 : 410),
-            ms(Platform.OS === 'ios' ? 170 : 150),
-          ]}
+          snapPoints={['60%', '30%']}
           borderRadius={20}
           renderContent={renderBottomContent}
           onOpenEnd={() => setSnapStatus(1)}
           onCloseEnd={() => setSnapStatus(0)}
+          enabledGestureInteraction={false}
         />
 
         {isLoadingMap && (

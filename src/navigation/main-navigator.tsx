@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect} from 'react'
-import {ImageSourcePropType, Platform} from 'react-native'
+import {ImageSourcePropType} from 'react-native'
 import {Box, HStack, Pressable} from 'native-base'
 import {createDrawerNavigator} from '@react-navigation/drawer'
 import {
@@ -17,6 +17,7 @@ import {
   Financial,
   Information,
   Crew,
+  Settings,
 } from '@bluecentury/screens'
 import {Sidebar, IconButton} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
@@ -152,6 +153,7 @@ export default function MainNavigator({navigation}: Props) {
           headerTitle: 'Select your role',
         }}
       />
+      <Screen name={Screens.Settings} component={Settings} />
     </Navigator>
   )
 }

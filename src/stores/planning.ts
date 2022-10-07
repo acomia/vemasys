@@ -17,27 +17,27 @@ type PlanningState = {
 }
 
 type PlanningActions = {
-  getVesselHistoryNavLogs?: (vesselId: string, page: number) => void
-  getVesselPlannedNavLogs?: (vesselId: string) => void
-  getNavigationLogDetails?: (navLogId: string) => void
-  getNavigationLogActions?: (navLogId: string) => void
-  getNavigationLogCargoHolds?: (physicalVesselId: string) => void
-  getNavigationLogComments?: (navLogId: string) => void
-  getNavigationLogDocuments?: (navLogId: string) => void
-  updateNavlogDates?: (navLogId: string, dates: object) => void
-  createNavlogComment?: (
+  getVesselHistoryNavLogs: (vesselId: string, page: number) => void
+  getVesselPlannedNavLogs: (vesselId: string) => void
+  getNavigationLogDetails: (navLogId: string) => void
+  getNavigationLogActions: (navLogId: string) => void
+  getNavigationLogCargoHolds: (physicalVesselId: string) => void
+  getNavigationLogComments: (navLogId: string) => void
+  getNavigationLogDocuments: (navLogId: string) => void
+  updateNavlogDates: (navLogId: string, dates: object) => void
+  createNavlogComment: (
     navLogId: string,
     comment: string,
     userId: string
   ) => void
-  getBulkTypes?: (query: string) => void
-  updateBulkCargo?: (cargo: any) => void
-  createBulkCargo?: (cargo: any, navLogId: string) => void
-  deleteBulkCargo?: (id: string) => void
-  updateComment?: (id: string, description: string) => void
-  uploadImgFile?: (file: ImageFile) => void
-  deleteComment?: (id: string) => void
-  uploadVesselNavigationLogFile?: (navLogId: string, body: any) => void
+  getBulkTypes: (query: string) => void
+  updateBulkCargo: (cargo: any) => void
+  createBulkCargo: (cargo: any, navLogId: string) => void
+  deleteBulkCargo: (id: string) => void
+  updateComment: (id: string, description: string) => void
+  uploadImgFile: (file: ImageFile) => void
+  deleteComment: (id: string) => void
+  uploadVesselNavigationLogFile: (navLogId: string, body: any) => void
 }
 
 export type PlanningStore = PlanningState & PlanningActions

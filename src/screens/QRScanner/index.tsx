@@ -71,7 +71,7 @@ export default function QRScanner({navigation}: Props) {
   const onLayoutMeasuredHandler = (e: LayoutChangeEvent) => {}
 
   return (
-    <Flex flex={1} backgroundColor={Colors.black}>
+    <Flex flex="1" backgroundColor={Colors.black}>
       <RNCamera
         style={{flex: 1, justifyContent: 'flex-end', alignItems: 'center'}}
         type={RNCamera.Constants.Type.back}

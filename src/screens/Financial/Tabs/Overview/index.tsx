@@ -52,11 +52,11 @@ const Overview = () => {
         px={ms(16)}
         mb={ms(7)}
       >
-        <Text flex={1} fontWeight="medium" color={Colors.text}>
+        <Text flex="1" fontWeight="medium" color={Colors.text}>
           {status}
         </Text>
         <Box
-          flex={1}
+          flex="1"
           borderLeftWidth={ms(1)}
           borderColor="#E6E6E6"
           height="100%"
@@ -230,12 +230,12 @@ const Overview = () => {
           borderRadius={5}
           px={ms(16)}
         >
-          <Text flex={1} fontWeight="medium" color={Colors.white}>
+          <Text flex="1" fontWeight="medium" color={Colors.white}>
             Total balance
           </Text>
 
           <Box
-            flex={1}
+            flex="1"
             borderLeftWidth={ms(1)}
             borderColor="#E6E6E6"
             height="100%"
