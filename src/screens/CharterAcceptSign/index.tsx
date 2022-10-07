@@ -17,7 +17,13 @@ import Signature, {SignatureViewRef} from 'react-native-signature-canvas'
 import {Shadow} from 'react-native-shadow-2'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {useCharters, useEntity, useSettings} from '@bluecentury/stores'
-import {CHARTER_CONTRACTOR_STATUS_ACCEPTED} from '@bluecentury/constants'
+import {
+  CHARTER_CONTRACTOR_STATUS_ACCEPTED,
+  UPDATE_CHARTER_FAILED,
+  UPDATE_CHARTER_SUCCESS,
+  UPLOAD_CHARTER_SIGNATURE_FAILED,
+  UPLOAD_CHARTER_SIGNATURE_SUCCESS,
+} from '@bluecentury/constants'
 import {LoadingAnimated} from '@bluecentury/components'
 
 type Props = NativeStackScreenProps<RootStackParamList>
@@ -41,7 +47,7 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
   const [sign, setSign] = useState(null)
 
   useEffect(() => {
-    if (updateCharterStatusResponse !== '') {
+    if (updateCharterStatusResponse === UPDATE_CHARTER_SUCCESS) {
       const signData = {
         user: user.id,
         signature: sign,
@@ -54,21 +60,18 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
       }
       showToast('Charter accepted sucessfully.', 'success')
     } else {
-      if (updateCharterStatusResponse !== '') {
+      if (updateCharterStatusResponse === UPDATE_CHARTER_FAILED) {
         showToast('Charter accepted failed.', 'failed')
       }
     }
   }, [updateCharterStatusResponse])
 
   useEffect(() => {
-    if (
-      typeof uploadCharterSignatureResponse === 'object' &&
-      uploadCharterSignatureResponse !== null
-    ) {
+    if (uploadCharterSignatureResponse === UPLOAD_CHARTER_SIGNATURE_SUCCESS) {
       showToast('Charter signature uploaded.', 'success')
       navigation.goBack()
     } else {
-      if (uploadCharterSignatureResponse !== null) {
+      if (uploadCharterSignatureResponse === UPLOAD_CHARTER_SIGNATURE_FAILED) {
         showToast('Charter signature upload failed.', 'failed')
       }
     }
@@ -123,7 +126,7 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
   }
 
   const onSuccess = () => {
-    resetResponses?.()
+    resetResponses()
   }
 
   if (isCharterLoading) return <LoadingAnimated />

@@ -3,6 +3,12 @@ import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import * as API from '@bluecentury/api/vemasys'
+import {
+  UPDATE_CHARTER_FAILED,
+  UPDATE_CHARTER_SUCCESS,
+  UPLOAD_CHARTER_SIGNATURE_FAILED,
+  UPLOAD_CHARTER_SIGNATURE_SUCCESS,
+} from '@bluecentury/constants'
 interface IUpdateStatus {
   status?: string
   setContractorStatus?: boolean
@@ -19,7 +25,7 @@ type ChartersState = {
   isCharterLoading: boolean
   pdfPath: string
   updateCharterStatusResponse: string
-  uploadCharterSignatureResponse: {} | null
+  uploadCharterSignatureResponse: string
 }
 
 type ChartersActions = {
@@ -39,7 +45,7 @@ export const useCharters = create(
       charters: [],
       pdfPath: '',
       updateCharterStatusResponse: '',
-      uploadCharterSignatureResponse: null,
+      uploadCharterSignatureResponse: '',
       getCharters: async () => {
         set({isCharterLoading: true, charters: []})
         try {
@@ -73,7 +79,17 @@ export const useCharters = create(
         set({isCharterLoading: true})
         try {
           const response = await API.updateCharterStatus(charterId, status)
-          set({isCharterLoading: false, updateCharterStatusResponse: response})
+          if (typeof response === 'string') {
+            set({
+              isCharterLoading: false,
+              updateCharterStatusResponse: UPDATE_CHARTER_SUCCESS,
+            })
+          } else {
+            set({
+              isCharterLoading: false,
+              updateCharterStatusResponse: UPDATE_CHARTER_FAILED,
+            })
+          }
         } catch (error) {
           set({isCharterLoading: false})
         }
@@ -82,10 +98,17 @@ export const useCharters = create(
         set({isCharterLoading: true})
         try {
           const response = await API.uploadSignature(signature)
-          set({
-            isCharterLoading: false,
-            uploadCharterSignatureResponse: response,
-          })
+          if (typeof response === 'object') {
+            set({
+              isCharterLoading: false,
+              uploadCharterSignatureResponse: UPLOAD_CHARTER_SIGNATURE_SUCCESS,
+            })
+          } else {
+            set({
+              isCharterLoading: false,
+              uploadCharterSignatureResponse: UPLOAD_CHARTER_SIGNATURE_FAILED,
+            })
+          }
         } catch (error) {
           set({isCharterLoading: false})
         }
@@ -93,7 +116,7 @@ export const useCharters = create(
       resetResponses: () => {
         set({
           updateCharterStatusResponse: '',
-          uploadCharterSignatureResponse: null,
+          uploadCharterSignatureResponse: '',
         })
       },
     }),
