@@ -297,7 +297,7 @@ export default function CharterDetails({navigation, route}: Props) {
             Location
           </Text>
           <Box my={ms(15)}>
-            <Button
+            {/* <Button
               leftIcon={
                 <Image
                   alt="view-navlog"
@@ -312,7 +312,7 @@ export default function CharterDetails({navigation, route}: Props) {
               onPress={() => navigation.navigate('Planning')}
             >
               View Navlog
-            </Button>
+            </Button> */}
             <Button
               leftIcon={
                 <Image
