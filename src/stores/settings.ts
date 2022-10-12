@@ -13,6 +13,7 @@ type SettingsState = {
   language: string
   isMobileTracking: boolean
   hasSettingsRehydrated: boolean
+  isQrScanner: boolean
 }
 
 type SettingsActions = {
@@ -22,6 +23,7 @@ type SettingsActions = {
   setIsMobileTracking: (val: boolean) => void
   setHasHydrated: (val: boolean) => void
   setIsRemainLoggedIn: (isRemainLoggedIn: boolean) => void
+  setIsQrScanner: (val: boolean) => void
 }
 
 type SettingsStore = SettingsState & SettingsActions
@@ -36,6 +38,7 @@ export const useSettings = create(
       language: 'en',
       isMobileTracking: false,
       hasSettingsRehydrated: false,
+      isQrScanner: true,
       setDarkMode: async darkMode => {
         set({
           isDarkMode: darkMode,
@@ -61,6 +64,9 @@ export const useSettings = create(
       },
       setHasHydrated: val => {
         set({hasSettingsRehydrated: val})
+      },
+      setIsQrScanner: val => {
+        set({isQrScanner: val})
       },
     }),
     {

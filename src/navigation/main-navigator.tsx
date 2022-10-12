@@ -40,6 +40,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Main'>
 
 export default function MainNavigator({navigation}: Props) {
   const isMobileTracking = useSettings(state => state.isMobileTracking)
+  const isQrScanner = useSettings(state => state.isQrScanner)
   const token = useAuth(state => state.token)
   const activeFormations = useMap(state => state.activeFormations)
   const getActiveFormations = useMap(state => state.getActiveFormations)
@@ -111,11 +112,13 @@ export default function MainNavigator({navigation}: Props) {
         headerRight: () => (
           <Box flexDirection="row" alignItems="center" mr={2}>
             <HStack space="3">
-              <IconButton
-                source={scanIcon}
-                onPress={() => scanNavigateTo()}
-                size={ms(25)}
-              />
+              {isQrScanner ? (
+                <IconButton
+                  source={scanIcon}
+                  onPress={() => scanNavigateTo()}
+                  size={ms(25)}
+                />
+              ) : null}
               <Pressable
                 size={ms(40)}
                 onPress={() => navigation.navigate('GPSTracker')}
