@@ -4,9 +4,9 @@ import {Animated} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
 import DocumentScanner from 'react-native-document-scanner-plugin'
-import RNImageToPdf from 'react-native-image-to-pdf'
 import {useFinancial, usePlanning} from '@bluecentury/stores'
-import {LoadingAnimated} from "@bluecentury/components";
+import {LoadingAnimated} from '@bluecentury/components'
+import {convertToPdfAndUpload} from '@bluecentury/utils'
 
 const Scan = () => {
   const {uploadImgFile} = usePlanning()
@@ -33,54 +33,10 @@ const Scan = () => {
     })
   }
 
-  const convertToPdfAndUpload = async (files: string[]) => {
-    // Remove 'file://' from file link is react-native-image-to-pdf requirement
-    const arrayForPdf = files.map(item => {
-      return item.replace('file://', '')
-    })
-
-    const name = `PDF${Date.now()}.pdf`
-
-    // This part converts jpg to pdf and send pdf to backend.
-    // Upload has two steps
-    //  first is file uploading,
-    //  second is creation of connection between uploaded file and certain navlog
-    try {
-      const options = {
-        imagePaths: arrayForPdf,
-        name,
-      }
-
-      const pdf = await RNImageToPdf.createPDFbyImages(options)
-
-      const file = {
-        uri: `file://${pdf.filePath}`,
-        type: 'application/pdf',
-        fileName: name,
-      }
-
-      const upload = await uploadImgFile(file)
-
-      console.log('IMG_UPLOAD_RES', upload)
-
-      if (typeof upload === 'object') {
-        const uploadDocs = await addFilesInGroup(upload.path)
-        console.log('UPLOAD_DOCS', uploadDocs)
-        if (typeof uploadDocs === 'object' && uploadDocs[1] === 200) {
-          showToast('File upload successfully.', 'success')
-        } else {
-          showToast('File upload failed.', 'failed')
-        }
-      }
-    } catch (e) {
-      console.log('PDF_ERROR', e)
-    }
-  }
-
   const scanDocument = async () => {
     // start the document scanner
     const {scannedImages} = await DocumentScanner.scanDocument()
-    await convertToPdfAndUpload(scannedImages)
+    await convertToPdfAndUpload(scannedImages, showToast)
   }
 
   if (isFinancialLoading) return <LoadingAnimated />
