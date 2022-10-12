@@ -33,13 +33,11 @@ export default function Formations({navigation}: Props) {
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => {
-        if (isQrScanner) {
-          return (
-            <IconButton source={Icons.qr} onPress={() => navigation.goBack()} />
-          )
-        } else {
-          null
-        }
+        if (!isQrScanner) return null
+
+        return (
+          <IconButton source={Icons.qr} onPress={() => navigation.goBack()} />
+        )
       },
     })
     getActiveFormations()
