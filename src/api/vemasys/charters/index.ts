@@ -60,6 +60,7 @@ const uploadSignature = async (signature: Signature) => {
   return API.post(`signatures`, signature)
     .then(response => {
       if (response.data) {
+        console.log('UPL_SIG_RESPONSE', response.data)
         return response.data
       } else {
         throw new Error('Charter upload signature failed.')

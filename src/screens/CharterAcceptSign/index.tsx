@@ -21,7 +21,7 @@ import {LoadingAnimated} from '@bluecentury/components'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const CharterAcceptSign = ({navigation, route}: Props) => {
-  const {charter} = route.params
+  const {charter, setSignature, onCharterSelected} = route.params
   const ref = useRef<SignatureViewRef>(null)
   const toast = useToast()
   const {isCharterLoading, updateCharterStatus, getCharters, uploadSignature} =
@@ -30,6 +30,7 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
   const [scrollEnabled, setScrollEnabled] = useState(true)
 
   const handleSignature = async signature => {
+    // console.log('SIGNATURE', signature)
     const status = {
       status: CHARTER_CONTRACTOR_STATUS_ACCEPTED,
       setContractorStatus: true,
@@ -50,6 +51,7 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
     const sign = await uploadSignature(signData)
     if (typeof sign === 'object') {
       showToast('Signature upload sucessfully.', 'warning')
+      setSignature(signature.replace('data:image/png;base64,', ''))
     } else {
       showToast('Signature upload failed.', 'failed')
     }
@@ -95,7 +97,9 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
         )
       },
       onCloseComplete() {
+        //TODO not just goBack but automatically open modal with pdf in edit mode, pass there a signature
         res === 'success' ? navigation.goBack() : null
+        onCharterSelected(charter)
       },
     })
   }

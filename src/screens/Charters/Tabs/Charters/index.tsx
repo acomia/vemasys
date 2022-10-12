@@ -4,6 +4,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Platform,
+  Dimensions,
 } from 'react-native'
 import {
   Text,
@@ -24,6 +25,7 @@ import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import Pdf from 'react-native-pdf'
+import {PDFDocument} from 'pdf-lib'
 
 import {useCharters, useEntity} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
@@ -35,6 +37,9 @@ import {
   ENTITY_TYPE_EXPLOITATION_GROUP,
   ENTITY_TYPE_EXPLOITATION_VESSEL,
 } from '@bluecentury/constants'
+import {decode as atob, encode as btoa} from 'base-64'
+import ReactNativeBlobUtil from 'react-native-blob-util'
+const RNFS = require('react-native-fs')
 
 export default function Charters({navigation, route}: any) {
   const toast = useToast()
@@ -60,11 +65,40 @@ export default function Charters({navigation, route}: any) {
   const [reviewPDF, setReviewPDF] = useState(false)
   const [path, setPath] = useState('')
   const [selectedCharter, setSelectedCharter] = useState(null)
+  const [signature, setSignature] = useState('')
+  const [signatureArrayBuffer, setSignatureArrayBuffer] = useState(null)
+  const [pageWidth, setPageWidth] = useState(0)
+  const [pageHeight, setPageHeight] = useState(0)
+  const [pdfBase64, setPdfBase64] = useState(null)
+  const [pdfArrayBuffer, setPdfArrayBuffer] = useState(null)
+  const [isPdfSigned, setIsPdfSigned] = useState(false)
   const source = {uri: path, cache: true}
 
   useEffect(() => {
     getCharters()
   }, [vesselId])
+
+  useEffect(() => {
+    console.log('PATH', path)
+    if (path) {
+      readFile()
+    }
+  }, [path])
+
+  useEffect(() => {
+    console.log('SOURCE', source)
+  }, [source])
+
+  useEffect(() => {
+    console.log('CHARTERS', charters)
+  }, [charters])
+
+  const readFile = () => {
+    ReactNativeBlobUtil.fs.readFile(path, 'base64').then(contents => {
+      setPdfBase64(contents)
+      setPdfArrayBuffer(_base64ToArrayBuffer(contents))
+    })
+  }
 
   const showToast = (text: string, res: string) => {
     toast.show({
@@ -105,8 +139,9 @@ export default function Charters({navigation, route}: any) {
       return CHARTER_ORDERER_STATUS_COMPLETED
     }
 
-    if (charter.contractorStatus === CHARTER_CONTRACTOR_STATUS_ARCHIVED)
+    if (charter.contractorStatus === CHARTER_CONTRACTOR_STATUS_ARCHIVED) {
       return charter.contractorStatus
+    }
 
     return selectedEntityType === ENTITY_TYPE_EXPLOITATION_VESSEL ||
       selectedEntityType === ENTITY_TYPE_EXPLOITATION_GROUP
@@ -212,8 +247,9 @@ export default function Charters({navigation, route}: any) {
 
   const onCharterSelected = async (charter: any) => {
     setSelectedCharter(charter)
-    if (charter.contractorStatus === 'new') {
+    if (charter.contractorStatus === 'new' || signature) {
       const path = await viewPdf(charter.id)
+      console.log('PATH_FROM_VIEW_PDF', path)
       setPath(path)
       setReviewPDF(true)
     } else {
@@ -238,11 +274,86 @@ export default function Charters({navigation, route}: any) {
 
   const handleOnAccept = () => {
     setReviewPDF(false)
-    navigation.navigate('CharterAcceptSign', {charter: selectedCharter})
+    navigation.navigate('CharterAcceptSign', {
+      charter: selectedCharter,
+      setSignature: setSignature,
+      onCharterSelected: onCharterSelected,
+    })
   }
 
   const onPullToReload = () => {
     getCharters()
+  }
+
+  const _base64ToArrayBuffer = base64 => {
+    const binary_string = atob(base64)
+    const len = binary_string.length
+    const bytes = new Uint8Array(len)
+    for (let i = 0; i < len; i++) {
+      bytes[i] = binary_string.charCodeAt(i)
+    }
+    return bytes.buffer
+  }
+
+  const _uint8ToBase64 = u8Arr => {
+    const CHUNK_SIZE = 0x8000 //arbitrary number
+    let index = 0
+    const length = u8Arr.length
+    let result = ''
+    let slice
+    while (index < length) {
+      slice = u8Arr.subarray(index, Math.min(index + CHUNK_SIZE, length))
+      result += String.fromCharCode.apply(null, slice)
+      index += CHUNK_SIZE
+    }
+    return btoa(result)
+  }
+
+  const handleSingleTap = async (page, x, y) => {
+    console.log('ON_SINGLE_TAP')
+    if (signature) {
+      console.log('ON_SINGLE_TAP_WE_HAVE_SIGNATURE')
+      const signArrBuf = _base64ToArrayBuffer(signature)
+      const pdfDoc = await PDFDocument.load(pdfArrayBuffer)
+      const pages = pdfDoc.getPages()
+      const firstPage = pages[page - 1]
+
+      const signatureImage = await pdfDoc.embedPng(signArrBuf)
+      if (Platform.OS == 'ios') {
+        firstPage.drawImage(signatureImage, {
+          x: (pageWidth * (x - 12)) / Dimensions.get('window').width,
+          y: pageHeight - (pageHeight * (y + 12)) / 540,
+          width: 100,
+          height: 100,
+        })
+      } else {
+        firstPage.drawImage(signatureImage, {
+          x: (firstPage.getWidth() * x) / pageWidth,
+          y:
+            firstPage.getHeight() -
+            (firstPage.getHeight() * y) / pageHeight -
+            25,
+          width: 50,
+          height: 50,
+        })
+      }
+
+      const pdfBytes = await pdfDoc.save()
+      const pdfBase64 = _uint8ToBase64(pdfBytes)
+
+      ReactNativeBlobUtil.fs
+        .writeFile(`${path}_signed`, pdfBase64, 'base64')
+        .then(success => {
+          console.log('SIGNATURE_SUCCESS_NEW_PATH', success)
+          setSignature('')
+          setPath(`${path}_signed`)
+          setPdfBase64(pdfBase64)
+          setIsPdfSigned(true)
+        })
+        .catch(err => {
+          console.log(err.message)
+        })
+    }
   }
 
   if (isCharterLoading) return <LoadingAnimated />
@@ -306,7 +417,6 @@ export default function Charters({navigation, route}: any) {
           />
         }
       />
-
       <Modal
         isOpen={reviewPDF}
         size="full"
@@ -329,30 +439,57 @@ export default function Charters({navigation, route}: any) {
               )}
               .pdf
             </Text> */}
-          <TouchableOpacity
-            onPress={() => setReviewPDF(false)}
-            style={{
-              alignItems: 'flex-end',
-              backgroundColor: Colors.black,
-              paddingHorizontal: ms(16),
-              paddingVertical: ms(10),
-            }}
-          >
-            <Text
-              color={Colors.primary}
-              fontSize={ms(12)}
-              fontWeight="bold"
-              textAlign="right"
+          {!signature ? (
+            <TouchableOpacity
+              onPress={() => {
+                setReviewPDF(false)
+                setIsPdfSigned(false)
+              }}
+              style={{
+                alignItems: 'flex-end',
+                backgroundColor: Colors.black,
+                paddingHorizontal: ms(16),
+                paddingVertical: ms(10),
+              }}
             >
-              Done
-            </Text>
-          </TouchableOpacity>
+              <Text
+                color={Colors.primary}
+                fontSize={ms(12)}
+                fontWeight="bold"
+                textAlign="right"
+              >
+                Done
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            <Box
+              style={{
+                alignItems: 'flex-end',
+                backgroundColor: Colors.black,
+                paddingHorizontal: ms(16),
+                paddingVertical: ms(10),
+              }}
+            >
+              <Text
+                color={Colors.primary}
+                fontSize={ms(12)}
+                fontWeight="bold"
+                textAlign="right"
+              >
+                Make single tap to select place for signature
+              </Text>
+            </Box>
+          )}
           {/* </HStack> */}
 
           <Pdf
             source={source}
-            onLoadComplete={(numberOfPages, filePath) => {
+            onLoadComplete={(numberOfPages, filePath, {width, height}) => {
               console.log(`Number of pages: ${numberOfPages}`)
+              console.log('FILE_PATH_FROM_PDF', filePath)
+              console.log('SOURCE_FROM_PDF', source)
+              setPageWidth(width)
+              setPageHeight(height)
             }}
             onPageChanged={(page, numberOfPages) => {
               console.log(`Current page: ${page}`)
@@ -366,24 +503,29 @@ export default function Charters({navigation, route}: any) {
             style={styles.pdf}
             enablePaging
             trustAllCerts={false}
+            onPageSingleTap={(page, x, y) => {
+              handleSingleTap(page, x, y)
+            }}
           />
         </Modal.Content>
-        <Modal.Footer bg={Colors.black}>
-          <Box flex="1">
-            <Button
-              variant="outline"
-              colorScheme="dark"
-              style={{borderColor: Colors.danger}}
-              mb={ms(8)}
-              onPress={handleOnDecline}
-            >
-              Decline
-            </Button>
-            <Button bg={Colors.primary} onPress={handleOnAccept}>
-              Accept
-            </Button>
-          </Box>
-        </Modal.Footer>
+        {!signature && !isPdfSigned ? (
+          <Modal.Footer bg={Colors.black}>
+            <Box flex="1">
+              <Button
+                variant="outline"
+                colorScheme="dark"
+                style={{borderColor: Colors.danger}}
+                mb={ms(8)}
+                onPress={handleOnDecline}
+              >
+                Decline
+              </Button>
+              <Button bg={Colors.primary} onPress={handleOnAccept}>
+                Accept
+              </Button>
+            </Box>
+          </Modal.Footer>
+        ) : null}
       </Modal>
     </Box>
   )

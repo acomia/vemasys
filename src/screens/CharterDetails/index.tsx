@@ -20,6 +20,7 @@ import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
 import {useAuth, useCharters, useEntity} from '@bluecentury/stores'
 import {formatLocationLabel} from '@bluecentury/constants'
+import pdf2html from 'pdf2html'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 export default function CharterDetails({navigation, route}: Props) {
