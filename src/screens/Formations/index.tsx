@@ -9,7 +9,7 @@ import {ms} from 'react-native-size-matters'
 import {Colors} from '@bluecentury/styles'
 import {IconButton} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
-import {useEntity, useMap} from '@bluecentury/stores'
+import {useEntity, useMap, useSettings} from '@bluecentury/stores'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 
@@ -21,6 +21,7 @@ export default function Formations({navigation}: Props) {
     removeVesselFromFormations,
   } = useMap()
   const {vesselId} = useEntity()
+  const {isQrScanner} = useSettings()
   const [dropOffModal, setDropOffModal] = useState(false)
   const [selectedBarge, setSelectedBarge] = useState<any>(null)
 
@@ -31,9 +32,15 @@ export default function Formations({navigation}: Props) {
 
   useEffect(() => {
     navigation.setOptions({
-      headerRight: () => (
-        <IconButton source={Icons.qr} onPress={() => navigation.goBack()} />
-      ),
+      headerRight: () => {
+        if (isQrScanner) {
+          return (
+            <IconButton source={Icons.qr} onPress={() => navigation.goBack()} />
+          )
+        } else {
+          null
+        }
+      },
     })
     getActiveFormations()
   }, [])
