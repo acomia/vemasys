@@ -1,22 +1,15 @@
 import create from 'zustand'
 import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-
 import * as API from '@bluecentury/api/vemasys'
-import {
-  UPDATE_CHARTER_FAILED,
-  UPDATE_CHARTER_SUCCESS,
-  UPLOAD_CHARTER_SIGNATURE_FAILED,
-  UPLOAD_CHARTER_SIGNATURE_SUCCESS,
-} from '@bluecentury/constants'
 interface IUpdateStatus {
   status?: string
   setContractorStatus?: boolean
 }
 interface ISignature {
   user: string
-  signature: string
-  signedDate: Date
+  signature: StringOrNull
+  signedDate: StringOrNull
   charter: string
 }
 
@@ -24,16 +17,16 @@ type ChartersState = {
   charters: [] | undefined
   isCharterLoading: boolean
   pdfPath: string
-  updateCharterStatusResponse: string
-  uploadCharterSignatureResponse: string
+  updateCharterStatusResponse: StringOrNull
+  uploadCharterSignatureResponse: StringOrNull
 }
 
 type ChartersActions = {
   getCharters: () => void
-  viewPdf?: (charterId: string) => void
-  updateCharterStatus?: (charterId: string, status: IUpdateStatus) => void
-  uploadSignature?: (signature: ISignature) => void
-  resetResponses?: () => void
+  viewPdf: (charterId: string) => void
+  updateCharterStatus: (charterId: string, status: IUpdateStatus) => void
+  uploadSignature: (signature: ISignature) => void
+  resetResponses: () => void
 }
 
 type ChartersStore = ChartersState & ChartersActions
@@ -44,8 +37,8 @@ export const useCharters = create(
       isCharterLoading: false,
       charters: [],
       pdfPath: '',
-      updateCharterStatusResponse: '',
-      uploadCharterSignatureResponse: '',
+      updateCharterStatusResponse: null,
+      uploadCharterSignatureResponse: null,
       getCharters: async () => {
         set({isCharterLoading: true, charters: []})
         try {
@@ -76,39 +69,31 @@ export const useCharters = create(
         }
       },
       updateCharterStatus: async (charterId: string, status: IUpdateStatus) => {
-        set({isCharterLoading: true})
+        set({
+          isCharterLoading: true,
+          updateCharterStatusResponse: null,
+        })
         try {
           const response = await API.updateCharterStatus(charterId, status)
-          if (typeof response === 'string') {
-            set({
-              isCharterLoading: false,
-              updateCharterStatusResponse: UPDATE_CHARTER_SUCCESS,
-            })
-          } else {
-            set({
-              isCharterLoading: false,
-              updateCharterStatusResponse: UPDATE_CHARTER_FAILED,
-            })
-          }
+          set({
+            isCharterLoading: false,
+            updateCharterStatusResponse: response,
+          })
         } catch (error) {
           set({isCharterLoading: false})
         }
       },
       uploadSignature: async (signature: ISignature) => {
-        set({isCharterLoading: true})
+        set({
+          isCharterLoading: true,
+          uploadCharterSignatureResponse: null,
+        })
         try {
           const response = await API.uploadSignature(signature)
-          if (typeof response === 'object') {
-            set({
-              isCharterLoading: false,
-              uploadCharterSignatureResponse: UPLOAD_CHARTER_SIGNATURE_SUCCESS,
-            })
-          } else {
-            set({
-              isCharterLoading: false,
-              uploadCharterSignatureResponse: UPLOAD_CHARTER_SIGNATURE_FAILED,
-            })
-          }
+          set({
+            isCharterLoading: false,
+            uploadCharterSignatureResponse: response,
+          })
         } catch (error) {
           set({isCharterLoading: false})
         }
