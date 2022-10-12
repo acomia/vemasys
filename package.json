@@ -72,7 +72,6 @@
     "react-native-vector-icons": "^9.1.0",
     "react-native-webview": "^11.23.1",
     "reanimated-bottom-sheet": "^1.0.0-alpha.22",
-    "vemicons": "git+https://bitbucket.org/vemasysdev/vemicons.git",
     "victory-native": "^36.6.5",
     "zustand": "^3.7.1"
   },

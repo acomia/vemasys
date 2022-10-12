@@ -32,6 +32,7 @@ export const planningDetailsTabs = [
   {key: 'cargoList', title: 'Cargo List'},
   {key: 'cargoHolds', title: 'Cargo Holds'},
   {key: 'documents', title: 'Documents'},
+  {key: 'navlogmap', title: 'Nav Log'},
 ]
 
 // Financial constants
