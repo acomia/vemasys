@@ -9686,10 +9686,6 @@ vary@~1.1.2:
   resolved "https://registry.yarnpkg.com/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
   integrity sha1-IpnwLG3tMNSllhsLn3RSShj2NPw=
 
-"vemicons@git+https://bitbucket.org/vemasysdev/vemicons.git":
-  version "1.2.0"
-  resolved "git+https://bitbucket.org/vemasysdev/vemicons.git#6f779f86abac5bbce3ad4e8ca5912c3f748436f8"
-
 victory-area@^36.6.5:
   version "36.6.5"
   resolved "https://registry.yarnpkg.com/victory-area/-/victory-area-36.6.5.tgz#0ee7304c7fb98a00749e7c2cddfc53539b5db063"
