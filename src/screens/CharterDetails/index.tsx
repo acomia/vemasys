@@ -25,7 +25,7 @@ import pdf2html from 'pdf2html'
 type Props = NativeStackScreenProps<RootStackParamList>
 export default function CharterDetails({navigation, route}: Props) {
   const {entityType} = useEntity()
-  const {viewPdf, isCharterLoading} = useCharters()
+  const {viewPdf, isCharterLoading, signedDocumentsArray} = useCharters()
 
   useEffect(() => {
     // navigation.setOptions({
@@ -257,9 +257,10 @@ export default function CharterDetails({navigation, route}: Props) {
   }
 
   const handlePDFView = async () => {
-    const path = await viewPdf(charter.id)
+    // const path = await viewPdf(charter.id)
+    const path = signedDocumentsArray.find(item => item.charter_id === charter.id)
     navigation.navigate('PDFView', {
-      path: `${path}`,
+      path: `${path.path}`,
     })
   }
 

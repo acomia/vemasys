@@ -31,6 +31,7 @@ import {useCharters, useEntity} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
 import {CharterStatus, LoadingAnimated} from '@bluecentury/components'
 import {
+  CHARTER_CONTRACTOR_STATUS_ACCEPTED,
   CHARTER_CONTRACTOR_STATUS_ARCHIVED,
   CHARTER_CONTRACTOR_STATUS_REFUSED,
   CHARTER_ORDERER_STATUS_COMPLETED,
@@ -46,9 +47,14 @@ export default function Charters({navigation, route}: any) {
   const {
     isCharterLoading,
     charters,
+    signedDocumentsArray,
     getCharters,
     viewPdf,
     updateCharterStatus,
+    addSignedDocument,
+    signatureId,
+    getSignature,
+    setSignatureId,
   } = useCharters()
   const {entityType, vesselId} = useEntity()
   const [searchedValue, setSearchValue] = useState('')
@@ -75,6 +81,11 @@ export default function Charters({navigation, route}: any) {
   const source = {uri: path, cache: true}
 
   useEffect(() => {
+    setSignatureId('')
+    addSignedDocument([])
+  }, [])
+
+  useEffect(() => {
     getCharters()
   }, [vesselId])
 
@@ -92,6 +103,10 @@ export default function Charters({navigation, route}: any) {
   useEffect(() => {
     console.log('CHARTERS', charters)
   }, [charters])
+
+  useEffect(() => {
+    console.log('SIGNED_DOCUMENTS_ARRAY', signedDocumentsArray)
+  }, [signedDocumentsArray])
 
   const readFile = () => {
     ReactNativeBlobUtil.fs.readFile(path, 'base64').then(contents => {
@@ -272,13 +287,27 @@ export default function Charters({navigation, route}: any) {
     }
   }
 
-  const handleOnAccept = () => {
+  const handleOnAccept = async () => {
     setReviewPDF(false)
-    navigation.navigate('CharterAcceptSign', {
-      charter: selectedCharter,
-      setSignature: setSignature,
-      onCharterSelected: onCharterSelected,
-    })
+    const navigateToGetSignatureScreen = () => {
+      navigation.navigate('CharterAcceptSign', {
+        charter: selectedCharter,
+        setSignature: setSignature,
+        onCharterSelected: onCharterSelected,
+      })
+    }
+    if (!signatureId) {
+      navigateToGetSignatureScreen()
+    } else {
+      const response = await getSignature(signatureId, navigateToGetSignatureScreen)
+      console.log('SIGNATURE_RESPONSE', response)
+      if (response.signature) {
+        setSignature(response.signature.replace('data:image/png;base64,', ''))
+        onCharterSelected(selectedCharter)
+      } else {
+        navigateToGetSignatureScreen()
+      }
+    }
   }
 
   const onPullToReload = () => {
@@ -341,6 +370,12 @@ export default function Charters({navigation, route}: any) {
       const pdfBytes = await pdfDoc.save()
       const pdfBase64 = _uint8ToBase64(pdfBytes)
 
+      const status = {
+        status: CHARTER_CONTRACTOR_STATUS_ACCEPTED,
+        setContractorStatus: true,
+      }
+      const update = await updateCharterStatus(selectedCharter?.id, status)
+
       ReactNativeBlobUtil.fs
         .writeFile(`${path}_signed`, pdfBase64, 'base64')
         .then(success => {
@@ -349,6 +384,18 @@ export default function Charters({navigation, route}: any) {
           setPath(`${path}_signed`)
           setPdfBase64(pdfBase64)
           setIsPdfSigned(true)
+          const newSignedDocument = {
+            charter_id: selectedCharter.id,
+            path: `${path}_signed`
+          }
+          addSignedDocument([...signedDocumentsArray, newSignedDocument])
+
+          if (typeof update === 'string') {
+            getCharters()
+            showToast('Charter accepted sucessfully.', 'success')
+          } else {
+            showToast('Charter accepted failed.', 'failed')
+          }
         })
         .catch(err => {
           console.log(err.message)

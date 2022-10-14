@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {
   Box,
   Button,
@@ -24,13 +24,26 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
   const {charter, setSignature, onCharterSelected} = route.params
   const ref = useRef<SignatureViewRef>(null)
   const toast = useToast()
-  const {isCharterLoading, updateCharterStatus, getCharters, uploadSignature} =
-    useCharters()
+  const {
+    isCharterLoading,
+    updateCharterStatus,
+    getCharters,
+    uploadSignature,
+    setSignatureId,
+    signatureId,
+  } = useCharters()
   const {user} = useEntity()
   const [scrollEnabled, setScrollEnabled] = useState(true)
 
+  useEffect(() => {
+    console.log('USER_ID', user)
+  }, [])
+
+  useEffect(() => {
+    console.log('SIGNATURE_ID_FROM_STORE', signatureId)
+  }, [signatureId])
+
   const handleSignature = async signature => {
-    // console.log('SIGNATURE', signature)
     const status = {
       status: CHARTER_CONTRACTOR_STATUS_ACCEPTED,
       setContractorStatus: true,
@@ -51,6 +64,7 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
     const sign = await uploadSignature(signData)
     if (typeof sign === 'object') {
       showToast('Signature upload sucessfully.', 'warning')
+      setSignatureId(sign.id)
       setSignature(signature.replace('data:image/png;base64,', ''))
     } else {
       showToast('Signature upload failed.', 'failed')

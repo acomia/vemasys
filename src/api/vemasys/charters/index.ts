@@ -60,7 +60,7 @@ const uploadSignature = async (signature: Signature) => {
   return API.post(`signatures`, signature)
     .then(response => {
       if (response.data) {
-        console.log('UPL_SIG_RESPONSE', response.data)
+        console.log('UPL_SIG_RESPONSE', response.data.id)
         return response.data
       } else {
         throw new Error('Charter upload signature failed.')
@@ -71,4 +71,25 @@ const uploadSignature = async (signature: Signature) => {
     })
 }
 
-export {reloadVesselCharters, viewPdfFile, updateCharterStatus, uploadSignature}
+const getSignature = async (signatureId: string) => {
+  return API.get(`signature/${signatureId}`)
+    .then(response => {
+      if (response.data) {
+        console.log('UPL_SIG_RESPONSE', response)
+        return response.data
+      } else {
+        throw new Error('Charter upload signature failed.')
+      }
+    })
+    .catch(error => {
+      console.error('Error: Charter upload signature API', error)
+    })
+}
+
+export {
+  reloadVesselCharters,
+  viewPdfFile,
+  updateCharterStatus,
+  uploadSignature,
+  getSignature,
+}
