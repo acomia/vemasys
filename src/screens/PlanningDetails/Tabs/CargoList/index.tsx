@@ -1,14 +1,14 @@
 import React from 'react'
-import { Alert } from 'react-native'
-import { Box, Divider, HStack, ScrollView, Text, useToast } from 'native-base'
-import { useNavigation } from '@react-navigation/native'
-import { ms } from 'react-native-size-matters'
+import {Alert} from 'react-native'
+import {Box, Divider, HStack, ScrollView, Text, useToast} from 'native-base'
+import {useNavigation} from '@react-navigation/native'
+import {ms} from 'react-native-size-matters'
 
-import { Colors } from '@bluecentury/styles'
-import { usePlanning } from '@bluecentury/stores'
-import { IconButton, LoadingIndicator } from '@bluecentury/components'
-import { Icons } from '@bluecentury/assets'
-import { formatBulkTypeLabel, formatNumber } from '@bluecentury/constants'
+import {Colors} from '@bluecentury/styles'
+import {usePlanning} from '@bluecentury/stores'
+import {IconButton, LoadingAnimated} from '@bluecentury/components'
+import {Icons} from '@bluecentury/assets'
+import {formatBulkTypeLabel, formatNumber} from '@bluecentury/constants'
 
 const CargoList = () => {
   const navigation = useNavigation()
@@ -17,7 +17,7 @@ const CargoList = () => {
     isPlanningLoading,
     navigationLogDetails,
     getNavigationLogDetails,
-    deleteBulkCargo
+    deleteBulkCargo,
   } = usePlanning()
 
   const showToast = (text: string, res: string) => {
@@ -36,7 +36,7 @@ const CargoList = () => {
             {text}
           </Text>
         )
-      }
+      },
     })
   }
 
@@ -47,13 +47,13 @@ const CargoList = () => {
       [
         {
           text: 'Cancel',
-          style: 'cancel'
+          style: 'cancel',
         },
         {
           text: 'Yes, delete it',
           onPress: async () => onDeleteBulkCargoEntry(cargo),
-          style: 'destructive'
-        }
+          style: 'destructive',
+        },
       ]
     )
   }
@@ -72,11 +72,11 @@ const CargoList = () => {
     }
   }
 
-  if (isPlanningLoading) return <LoadingIndicator />
+  if (isPlanningLoading) return <LoadingAnimated />
   return (
     <Box flex="1">
       <ScrollView
-        contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
+        contentContainerStyle={{flexGrow: 1, paddingBottom: 20}}
         bg={Colors.white}
         px={ms(12)}
         py={ms(20)}
@@ -109,7 +109,7 @@ const CargoList = () => {
                 shadow={1}
               >
                 <Box flex="1" mr={ms(5)}>
-                  <Text fontWeight="medium" >
+                  <Text fontWeight="medium">
                     {cargo.type ? formatBulkTypeLabel(cargo.type) : 'N.A.'}
                   </Text>
                   <Text color={Colors.disabled}>
@@ -126,7 +126,7 @@ const CargoList = () => {
                     onPress={() =>
                       navigation.navigate('AddEditBulkCargo', {
                         cargo: cargo,
-                        method: 'edit'
+                        method: 'edit',
                       })
                     }
                     size={ms(22)}
@@ -158,7 +158,7 @@ const CargoList = () => {
             size={ms(50)}
             onPress={() =>
               navigation.navigate('AddEditBulkCargo', {
-                method: 'add'
+                method: 'add',
               })
             }
           />

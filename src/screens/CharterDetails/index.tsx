@@ -9,7 +9,7 @@ import {
   Image,
   ScrollView,
   Text,
-  VStack
+  VStack,
 } from 'native-base'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {ms} from 'react-native-size-matters'
@@ -56,14 +56,14 @@ export default function CharterDetails({navigation, route}: Props) {
           {cargo.type.nameEn || cargo.type.nameNl}
         </Text>
         <HStack borderTopWidth={1} borderColor={Colors.light}>
-          <HStack flex={1} alignItems="center" my={ms(10)}>
+          <HStack flex="1" alignItems="center" my={ms(10)}>
             <Text ml={ms(10)}>Booked:</Text>
             <Text ml={ms(10)} fontWeight="bold" color={Colors.disabled}>
               {parseInt(cargo.amount) || 0} MT
             </Text>
           </HStack>
           <HStack
-            flex={1}
+            flex="1"
             borderLeftWidth={ms(1)}
             borderColor="#F0F0F0"
             alignItems="center"
@@ -82,7 +82,7 @@ export default function CharterDetails({navigation, route}: Props) {
     return (
       <HStack key={index} alignItems="center">
         <VStack alignItems="center">
-          <Box flex={1}>
+          <Box flex="1">
             {index > 0 && (
               <Box width={ms(2)} height="full" backgroundColor={Colors.azure} />
             )}
@@ -92,7 +92,7 @@ export default function CharterDetails({navigation, route}: Props) {
             source={Icons.navlog_pin}
             resizeMode="contain"
           />
-          <Box flex={1}>
+          <Box flex="1">
             {index != charter.navigationLogs.length - 1 && (
               <Box width={ms(2)} height="full" backgroundColor={Colors.azure} />
             )}
@@ -108,12 +108,12 @@ export default function CharterDetails({navigation, route}: Props) {
             borderColor: Colors.light,
             marginBottom: ms(10),
             marginLeft: ms(-20),
-            zIndex: -1
+            zIndex: -1,
           }}
           onPress={() =>
             navigation.navigate('PlanningDetails', {
               navlog: navlogs,
-              title: formatLocationLabel(navlogs.location)
+              title: formatLocationLabel(navlogs.location),
             })
           }
         >
@@ -207,7 +207,7 @@ export default function CharterDetails({navigation, route}: Props) {
             style={{
               display: 'flex',
               flexDirection: 'column',
-              alignItems: 'flex-start'
+              alignItems: 'flex-start',
             }}
           >
             <Text>{party.financialInformation.name}</Text>
@@ -220,7 +220,7 @@ export default function CharterDetails({navigation, route}: Props) {
             style={{
               display: 'flex',
               flexDirection: 'column',
-              alignItems: 'flex-start'
+              alignItems: 'flex-start',
             }}
           >
             <Text>{party.entity.alias}</Text>
@@ -258,14 +258,14 @@ export default function CharterDetails({navigation, route}: Props) {
   const handlePDFView = async () => {
     const path = await viewPdf(charter.id)
     navigation.navigate('PDFView', {
-      path: `${path}`
+      path: `${path}`,
     })
   }
 
   return (
-    <Flex flex={1}>
+    <Flex flex="1">
       <Box
-        flex={1}
+        flex="1"
         backgroundColor={Colors.white}
         borderTopLeftRadius={ms(15)}
         borderTopRightRadius={ms(15)}
@@ -292,12 +292,12 @@ export default function CharterDetails({navigation, route}: Props) {
           <CharterStatus entityType={entityType} charter={charter} />
         </HStack>
         <Divider my={ms(15)} />
-        <ScrollView flex={1} showsVerticalScrollIndicator={false}>
+        <ScrollView flex="1" showsVerticalScrollIndicator={false}>
           <Text fontSize={ms(16)} fontWeight="semibold" color={Colors.text}>
             Location
           </Text>
           <Box my={ms(15)}>
-            <Button
+            {/* <Button
               leftIcon={
                 <Image
                   alt="view-navlog"
@@ -312,7 +312,7 @@ export default function CharterDetails({navigation, route}: Props) {
               onPress={() => navigation.navigate('Planning')}
             >
               View Navlog
-            </Button>
+            </Button> */}
             <Button
               leftIcon={
                 <Image

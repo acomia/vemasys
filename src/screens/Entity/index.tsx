@@ -14,7 +14,7 @@ import {ms} from 'react-native-size-matters'
 import {useEntity, useAuth, useSettings} from '@bluecentury/stores'
 import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
-import {EntityCard, LoadingIndicator} from '@bluecentury/components'
+import {EntityCard, LoadingAnimated} from '@bluecentury/components'
 import {Shadow} from 'react-native-shadow-2'
 import {resetAllStates} from '@bluecentury/utils'
 import {useSafeAreaInsets} from 'react-native-safe-area-context'
@@ -91,10 +91,10 @@ export default function Entity({route, navigation}: Props) {
     logout()
   }
   return (
-    <Box flex={1} bg={Colors.light} pt={paddingTop}>
+    <Box flex="1" bg={Colors.light} pt={paddingTop}>
       <Box
         bg={Colors.white}
-        flex={1}
+        flex="1"
         pt={ms(20)}
         px={ms(20)}
         borderTopRadius="3xl"
@@ -108,7 +108,7 @@ export default function Entity({route, navigation}: Props) {
           </Button>
         </HStack>
         <Divider mb="5" />
-        {isLoadingEntityUsers && <LoadingIndicator />}
+        {isLoadingEntityUsers && <LoadingAnimated />}
         <FlatList
           data={entityItems}
           renderItem={({item}: any) => {

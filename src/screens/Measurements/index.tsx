@@ -12,7 +12,7 @@ import {
   Progress,
   Skeleton,
   Text,
-  useToast
+  useToast,
 } from 'native-base'
 import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
@@ -22,7 +22,7 @@ import moment from 'moment'
 import {Shadow} from 'react-native-shadow-2'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import {useEntity, useTechnical} from '@bluecentury/stores'
-import {LoadingIndicator} from '@bluecentury/components'
+import {LoadingAnimated} from '@bluecentury/components'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const Measurements = ({navigation, route}: Props) => {
@@ -35,7 +35,7 @@ const Measurements = ({navigation, route}: Props) => {
     createNewConsumptionMeasure,
     getVesselGasoilReservoirs,
     getVesselEngines,
-    getVesselReservoirs
+    getVesselReservoirs,
   } = useTechnical()
   const {physicalVesselId} = useEntity()
   const [newMeasurement, setNewMeasurement] = useState('')
@@ -63,7 +63,7 @@ const Measurements = ({navigation, route}: Props) => {
             {text}
           </Text>
         )
-      }
+      },
     })
   }
 
@@ -83,7 +83,7 @@ const Measurements = ({navigation, route}: Props) => {
             {text}
           </Text>
         )
-      }
+      },
     })
   }
 
@@ -107,14 +107,14 @@ const Measurements = ({navigation, route}: Props) => {
       >
         <HStack alignItems="center">
           <Skeleton
-            flex={1}
+            flex="1"
             h={ms(22)}
             w={ms(100)}
             rounded="full"
             isLoaded={!isTechnicalLoading}
             startColor={Colors.light}
           >
-            <Text flex={1} color={Colors.azure} fontWeight="medium">
+            <Text flex="1" color={Colors.azure} fontWeight="medium">
               {data?.name}
             </Text>
           </Skeleton>
@@ -180,14 +180,14 @@ const Measurements = ({navigation, route}: Props) => {
       >
         <HStack alignItems="center">
           <Skeleton
-            flex={1}
+            flex="1"
             h={ms(22)}
             w={ms(100)}
             rounded="full"
             isLoaded={!isTechnicalLoading}
             startColor={Colors.light}
           >
-            <Text flex={1} color={Colors.azure} fontWeight="medium">
+            <Text flex="1" color={Colors.azure} fontWeight="medium">
               {data?.data[pLength]?.type?.title}
             </Text>
           </Skeleton>
@@ -269,7 +269,7 @@ const Measurements = ({navigation, route}: Props) => {
         </Text>
         <Divider mt={ms(8)} mb={ms(15)} />
         {isTechnicalLoading ? (
-          <LoadingIndicator />
+          <LoadingAnimated />
         ) : (
           <FlatList
             data={lastMeasurements}
@@ -342,7 +342,7 @@ const Measurements = ({navigation, route}: Props) => {
       <Box bg={Colors.white}>
         <Shadow
           viewStyle={{
-            width: '100%'
+            width: '100%',
           }}
         >
           <Button

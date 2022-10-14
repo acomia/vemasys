@@ -38,7 +38,7 @@
 		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Your message to user when the camera is accessed for the first time</string>
+	<string>Allow App to take photos for uploading documents, and other reports.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>App requires background tracking</string>
 	<key>NSLocationAlwaysUsageDescription</key>
@@ -48,7 +48,7 @@
 	<key>NSMotionUsageDescription</key>
 	<string>App requires motion tracking</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Your message to user when the camera is accessed for the first time</string>
+	<string>Allow App to access library/photos to upload documents, and other reports.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>

@@ -9,7 +9,7 @@ import {useIsFocused} from '@react-navigation/native'
 import {ms} from 'react-native-size-matters'
 
 import {Colors} from '@bluecentury/styles'
-import {LoadingIndicator} from '@bluecentury/components'
+import {LoadingAnimated} from '@bluecentury/components'
 import {useEntity, useMap} from '@bluecentury/stores'
 
 type Props = NativeStackScreenProps<RootStackParamList>
@@ -20,10 +20,10 @@ export default function QRScanner({navigation}: Props) {
     isLoadingMap,
     verifyTrackingDeviceToken,
     activeFormations,
-    tokenHasConnectedToShip
+    tokenHasConnectedToShip,
   } = useMap()
   const [barcodeType, setBarcodeType] = useState([
-    RNCamera.Constants.BarCodeType.qr
+    RNCamera.Constants.BarCodeType.qr,
   ])
   const focused = useIsFocused()
 
@@ -71,7 +71,7 @@ export default function QRScanner({navigation}: Props) {
   const onLayoutMeasuredHandler = (e: LayoutChangeEvent) => {}
 
   return (
-    <Flex flex={1} backgroundColor={Colors.black}>
+    <Flex flex="1" backgroundColor={Colors.black}>
       <RNCamera
         style={{flex: 1, justifyContent: 'flex-end', alignItems: 'center'}}
         type={RNCamera.Constants.Type.back}
@@ -119,7 +119,7 @@ export default function QRScanner({navigation}: Props) {
             flexDirection="row"
             alignItems="center"
           >
-            <LoadingIndicator />
+            <LoadingAnimated />
             <Text fontWeight="medium">Processing...</Text>
           </Box>
         </Modal.Content>

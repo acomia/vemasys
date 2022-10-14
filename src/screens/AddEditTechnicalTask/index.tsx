@@ -13,7 +13,7 @@ import {
   TextArea,
   WarningOutlineIcon,
   Image,
-  useToast
+  useToast,
 } from 'native-base'
 import {ms} from 'react-native-size-matters'
 import {Shadow} from 'react-native-shadow-2'
@@ -27,7 +27,7 @@ import * as ImagePicker from 'react-native-image-picker'
 import {Colors} from '@bluecentury/styles'
 import {useEntity, useTechnical} from '@bluecentury/stores'
 import moment from 'moment'
-import {IconButton, LoadingIndicator} from '@bluecentury/components'
+import {IconButton, LoadingAnimated} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 
 type Props = NativeStackScreenProps<RootStackParamList>
@@ -38,18 +38,18 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
     isTechnicalLoading,
     createVesselTask,
     updateVesselTask,
-    uploadFileBySubject
+    uploadFileBySubject,
   } = useTechnical()
   const {vesselId} = useEntity()
   const types = [
     {
       value: 'Technical_task',
-      label: 'Technical Task'
+      label: 'Technical Task',
     },
     {
       value: 'Verbeteringen',
-      label: 'Verbeteringen'
-    }
+      label: 'Verbeteringen',
+    },
   ]
 
   const [taskData, setTaskData] = useState<Task>({
@@ -57,14 +57,14 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
     // exploitationVessel: {id: vesselId},
     deadline: new Date(),
     description: '',
-    instructions: ''
+    instructions: '',
   })
   const [openDatePicker, setOpenDatePicker] = useState(false)
   const [imgFile, setImgFile] = useState<ImageFile>({
     id: '',
     uri: '',
     fileName: '',
-    type: ''
+    type: '',
   })
 
   useEffect(() => {
@@ -74,14 +74,14 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
         title: task?.title,
         deadline: task?.deadline ? new Date(task?.deadline) : new Date(),
         description: task?.description,
-        instructions: task?.instructions
+        instructions: task?.instructions,
       })
     }
   }, [task])
 
   const launchImageLibrary = () => {
     let options: ImagePicker.ImageLibraryOptions = {
-      mediaType: 'photo'
+      mediaType: 'photo',
     }
 
     ImagePicker.launchImageLibrary(options, response => {
@@ -90,7 +90,7 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
         id: response.assets[0].id,
         uri: response.assets[0].uri,
         fileName: response.assets[0].fileName,
-        type: response.assets[0].type
+        type: response.assets[0].type,
       })
     })
   }
@@ -114,14 +114,14 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
       },
       onCloseComplete() {
         res === 'success' ? navigation.goBack() : null
-      }
+      },
     })
   }
 
   const handleOnCreateNewTask = async () => {
     if (method === 'add') {
       const newTask = Object.assign({}, taskData, {
-        exploitationVessel: {id: vesselId}
+        exploitationVessel: {id: vesselId},
       })
       const res = await createVesselTask(newTask)
       if (typeof res === 'object' && res?.id) {
@@ -155,7 +155,7 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
     }
   }
 
-  if (isTechnicalLoading) return <LoadingIndicator />
+  if (isTechnicalLoading) return <LoadingAnimated />
 
   return (
     <Box
@@ -225,7 +225,7 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
               activeOpacity={0.7}
               style={{
                 flex: 1,
-                marginLeft: 10
+                marginLeft: 10,
               }}
               onPress={() => setOpenDatePicker(true)}
             >
@@ -332,7 +332,7 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
         <Shadow
           distance={25}
           viewStyle={{
-            width: '100%'
+            width: '100%',
           }}
         >
           <HStack>

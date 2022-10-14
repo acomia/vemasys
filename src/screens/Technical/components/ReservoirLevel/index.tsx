@@ -42,13 +42,13 @@ const ReservoirLevel = ({reservoir, physicalVesselId}: any) => {
           onPress={() =>
             navigation.navigate('Measurements', {
               data: reservoir,
-              routeFrom: 'reservoir'
+              routeFrom: 'reservoir',
             })
           }
         >
           <Box px={ms(16)} py={ms(5)}>
             <HStack alignItems="center">
-              <Text flex={1} color={Colors.azure} fontWeight="medium">
+              <Text flex="1" color={Colors.azure} fontWeight="medium">
                 {reservoir.name}
               </Text>
               <Text color={Colors.azure} fontSize={ms(16)} fontWeight="bold">
@@ -59,7 +59,7 @@ const ReservoirLevel = ({reservoir, physicalVesselId}: any) => {
                 %)
               </Text>
             </HStack>
-            <Text flex={1} color={Colors.disabled} fontWeight="medium">
+            <Text flex="1" color={Colors.disabled} fontWeight="medium">
               {moment(reservoir?.lastMeasurement?.date).fromNow()}
             </Text>
             <Progress
@@ -91,7 +91,7 @@ const ReservoirLevel = ({reservoir, physicalVesselId}: any) => {
         py={ms(10)}
         alignItems="center"
       >
-        <Text flex={1} color={Colors.azure} fontWeight="medium">
+        <Text flex="1" color={Colors.azure} fontWeight="medium">
           Total gasoil
         </Text>
         <Text color={Colors.azure} fontSize={ms(20)} fontWeight="bold">

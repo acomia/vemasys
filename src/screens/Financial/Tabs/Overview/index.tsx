@@ -52,11 +52,11 @@ const Overview = () => {
         px={ms(16)}
         mb={ms(7)}
       >
-        <Text flex={1} fontWeight="medium" color={Colors.text}>
+        <Text flex="1" fontWeight="medium" color={Colors.text}>
           {status}
         </Text>
         <Box
-          flex={1}
+          flex="1"
           borderLeftWidth={ms(1)}
           borderColor="#E6E6E6"
           height="100%"
@@ -88,7 +88,7 @@ const Overview = () => {
                     Platform.OS === 'ios'
                       ? Number(value).toLocaleString('en-GB', {
                           maximumFractionDigits: 2,
-                          minimumFractionDigits: 2
+                          minimumFractionDigits: 2,
                         })
                       : Number(value)
                           .toFixed(2)
@@ -184,18 +184,18 @@ const Overview = () => {
             </Card> */}
           <Card title={'Total'}>
             <CardContent
-              status="Total costs"
-              value={
-                invoiceStatistics?.length > 0
-                  ? invoiceStatistics[0]?.totalIncoming || 0
-                  : 0
-              }
-            />
-            <CardContent
               status="Total turnover"
               value={
                 invoiceStatistics?.length > 0
                   ? invoiceStatistics[0]?.totalOutgoing || 0
+                  : 0
+              }
+            />
+            <CardContent
+              status="Total costs"
+              value={
+                invoiceStatistics?.length > 0
+                  ? invoiceStatistics[0]?.totalIncoming || 0
                   : 0
               }
             />
@@ -230,12 +230,12 @@ const Overview = () => {
           borderRadius={5}
           px={ms(16)}
         >
-          <Text flex={1} fontWeight="medium" color={Colors.white}>
+          <Text flex="1" fontWeight="medium" color={Colors.white}>
             Total balance
           </Text>
 
           <Box
-            flex={1}
+            flex="1"
             borderLeftWidth={ms(1)}
             borderColor="#E6E6E6"
             height="100%"
@@ -262,7 +262,7 @@ const Overview = () => {
                           : 0
                       ).toLocaleString('en-GB', {
                         maximumFractionDigits: 2,
-                        minimumFractionDigits: 2
+                        minimumFractionDigits: 2,
                       })
                     : Number(
                         invoiceStatistics?.length > 0

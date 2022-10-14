@@ -12,7 +12,8 @@ import {
   WarningOutlineIcon,
   Center,
   KeyboardAvoidingView,
-  HStack
+  HStack,
+  Checkbox,
 } from 'native-base'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import {ms} from 'react-native-size-matters'
@@ -22,9 +23,9 @@ import {Credentials} from '@bluecentury/models'
 import {Images} from '@bluecentury/assets'
 import {_t} from '@bluecentury/constants'
 import {useAuth, useSettings} from '@bluecentury/stores'
-import {CommonActions, useNavigation} from '@react-navigation/native'
 import {VersionBuildLabel} from '@bluecentury/components/version-build-label'
 import {useSafeAreaInsets} from 'react-native-safe-area-context'
+import * as Keychain from 'react-native-keychain'
 
 const usernameRequired = _t('usernameRequired')
 const passwordRequired = _t('passwordRequired')
@@ -37,8 +38,9 @@ function Login() {
     isAuthenticatingUser,
     authenticate,
     hasAuthenticationError,
-    errorMessage
+    errorMessage,
   } = useAuth()
+  const {isRemainLoggedIn, setIsRemainLoggedIn} = useSettings()
   const [user, setUser] = useState<Credentials>({username: '', password: ''})
   const [isShowPassword, setIsShowPassword] = useState(false)
   const [isUsernameEmpty, setIsUsernameEmpty] = useState(false)
@@ -60,12 +62,25 @@ function Login() {
     authenticate(user)
   }
   const handleOnSubmitEditingPassword = () => handleOnPressLogin()
+  useEffect(() => {
+    Keychain.getGenericPassword()
+      .then(credentials => {
+        console.log('credentials ', credentials)
+        if (credentials) {
+          const {username, password} = credentials
+          setUser({username: username, password: password})
+        }
+      })
+      .catch(error => {
+        console.log('Error: ', error)
+      })
+  }, [])
   return (
-    <Box flex={1} safeArea>
+    <Box flex="1" safeArea>
       <KeyboardAvoidingView
         h={{
           base: '100%',
-          lg: 'auto'
+          lg: 'auto',
         }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
@@ -166,16 +181,25 @@ function Login() {
                 <Text color={Colors.white}>{errorMessage}</Text>
               </Box>
             )}
+            <HStack justifyContent="flex-end">
+              <Checkbox
+                isChecked={isRemainLoggedIn}
+                onChange={v => setIsRemainLoggedIn(v)}
+                value="remain-logged-in"
+              >
+                Remain logged in?
+              </Checkbox>
+            </HStack>
           </VStack>
           <Button
             colorScheme="azure"
             isLoadingText="Logging in"
             isLoading={isAuthenticatingUser}
             _spinner={{
-              color: Colors.white
+              color: Colors.white,
             }}
             _text={{
-              textTransform: 'uppercase'
+              textTransform: 'uppercase',
             }}
             onPress={handleOnPressLogin}
           >

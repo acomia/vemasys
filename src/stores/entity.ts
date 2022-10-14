@@ -30,7 +30,7 @@ type EntityActions = {
   getUserInfo: () => void
   getEntityUsers: () => void
   selectEntityUser: (entity: any) => void
-  selectFleetVessel?: (index: number, entity: any) => void
+  selectFleetVessel: (index: number, entity: any) => void
   setHasHydrated: (state: boolean) => void
   reset: () => void
 }
@@ -55,7 +55,7 @@ const initialEntityState: EntityState = {
   selectedVessel: {},
   selectedEntity: {},
   physicalVesselId: '',
-  fleetVessel: 0
+  fleetVessel: 0,
 }
 
 export const useEntity = create(
@@ -66,18 +66,18 @@ export const useEntity = create(
         set({
           user: [],
           isLoadingCurrentUserInfo: true,
-          hasErrorLoadingCurrentUser: false
+          hasErrorLoadingCurrentUser: false,
         })
         try {
           const response = await API.reloadUser()
           set({
             user: response,
-            isLoadingCurrentUserInfo: false
+            isLoadingCurrentUserInfo: false,
           })
         } catch (error) {
           set({
             hasErrorLoadingCurrentUser: true,
-            isLoadingCurrentUserInfo: false
+            isLoadingCurrentUserInfo: false,
           })
         }
       },
@@ -85,26 +85,26 @@ export const useEntity = create(
         set({
           entityUsers: [],
           isLoadingEntityUsers: true,
-          hasErrorLoadingEntityUsers: false
+          hasErrorLoadingEntityUsers: false,
         })
         try {
           const response = await API.reloadEntityUsers()
           if (Array.isArray(response)) {
             set({
               entityUsers: response,
-              isLoadingEntityUsers: false
+              isLoadingEntityUsers: false,
             })
           } else {
             set({
               entityUsers: [],
               isLoadingEntityUsers: false,
-              hasErrorLoadingEntityUsers: true
+              hasErrorLoadingEntityUsers: true,
             })
           }
         } catch (error) {
           set({
             isLoadingEntityUsers: false,
-            hasErrorLoadingEntityUsers: true
+            hasErrorLoadingEntityUsers: true,
           })
         }
       },
@@ -136,16 +136,16 @@ export const useEntity = create(
           entityType: entityType,
           vesselId: vesselId,
           selectedVessel: selectedVessel,
-          selectedEntity: entity
+          selectedEntity: entity,
         })
         try {
           const response = await API.getVesselNavigationDetails(vesselId)
           set({
-            vesselDetails: response
+            vesselDetails: response,
           })
         } catch (error) {
           set({
-            isLoadingEntityUsers: false
+            isLoadingEntityUsers: false,
           })
         }
       },
@@ -174,37 +174,37 @@ export const useEntity = create(
           entityUserId: entityUserId,
           physicalVesselId: physicalVesselId,
           vesselId: vesselId,
-          selectedVessel: entity.entity
+          selectedVessel: entity.entity,
         })
         try {
           const response = await API.getVesselNavigationDetails(vesselId)
           set({
-            vesselDetails: response
+            vesselDetails: response,
           })
         } catch (error) {
           set({
-            isLoadingEntityUsers: false
+            isLoadingEntityUsers: false,
           })
         }
       },
       setHasHydrated: state => {
         set({
-          hasEntityHydrated: state
+          hasEntityHydrated: state,
         })
       },
       reset: () => {
         set({
           ...initialEntityState,
-          hasEntityHydrated: true
+          hasEntityHydrated: true,
         })
-      }
+      },
     }),
     {
       name: 'entity-storage',
       getStorage: () => AsyncStorage,
       onRehydrateStorage: () => state => {
         state?.setHasHydrated(true)
-      }
+      },
     }
   )
 )

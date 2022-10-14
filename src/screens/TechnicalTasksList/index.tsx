@@ -8,7 +8,7 @@ import moment from 'moment'
 
 import {Colors} from '@bluecentury/styles'
 import {useEntity, useTechnical} from '@bluecentury/stores'
-import {LoadingIndicator} from '@bluecentury/components'
+import {LoadingAnimated} from '@bluecentury/components'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const TechnicalTasksList = ({navigation, route}: Props) => {
@@ -31,7 +31,7 @@ const TechnicalTasksList = ({navigation, route}: Props) => {
             Add a task
           </Text>
         </TouchableOpacity>
-      )
+      ),
     })
     getVesselTasksByCategory(vesselId, category)
   }, [])
@@ -118,7 +118,7 @@ const TechnicalTasksList = ({navigation, route}: Props) => {
     getVesselTasksByCategory(vesselId, category)
   }
 
-  if (isTechnicalLoading) return <LoadingIndicator />
+  if (isTechnicalLoading) return <LoadingAnimated />
 
   return (
     <Box
@@ -146,7 +146,7 @@ const TechnicalTasksList = ({navigation, route}: Props) => {
                   onPress={() =>
                     navigation.navigate('TechnicalTaskDetails', {
                       task: task,
-                      category: category
+                      category: category,
                     })
                   }
                 >

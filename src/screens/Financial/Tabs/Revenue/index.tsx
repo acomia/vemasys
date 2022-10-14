@@ -8,7 +8,7 @@ import {ms} from 'react-native-size-matters'
 import {Colors} from '@bluecentury/styles'
 import {useEntity, useFinancial} from '@bluecentury/stores'
 import {useNavigation} from '@react-navigation/native'
-import {LoadingIndicator} from '@bluecentury/components'
+import {LoadingAnimated} from '@bluecentury/components'
 
 const Revenue = () => {
   const navigation = useNavigation()
@@ -112,7 +112,7 @@ const Revenue = () => {
             {Platform.OS === 'ios'
               ? Number(amount).toLocaleString('en-GB', {
                   maximumFractionDigits: 2,
-                  minimumFractionDigits: 2
+                  minimumFractionDigits: 2,
                 })
               : Number(amount)
                   .toFixed(2)
@@ -152,11 +152,11 @@ const Revenue = () => {
           borderRadius={5}
           px={ms(16)}
         >
-          <Text flex={1} fontWeight="medium" color={Colors.white}>
+          <Text flex="1" fontWeight="medium" color={Colors.white}>
             {label}
           </Text>
           <Box
-            flex={1}
+            flex="1"
             borderLeftWidth={ms(1)}
             borderColor="#E6E6E6"
             height="100%"
@@ -179,7 +179,7 @@ const Revenue = () => {
                 {Platform.OS === 'ios'
                   ? Number(value).toLocaleString('en-GB', {
                       maximumFractionDigits: 2,
-                      minimumFractionDigits: 2
+                      minimumFractionDigits: 2,
                     })
                   : Number(value)
                       .toFixed(2)
@@ -205,11 +205,11 @@ const Revenue = () => {
         borderRadius={5}
         px={ms(16)}
       >
-        <Text flex={1} fontWeight="medium" color={Colors.white}>
+        <Text flex="1" fontWeight="medium" color={Colors.white}>
           {label}
         </Text>
         <Box
-          flex={1}
+          flex="1"
           borderLeftWidth={ms(1)}
           borderColor="#E6E6E6"
           height="100%"
@@ -232,7 +232,7 @@ const Revenue = () => {
               {Platform.OS === 'ios'
                 ? Number(value).toLocaleString('en-GB', {
                     maximumFractionDigits: 2,
-                    minimumFractionDigits: 2
+                    minimumFractionDigits: 2,
                   })
                 : Number(value)
                     .toFixed(2)
@@ -279,7 +279,7 @@ const Revenue = () => {
             Outgoing Invoices
           </Text>
           {isFinancialLoading && !isPageChange ? (
-            <LoadingIndicator />
+            <LoadingAnimated />
           ) : (
             <FlatList
               data={outgoingInvoices}
@@ -290,7 +290,7 @@ const Revenue = () => {
                     navigation.navigate('FinancialInvoiceDetails', {
                       id: item.id,
                       routeFrom: 'revenue',
-                      title: item.senderReference
+                      title: item.senderReference,
                     })
                   }
                 >
@@ -328,13 +328,13 @@ const Revenue = () => {
           justifyContent="center"
           style={{zIndex: 999}}
         >
-          <LoadingIndicator />
+          <LoadingAnimated />
         </Box>
       ) : totalEnabled ? (
         <Box bg={Colors.white}>
           <Shadow
             viewStyle={{
-              width: '100%'
+              width: '100%',
             }}
           >
             <TouchableOpacity
@@ -365,7 +365,7 @@ const Revenue = () => {
         <Box bg={Colors.white}>
           <Shadow
             viewStyle={{
-              width: '100%'
+              width: '100%',
             }}
           >
             <CardTotal

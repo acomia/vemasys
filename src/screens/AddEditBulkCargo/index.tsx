@@ -8,7 +8,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {Colors} from '@bluecentury/styles'
 import {usePlanning} from '@bluecentury/stores'
 import {formatBulkTypeLabel} from '@bluecentury/constants'
-import {IconButton, LoadingIndicator} from '@bluecentury/components'
+import {IconButton, LoadingAnimated} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 
 type Props = NativeStackScreenProps<RootStackParamList>
@@ -23,14 +23,14 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
     createBulkCargo,
     deleteBulkCargo,
     navigationLogDetails,
-    getNavigationLogDetails
+    getNavigationLogDetails,
   } = usePlanning()
   const [cargoData, setCargoData] = useState({
     id: cargo !== undefined ? cargo?.id : '',
     typeId: cargo !== undefined ? cargo?.type?.id : '',
     amount: cargo !== undefined ? (cargo?.amount ? cargo?.amount : 0) : '',
     actualAmount: cargo ? (cargo?.actualAmount ? cargo?.actualAmount : 0) : '',
-    isLoading: cargo !== undefined ? (cargo?.isLoading ? '1' : '0') : '0'
+    isLoading: cargo !== undefined ? (cargo?.isLoading ? '1' : '0') : '0',
   })
   const [bulkTypesData, setBulkTypesData] = useState([])
   const defaultType = cargo !== undefined ? formatBulkTypeLabel(cargo.type) : ''
@@ -43,7 +43,7 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
             onPress={deleteBulkCargoConfirmation}
             size={22}
           />
-        )
+        ),
     })
 
     getBulkTypes('')
@@ -54,7 +54,7 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
       return {
         id: bulkType.id,
         value: bulkType.id,
-        label: bulkType.nameNl
+        label: bulkType.nameNl,
       }
     })
     setBulkTypesData(types)
@@ -79,7 +79,7 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
       },
       onCloseComplete() {
         res === 'success' ? onSuccess() : null
-      }
+      },
     })
   }
 
@@ -99,7 +99,7 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
             {text}
           </Text>
         )
-      }
+      },
     })
   }
 
@@ -159,13 +159,13 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
       [
         {
           text: 'Cancel',
-          style: 'cancel'
+          style: 'cancel',
         },
         {
           text: 'Yes, delete it',
           onPress: async () => onDeleteBulkCargoEntry(),
-          style: 'destructive'
-        }
+          style: 'destructive',
+        },
       ]
     )
   }
@@ -183,7 +183,7 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
     }
   }
 
-  if (isPlanningLoading) return <LoadingIndicator />
+  if (isPlanningLoading) return <LoadingAnimated />
   return (
     <Box
       flex="1"
@@ -244,7 +244,7 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
         <Shadow
           distance={25}
           viewStyle={{
-            width: '100%'
+            width: '100%',
           }}
         >
           <HStack>

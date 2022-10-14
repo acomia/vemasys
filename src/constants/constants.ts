@@ -24,14 +24,15 @@ export const EXTERNAL_PEGEL_IMAGE_URL =
 export const VESSEL_PART_CARGO_TYPE = 'Cargo'
 export const planningTabs = [
   {key: 'planning', title: 'Planning'},
-  {key: 'logbook', title: 'Logbook'}
+  {key: 'logbook', title: 'Logbook'},
 ]
 
 export const planningDetailsTabs = [
   {key: 'details', title: 'Details'},
   {key: 'cargoList', title: 'Cargo List'},
   {key: 'cargoHolds', title: 'Cargo Holds'},
-  {key: 'documents', title: 'Documents'}
+  {key: 'documents', title: 'Documents'},
+  {key: 'navlogmap', title: 'Nav Log'},
 ]
 
 // Financial constants
@@ -39,7 +40,7 @@ export const financialTabs = [
   {key: 'overview', title: 'Overview'},
   {key: 'costs', title: 'Costs'},
   {key: 'revenue', title: 'Revenue'},
-  {key: 'scan', title: 'Scan'}
+  {key: 'scan', title: 'Scan'},
 ]
 
 export const incomingStatuses = [
@@ -48,7 +49,7 @@ export const incomingStatuses = [
   {label: 'Accepted', value: 'accepted'},
   {label: 'On hold', value: 'on_hold'},
   {label: 'Paid', value: 'paid'},
-  {label: 'Unpaid', value: 'unpaid'}
+  {label: 'Unpaid', value: 'unpaid'},
 ]
 
 export const outgoingStatuses = [
@@ -56,13 +57,13 @@ export const outgoingStatuses = [
   {label: 'Sent', value: 'sent'},
   {label: 'Read', value: 'read'},
   {label: 'Payment confirmed', value: 'payment_confirmed'},
-  {label: 'Unpaid', value: 'unpaid'}
+  {label: 'Unpaid', value: 'unpaid'},
 ]
 
 // Charters constants
 export const chartersTabs = [
   {key: 'charters', title: 'Charters'},
-  {key: 'time_charters', title: 'Time Charters'}
+  {key: 'time_charters', title: 'Time Charters'},
 ]
 export const CHARTER_CONTRACTOR_STATUS_NEW = 'new'
 export const CHARTER_CONTRACTOR_STATUS_ACCEPTED = 'accepted'
@@ -75,6 +76,12 @@ export const CHARTER_ORDERER_STATUS_EN_ROUTE = 'en_route'
 export const CHARTER_ORDERER_STATUS_COMPLETED = 'completed'
 export const CHARTER_ORDERER_STATUS_ARCHIVED = 'archived'
 
+export const UPDATE_CHARTER_SUCCESS = 'UPDATE_CHARTER_SUCCESS'
+export const UPDATE_CHARTER_FAILED = 'UPDATE_CHARTER_FAILED'
+export const UPLOAD_CHARTER_SIGNATURE_SUCCESS =
+  'UPLOAD_CHARTER_SIGNATURE_SUCCESS'
+export const UPLOAD_CHARTER_SIGNATURE_FAILED = 'UPLOAD_CHARTER_SIGNATURE_FAILED'
+
 // Technical constants
 
 export const ROLE_PERMISSION_TASK_MANAGE = 'ROLE_PERMISSION_TASK_MANAGE'
@@ -86,19 +93,19 @@ export const technicalTabs = [
   {key: 'tasks', title: 'Tasks'},
   {key: 'routines', title: 'Routines'},
   {key: 'certificates', title: 'Certificates'},
-  {key: 'inventory', title: 'Inventory'}
+  {key: 'inventory', title: 'Inventory'},
 ]
 
 // Information constants
 export const informationTabs = [
   {key: 'pegels', title: 'Pegels'},
   {key: 'rules', title: 'Rules'},
-  {key: 'tickerOilPrices', title: 'Ticker Oil Prices'}
+  {key: 'tickerOilPrices', title: 'Ticker Oil Prices'},
 ]
 
 // Crew constants
 export const crewTabs = [
   {key: 'me', title: 'Me'},
-  {key: 'planning', title: 'Planning'}
+  {key: 'planning', title: 'Planning'},
 ]
 export const VESSEL_CREW_PLANNING_ONBOARD = 'onboard'

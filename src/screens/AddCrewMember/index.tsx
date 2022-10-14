@@ -12,7 +12,7 @@ import {
   Select,
   Text,
   useToast,
-  WarningOutlineIcon
+  WarningOutlineIcon,
 } from 'native-base'
 import {ms} from 'react-native-size-matters'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
@@ -23,7 +23,7 @@ import moment from 'moment'
 import {Colors} from '@bluecentury/styles'
 import {useCrew, useEntity} from '@bluecentury/stores'
 import {titleCase, _t} from '@bluecentury/constants'
-import {LoadingIndicator} from '@bluecentury/components'
+import {LoadingAnimated} from '@bluecentury/components'
 
 const allFieldsRequired = _t('allFieldsRequired')
 const userFirstname = _t('newUserFirstname')
@@ -45,7 +45,7 @@ const AddCrewMember = ({navigation}: Props) => {
     birthdate: '',
     email: '',
     phone: '',
-    roles: ''
+    roles: '',
   })
   const [isAllFieldEmpty, setIsAllFieldEmpty] = useState(false)
   const [isFirstnameEmpty, setIsFirstnameEmpty] = useState(false)
@@ -84,7 +84,7 @@ const AddCrewMember = ({navigation}: Props) => {
       },
       onCloseComplete() {
         res === 'success' ? navigation.goBack() : null
-      }
+      },
     })
   }
 
@@ -144,7 +144,7 @@ const AddCrewMember = ({navigation}: Props) => {
     setCrewData(searched)
   }
 
-  if (isCrewLoading) return <LoadingIndicator />
+  if (isCrewLoading) return <LoadingAnimated />
 
   return (
     <Box flex="1">
@@ -157,7 +157,7 @@ const AddCrewMember = ({navigation}: Props) => {
       >
         <Input
           w={{
-            base: '100%'
+            base: '100%',
           }}
           mb={ms(20)}
           backgroundColor="#F7F7F7"
@@ -192,7 +192,7 @@ const AddCrewMember = ({navigation}: Props) => {
                 key={`User-${index}`}
                 style={{
                   backgroundColor: Colors.white,
-                  paddingHorizontal: 10
+                  paddingHorizontal: 10,
                 }}
                 // onPress={(): Promise<any> => selectCrewMember(user)}
               >
@@ -266,7 +266,7 @@ const AddCrewMember = ({navigation}: Props) => {
               activeOpacity={0.7}
               style={{
                 flex: 1,
-                marginLeft: 10
+                marginLeft: 10,
               }}
               onPress={() => setOpenDatePicker(true)}
             >

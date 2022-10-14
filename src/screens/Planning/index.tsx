@@ -7,14 +7,14 @@ import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
 import {
   ENTITY_TYPE_EXPLOITATION_GROUP,
-  planningTabs
+  planningTabs,
 } from '@bluecentury/constants'
 import {FleetHeader} from '@bluecentury/components'
 import {useEntity} from '@bluecentury/stores'
 
 const renderScene = SceneMap({
   planning: PlanningLogbook,
-  logbook: HistoryLogbook
+  logbook: HistoryLogbook,
 })
 
 export default function Planning() {
@@ -40,7 +40,7 @@ export default function Planning() {
         height: 3,
         borderRadius: 3,
         width: ms(50),
-        marginHorizontal: layout.width / 6 + 5
+        marginHorizontal: layout.width / 6 + 5,
       }}
       style={{backgroundColor: Colors.primary}}
       renderLabel={({route, color}) => (
@@ -51,15 +51,15 @@ export default function Planning() {
     />
   )
 
-  const onReloadFleetNavLogs = (index: number, vessel: any) => {
+  const onReloadFleetNavLogs = (idx: number, vessel: any) => {
     const selectedEntityVessel = entityUsers.find(
       e => e?.entity?.exploitationVessel?.id === vessel?.id
     )
 
-    if (typeof selectedEntityVessel === 'object' && selectedEntityVessel?.id) {
-      selectFleetVessel(index, selectedEntityVessel)
+    if (selectedEntityVessel && selectedEntityVessel?.id) {
+      selectFleetVessel(idx, selectedEntityVessel)
     } else {
-      selectFleetVessel(index, vessel)
+      selectFleetVessel(idx, vessel)
     }
   }
 
@@ -67,8 +67,8 @@ export default function Planning() {
     <Box flex="1">
       {entityType === ENTITY_TYPE_EXPLOITATION_GROUP && (
         <FleetHeader
-          onPress={(index: number, vessel: any) =>
-            onReloadFleetNavLogs(index, vessel)
+          onPress={(idx: number, vessel: any) =>
+            onReloadFleetNavLogs(idx, vessel)
           }
         />
       )}

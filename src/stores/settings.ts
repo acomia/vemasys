@@ -6,12 +6,14 @@ import {Environments} from '@bluecentury/constants'
 type TEnv = keyof typeof Environments
 
 type SettingsState = {
+  isRemainLoggedIn: boolean
   env: string | undefined
   apiUrl: string | undefined
   isDarkMode: boolean
   language: string
   isMobileTracking: boolean
   hasSettingsRehydrated: boolean
+  isQrScanner: boolean
 }
 
 type SettingsActions = {
@@ -20,6 +22,8 @@ type SettingsActions = {
   setLanguage: (lang: string) => void
   setIsMobileTracking: (val: boolean) => void
   setHasHydrated: (val: boolean) => void
+  setIsRemainLoggedIn: (isRemainLoggedIn: boolean) => void
+  setIsQrScanner: (val: boolean) => void
 }
 
 type SettingsStore = SettingsState & SettingsActions
@@ -27,15 +31,17 @@ type SettingsStore = SettingsState & SettingsActions
 export const useSettings = create(
   persist<SettingsStore>(
     set => ({
+      isRemainLoggedIn: false,
       env: undefined,
       apiUrl: undefined,
       isDarkMode: false,
       language: 'en',
       isMobileTracking: false,
       hasSettingsRehydrated: false,
+      isQrScanner: true,
       setDarkMode: async darkMode => {
         set({
-          isDarkMode: darkMode
+          isDarkMode: darkMode,
         })
       },
       setLanguage: lang => {
@@ -43,26 +49,32 @@ export const useSettings = create(
       },
       setIsMobileTracking: val => {
         set({
-          isMobileTracking: val
+          isMobileTracking: val,
         })
       },
       setEnv: env => {
         const url = Environments[env]
         set({
           env: env,
-          apiUrl: url
+          apiUrl: url,
         })
+      },
+      setIsRemainLoggedIn: isRemainLoggedIn => {
+        set({isRemainLoggedIn: isRemainLoggedIn})
       },
       setHasHydrated: val => {
         set({hasSettingsRehydrated: val})
-      }
+      },
+      setIsQrScanner: val => {
+        set({isQrScanner: val})
+      },
     }),
     {
       name: 'settings-storage',
       getStorage: () => AsyncStorage,
       onRehydrateStorage: () => state => {
         state?.setHasHydrated(true)
-      }
+      },
     }
   )
 )

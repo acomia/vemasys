@@ -10,19 +10,20 @@ import {
   ScrollView,
   Text,
   useDisclose,
-  useToast
+  useToast,
 } from 'native-base'
 import {ms} from 'react-native-size-matters'
 import Ionicons from 'react-native-vector-icons/Ionicons'
-import {useNavigation, useRoute} from '@react-navigation/native'
+import {NavigationProp, useNavigation, useRoute} from '@react-navigation/native'
 import {Colors} from '@bluecentury/styles'
 import {usePlanning, useSettings} from '@bluecentury/stores'
-import {IconButton, LoadingIndicator} from '@bluecentury/components'
+import {IconButton, LoadingAnimated} from '@bluecentury/components'
 import DocumentPicker, {isInProgress, types} from 'react-native-document-picker'
 import {Icons} from '@bluecentury/assets'
 import {RefreshControl} from 'react-native'
 import moment from 'moment'
-import {Environments} from '@bluecentury/constants'
+import DocumentScanner from 'react-native-document-scanner-plugin'
+import {convertToPdfAndUpload} from '@bluecentury/utils'
 
 type Document = {
   id: number
@@ -32,7 +33,7 @@ type Document = {
 
 const Documents = () => {
   const route = useRoute()
-  const navigation = useNavigation()
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>()
   const toast = useToast()
   const {navlog}: any = route.params
   const {
@@ -41,12 +42,19 @@ const Documents = () => {
     navigationLogDocuments,
     getNavigationLogDocuments,
     uploadImgFile,
-    uploadVesselNavigationLogFile
+    uploadVesselNavigationLogFile,
   } = usePlanning()
   const {isOpen, onOpen, onClose} = useDisclose()
   const [result, setResult] = useState<ImageFile>({})
   const [selectedImg, setSelectedImg] = useState<ImageFile>({})
   const [viewImg, setViewImg] = useState(false)
+  const [scannedImage, setScannedImage] = useState()
+
+  const scanDocument = async () => {
+    // start the document scanner
+    const {scannedImages} = await DocumentScanner.scanDocument()
+    await convertToPdfAndUpload(scannedImages, showToast, true, navlog, setScannedImage)
+  }
 
   const handleError = (err: unknown) => {
     if (DocumentPicker.isCancel(err)) {
@@ -78,13 +86,11 @@ const Documents = () => {
           </Text>
         )
       },
-      onCloseComplete() {
-        res === 'success' ? navigation.goBack() : null
-      }
     })
   }
 
   const onScanDocument = () => {
+    scanDocument()
     onClose()
   }
 
@@ -93,31 +99,31 @@ const Documents = () => {
       const pickerResult = await DocumentPicker.pickSingle({
         presentationStyle: 'fullScreen',
         copyTo: 'cachesDirectory',
-        type: [types.images]
+        type: [types.images],
       })
       onClose()
       setResult({
         uri: pickerResult.uri,
         fileName: pickerResult.name,
-        type: pickerResult.type
+        type: pickerResult.type,
       })
       const upload = await uploadImgFile({
         uri: pickerResult.uri,
         fileName: pickerResult.name,
-        type: pickerResult.type
+        type: pickerResult.type,
       })
       if (typeof upload === 'object') {
         const newFile = {
           path: upload.path,
-          description: moment().format('YYYY-MM-DD HH:mm:ss')
+          description: moment().format('YYYY-MM-DD HH:mm:ss'),
         }
         let body = {
           fileGroup: {
             files:
               navigationLogDocuments?.length > 0
                 ? [...navigationLogDocuments?.map(f => ({id: f.id})), newFile]
-                : [newFile]
-          }
+                : [newFile],
+          },
         }
 
         if (navigationLogDetails?.fileGroup?.id) {
@@ -145,7 +151,7 @@ const Documents = () => {
     // Documents saved as base64 don't have a file extention
     if (splitFile.length === 0) {
       navigation.navigate('PDFView', {
-        path: `${path}`
+        path: `${path}`,
       })
       return
     }
@@ -153,14 +159,14 @@ const Documents = () => {
     switch (fileType) {
       case 'pdf':
         navigation.navigate('PDFView', {
-          path: `${path}`
+          path: `${path}`,
         })
         break
       case 'jpeg':
         setSelectedImg({
           uri: `${path}`,
           fileName: 'preview',
-          type: 'image/jpeg'
+          type: 'image/jpeg',
         })
         setViewImg(true)
         break
@@ -168,7 +174,7 @@ const Documents = () => {
         setSelectedImg({
           uri: `${path}`,
           fileName: 'preview',
-          type: 'image/jpg'
+          type: 'image/jpg',
         })
         setViewImg(true)
         break
@@ -176,7 +182,7 @@ const Documents = () => {
         setSelectedImg({
           uri: `${path}`,
           fileName: 'preview',
-          type: 'image/jpeg'
+          type: 'image/jpeg',
         })
         setViewImg(true)
         break
@@ -190,27 +196,28 @@ const Documents = () => {
     const env = useSettings.getState().env
 
     switch (env) {
-      case Environments.PROD:
+      case 'PROD':
         viewDocument(
           `https://app.vemasys.eu/upload/documents/${document?.path}`
         )
         break
-      case Environments.UAT:
+      // case Environments.UAT:
+      case 'UAT':
         viewDocument(
-          `https://uat-app.vemasys.eu/upload/documents/${document?.path}`
+          `https://app-uat.vemasys.eu/upload/documents/${document?.path}`
         )
         break
     }
   }
 
-  if (isPlanningLoading) return <LoadingIndicator />
+  if (isPlanningLoading) return <LoadingAnimated />
 
   return (
     <Box flex="1">
       <ScrollView
         contentContainerStyle={{flexGrow: 1}}
         px={ms(12)}
-        py={ms(20)}
+        py={ms(8)}
         scrollEventThrottle={16}
         refreshControl={
           <RefreshControl
@@ -231,7 +238,11 @@ const Documents = () => {
           return (
             <HStack
               key={index}
-              bg={Colors.white}
+              bg={
+                document.description !== scannedImage
+                  ? Colors.white
+                  : 'rgba(85,189,55,0.73)'
+              }
               borderRadius={5}
               justifyContent="space-between"
               alignItems="center"
@@ -248,6 +259,7 @@ const Documents = () => {
               <IconButton
                 source={Icons.eye}
                 onPress={() => handleOnPressUpload(document)}
+                //   onPress={() => {console.log('PRESSED')}}
                 size={ms(22)}
               />
             </HStack>

@@ -13,8 +13,8 @@ const Sidebar = (props: DrawerContentComponentProps) => {
     navigation.navigate(name)
   }
   return (
-    <Box flex={1} safeArea p={ms(10)} w={240}>
-      <VStack flex={1}>
+    <Box flex="1" safeArea p={ms(10)} w={240}>
+      <VStack flex="1">
         <Image
           alt="Company Logo"
           source={Images.logo}
@@ -114,7 +114,7 @@ const Sidebar = (props: DrawerContentComponentProps) => {
           active={currentRoute === Screens.Settings}
           onPress={() => handlePressMenu(Screens.Settings)}
           iconSource={Icons.cog}
-          disabled
+          // disabled
         >
           Settings
         </MenuButton>

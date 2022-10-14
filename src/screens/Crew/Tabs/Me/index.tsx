@@ -10,7 +10,7 @@ import {Colors} from '@bluecentury/styles'
 import {Icons} from '@bluecentury/assets'
 import {useCrew, useEntity} from '@bluecentury/stores'
 import {VESSEL_CREW_PLANNING_ONBOARD} from '@bluecentury/constants'
-import {LoadingIndicator} from '@bluecentury/components'
+import {LoadingAnimated} from '@bluecentury/components'
 
 const Me = () => {
   const {isCrewLoading, crew, planning, getCrew, getCrewPlanning} = useCrew()
@@ -45,7 +45,7 @@ const Me = () => {
           color:
             plan.type.title.toLowerCase() === VESSEL_CREW_PLANNING_ONBOARD
               ? Colors.secondary
-              : Colors.danger
+              : Colors.danger,
         })
 
         dates[startDate] = currentObject
@@ -108,7 +108,7 @@ const Me = () => {
     getCrewPlanning(vesselId)
   }
 
-  if (isCrewLoading) return <LoadingIndicator />
+  if (isCrewLoading) return <LoadingAnimated />
 
   return (
     <Box flex="1" bg={Colors.white}>

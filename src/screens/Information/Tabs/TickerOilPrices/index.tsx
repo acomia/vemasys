@@ -6,7 +6,7 @@ import {TouchableOpacity} from 'react-native'
 import {Icons} from '@bluecentury/assets'
 import {useEntity, useInformation} from '@bluecentury/stores'
 import moment from 'moment'
-import {LoadingIndicator} from '@bluecentury/components'
+import {LoadingAnimated} from '@bluecentury/components'
 import {useNavigation} from '@react-navigation/native'
 
 const TickerOilPrices = () => {
@@ -20,7 +20,7 @@ const TickerOilPrices = () => {
   }, [vesselId])
 
   const entityList = tickerOilPrices && [
-    ...new Set(tickerOilPrices.map(x => x.entity.alias))
+    ...new Set(tickerOilPrices.map(x => x.entity.alias)),
   ]
   const tickerOilPrice =
     entityList &&
@@ -54,7 +54,7 @@ const TickerOilPrices = () => {
             alignItems="center"
           >
             <Text
-              flex={1}
+              flex="1"
               color={Colors.azure}
               fontWeight="bold"
               fontSize={ms(16)}
@@ -112,7 +112,7 @@ const TickerOilPrices = () => {
       </Text>
 
       {isInformationLoading ? (
-        <LoadingIndicator />
+        <LoadingAnimated />
       ) : (
         <FlatList
           data={tickerOilPrice}

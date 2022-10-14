@@ -11,10 +11,10 @@ type CrewState = {
 }
 
 type CrewActions = {
-  getCrew?: (vesselId: string) => void
-  getCrewPlanning?: (vesselId: string) => void
-  getUserRoles?: () => void
-  createNewUser?: (entityId: any, user: any) => void
+  getCrew: (vesselId: string) => void
+  getCrewPlanning: (vesselId: string) => void
+  getUserRoles: () => void
+  createNewUser: (entityId: any, user: any) => void
 }
 
 type CrewStore = CrewState & CrewActions
@@ -29,7 +29,7 @@ export const useCrew = create(
       getCrew: async (vesselId: string) => {
         set({
           isCrewLoading: true,
-          crew: []
+          crew: [],
         })
         try {
           const response = await API.reloadCrew(vesselId)
@@ -37,8 +37,8 @@ export const useCrew = create(
             const res = [response].reduce((acc, crewMember) => {
               crewMember = Object.assign({}, crewMember, {
                 exploitationVessel: {
-                  id: vesselId
-                }
+                  id: vesselId,
+                },
               })
               const index = acc.findIndex(
                 (c: {id: any}) => c.id === crewMember.id
@@ -93,7 +93,7 @@ export const useCrew = create(
               isCrewLoading: false,
               roles: response?.map(role => {
                 return {label: role.title, value: role.id}
-              })
+              }),
             })
           }
         } catch (error) {
@@ -109,11 +109,11 @@ export const useCrew = create(
         } catch (error) {
           set({isCrewLoading: false})
         }
-      }
+      },
     }),
     {
       name: 'crew-storage',
-      getStorage: () => AsyncStorage
+      getStorage: () => AsyncStorage,
     }
   )
 )
