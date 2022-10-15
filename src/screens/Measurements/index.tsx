@@ -291,7 +291,7 @@ const Measurements = ({navigation, route}: Props) => {
                       {item?.user?.firstname} {item?.user?.lastname}
                     </Text>
                     <Text color={Colors.disabled}>
-                      {moment(item?.date).format('DD MMM YYYY - HH:mm')}
+                      {moment(item?.date).format('DD MMM YYYY - hh:mm A')}
                     </Text>
                   </Box>
                   <Text fontWeight="bold" color={Colors.highlighted_text}>

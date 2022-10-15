@@ -55,7 +55,7 @@ const PlanningLogbook = () => {
             </Text>
             <Text color={'#23475C'} fontWeight="medium">
               Planned:{' '}
-              {moment(navigationLog?.plannedEta).format('DD MMM YYYY | HH:mm')}
+              {moment(navigationLog?.plannedEta).format('DD MMM YYYY | hh:mm A')}
             </Text>
           </Box>
           {/* End of Header */}

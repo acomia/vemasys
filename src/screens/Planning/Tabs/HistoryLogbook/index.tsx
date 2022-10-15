@@ -62,12 +62,12 @@ const HistoryLogbook = ({routeIndex}: any) => {
       if (end) {
         if (
           start.isSame(end, 'day') &&
-          start.format('HH:mm') == end.format('HH:mm')
+          start.format('hh:mm ') == end.format('hh:mm A')
         ) {
           if (mode === 1 && current && current.isSame(start, 'day')) {
-            return `${start.format('HH:mm')}`
+            return `${start.format('hh:mm A')}`
           } else {
-            return `${start.format('DD/MM/YYYY HH:mm')}`
+            return `${start.format('DD/MM/YYYY hh:mm A')}`
           }
         } else {
           const currentStartAndEndDayAreEqual =
@@ -75,22 +75,22 @@ const HistoryLogbook = ({routeIndex}: any) => {
             current.isSame(start, 'day') &&
             current.isSame(end, 'day')
           if (mode === 0 && currentStartAndEndDayAreEqual) {
-            return `${start.format('DD/MM/YYYY HH:mm')} - ${end.format(
-              'HH:mm'
+            return `${start.format('DD/MM/YYYY hh:mm A')} - ${end.format(
+              'hh:mm A'
             )}`
           } else if (mode === 1 && currentStartAndEndDayAreEqual) {
-            return `${start.format('HH:mm')} - ${end.format('HH:mm')}`
+            return `${start.format('hh:mm A')} - ${end.format('hh:mm A')}`
           } else {
-            return `${start.format('DD/MM/YYYY HH:mm')} - ${end.format(
-              'DD/MM/YYYY HH:mm'
+            return `${start.format('DD/MM/YYYY hh:mm A')} - ${end.format(
+              'DD/MM/YYYY hh:mm A'
             )}`
           }
         }
       } else {
         if (mode === 1 && current && current.isSame(start, 'day')) {
-          return `${start.format('HH:mm')} - Present`
+          return `${start.format('hh:mm A')} - Present`
         } else {
-          return `${start.format('DD/MM/YYYY HH:mm')} - Present`
+          return `${start.format('DD/MM/YYYY hh:mm A')} - Present`
         }
       }
     }
@@ -105,9 +105,9 @@ const HistoryLogbook = ({routeIndex}: any) => {
 
     if (planned) {
       if (mode === 1 && current && current.isSame(planned, 'day')) {
-        return `Planned: ${moment(planned).format('DD MMM YYYY | HH:mm')}`
+        return `Planned: ${moment(planned).format('DD MMM YYYY | hh:mm A')}`
       } else {
-        return `Planned: ${moment(planned).format('DD MMM YYYY | HH:mm')}`
+        return `Planned: ${moment(planned).format('DD MMM YYYY | hh:mm A')}`
       }
     }
 

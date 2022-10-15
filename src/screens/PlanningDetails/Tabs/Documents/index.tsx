@@ -115,7 +115,7 @@ const Documents = () => {
       if (typeof upload === 'object') {
         const newFile = {
           path: upload.path,
-          description: moment().format('YYYY-MM-DD HH:mm:ss'),
+          description: moment().format('YYYY-MM-DD hh:mm:ss'),
         }
         let body = {
           fileGroup: {
