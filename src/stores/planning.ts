@@ -6,7 +6,7 @@ import {NavigationLog} from '@bluecentury/models'
 
 type PlanningState = {
   isPlanningLoading: boolean
-  plannedNavigationLogs: [] | undefined
+  plannedNavigationLogs: Array<any> | undefined
   historyNavigationLogs: any[]
   navigationLogDetails?: NavigationLog | undefined
   navigationLogActions?: any[]
@@ -14,6 +14,8 @@ type PlanningState = {
   navigationLogComments?: any[]
   navigationLogDocuments?: any[]
   bulkTypes?: []
+  hasErrorLoadingPlannedNavigationLogs: boolean
+  hasErrorLoadingVesselHistoryNavLogs: boolean
 }
 
 type PlanningActions = {
@@ -48,10 +50,13 @@ export const usePlanning = create(
       isPlanningLoading: false,
       plannedNavigationLogs: [],
       historyNavigationLogs: [],
+      hasErrorLoadingPlannedNavigationLogs: false,
+      hasErrorLoadingVesselHistoryNavLogs: false,
       getVesselHistoryNavLogs: async (vesselId: string, page: number) => {
         set({
           isPlanningLoading: true,
           historyNavigationLogs: page === 1 ? [] : get().historyNavigationLogs,
+          hasErrorLoadingVesselHistoryNavLogs: false,
         })
         try {
           const response = await API.reloadVesselHistoryNavLogs(vesselId, page)
@@ -70,8 +75,10 @@ export const usePlanning = create(
             })
           }
         } catch (error) {
+          console.log('wooppssiess ', error)
           set({
             isPlanningLoading: false,
+            hasErrorLoadingVesselHistoryNavLogs: true,
           })
         }
       },
@@ -79,6 +86,7 @@ export const usePlanning = create(
         set({
           isPlanningLoading: true,
           plannedNavigationLogs: [],
+          hasErrorLoadingPlannedNavigationLogs: false,
         })
         try {
           const response = await API.getPlannedNavLog(vesselId)
@@ -91,11 +99,13 @@ export const usePlanning = create(
             set({
               isPlanningLoading: false,
               plannedNavigationLogs: [],
+              hasErrorLoadingPlannedNavigationLogs: true,
             })
           }
         } catch (error) {
           set({
             isPlanningLoading: false,
+            hasErrorLoadingPlannedNavigationLogs: true,
           })
         }
       },

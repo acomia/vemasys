@@ -101,8 +101,8 @@ export default function Notification() {
           <Text maxWidth={screenWidth - 100}>{sanitizedHTML(item.label)}</Text>
           <Text fontSize={ms(12)} color="#ADADAD">
             {moment(new Date()).isSame(moment(new Date(date)))
-              ? `Today | ${moment(date).format('HH:mm')}`
-              : moment(date).format('MMM DD, YYYY HH:mm')}
+              ? `Today | ${moment(date).format('hh:mm A')}`
+              : moment(date).format('MMM DD, YYYY hh:mm A')}
           </Text>
         </VStack>
         {!item.read && (

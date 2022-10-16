@@ -446,9 +446,9 @@ const Details = () => {
                     </HStack>
                     <Text color={Colors.disabled}>{`${moment(
                       action.start
-                    ).format('DD/MM | HH:mm')} - ${moment(
+                    ).format('DD/MM | hh:mm A')} - ${moment(
                       _.isNull(action.end) ? null : action.end
-                    ).format('DD/MM | HH:mm')}`}</Text>
+                    ).format('DD/MM | hh:mm A')}`}</Text>
                   </Box>
                   <Image
                     alt="navlog-action-icon"
