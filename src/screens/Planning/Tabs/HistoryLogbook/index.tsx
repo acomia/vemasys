@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {Box, HStack, Image, ScrollView, Text} from 'native-base'
+import {Box, Center, HStack, Image, ScrollView, Text} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import {useNavigation} from '@react-navigation/native'
@@ -20,16 +20,19 @@ const HistoryLogbook = ({routeIndex}: any) => {
   const {
     isPlanningLoading,
     historyNavigationLogs,
-    getVesselHistoryNavLogs,
-  }: any = usePlanning()
-  const {vesselId} = useEntity()
+    hasErrorLoadingVesselHistoryNavLogs,
+  } = usePlanning()
+  const getVesselHistoryNavLogs = usePlanning.getState().getVesselHistoryNavLogs
+  const vesselId = useEntity(state => state.vesselId)
   const [currentPage, setCurrentPage] = useState(1)
   const [isPageChange, setIsPageChange] = useState(false)
   const [isRefreshing, setIsRefreshing] = useState(false)
 
   useEffect(() => {
-    getVesselHistoryNavLogs(vesselId, currentPage)
-  }, [vesselId, currentPage])
+    if (vesselId) {
+      getVesselHistoryNavLogs(vesselId, currentPage)
+    }
+  }, [vesselId, currentPage, getVesselHistoryNavLogs])
 
   useEffect(() => {
     setIsPageChange(false)
@@ -255,7 +258,9 @@ const HistoryLogbook = ({routeIndex}: any) => {
   const onPullRefresh = () => {
     setIsRefreshing(true)
     setCurrentPage(1)
-    getVesselHistoryNavLogs(vesselId, 1)
+    if (vesselId) {
+      getVesselHistoryNavLogs(vesselId, 1)
+    }
   }
 
   if (isPlanningLoading && !isPageChange) return <LoadingAnimated />
@@ -277,33 +282,41 @@ const HistoryLogbook = ({routeIndex}: any) => {
         px={ms(12)}
         py={ms(15)}
       >
-        {historyNavigationLogs.map((navigationLog: any, i: number) => {
-          const previousNavigationLog =
-            i > 0 ? historyNavigationLogs[i - 1] : null
-          const previousDate = previousNavigationLog
-            ? moment(
-                previousNavigationLog.arrivalDatetime ||
-                  previousNavigationLog.plannedEta ||
-                  previousNavigationLog.arrivalZoneTwo
-              )
-            : null
-          const currentDate =
-            navigationLog.arrivalDatetime ||
-            navigationLog.plannedEta ||
-            navigationLog.arrivalZoneTwo
+        {hasErrorLoadingVesselHistoryNavLogs ? (
+          <Box flex="1" bgColor={Colors.white} p="5">
+            <Center>
+              <Text>Failed to load the requested resource.</Text>
+            </Center>
+          </Box>
+        ) : (
+          historyNavigationLogs.map((navigationLog: any, i: number) => {
+            const previousNavigationLog =
+              i > 0 ? historyNavigationLogs[i - 1] : null
+            const previousDate = previousNavigationLog
+              ? moment(
+                  previousNavigationLog.arrivalDatetime ||
+                    previousNavigationLog.plannedEta ||
+                    previousNavigationLog.arrivalZoneTwo
+                )
+              : null
+            const currentDate =
+              navigationLog.arrivalDatetime ||
+              navigationLog.plannedEta ||
+              navigationLog.arrivalZoneTwo
 
-          const dateChanged =
-            !previousDate || !previousDate.isSame(currentDate, 'day')
+            const dateChanged =
+              !previousDate || !previousDate.isSame(currentDate, 'day')
 
-          return (
-            <NavLogCard
-              key={i}
-              navigationLog={navigationLog}
-              currentDate={currentDate}
-              dateChanged={dateChanged}
-            />
-          )
-        })}
+            return (
+              <NavLogCard
+                key={i}
+                navigationLog={navigationLog}
+                currentDate={currentDate}
+                dateChanged={dateChanged}
+              />
+            )
+          })
+        )}
       </ScrollView>
       {isPageChange && (
         <Box h={ms(30)} justifyContent="center" style={{zIndex: 999}}>

@@ -49,6 +49,7 @@ const reloadVesselHistoryNavLogs = async (vesselId: string, page: number) => {
       }
     })
     .catch(error => {
+      console.log('whahahahaha')
       console.log('Error: History navigation logs', error)
       return Promise.reject(error)
     })
