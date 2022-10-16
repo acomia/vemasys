@@ -35,14 +35,6 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
   const {user} = useEntity()
   const [scrollEnabled, setScrollEnabled] = useState(true)
 
-  useEffect(() => {
-    console.log('USER_ID', user)
-  }, [])
-
-  useEffect(() => {
-    console.log('SIGNATURE_ID_FROM_STORE', signatureId)
-  }, [signatureId])
-
   const handleSignature = async signature => {
     const status = {
       status: CHARTER_CONTRACTOR_STATUS_ACCEPTED,

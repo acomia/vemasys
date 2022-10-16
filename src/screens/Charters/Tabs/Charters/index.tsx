@@ -90,23 +90,10 @@ export default function Charters({navigation, route}: any) {
   }, [vesselId])
 
   useEffect(() => {
-    console.log('PATH', path)
     if (path) {
       readFile()
     }
   }, [path])
-
-  useEffect(() => {
-    console.log('SOURCE', source)
-  }, [source])
-
-  useEffect(() => {
-    console.log('CHARTERS', charters)
-  }, [charters])
-
-  useEffect(() => {
-    console.log('SIGNED_DOCUMENTS_ARRAY', signedDocumentsArray)
-  }, [signedDocumentsArray])
 
   const readFile = () => {
     ReactNativeBlobUtil.fs.readFile(path, 'base64').then(contents => {
@@ -264,7 +251,6 @@ export default function Charters({navigation, route}: any) {
     setSelectedCharter(charter)
     if (charter.contractorStatus === 'new' || signature) {
       const path = await viewPdf(charter.id)
-      console.log('PATH_FROM_VIEW_PDF', path)
       setPath(path)
       setReviewPDF(true)
     } else {
@@ -300,7 +286,6 @@ export default function Charters({navigation, route}: any) {
       navigateToGetSignatureScreen()
     } else {
       const response = await getSignature(signatureId, navigateToGetSignatureScreen)
-      console.log('SIGNATURE_RESPONSE', response)
       if (response.signature) {
         setSignature(response.signature.replace('data:image/png;base64,', ''))
         onCharterSelected(selectedCharter)
@@ -339,9 +324,7 @@ export default function Charters({navigation, route}: any) {
   }
 
   const handleSingleTap = async (page, x, y) => {
-    console.log('ON_SINGLE_TAP')
     if (signature) {
-      console.log('ON_SINGLE_TAP_WE_HAVE_SIGNATURE')
       const signArrBuf = _base64ToArrayBuffer(signature)
       const pdfDoc = await PDFDocument.load(pdfArrayBuffer)
       const pages = pdfDoc.getPages()
@@ -533,8 +516,6 @@ export default function Charters({navigation, route}: any) {
             source={source}
             onLoadComplete={(numberOfPages, filePath, {width, height}) => {
               console.log(`Number of pages: ${numberOfPages}`)
-              console.log('FILE_PATH_FROM_PDF', filePath)
-              console.log('SOURCE_FROM_PDF', source)
               setPageWidth(width)
               setPageHeight(height)
             }}
