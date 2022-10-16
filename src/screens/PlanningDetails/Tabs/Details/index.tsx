@@ -180,7 +180,6 @@ const Details = () => {
               ? dates.plannedEta
               : navigationLogDetails?.plannedEta
           }
-          
           locked={navigationLogDetails?.locked}
           onChangeDate={() => {
             setSelectedDate('PLN')
