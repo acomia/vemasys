@@ -25,7 +25,7 @@ export const PlannedNavLogInfo = ({logs}: Props) => {
           ? null
           : navigation.navigate('PlanningDetails', {
               navlog: navigationLog,
-              title: formatLocationLabel(navigationLog?.location)
+              title: formatLocationLabel(navigationLog?.location),
             })
       }
     >
@@ -41,7 +41,9 @@ export const PlannedNavLogInfo = ({logs}: Props) => {
             </Text>
             <Text color="#ADADAD">
               Planned:{' '}
-              {moment(navigationLog?.plannedEta).format('DD MMM YYYY | HH:mm')}
+              {moment(navigationLog?.plannedEta).format(
+                'DD MMM YYYY | hh:mm A'
+              )}
             </Text>
           </>
         )}
@@ -89,6 +91,6 @@ const styles = StyleSheet.create({
     borderStyle: 'dashed',
     paddingVertical: 10,
     paddingHorizontal: 15,
-    marginBottom: 20
-  }
+    marginBottom: 20,
+  },
 })

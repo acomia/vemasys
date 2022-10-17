@@ -55,7 +55,7 @@ export const convertToPdfAndUpload = async (
       }
     }
     if (typeof upload === 'object' && planning) {
-      const description = `${moment().format('YYYY-MM-DD HH:mm:ss')}.pdf`
+      const description = `${moment().format('YYYY-MM-DD hh:mm:ss')}.pdf`
 
       const newFile = {
         path: upload.path,

@@ -1,6 +1,5 @@
 import React from 'react'
-import {TouchableOpacity} from 'react-native'
-import {HStack, Text} from 'native-base'
+import {HStack, Text, Pressable} from 'native-base'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import {ms} from 'react-native-size-matters'
 
@@ -29,28 +28,31 @@ const DatetimePickerList = ({
         alignItems="center"
         ml={ms(15)}
       >
-        <Icon
-          name="calendar-month-outline"
-          size={ms(22)}
-          color={Colors.highlighted_text}
-        />
-        <TouchableOpacity
-          activeOpacity={locked ? 0 : 0.7}
-          style={{
-            flex: 1,
-            marginLeft: 10,
+        <Pressable
+          flex="1"
+          _pressed={{
+            opacity: locked ? 0 : 0.7,
           }}
           onPress={onChangeDate}
           disabled={locked}
         >
-          <Text
-            fontSize={ms(16)}
-            fontWeight="medium"
-            color={date ? Colors.text : Colors.disabled}
-          >
-            {date ? moment(date).format('D MMM YYYY') : 'No Date Set'}
-          </Text>
-        </TouchableOpacity>
+          <HStack space="2">
+            <Icon
+              name="calendar-month-outline"
+              size={ms(22)}
+              color={Colors.highlighted_text}
+            />
+            <Text
+              fontSize="md"
+              fontWeight="medium"
+              color={date ? Colors.text : Colors.disabled}
+            >
+              {date
+                ? moment(date).format('D MMM YYYY | hh:mm A')
+                : 'No Date & Time Set'}
+            </Text>
+          </HStack>
+        </Pressable>
         {date ? (
           <IconButton
             source={Icons.close}

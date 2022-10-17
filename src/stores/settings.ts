@@ -31,7 +31,7 @@ type SettingsStore = SettingsState & SettingsActions
 export const useSettings = create(
   persist<SettingsStore>(
     set => ({
-      isRemainLoggedIn: false,
+      isRemainLoggedIn: true,
       env: undefined,
       apiUrl: undefined,
       isDarkMode: false,
