@@ -57,7 +57,7 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
     setSign(signature)
     updateCharterStatus(charter?.id, status)
     const update = await updateCharterStatus(charter?.id, status)
-    if (typeof update === 'string') {
+    if (update === UPDATE_CHARTER_SUCCESS) {
       getCharters()
       showToast('Charter accepted sucessfully.', 'success')
     } else {
@@ -116,7 +116,7 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
         //TODO not just goBack but automatically open modal with pdf in edit mode, pass there a signature
         res === 'success' ? navigation.goBack() : null
         onCharterSelected(charter)
-        res === 'success' ? resetResponses() : null
+        // res === 'success' ? resetResponses() : null
       },
     })
   }

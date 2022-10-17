@@ -94,6 +94,7 @@ export const useCharters = create(
             isCharterLoading: false,
             updateCharterStatusResponse: response,
           })
+          return response
         } catch (error) {
           set({isCharterLoading: false})
         }
