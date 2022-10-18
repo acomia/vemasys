@@ -67,8 +67,8 @@ const uploadSignature = async (signature: Signature) =>
   API.post('signatures', signature)
     .then(response =>
       response.data
-        ? UPLOAD_CHARTER_SIGNATURE_SUCCESS
-        : UPLOAD_CHARTER_SIGNATURE_FAILED
+      // ? UPLOAD_CHARTER_SIGNATURE_SUCCESS
+      // : UPLOAD_CHARTER_SIGNATURE_FAILED
     )
     .catch(error => {
       console.log('Error: Upload Signature failed', error)
