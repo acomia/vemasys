@@ -21,6 +21,7 @@ type AuthActions = {
   setUser: (obj: any) => void
   setHasHydrated: (state: boolean) => void
   logout: () => void
+  refreshTokens: (token: string, refreshToken: string) => void
 }
 
 type AuthStore = AuthState & AuthActions
@@ -86,6 +87,12 @@ export const useAuth = create(
       setHasHydrated: state => {
         set({
           hasAuthHydrated: state,
+        })
+      },
+      refreshTokens: (token, refreshToken) => {
+        set({
+          token,
+          refreshToken,
         })
       },
     }),

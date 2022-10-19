@@ -7,8 +7,10 @@ import * as Keychain from 'react-native-keychain'
 const UNAUTHENTICATED = 401
 
 export const onFailedResponse = async (error: any) => {
+  const {refreshTokens} = useAuth.getState()
   const failedRequest = error?.config
   const errorUrl = failedRequest?.url
+  console.log('ERROR_URL', errorUrl)
   let failedRequestHeaders = failedRequest.headers || undefined
   // DO anything here
   console.log('Error data: ', error?.response.data)
@@ -22,16 +24,22 @@ export const onFailedResponse = async (error: any) => {
   const isLogin = errorUrl === 'login_check'
 
   if (error?.response?.status === UNAUTHENTICATED && !isLogin) {
+    console.log('UNAUTH')
+    console.log('FAILED_RESP_API_URL', API_URL)
     try {
       const refreshToken = useAuth.getState().refreshToken
-      const res = await axios.post(
-        `${API_URL}token/refresh?refresh_token=${refreshToken}`
-      )
+      // const res = await axios.post(
+      //   `${API_URL}token/refresh?refresh_token=${refreshToken}`
+      // )
+      console.log('REFRESH_TOKEN', refreshToken)
+      const res = await API.post('token/refresh', {refresh_token: refreshToken})
+      console.log('REFRESH_TOKEN_RESPONSE', res)
       if (res) {
         API.defaults.headers.common = {
           ...API.defaults.headers.common,
           'Jwt-Auth': res.data.token,
         }
+        refreshTokens(res.data.token, res.data.refreshToken)
         return API(failedRequest)
       }
     } catch (err) {

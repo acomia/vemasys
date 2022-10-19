@@ -235,7 +235,7 @@ export const useMap = create(
             entityId,
             position
           )
-          console.log('response ', response)
+          console.log('response after sending location', response)
           if (response) {
             set({isLoadingMap: false})
           }
