@@ -26,12 +26,12 @@ const BunkeringList = ({bunkering}: any) => {
           bg={Colors.white}
           shadow={2}
         >
-          <VStack flex={1}>
+          <VStack flex="1">
             <Text color={Colors.text} fontWeight="medium">
               {bunk.entity.alias}
             </Text>
             <Text color={Colors.disabled}>
-              {moment(bunk.date).format('DD/MM/YYYY - HH:mm')}
+              {moment(bunk.date).format('DD/MM/YYYY - hh:mm A')}
             </Text>
           </VStack>
           <Text color={Colors.highlighted_text} fontWeight="bold">
@@ -45,7 +45,7 @@ const BunkeringList = ({bunkering}: any) => {
   return (
     <Box>
       <HStack alignItems="center">
-        <Text flex={1} color={Colors.text} fontSize={ms(16)} fontWeight="bold">
+        <Text flex="1" color={Colors.text} fontSize={ms(16)} fontWeight="bold">
           Details
         </Text>
         <Text color={Colors.text} fontSize={ms(16)} fontWeight="bold">

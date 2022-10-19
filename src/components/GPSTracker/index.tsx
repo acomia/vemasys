@@ -56,6 +56,7 @@ export const GPSTracker = ({navigation}: Props) => {
   }
 
   const renderTrackerSourceText = () => {
+    //TODO we need to define should we always show 'Current device' as data source if gps tracker is enabled or should we take this data from backend
     const sourceData = vesselDetails?.lastGeolocation?.sourceOfData
     if (isMobileTracking) return 'Current device'
     if (typeof sourceData === 'undefined') return 'Unknown'
@@ -69,7 +70,7 @@ export const GPSTracker = ({navigation}: Props) => {
   }
 
   return (
-    <Box flex={1} backgroundColor="rgba(0,0,0,0.5)">
+    <Box flex="1" backgroundColor="rgba(0,0,0,0.5)">
       <Box
         backgroundColor="#fff"
         mb={ms(0)}
@@ -93,20 +94,21 @@ export const GPSTracker = ({navigation}: Props) => {
           mb={ms(10)}
           shadow={2}
         >
-          <Text flex={1} fontWeight="medium">
+          <Text flex="1" fontWeight="medium">
             Last ping
           </Text>
           <Box
-            flex={1}
+            flex="1"
             borderLeftWidth={ms(1)}
             borderColor="#F0F0F0"
             height="100%"
             justifyContent="center"
           >
             <Text fontWeight="medium" ml={ms(15)}>
-              {!isMobileTracking
-                ? moment(vesselDetails?.lastGeolocation?.locationTime).fromNow()
-                : moment(position?.time).fromNow()}
+              {/*{!isMobileTracking*/}
+              {/*  ? moment(vesselDetails?.lastGeolocation?.locationTime).fromNow()*/}
+              {/*  : moment(position?.time).fromNow()}*/}
+              {moment(vesselDetails?.lastGeolocation?.lastIterationTime).fromNow()}
             </Text>
           </Box>
         </HStack>
@@ -121,11 +123,11 @@ export const GPSTracker = ({navigation}: Props) => {
           mb={ms(10)}
           shadow={2}
         >
-          <Text flex={1} fontWeight="medium">
+          <Text flex="1" fontWeight="medium">
             Data source
           </Text>
           <HStack
-            flex={1}
+            flex="1"
             borderLeftWidth={ms(1)}
             borderColor="#F0F0F0"
             height="100%"
@@ -158,7 +160,7 @@ export const GPSTracker = ({navigation}: Props) => {
             width={ms(20)}
             height={ms(20)}
           />
-          <Text flex={1} fontWeight="medium">
+          <Text flex="1" fontWeight="medium">
             Set this device as Vessel GPS
           </Text>
           <Switch
@@ -180,11 +182,11 @@ export const GPSTracker = ({navigation}: Props) => {
           mb={ms(10)}
           shadow={2}
         >
-          <Text flex={1} fontWeight="medium">
+          <Text flex="1" fontWeight="medium">
             GPS satelites
           </Text>
           <HStack
-            flex={1}
+            flex="1"
             borderLeftWidth={ms(1)}
             borderColor="#F0F0F0"
             height="100%"
@@ -213,22 +215,23 @@ export const GPSTracker = ({navigation}: Props) => {
           mb={ms(10)}
           shadow={2}
         >
-          <Text flex={1} fontWeight="medium">
+          <Text flex="1" fontWeight="medium">
             Position
           </Text>
           <Box
-            flex={1}
+            flex="1"
             borderLeftWidth={ms(1)}
             borderColor="#F0F0F0"
             height="100%"
             justifyContent="center"
           >
             <Text fontWeight="medium" ml={ms(15)}>
-              {!isMobileTracking
-                ? `${vesselDetails?.lastGeolocation?.latitude} | ${vesselDetails?.lastGeolocation?.longitude}`
-                : isLoadingMap
-                ? 'Loading...'
-                : `${position?.latitude} | ${position?.longitude}`}
+              {/*{!isMobileTracking*/}
+              {/*  ? `${vesselDetails?.lastGeolocation?.latitude} | ${vesselDetails?.lastGeolocation?.longitude}`*/}
+              {/*  : isLoadingMap*/}
+              {/*  ? 'Loading...'*/}
+              {/*  : `${position?.latitude} | ${position?.longitude}`}*/}
+              {`${vesselDetails?.lastGeolocation?.latitude} | ${vesselDetails?.lastGeolocation?.longitude}`}
             </Text>
           </Box>
         </HStack>

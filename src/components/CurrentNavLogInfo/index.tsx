@@ -18,7 +18,7 @@ export const CurrentNavLogInfo = () => {
     } else {
       navigation.navigate('PlanningDetails', {
         navlog: currentNavLogs[currentNavLogs?.length - 1],
-        title: currentNavLogs[currentNavLogs?.length - 1]?.location?.name
+        title: currentNavLogs[currentNavLogs?.length - 1]?.location?.name,
       })
     }
   }
@@ -29,12 +29,10 @@ export const CurrentNavLogInfo = () => {
       onPress={handleOnPressNavigation}
     >
       <Box ml={ms(15)}>
-        {vesselStatus?.speed > 0 ? (
-          <Text fontWeight="700">
-            Navigating at{' '}
-            <Text color="#29B7EF">{vesselStatus?.speed} km/h</Text>
-          </Text>
-        ) : currentNavLogs?.length !== 0 ? (
+        {currentNavLogs?.length !== 0 &&
+        currentNavLogs[currentNavLogs?.length - 1]?.arrivalDatetime !== null &&
+        currentNavLogs[currentNavLogs?.length - 1]?.departureDatetime ===
+          null ? (
           <>
             <Text fontWeight="700">
               {formatLocationLabel(
@@ -45,16 +43,21 @@ export const CurrentNavLogInfo = () => {
               Arrival:{' '}
               {moment(
                 currentNavLogs[currentNavLogs?.length - 1]?.arrivalDatetime
-              ).format('DD MMM YYYY | HH:mm')}
+              ).format('DD MMM YYYY | hh:mm A')}
             </Text>
           </>
+        ) : vesselStatus?.speed > 0 ? (
+          <Text fontWeight="700">
+            Navigating at{' '}
+            <Text color="#29B7EF">{vesselStatus?.speed} km/h</Text>
+          </Text>
         ) : (
           <>
             <Text fontWeight="700">Unknown Location</Text>
             <Text color="#ADADAD">
               Last seen:{' '}
               {moment(prevNavLogs[0]?.arrivalDatetime).format(
-                'DD MMM YYYY | HH:mm'
+                'DD MMM YYYY | hh:mm A'
               )}
             </Text>
           </>
@@ -92,6 +95,6 @@ const styles = StyleSheet.create({
     borderColor: '#BEE3F8',
     padding: 15,
     marginBottom: 20,
-    zIndex: 1
-  }
+    zIndex: 1,
+  },
 })

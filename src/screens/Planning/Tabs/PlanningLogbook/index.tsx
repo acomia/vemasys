@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import {RefreshControl, TouchableOpacity, View} from 'react-native'
-import {Box, HStack, Image, ScrollView, Text} from 'native-base'
+import {Box, Center, HStack, Image, ScrollView, Text} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import {useNavigation} from '@react-navigation/native'
@@ -21,6 +21,7 @@ const PlanningLogbook = () => {
     isPlanningLoading,
     plannedNavigationLogs,
     getVesselPlannedNavLogs,
+    hasErrorLoadingVesselHistoryNavLogs,
   }: any = usePlanning()
   const {vesselId} = useEntity()
 
@@ -55,7 +56,9 @@ const PlanningLogbook = () => {
             </Text>
             <Text color={'#23475C'} fontWeight="medium">
               Planned:{' '}
-              {moment(navigationLog?.plannedEta).format('DD MMM YYYY | HH:mm')}
+              {moment(navigationLog?.plannedEta).format(
+                'DD MMM YYYY | hh:mm A'
+              )}
             </Text>
           </Box>
           {/* End of Header */}
@@ -125,7 +128,7 @@ const PlanningLogbook = () => {
   if (isPlanningLoading) return <LoadingAnimated />
 
   return (
-    <Box flex="1" bg={Colors.white}>
+    <Box flex="1" bgColor={Colors.white}>
       <ScrollView
         contentContainerStyle={{flexGrow: 1, paddingBottom: 20}}
         scrollEventThrottle={16}
@@ -138,9 +141,17 @@ const PlanningLogbook = () => {
         px={ms(12)}
         py={ms(15)}
       >
-        {plannedNavigationLogs.map((navigationLog: any, i: number) => {
-          return <NavLogCard key={i} navigationLog={navigationLog} />
-        })}
+        {hasErrorLoadingVesselHistoryNavLogs ? (
+          <Box flex="1" bgColor={Colors.white} p="5">
+            <Center>
+              <Text>Failed to load requested resource</Text>
+            </Center>
+          </Box>
+        ) : (
+          plannedNavigationLogs.map((navigationLog: any, i: number) => {
+            return <NavLogCard key={i} navigationLog={navigationLog} />
+          })
+        )}
       </ScrollView>
     </Box>
   )

@@ -101,8 +101,8 @@ export default function Notification() {
           <Text maxWidth={screenWidth - 100}>{sanitizedHTML(item.label)}</Text>
           <Text fontSize={ms(12)} color="#ADADAD">
             {moment(new Date()).isSame(moment(new Date(date)))
-              ? `Today | ${moment(date).format('HH:mm')}`
-              : moment(date).format('MMM DD, YYYY HH:mm')}
+              ? `Today | ${moment(date).format('hh:mm A')}`
+              : moment(date).format('MMM DD, YYYY hh:mm A')}
           </Text>
         </VStack>
         {!item.read && (
@@ -151,7 +151,7 @@ export default function Notification() {
   if (isLoadingNotification) return <LoadingAnimated />
 
   return (
-    <Box flex={1}>
+    <Box flex="1">
       {entityType === ENTITY_TYPE_EXPLOITATION_GROUP && (
         <FleetHeader
           onPress={(index: number, vessel: any) =>
@@ -160,7 +160,7 @@ export default function Notification() {
         />
       )}
       <Box
-        flex={1}
+        flex="1"
         backgroundColor={'#fff'}
         borderTopLeftRadius={ms(15)}
         borderTopRightRadius={ms(15)}

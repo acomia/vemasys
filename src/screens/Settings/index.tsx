@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import {Box} from 'native-base'
 import SettingsItem from '@bluecentury/components/SettingsItem'
 import {Colors} from '@bluecentury/styles'
@@ -15,11 +15,12 @@ const Settings = (props: DrawerContentComponentProps) => {
   const setLanguage = useSettings(state => state.setLanguage)
   const setDarkMode = useSettings(state => state.setDarkMode)
   const setMobileTracking = useSettings(state => state.setIsMobileTracking)
-  // const setShowQR = useSettings(state => state.setIsMobileTracking)
+  const setIsQrScanner = useSettings(state => state.setIsQrScanner)
+  const isQrScanner = useSettings(state => state.isQrScanner)
 
   return (
     <Box
-      style={{height: '100%'}}
+      flex="1"
       px="13"
       pt="29"
       backgroundColor={Colors.white}
@@ -59,7 +60,8 @@ const Settings = (props: DrawerContentComponentProps) => {
         type="switch"
         value="Show QR scanner on top menu"
         iconSource={Icons.qr}
-        callback={() => {}}
+        switchState={isQrScanner}
+        callback={setIsQrScanner}
       />
       <SettingsItem
         type="switch"

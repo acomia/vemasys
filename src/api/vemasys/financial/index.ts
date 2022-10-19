@@ -74,9 +74,47 @@ const updateInvoiceStatus = async (
     })
 }
 
+const uploadFinancialFile = async (filePath: string) => {
+  const entityUsers = useEntity.getState().entityUsers
+  const entityUserId = useEntity.getState().entityUserId
+  const fileGroupId = entityUsers.find(item => item.id == entityUserId).entity.fileGroup.id
+  return API.put(`add_file_to_file_group/${fileGroupId}`, {
+    path: filePath,
+    description: `Invoice scan ${Date.now()}.pdf`,
+  })
+    .then(response => {
+      console.log('FIN_UPLOADING', response.data)
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Invoice details failed.')
+      }
+    })
+    .catch(error => {
+      console.error('Error: Invoice details data', error)
+    })
+}
+
+const getFinancialFile = async (id: string) => {
+  return API.get(`file_groups/${id}`)
+    .then(response => {
+      console.log('FILES_FROM_GROUP', response)
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Invoice details failed.')
+      }
+    })
+    .catch(error => {
+      console.error('Error: Invoice details data', error)
+    })
+}
+
 export {
   reloadInvoiceStatistics,
   reloadInvoices,
   getInvoiceDetails,
-  updateInvoiceStatus
+  updateInvoiceStatus,
+  uploadFinancialFile,
+  getFinancialFile,
 }

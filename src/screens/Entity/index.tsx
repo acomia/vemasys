@@ -25,7 +25,8 @@ type Props = NativeStackScreenProps<RootStackParamList>
 
 export default function Entity({route, navigation}: Props) {
   const insets = useSafeAreaInsets()
-  const paddingTop = route.name === 'ChangeRole' ? 2 : ms(insets.top + 2)
+  const paddingTop = route.name === 'ChangeRole' ? 2 : 0
+  const borderTopRadius = route.name === 'ChangeRole' ? '3xl' : 0
   const {
     entityUsers,
     entityUserId,
@@ -91,13 +92,13 @@ export default function Entity({route, navigation}: Props) {
     logout()
   }
   return (
-    <Box flex={1} bg={Colors.light} pt={paddingTop}>
+    <Box flex="1" bg={Colors.light} pt={paddingTop}>
       <Box
         bg={Colors.white}
-        flex={1}
+        flex="1"
         pt={ms(20)}
         px={ms(20)}
-        borderTopRadius="3xl"
+        borderTopRadius={borderTopRadius}
       >
         <HStack justifyContent="space-between" justifyItems="center">
           <Heading fontSize="xl" pb="2">
@@ -134,7 +135,7 @@ export default function Entity({route, navigation}: Props) {
             width: '100%',
           }}
         >
-          <Box p={ms(20)} pb={ms(insets.bottom)}>
+          <Box p={ms(20)} pb={ms(insets.bottom === 0 ? 20 : insets.bottom)}>
             <Button
               bg={Colors.danger}
               _light={{

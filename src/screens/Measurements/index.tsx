@@ -107,14 +107,14 @@ const Measurements = ({navigation, route}: Props) => {
       >
         <HStack alignItems="center">
           <Skeleton
-            flex={1}
+            flex="1"
             h={ms(22)}
             w={ms(100)}
             rounded="full"
             isLoaded={!isTechnicalLoading}
             startColor={Colors.light}
           >
-            <Text flex={1} color={Colors.azure} fontWeight="medium">
+            <Text flex="1" color={Colors.azure} fontWeight="medium">
               {data?.name}
             </Text>
           </Skeleton>
@@ -180,14 +180,14 @@ const Measurements = ({navigation, route}: Props) => {
       >
         <HStack alignItems="center">
           <Skeleton
-            flex={1}
+            flex="1"
             h={ms(22)}
             w={ms(100)}
             rounded="full"
             isLoaded={!isTechnicalLoading}
             startColor={Colors.light}
           >
-            <Text flex={1} color={Colors.azure} fontWeight="medium">
+            <Text flex="1" color={Colors.azure} fontWeight="medium">
               {data?.data[pLength]?.type?.title}
             </Text>
           </Skeleton>
@@ -291,7 +291,7 @@ const Measurements = ({navigation, route}: Props) => {
                       {item?.user?.firstname} {item?.user?.lastname}
                     </Text>
                     <Text color={Colors.disabled}>
-                      {moment(item?.date).format('DD MMM YYYY - HH:mm')}
+                      {moment(item?.date).format('DD MMM YYYY - hh:mm A')}
                     </Text>
                   </Box>
                   <Text fontWeight="bold" color={Colors.highlighted_text}>

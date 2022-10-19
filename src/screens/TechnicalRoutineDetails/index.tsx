@@ -120,11 +120,11 @@ const TechnicalRoutineDetails = ({navigation, route}: Props) => {
         mb={ms(10)}
         shadow={2}
       >
-        <Text flex={1} fontWeight="medium">
+        <Text flex="1" fontWeight="medium">
           {label}
         </Text>
         <HStack
-          flex={1}
+          flex="1"
           borderLeftWidth={ms(1)}
           borderColor="#F0F0F0"
           height="100%"

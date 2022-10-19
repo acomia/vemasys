@@ -1,10 +1,87 @@
-import React from 'react'
-import {Box, Button, Image, Text} from 'native-base'
+import React, {useState} from 'react'
+import {Box, Button, Image, Text, useDisclose, useToast} from 'native-base'
 import {Animated} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
+import DocumentScanner from 'react-native-document-scanner-plugin'
+import {useFinancial, usePlanning} from '@bluecentury/stores'
+import {LoadingAnimated} from '@bluecentury/components'
+import {convertToPdfAndUpload} from '@bluecentury/utils'
+import DocumentPicker, {isInProgress, types} from 'react-native-document-picker'
+import moment from "moment";
 
 const Scan = () => {
+  const {uploadImgFile} = usePlanning()
+  const {addFilesInGroup, isFinancialLoading} = useFinancial()
+  const {isOpen, onOpen, onClose} = useDisclose()
+  const toast = useToast()
+  const [result, setResult] = useState<ImageFile>({})
+
+  const showToast = (text: string, res: string) => {
+    toast.show({
+      duration: 1000,
+      render: () => {
+        return (
+          <Text
+            bg={res === 'success' ? 'emerald.500' : 'red.500'}
+            px="2"
+            py="1"
+            rounded="sm"
+            mb={5}
+            color={Colors.white}
+          >
+            {text}
+          </Text>
+        )
+      },
+    })
+  }
+
+  const scanDocument = async () => {
+    // start the document scanner
+    const {scannedImages} = await DocumentScanner.scanDocument()
+    await convertToPdfAndUpload(scannedImages, showToast)
+  }
+
+  const handleError = (err: unknown) => {
+    if (DocumentPicker.isCancel(err)) {
+      console.warn('cancelled')
+      // User cancelled the picker, exit any dialogs or menus and move on
+    } else if (isInProgress(err)) {
+      console.warn(
+        'multiple pickers were opened, only the last will be considered'
+      )
+    } else {
+      throw err
+    }
+  }
+
+  const onSelectDocument = async () => {
+    try {
+      const pickerResult = await DocumentPicker.pickSingle({
+        presentationStyle: 'fullScreen',
+        copyTo: 'cachesDirectory',
+        type: [types.images],
+      })
+      onClose()
+      setResult({
+        uri: pickerResult.uri,
+        fileName: pickerResult.name,
+        type: pickerResult.type,
+      })
+      const upload = await uploadImgFile({
+        uri: pickerResult.uri,
+        fileName: pickerResult.name,
+        type: pickerResult.type,
+      })
+      console.log('IMG_UPLOAD', upload)
+    } catch (e) {
+      handleError(e)
+    }
+  }
+
+  if (isFinancialLoading) return <LoadingAnimated />
+
   return (
     <Box flex="1" bg={Colors.white} px={ms(12)} py={ms(20)}>
       <Text fontSize={ms(20)} fontWeight="bold" color={Colors.azure}>
@@ -21,7 +98,7 @@ const Scan = () => {
         my={ms(20)}
         resizeMode="contain"
       />
-      <Button bg={Colors.primary} size="md">
+      <Button bg={Colors.primary} size="md" onPress={() => onSelectDocument()}>
         Upload image
       </Button>
       <Text
@@ -38,7 +115,7 @@ const Scan = () => {
       <Button
         bg={Colors.primary}
         size="md"
-        // onPress={() => this.uploadDocument()}
+        onPress={() => scanDocument()}
       >
         Open camera
       </Button>

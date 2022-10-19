@@ -6,7 +6,7 @@ import {NavigationLog} from '@bluecentury/models'
 
 type PlanningState = {
   isPlanningLoading: boolean
-  plannedNavigationLogs: [] | undefined
+  plannedNavigationLogs: Array<any> | undefined
   historyNavigationLogs: any[]
   navigationLogDetails?: NavigationLog | undefined
   navigationLogActions?: any[]
@@ -14,30 +14,32 @@ type PlanningState = {
   navigationLogComments?: any[]
   navigationLogDocuments?: any[]
   bulkTypes?: []
+  hasErrorLoadingPlannedNavigationLogs: boolean
+  hasErrorLoadingVesselHistoryNavLogs: boolean
 }
 
 type PlanningActions = {
-  getVesselHistoryNavLogs?: (vesselId: string, page: number) => void
-  getVesselPlannedNavLogs?: (vesselId: string) => void
-  getNavigationLogDetails?: (navLogId: string) => void
-  getNavigationLogActions?: (navLogId: string) => void
-  getNavigationLogCargoHolds?: (physicalVesselId: string) => void
-  getNavigationLogComments?: (navLogId: string) => void
-  getNavigationLogDocuments?: (navLogId: string) => void
-  updateNavlogDates?: (navLogId: string, dates: object) => void
-  createNavlogComment?: (
+  getVesselHistoryNavLogs: (vesselId: string, page: number) => void
+  getVesselPlannedNavLogs: (vesselId: string) => void
+  getNavigationLogDetails: (navLogId: string) => void
+  getNavigationLogActions: (navLogId: string) => void
+  getNavigationLogCargoHolds: (physicalVesselId: string) => void
+  getNavigationLogComments: (navLogId: string) => void
+  getNavigationLogDocuments: (navLogId: string) => void
+  updateNavlogDates: (navLogId: string, dates: object) => void
+  createNavlogComment: (
     navLogId: string,
     comment: string,
     userId: string
   ) => void
-  getBulkTypes?: (query: string) => void
-  updateBulkCargo?: (cargo: any) => void
-  createBulkCargo?: (cargo: any, navLogId: string) => void
-  deleteBulkCargo?: (id: string) => void
-  updateComment?: (id: string, description: string) => void
-  uploadImgFile?: (file: ImageFile) => void
-  deleteComment?: (id: string) => void
-  uploadVesselNavigationLogFile?: (navLogId: string, body: any) => void
+  getBulkTypes: (query: string) => void
+  updateBulkCargo: (cargo: any) => void
+  createBulkCargo: (cargo: any, navLogId: string) => void
+  deleteBulkCargo: (id: string) => void
+  updateComment: (id: string, description: string) => void
+  uploadImgFile: (file: ImageFile) => void
+  deleteComment: (id: string) => void
+  uploadVesselNavigationLogFile: (navLogId: string, body: any) => void
 }
 
 export type PlanningStore = PlanningState & PlanningActions
@@ -48,10 +50,13 @@ export const usePlanning = create(
       isPlanningLoading: false,
       plannedNavigationLogs: [],
       historyNavigationLogs: [],
+      hasErrorLoadingPlannedNavigationLogs: false,
+      hasErrorLoadingVesselHistoryNavLogs: false,
       getVesselHistoryNavLogs: async (vesselId: string, page: number) => {
         set({
           isPlanningLoading: true,
           historyNavigationLogs: page === 1 ? [] : get().historyNavigationLogs,
+          hasErrorLoadingVesselHistoryNavLogs: false,
         })
         try {
           const response = await API.reloadVesselHistoryNavLogs(vesselId, page)
@@ -70,8 +75,10 @@ export const usePlanning = create(
             })
           }
         } catch (error) {
+          console.log('wooppssiess ', error)
           set({
             isPlanningLoading: false,
+            hasErrorLoadingVesselHistoryNavLogs: true,
           })
         }
       },
@@ -79,6 +86,7 @@ export const usePlanning = create(
         set({
           isPlanningLoading: true,
           plannedNavigationLogs: [],
+          hasErrorLoadingPlannedNavigationLogs: false,
         })
         try {
           const response = await API.getPlannedNavLog(vesselId)
@@ -91,11 +99,13 @@ export const usePlanning = create(
             set({
               isPlanningLoading: false,
               plannedNavigationLogs: [],
+              hasErrorLoadingPlannedNavigationLogs: true,
             })
           }
         } catch (error) {
           set({
             isPlanningLoading: false,
+            hasErrorLoadingPlannedNavigationLogs: true,
           })
         }
       },

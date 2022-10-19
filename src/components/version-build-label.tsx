@@ -1,17 +1,15 @@
 import React, {useCallback, useEffect, useState} from 'react'
 import {Link} from 'native-base'
-import DeviceInfo from 'react-native-device-info'
 import {useSettings} from '@bluecentury/stores'
 import {
   CommonActions,
   useFocusEffect,
-  useNavigation
+  useNavigation,
 } from '@react-navigation/native'
 import _ from 'lodash'
 
 export function VersionBuildLabel() {
   const navigation = useNavigation()
-  const readableVersion = DeviceInfo.getReadableVersion()
   const {env} = useSettings()
   const [count, setCount] = useState(0)
 
@@ -28,7 +26,7 @@ export function VersionBuildLabel() {
       navigation.dispatch(
         CommonActions.reset({
           index: 0,
-          routes: [{name: 'SelectEnvironment'}]
+          routes: [{name: 'SelectEnvironment'}],
         })
       )
     }
@@ -44,7 +42,7 @@ export function VersionBuildLabel() {
   }
   return (
     <Link isUnderlined={false} onPress={handleOnPressChangeEnvironment}>
-      Vemasys v{readableVersion} &copy; 2022 {env === 'UAT' ? env : ''}
+      Vemasys &copy; 2022 {env === 'UAT' ? env : ''}
     </Link>
   )
 }
