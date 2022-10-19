@@ -7,7 +7,6 @@ import * as Keychain from 'react-native-keychain'
 const UNAUTHENTICATED = 401
 
 export const onFailedResponse = async (error: any) => {
-  const {refreshTokens} = useAuth.getState()
   const failedRequest = error?.config
   const errorUrl = failedRequest?.url
   console.log('ERROR_URL', errorUrl)
@@ -27,48 +26,44 @@ export const onFailedResponse = async (error: any) => {
     console.log('UNAUTH')
     console.log('FAILED_RESP_API_URL', API_URL)
     try {
-      const refreshToken = useAuth.getState().refreshToken
-      // const res = await axios.post(
-      //   `${API_URL}token/refresh?refresh_token=${refreshToken}`
-      // )
-      console.log('REFRESH_TOKEN', refreshToken)
-      const res = await API.post('token/refresh', {refresh_token: refreshToken})
-      console.log('REFRESH_TOKEN_RESPONSE', res)
-      if (res) {
-        API.defaults.headers.common = {
-          ...API.defaults.headers.common,
-          'Jwt-Auth': res.data.token,
-        }
-        refreshTokens(res.data.token, res.data.refreshToken)
-        return API(failedRequest)
+      // reset the token using the refresh_token
+      await useAuth.getState().resetToken()
+      // use the updated token
+      const token = useAuth.getState().token
+      API.defaults.headers.common = {
+        ...API.defaults.headers.common,
+        'Jwt-Auth': `Bearer ${token}`,
       }
+      // continue with the previous request
+      return API(failedRequest)
     } catch (err) {
       console.log('Error: Failed to Refresh Token ', err)
-      if (useSettings.getState().isRemainLoggedIn) {
-        const credentials = await Keychain.getGenericPassword()
-        if (credentials) {
-          console.log('credentials ')
-          const {username, password} = credentials
-          const res = await axios.post(`${API_URL}login_check`, {
-            username: username,
-            password: password,
-          })
-          console.log('res using stored', res.data.token)
-          if (res) {
-            API.defaults.headers.common = {
-              ...API.defaults.headers.common,
-              'Jwt-Auth': res.data.token,
-            }
-            useAuth.getState().setUser({
-              token: res.data.token,
-              refreshToken: res.data.refreshToken,
-            })
-            return API(failedRequest)
-          }
-        }
+      const credentials = await Keychain.getGenericPassword()
+      const isRemainLoggedIn = useSettings.getState().isRemainLoggedIn
+
+      // check whether user desired to remain logged in
+      // or has stored credentials
+      if (!isRemainLoggedIn || credentials === false) {
+        useAuth.getState().logout() // log user out
+        return Promise.reject(err) // handle (reject) the request
       }
-      useAuth.getState().logout()
-      return Promise.reject(err)
+
+      const res = await axios.post(`${API_URL}login_check`, {
+        username: credentials.username,
+        password: credentials.password,
+      })
+
+      if (res.status === 200) {
+        useAuth.getState().setUser({
+          token: res.data.token,
+          refreshToken: res.data.refreshToken,
+        })
+        API.defaults.headers.common = {
+          ...API.defaults.headers.common,
+          'Jwt-Auth': `Bearer ${res.data.token}`,
+        }
+        return API(failedRequest)
+      }
     }
   }
   return Promise.reject(error)

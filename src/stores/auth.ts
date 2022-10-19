@@ -4,6 +4,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as API from '@bluecentury/api/vemasys'
 import {Credentials, Auth} from 'src/models'
 import * as Keychain from 'react-native-keychain'
+import axios from 'axios'
+import {useSettings} from './settings'
 
 type AuthState = {
   hasAuthHydrated: boolean
@@ -21,7 +23,7 @@ type AuthActions = {
   setUser: (obj: any) => void
   setHasHydrated: (state: boolean) => void
   logout: () => void
-  refreshTokens: (token: string, refreshToken: string) => void
+  resetToken: () => void
 }
 
 type AuthStore = AuthState & AuthActions
@@ -39,7 +41,7 @@ const initialState: AuthState = {
 
 export const useAuth = create(
   persist<AuthStore>(
-    set => ({
+    (set, get) => ({
       ...initialState,
       authenticate: async credentials => {
         set({
@@ -89,10 +91,15 @@ export const useAuth = create(
           hasAuthHydrated: state,
         })
       },
-      refreshTokens: (token, refreshToken) => {
+      resetToken: async () => {
+        const refreshToken = get().refreshToken
+        const apiUrl = useSettings.getState().apiUrl
+        const res = await axios.post(apiUrl + 'token/refresh', {
+          refresh_token: refreshToken,
+        })
         set({
-          token,
-          refreshToken,
+          token: res.data.token,
+          refreshToken: res.data.refreshToken,
         })
       },
     }),
