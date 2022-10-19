@@ -220,6 +220,7 @@ const getCurrentTrackerSource = async (vesselId: string) => {
 }
 
 const sendCurrentPosition = async (entityId: string, position: Location) => {
+  console.log('LOCATION_FROM_SEND_CURRENT_POSITION', position)
   return API.post('tracking_device/ingest_events/api_tracker', {
     entity: entityId,
     latitude: position?.latitude,
