@@ -9,6 +9,11 @@ const UNAUTHENTICATED = 401
 export const onFailedResponse = async (error: any) => {
   const failedRequest = error?.config
   const errorUrl = failedRequest?.url
+  const isTokenRefresh = useAuth.getState().isTokenRefresh
+  // const setIsTokenRefresh = useAuth.getState().setIsTokenRefresh
+  const authInterceptedRequests = useAuth.getState().authInterceptedRequests
+  const setAuthInterceptedRequests =
+    useAuth.getState().setAuthInterceptedRequests
   console.log('ERROR_URL', errorUrl)
   let failedRequestHeaders = failedRequest.headers || undefined
   // DO anything here
@@ -22,48 +27,65 @@ export const onFailedResponse = async (error: any) => {
 
   const isLogin = errorUrl === 'login_check'
 
-  if (error?.response?.status === UNAUTHENTICATED && !isLogin) {
+  if (error?.response?.status === UNAUTHENTICATED && !isLogin && !isTokenRefresh) {
     console.log('UNAUTH')
-    console.log('FAILED_RESP_API_URL', API_URL)
     try {
       // reset the token using the refresh_token
       await useAuth.getState().resetToken()
       // use the updated token
       const token = useAuth.getState().token
+      console.log('NEW_TOKEN', token)
       API.defaults.headers.common = {
         ...API.defaults.headers.common,
         'Jwt-Auth': `Bearer ${token}`,
       }
       // continue with the previous request
+      if (authInterceptedRequests.length) {
+        authInterceptedRequests.forEach(request => {
+          API(request)
+        })
+        setAuthInterceptedRequests([])
+      }
       return API(failedRequest)
     } catch (err) {
       console.log('Error: Failed to Refresh Token ', err)
-      const credentials = await Keychain.getGenericPassword()
-      const isRemainLoggedIn = useSettings.getState().isRemainLoggedIn
+      // Had errors, that is why I commented this part
+
+      // const credentials = await Keychain.getGenericPassword()
+      // const isRemainLoggedIn = useSettings.getState().isRemainLoggedIn
 
       // check whether user desired to remain logged in
       // or has stored credentials
-      if (!isRemainLoggedIn || credentials === false) {
-        useAuth.getState().logout() // log user out
-        return Promise.reject(err) // handle (reject) the request
-      }
+      // if (!isRemainLoggedIn || credentials === false) {
+      //   useAuth.getState().logout() // log user out
+      //   return Promise.reject(err) // handle (reject) the request
+      // }
 
-      const res = await axios.post(`${API_URL}login_check`, {
-        username: credentials.username,
-        password: credentials.password,
-      })
+      // const res = await axios.post(`${API_URL}login_check`, {
+      //   username: credentials.username,
+      //   password: credentials.password,
+      // })
 
-      if (res.status === 200) {
-        useAuth.getState().setUser({
-          token: res.data.token,
-          refreshToken: res.data.refreshToken,
-        })
-        API.defaults.headers.common = {
-          ...API.defaults.headers.common,
-          'Jwt-Auth': `Bearer ${res.data.token}`,
-        }
-        return API(failedRequest)
-      }
+      // if (res.status === 200) {
+      //   useAuth.getState().setUser({
+      //     token: res.data.token,
+      //     refreshToken: res.data.refreshToken,
+      //   })
+      //   API.defaults.headers.common = {
+      //     ...API.defaults.headers.common,
+      //     'Jwt-Auth': `Bearer ${res.data.token}`,
+      //   }
+      //   return API(failedRequest)
+      // }
+    }
+
+    //This part should help us to ensure that refresh will called just once
+    if (error?.response?.status === UNAUTHENTICATED && !isLogin && isTokenRefresh) {
+      setAuthInterceptedRequests([...authInterceptedRequests, failedRequest])
+      console.log(
+        'REQUEST_ADDED_TO_authInterceptedRequests',
+        authInterceptedRequests.length
+      )
     }
   }
   return Promise.reject(error)
