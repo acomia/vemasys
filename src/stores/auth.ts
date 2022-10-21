@@ -16,6 +16,8 @@ type AuthState = {
   hasAuthenticationError: boolean
   isLoggingOut: boolean
   hasErrorLogout: boolean
+  isTokenRefresh: boolean
+  authInterceptedRequests: any[]
 }
 
 type AuthActions = {
@@ -24,6 +26,8 @@ type AuthActions = {
   setHasHydrated: (state: boolean) => void
   logout: () => void
   resetToken: () => void
+  // setIsTokenRefresh: (status: boolean) => void
+  setAuthInterceptedRequests: (interceptedRequests: any[]) => void
 }
 
 type AuthStore = AuthState & AuthActions
@@ -37,6 +41,8 @@ const initialState: AuthState = {
   hasAuthenticationError: false,
   isLoggingOut: false,
   hasErrorLogout: false,
+  isTokenRefresh: false,
+  authInterceptedRequests: [],
 }
 
 export const useAuth = create(
@@ -92,14 +98,39 @@ export const useAuth = create(
         })
       },
       resetToken: async () => {
-        const refreshToken = get().refreshToken
-        const apiUrl = useSettings.getState().apiUrl
-        const res = await axios.post(apiUrl + 'token/refresh', {
-          refresh_token: refreshToken,
-        })
         set({
-          token: res.data.token,
-          refreshToken: res.data.refreshToken,
+          isTokenRefresh: true,
+        })
+        const refreshToken = get().refreshToken
+        console.log('RESET_EXPIRED_TOKEN', refreshToken)
+        // const apiUrl = useSettings.getState().apiUrl
+        // console.log('APIURL_FROM_RESET_TOKEN', apiUrl)
+        try {
+          // const res = await API.post('token/refresh', {
+          //   refresh_token: refreshToken,
+          // })
+          const res = await API.refresh(refreshToken)
+          console.log('RESET_RESPONSE', res)
+          set({
+            token: res.token,
+            refreshToken: res.refreshToken,
+            isTokenRefresh: false,
+          })
+        } catch (error) {
+          console.log('RESET_TOKEN_ERROR', error)
+          set({
+            isTokenRefresh: false,
+          })
+        }
+      },
+      // setIsTokenRefresh: status => {
+      //   set({
+      //     isTokenRefresh: status,
+      //   })
+      // },
+      setAuthInterceptedRequests: interceptedRequests => {
+        set({
+          authInterceptedRequests: interceptedRequests,
         })
       },
     }),
