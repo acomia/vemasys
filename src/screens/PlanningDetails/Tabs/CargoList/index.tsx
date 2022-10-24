@@ -84,10 +84,10 @@ const CargoList = () => {
         <Text fontSize={ms(20)} fontWeight="bold" color={Colors.azure}>
           Cargo
         </Text>
-        <HStack mt={ms(10)} justifyContent="space-between">
-          <Text fontSize={ms(16)} fontWeight="bold" color={Colors.text}>
+        <HStack mt={ms(10)} justifyContent="flex-end">
+          {/* <Text fontSize={ms(16)} fontWeight="bold" color={Colors.text}>
             Inventory
-          </Text>
+          </Text> */}
           <Text fontSize={ms(16)} fontWeight="bold" color={Colors.text}>
             Actions
           </Text>
@@ -120,24 +120,25 @@ const CargoList = () => {
                     )}
                   </Text>
                 </Box>
-                <HStack alignItems="center">
-                  <IconButton
-                    source={Icons.edit}
-                    onPress={() =>
-                      navigation.navigate('AddEditBulkCargo', {
-                        cargo: cargo,
-                        method: 'edit',
-                      })
-                    }
-                    size={ms(22)}
-                  />
+                <IconButton
+                  source={Icons.edit}
+                  onPress={() =>
+                    navigation.navigate('AddEditBulkCargo', {
+                      cargo: cargo,
+                      method: 'edit',
+                    })
+                  }
+                  size={ms(22)}
+                />
+                {/* <HStack alignItems="center">
+                  
                   <Box w={ms(10)} />
                   <IconButton
                     source={Icons.trash}
                     onPress={() => deleteBulkCargoConfirmation(cargo)}
                     size={ms(22)}
                   />
-                </HStack>
+                </HStack> */}
               </HStack>
             )
           })
@@ -152,7 +153,7 @@ const CargoList = () => {
             </Text>
           </Box>
         )}
-        <Box position="absolute" bottom={0} right={ms(12)}>
+        {/* <Box position="absolute" bottom={0} right={ms(12)}>
           <IconButton
             source={Icons.add}
             size={ms(50)}
@@ -162,7 +163,7 @@ const CargoList = () => {
               })
             }
           />
-        </Box>
+        </Box> */}
       </ScrollView>
     </Box>
   )
