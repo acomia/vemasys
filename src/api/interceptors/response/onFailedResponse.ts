@@ -27,23 +27,13 @@ export const onFailedResponse = async (error: any) => {
 
   const isLogin = errorUrl === 'login_check'
 
-  if (
-    error?.response?.status === UNAUTHENTICATED &&
-    !isLogin &&
-    !isTokenRefresh
-  ) {
-    console.log('UNAUTH')
+  if (error?.response?.status === UNAUTHENTICATED && !isLogin && !isTokenRefresh) {
     try {
       // reset the token using the refresh_token
       await useAuth.getState().resetToken()
       // use the updated token
       const token = useAuth.getState().token
       console.log('NEW_TOKEN', token)
-      API.defaults.headers.common = {
-        ...API.defaults.headers.common,
-        'Jwt-Auth': `Bearer ${token}`,
-      }
-      // continue with the previous request
       if (authInterceptedRequests.length) {
         authInterceptedRequests.forEach(request => {
           API(request)
@@ -56,11 +46,7 @@ export const onFailedResponse = async (error: any) => {
     }
 
     //This part should help us to ensure that refresh will called just once
-    if (
-      error?.response?.status === UNAUTHENTICATED &&
-      !isLogin &&
-      isTokenRefresh
-    ) {
+    if (error?.response?.status === UNAUTHENTICATED && !isLogin && isTokenRefresh) {
       setAuthInterceptedRequests([...authInterceptedRequests, failedRequest])
       console.log(
         'REQUEST_ADDED_TO_authInterceptedRequests',

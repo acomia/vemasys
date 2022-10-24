@@ -102,15 +102,8 @@ export const useAuth = create(
           isTokenRefresh: true,
         })
         const refreshToken = get().refreshToken
-        console.log('RESET_EXPIRED_TOKEN', refreshToken)
-        // const apiUrl = useSettings.getState().apiUrl
-        // console.log('APIURL_FROM_RESET_TOKEN', apiUrl)
         try {
-          // const res = await API.post('token/refresh', {
-          //   refresh_token: refreshToken,
-          // })
           const res = await API.refresh(refreshToken)
-          console.log('RESET_RESPONSE', res)
           set({
             token: res.token,
             refreshToken: res.refreshToken,
@@ -123,11 +116,6 @@ export const useAuth = create(
           })
         }
       },
-      // setIsTokenRefresh: status => {
-      //   set({
-      //     isTokenRefresh: status,
-      //   })
-      // },
       setAuthInterceptedRequests: interceptedRequests => {
         set({
           authInterceptedRequests: interceptedRequests,
