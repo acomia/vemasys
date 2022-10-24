@@ -44,8 +44,14 @@ export default function MainNavigator({navigation}: Props) {
   const token = useAuth(state => state.token)
   const activeFormations = useMap(state => state.activeFormations)
   const getActiveFormations = useMap(state => state.getActiveFormations)
-  let scanIcon: ImageSourcePropType = Icons.qr
-  let scanNavigateTo: () => void
+  // let scanIcon: ImageSourcePropType = Icons.qr
+  const scanIcon: ImageSourcePropType = activeFormations.length
+    ? Icons.formations
+    : Icons.qr
+  // let scanNavigateTo: () => void
+  const scanNavigateTo = activeFormations.length
+    ? () => navigation.navigate(Screens.Formations)
+    : () => navigation.navigate(Screens.QRScanner)
 
   useFocusEffect(
     useCallback(() => {
@@ -89,15 +95,15 @@ export default function MainNavigator({navigation}: Props) {
     }
   }, [token])
 
-  useEffect(() => {
-    if (activeFormations?.length > 0) {
-      scanIcon = Icons.qr
-      scanNavigateTo = () => navigation.navigate('QRScanner')
-    } else {
-      scanIcon = Icons.formations
-      scanNavigateTo = () => navigation.navigate('Formations')
-    }
-  }, [activeFormations])
+  // useEffect(() => {
+  //   if (activeFormations?.length > 0) {
+  //     scanIcon = Icons.qr
+  //     scanNavigateTo = () => navigation.navigate(Screens.QRScanner)
+  //   } else {
+  //     scanIcon = Icons.formations
+  //     scanNavigateTo = () => navigation.navigate('Formations')
+  //   }
+  // }, [activeFormations])
 
   return (
     <Navigator
@@ -115,7 +121,7 @@ export default function MainNavigator({navigation}: Props) {
               {isQrScanner ? (
                 <IconButton
                   source={scanIcon}
-                  onPress={() => scanNavigateTo()}
+                  onPress={scanNavigateTo}
                   size={ms(25)}
                 />
               ) : null}

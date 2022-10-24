@@ -28,7 +28,7 @@ import {LoadingAnimated} from '@bluecentury/components'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'CharterAcceptSign'>
 const CharterAcceptSign = ({navigation, route}: Props) => {
-  const {charter} = route.params
+  const {charter, setSignature, onCharterSelected} = route.params
   const ref = useRef<SignatureViewRef>(null)
   const toast = useToast()
   const {
@@ -36,54 +36,47 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
     updateCharterStatus,
     getCharters,
     uploadSignature,
+    setSignatureId,
+    signatureId,
     updateCharterStatusResponse,
     uploadCharterSignatureResponse,
     resetResponses,
   } = useCharters()
+
   const {user} = useEntity()
   const {isMobileTracking, setIsMobileTracking} = useSettings()
   const [scrollEnabled, setScrollEnabled] = useState(true)
   const [mobileTracker, setMobileTracker] = useState(false)
   const [sign, setSign] = useState<StringOrNull>(null)
 
-  useEffect(() => {
-    if (updateCharterStatusResponse === UPDATE_CHARTER_SUCCESS) {
-      const signData = {
-        user: user.id,
-        signature: sign,
-        signedDate: new Date().toLocaleDateString(),
-        charter: charter.id,
-      }
-      uploadSignature(signData)
-      if (!isMobileTracking && mobileTracker) {
-        setIsMobileTracking(mobileTracker)
-      }
-      showToast('Charter accepted sucessfully.', 'success')
-    } else {
-      if (updateCharterStatusResponse === UPDATE_CHARTER_FAILED) {
-        showToast('Charter accepted failed.', 'failed')
-      }
-    }
-  }, [updateCharterStatusResponse])
-
-  useEffect(() => {
-    if (uploadCharterSignatureResponse === UPLOAD_CHARTER_SIGNATURE_SUCCESS) {
-      showToast('Charter signature uploaded.', 'success')
-      navigation.goBack()
-    } else {
-      if (uploadCharterSignatureResponse === UPLOAD_CHARTER_SIGNATURE_FAILED) {
-        showToast('Charter signature upload failed.', 'failed')
-      }
-    }
-  }, [uploadCharterSignatureResponse])
-
-  const handleSignature = signature => {
+  const handleSignature = async signature => {
     const status = {
       status: CHARTER_CONTRACTOR_STATUS_ACCEPTED,
       setContractorStatus: true,
     }
     setSign(signature)
     updateCharterStatus(charter?.id, status)
+    const update = await updateCharterStatus(charter?.id, status)
+    if (update === UPDATE_CHARTER_SUCCESS) {
+      getCharters()
+      showToast('Charter accepted sucessfully.', 'success')
+    } else {
+      showToast('Charter accepted failed.', 'failed')
+    }
+    const signData = {
+      user: user.id,
+      signature: signature,
+      signedDate: new Date().toLocaleDateString(),
+      charter: charter.id,
+    }
+    const sign = await uploadSignature(signData)
+    if (typeof sign === 'object') {
+      showToast('Signature upload sucessfully.', 'warning')
+      setSignatureId(sign.id)
+      setSignature(signature.replace('data:image/png;base64,', ''))
+    } else {
+      showToast('Signature upload failed.', 'failed')
+    }
   }
 
   const handleEmpty = () => {
@@ -120,7 +113,10 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
         )
       },
       onCloseComplete() {
-        res === 'success' ? resetResponses() : null
+        //TODO not just goBack but automatically open modal with pdf in edit mode, pass there a signature
+        res === 'success' ? navigation.goBack() : null
+        onCharterSelected(charter)
+        // res === 'success' ? resetResponses() : null
       },
     })
   }

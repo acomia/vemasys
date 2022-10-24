@@ -67,12 +67,32 @@ const uploadSignature = async (signature: Signature) =>
   API.post('signatures', signature)
     .then(response =>
       response.data
-        ? UPLOAD_CHARTER_SIGNATURE_SUCCESS
-        : UPLOAD_CHARTER_SIGNATURE_FAILED
+      // ? UPLOAD_CHARTER_SIGNATURE_SUCCESS
+      // : UPLOAD_CHARTER_SIGNATURE_FAILED
     )
     .catch(error => {
       console.log('Error: Upload Signature failed', error)
       return UPLOAD_CHARTER_SIGNATURE_FAILED
     })
 
-export {reloadVesselCharters, viewPdfFile, updateCharterStatus, uploadSignature}
+const getSignature = async (signatureId: string) => {
+  return API.get(`signature/${signatureId}`)
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Charter upload signature failed.')
+      }
+    })
+    .catch(error => {
+      console.error('Error: Charter upload signature API', error)
+    })
+}
+
+export {
+  reloadVesselCharters,
+  viewPdfFile,
+  updateCharterStatus,
+  uploadSignature,
+  getSignature,
+}
