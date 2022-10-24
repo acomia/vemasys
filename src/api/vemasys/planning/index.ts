@@ -97,11 +97,11 @@ const createNavlogComment = async (
   return API.post(`navigation_log_comments`, {
     description: comment,
     user: {
-      id: userId
+      id: userId,
     },
     log: {
-      id: navlogId
-    }
+      id: navlogId,
+    },
   })
     .then(response => {
       if (response.data) {
@@ -136,7 +136,7 @@ const updateBulkCargoEntry = async (cargo: any) => {
     type: {id: parseInt(cargo.typeId)},
     amount: cargo.amount.toString(),
     actualAmount: cargo.actualAmount.toString(),
-    isLoading: cargo.isLoading === '1'
+    isLoading: cargo.isLoading === '1',
   })
     .then(response => {
       if (response.data) {
@@ -155,12 +155,12 @@ const createNewBulkCargoEntry = async (cargo: any, navLogId: string) => {
     `navigation_bulks`,
     {
       log: {
-        id: navLogId
+        id: navLogId,
       },
       type: {id: parseInt(cargo.typeId)},
       amount: cargo.amount,
       actualAmount: cargo.actualAmount,
-      isLoading: cargo.isLoading === '1'
+      isLoading: cargo.isLoading === '1',
     },
     {}
   )
@@ -209,7 +209,7 @@ const uploadImgFile = async (file: ImageFile) => {
   let image = {
     uri: file.uri,
     type: file.type,
-    name: file.fileName || `IMG_${Date.now()}`
+    name: file.fileName || `IMG_${Date.now()}`,
   }
 
   formData.append('file', image)
@@ -262,6 +262,47 @@ const uploadVesselNavigationLogFile = async (navLogId: string, body: any) => {
     })
 }
 
+const createNavigationLogAction = async (body: any) => {
+  return API.post(`navigation_log_actions`, body)
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Create navlog action.')
+      }
+    })
+    .catch(error => {
+      console.error('Error:Create navlog action data', error)
+    })
+}
+const updateNavigationLogAction = async (id: string, body: any) => {
+  return API.put(`navigation_log_actions/${id}`, body)
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Update navlog action.')
+      }
+    })
+    .catch(error => {
+      console.error('Error:Update navlog action data', error)
+    })
+}
+
+const deleteNavigationLogAction = async (id: string) => {
+  return API.delete(`navigation_log_actions/${id}`)
+    .then(response => {
+      if (response.status) {
+        return response.status
+      } else {
+        throw new Error('Delete navlog action.')
+      }
+    })
+    .catch(error => {
+      console.error('Error:Delete navlog action data', error)
+    })
+}
+
 export {
   reloadNavigationLogDetails,
   reloadNavigationLogActions,
@@ -277,5 +318,8 @@ export {
   updateComment,
   uploadImgFile,
   deleteComment,
-  uploadVesselNavigationLogFile
+  uploadVesselNavigationLogFile,
+  createNavigationLogAction,
+  updateNavigationLogAction,
+  deleteNavigationLogAction,
 }

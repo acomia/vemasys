@@ -12,8 +12,8 @@ const {width, height} = Dimensions.get('window')
 const NavLogMap = () => {
   const {navigationLogDetails} = usePlanning()
   const ASPECT_RATIO = width / height
-  const LATITUDE = navigationLogDetails?.location?.latitude
-  const LONGITUDE = navigationLogDetails?.location?.longitude
+  const LATITUDE = navigationLogDetails?.location?.latitude || 0
+  const LONGITUDE = navigationLogDetails?.location?.longitude || 0
   const LATITUDE_DELTA = 0.0922
   const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO
 

@@ -3,7 +3,14 @@ import {useWindowDimensions} from 'react-native'
 import {Box, Text} from 'native-base'
 import {TabView, TabBar, SceneMap} from 'react-native-tab-view'
 
-import {Details, CargoList, CargoHolds, Documents,NavLogMap} from './Tabs'
+import {
+  Details,
+  CargoList,
+  CargoHolds,
+  Documents,
+  NavLogMap,
+  Actions,
+} from './Tabs'
 import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
 import {planningDetailsTabs} from '@bluecentury/constants'
@@ -31,10 +38,11 @@ export default function PlanningDetails() {
 
   const renderScene = SceneMap({
     details: Details,
+    actions: Actions,
     cargoList: CargoList,
     cargoHolds: CargoHolds,
     documents: Documents,
-    navlogmap: NavLogMap
+    navlogmap: NavLogMap,
   })
 
   const LazyPlaceholder = ({route}) => (
@@ -53,7 +61,7 @@ export default function PlanningDetails() {
         height: 3,
         borderRadius: 3,
         width: ms(50),
-        marginLeft: 30
+        marginLeft: 30,
       }}
       style={{backgroundColor: Colors.primary}}
       tabStyle={{width: ms(110), height: ms(40)}}

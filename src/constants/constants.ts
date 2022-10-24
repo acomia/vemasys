@@ -1,4 +1,3 @@
-import {Icons} from '@bluecentury/assets'
 import {PROD_URL} from '@vemasys/env'
 
 // General
@@ -20,15 +19,19 @@ export const ROLE_PERMISSION_USER_MANAGE = 'ROLE_PERMISSION_USER_MANAGE'
 export const EXTERNAL_PEGEL_IMAGE_URL =
   'https://www.elwis.de/DE/dynamisch/gewaesserkunde/wasserstaende'
 
+// Map constants
+export const DEFAULT_LATITUDE = 50.503887
+export const DEFAULT_LONGITUDE = 4.469936
+
 // Planning constants
 export const VESSEL_PART_CARGO_TYPE = 'Cargo'
 export const planningTabs = [
   {key: 'planning', title: 'Planning'},
   {key: 'logbook', title: 'Logbook'},
 ]
-
 export const planningDetailsTabs = [
   {key: 'details', title: 'Details'},
+  {key: 'actions', title: 'Actions'},
   {key: 'cargoList', title: 'Cargo List'},
   {key: 'cargoHolds', title: 'Cargo Holds'},
   {key: 'documents', title: 'Documents'},

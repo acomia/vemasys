@@ -15,7 +15,11 @@ type RootStackParamList = {
   AddEditBulkCargo: {cargo?: any; method?: string}
   PlanningNewComment: undefined
   AddEditComment: {comment?: any; method: string; routeFrom?: string}
-  AddEditNavlogAction: {method: string; navlogAction?: {} | undefined}
+  AddEditNavlogAction: {
+    method: string
+    actionType: string
+    navlogAction?: {} | undefined
+  }
   TechnicalTasksList: {category: string; title: string}
   TechnicalTaskDetails: {task: any; category: string}
   TechnicalTaskNewComment: {taskId: string}

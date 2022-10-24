@@ -91,4 +91,5 @@ export const Icons = {
   chart__line_down: require('./chart-line-down.png'),
   user_plus: require('./user-plus.png'),
   refused: require('./refused.png'),
+  broom: require('./broom.png'),
 }
