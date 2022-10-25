@@ -9,7 +9,7 @@ import {Colors} from '@bluecentury/styles'
 
 const {width, height} = Dimensions.get('window')
 
-const NavLogMap = () => {
+const Map = () => {
   const {navigationLogDetails} = usePlanning()
   const ASPECT_RATIO = width / height
   const LATITUDE = navigationLogDetails?.location?.latitude || 0
@@ -43,4 +43,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default NavLogMap
+export default Map
