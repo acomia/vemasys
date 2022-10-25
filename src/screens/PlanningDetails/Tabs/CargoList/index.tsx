@@ -1,5 +1,5 @@
 import React from 'react'
-import {Alert} from 'react-native'
+import {Alert, RefreshControl} from 'react-native'
 import {Box, Divider, HStack, ScrollView, Text, useToast} from 'native-base'
 import {useNavigation} from '@react-navigation/native'
 import {ms} from 'react-native-size-matters'
@@ -72,11 +72,22 @@ const CargoList = () => {
     }
   }
 
+  const onPullToReload = () => {
+    getNavigationLogDetails(navigationLogDetails?.id)
+  }
+
   if (isPlanningLoading) return <LoadingAnimated />
+
   return (
     <Box flex="1">
       <ScrollView
         contentContainerStyle={{flexGrow: 1, paddingBottom: 20}}
+        refreshControl={
+          <RefreshControl
+            onRefresh={onPullToReload}
+            refreshing={isPlanningLoading}
+          />
+        }
         bg={Colors.white}
         px={ms(12)}
         py={ms(20)}

@@ -25,15 +25,11 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated'
+import DatePicker from 'react-native-date-picker'
 
 import {Colors} from '@bluecentury/styles'
 import {usePlanning} from '@bluecentury/stores'
-import DatePicker from 'react-native-date-picker'
-import {
-  formatBulkTypeLabel,
-  navLogActionsType,
-  titleCase,
-} from '@bluecentury/constants'
+import {formatBulkTypeLabel, titleCase} from '@bluecentury/constants'
 import {IconButton, LoadingAnimated} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 
@@ -51,9 +47,8 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
     deleteNavLogAction,
     isDeleteNavLogActionSuccess,
     reset,
+    updateBulkCargo,
   } = usePlanning()
-
-  console.log(navlogAction)
 
   const cargoChoices =
     navigationLogDetails?.bulkCargo.length > 0
@@ -76,7 +71,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
         ? [
             {
               navigationBulk: navlogAction?.navigationBulk?.id,
-              amount: navlogAction?.navigationBulk?.amount.toString(),
+              amount: navlogAction?.navigationBulk?.actualAmount.toString(),
             },
           ]
         : [
@@ -91,25 +86,10 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
   )
   const [selectedDate, setSelectedDate] = useState('')
   const [openDatePicker, setOpenDatePicker] = useState(false)
-  const [navigationLogActionTypes, setNavigationLogActionTypes] = useState([
-    {
-      label: 'Load',
-      img: Icons.loading,
-      selected: false,
-    },
-    {
-      label: 'Unload',
-      img: Icons.unloading,
-      selected: false,
-    },
-    {
-      label: 'Clean',
-      img: Icons.broom,
-      selected: false,
-    },
-  ])
   const [confirmModal, setConfirmModal] = useState(false)
   const [actionMethod, setActionMethod] = useState('Add')
+  const [newBulkCargoData, setNewBulkCargoData] = useState({})
+
   const dateTimeHeight = useSharedValue(method === 'edit' ? 190 : 0)
   const dateTimeOpacity = useSharedValue(method === 'edit' ? 1 : 0)
   const reanimatedStyle = useAnimatedStyle(() => {
@@ -136,9 +116,11 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
 
   useEffect(() => {
     if (isCreateNavLogActionSuccess) {
+      updateBulkCargo(newBulkCargoData)
       showToast('Action added.', 'success')
     }
     if (isUpdateNavLogActionSuccess) {
+      updateBulkCargo(newBulkCargoData)
       showToast('Action updated.', 'success')
     }
     if (isDeleteNavLogActionSuccess) {
@@ -152,7 +134,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
 
   const showToast = (text: string, res: string) => {
     toast.show({
-      duration: 2000,
+      duration: 1000,
       render: () => {
         return (
           <Text
@@ -410,7 +392,20 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
   }
 
   const handleSaveAction = () => {
-    console.log(navActionDetails)
+    // console.log(navActionDetails)
+    const bulkCargo = navigationLogDetails?.bulkCargo?.find(
+      cargo => cargo.id === navActionDetails.cargoHoldActions[0].navigationBulk
+    )
+    const newBulkCargoAmount =
+      Number(bulkCargo?.actualAmount) +
+      Number(navActionDetails.cargoHoldActions[0].amount)
+    setNewBulkCargoData({
+      id: bulkCargo?.id,
+      typeId: bulkCargo?.type?.id,
+      amount: bulkCargo?.amount,
+      actualAmount: newBulkCargoAmount,
+      isLoading: bulkCargo?.isLoading ? '1' : '0',
+    })
     if (method === 'add') {
       createNavigationLogAction(navigationLogDetails?.id, navActionDetails)
     } else {
