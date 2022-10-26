@@ -21,15 +21,13 @@ const logout = (userCredentials: Credentials) => {
     })
 }
 
-const refresh = (refreshToken: string) => {
-  console.log('REFRESH_EXPIRED_TOKEN', refreshToken)
+const refresh = async (refreshToken: string) => {
   return API.post('token/refresh', {refresh_token: refreshToken})
     .then(response => {
-      console.log('REFRESH_RESPONSE', response)
       return response.data
     })
     .catch(error => {
-      console.log('REFRESH_ERROR', error)
+      console.log('REFRESH_ERROR', error.toJSON())
       return error
     })
 }
