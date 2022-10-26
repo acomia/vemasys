@@ -21,4 +21,15 @@ const logout = (userCredentials: Credentials) => {
     })
 }
 
-export {login, logout}
+const refresh = async (refreshToken: string) => {
+  return API.post('token/refresh', {refresh_token: refreshToken})
+    .then(response => {
+      return response.data
+    })
+    .catch(error => {
+      console.log('REFRESH_ERROR', error.toJSON())
+      return error
+    })
+}
+
+export {login, logout, refresh}
