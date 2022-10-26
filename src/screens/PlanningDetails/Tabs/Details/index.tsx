@@ -24,11 +24,9 @@ import {Icons} from '@bluecentury/assets'
 import {useEntity, usePlanning} from '@bluecentury/stores'
 import {
   formatLocationLabel,
-  formatNumber,
   hasSelectedEntityUserPermission,
   ROLE_PERMISSION_NAVIGATION_LOG_ADD_COMMENT,
   ROLE_PERMISSION_NAVIGATION_LOG_ADD_FILE,
-  titleCase,
 } from '@bluecentury/constants'
 import {PROD_URL} from '@vemasys/env'
 import {LoadingAnimated} from '@bluecentury/components'
@@ -47,7 +45,6 @@ const Details = () => {
   const {
     isPlanningLoading,
     navigationLogDetails,
-    navigationLogActions,
     navigationLogComments,
     getNavigationLogDetails,
     getNavigationLogActions,
@@ -337,7 +334,6 @@ const Details = () => {
 
   const onPullToReload = () => {
     getNavigationLogDetails(navlog.id)
-    getNavigationLogActions(navlog.id)
     getNavigationLogComments(navlog.id)
     getNavigationLogDocuments(navlog.id)
     getNavigationLogCargoHolds(physicalVesselId)
@@ -393,85 +389,6 @@ const Details = () => {
           )}
         </Box>
 
-        {/* Actions Section */}
-        <Text
-          fontSize={ms(20)}
-          fontWeight="bold"
-          color={Colors.azure}
-          mt={ms(20)}
-        >
-          Actions
-        </Text>
-        {navigationLogActions?.length > 0
-          ? navigationLogActions?.map((action, index) => (
-              <TouchableOpacity
-                activeOpacity={0.7}
-                key={index}
-                onPress={() =>
-                  navigation.navigate('AddEditNavlogAction', {
-                    method: 'edit',
-                    navlogAction: action,
-                  })
-                }
-              >
-                <HStack
-                  borderWidth={1}
-                  borderColor={Colors.light}
-                  borderRadius={5}
-                  p={ms(10)}
-                  mt={ms(10)}
-                  bg={Colors.white}
-                  shadow={1}
-                  alignItems="center"
-                >
-                  <Box flex="1">
-                    <HStack>
-                      <Text fontWeight="medium" color={Colors.text}>
-                        {titleCase(action.type)}
-                      </Text>
-                      {action.type.toLowerCase() !== 'cleaning' &&
-                      action.navigationBulk ? (
-                        <Text
-                          fontWeight="medium"
-                          color={Colors.text}
-                          ml={ms(5)}
-                        >
-                          {action.navigationBulk.type.nameEN}
-                        </Text>
-                      ) : null}
-
-                      <Text fontWeight="medium" color={Colors.text} ml={ms(5)}>
-                        {action.value && formatNumber(action.value, 0)}
-                      </Text>
-                    </HStack>
-                    <Text color={Colors.disabled}>{`${moment(
-                      action.start
-                    ).format('DD/MM | hh:mm A')} - ${moment(
-                      _.isNull(action.end) ? null : action.end
-                    ).format('DD/MM | hh:mm A')}`}</Text>
-                  </Box>
-                  <Image
-                    alt="navlog-action-icon"
-                    source={action.end ? Icons.play : Icons.stop}
-                  />
-                </HStack>
-              </TouchableOpacity>
-            ))
-          : null}
-        <Box>
-          <Button
-            bg={Colors.primary}
-            leftIcon={<Icon as={Ionicons} name="add" size="sm" />}
-            mt={ms(20)}
-            onPress={() =>
-              navigation.navigate('AddEditNavlogAction', {
-                method: 'add',
-              })
-            }
-          >
-            Start new action
-          </Button>
-        </Box>
         {/* Comments Section */}
         <HStack alignItems="center" mt={ms(20)}>
           <Text fontSize={ms(20)} fontWeight="bold" color={Colors.azure}>

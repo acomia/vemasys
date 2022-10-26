@@ -1,14 +1,18 @@
 import React, {useEffect, useState} from 'react'
-import {TouchableOpacity} from 'react-native'
+import {Alert, TouchableOpacity, YellowBox} from 'react-native'
 import {
   Box,
   Button,
   Divider,
   HStack,
   Icon,
+  Image,
+  Input,
+  Modal,
   ScrollView,
   Select,
   Text,
+  useToast,
 } from 'native-base'
 import {Shadow} from 'react-native-shadow-2'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
@@ -16,88 +20,255 @@ import {ms} from 'react-native-size-matters'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import moment from 'moment'
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated'
+import DatePicker from 'react-native-date-picker'
 
 import {Colors} from '@bluecentury/styles'
-import {useEntity, usePlanning} from '@bluecentury/stores'
-import DatePicker from 'react-native-date-picker'
-import {titleCase} from '@bluecentury/constants'
-import {uniqueId} from 'lodash'
-import {LoadingAnimated} from '@bluecentury/components'
+import {usePlanning} from '@bluecentury/stores'
+import {formatBulkTypeLabel, titleCase} from '@bluecentury/constants'
+import {IconButton, LoadingAnimated} from '@bluecentury/components'
+import {Icons} from '@bluecentury/assets'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const AddEditNavlogAction = ({navigation, route}: Props) => {
-  const {method, navlogAction}: any = route.params
+  const {method, actionType, navlogAction}: any = route.params
+  const toast = useToast()
   const {
     isPlanningLoading,
-    navigationLogActions,
-    navigationLogCargoHolds,
     navigationLogDetails,
+    createNavigationLogAction,
+    isCreateNavLogActionSuccess,
+    updateNavigationLogAction,
+    isUpdateNavLogActionSuccess,
+    deleteNavLogAction,
+    isDeleteNavLogActionSuccess,
+    reset,
+    updateBulkCargo,
   } = usePlanning()
 
   const cargoChoices =
-    navigationLogDetails && navigationLogDetails?.bulkCargo
+    navigationLogDetails?.bulkCargo.length > 0
       ? navigationLogDetails?.bulkCargo?.map(
           (c: {type: {nameEn: any}; id: any}) => ({
-            label: c.type.nameEn,
+            label: formatBulkTypeLabel(c.type),
             value: c.id,
           })
         )
       : []
 
-  const {navigationBulk, cargoHoldTransactions} = navigationLogActions
-  const [navAction, setNavAction] = useState({
-    type: navlogAction !== undefined ? titleCase(navlogAction.type) : '',
-    start: navlogAction !== undefined ? navlogAction.start : new Date(),
-    estimatedEnd:
-      navlogAction !== undefined ? navlogAction.estimatedEnd : new Date(),
-    end: navlogAction !== undefined ? navlogAction.end : new Date(),
+  const [navActionDetails, setNavActionDetails] = useState({
+    type:
+      navlogAction !== undefined ? titleCase(navlogAction.type) : actionType,
+    start: navlogAction !== undefined ? navlogAction.start : '',
+    estimatedEnd: navlogAction !== undefined ? navlogAction.estimatedEnd : '',
+    end: navlogAction !== undefined ? navlogAction.end : '',
     cargoHoldActions:
-      cargoHoldTransactions && cargoHoldTransactions.length > 0
-        ? cargoHoldTransactions.map(cht => {
-            return {
-              navigationBulk: navigationBulk ? navigationBulk.id : 0,
-              cargoHoldTransactions: navigationLogCargoHolds.map(cargoHold => ({
-                id: cargoHold.id,
-                amount:
-                  cht.cargoHold.id == cargoHold.id
-                    ? cht.amount.toString()
-                    : '0',
-              })),
-            }
-          })
+      navlogAction !== undefined
+        ? [
+            {
+              navigationBulk: navlogAction?.navigationBulk?.id,
+              amount: navlogAction?.navigationBulk?.actualAmount.toString(),
+            },
+          ]
         : [
             {
-              navigationBulk: navigationBulk
-                ? navigationBulk.id
-                : cargoChoices.length
-                ? cargoChoices[0].value
-                : 0,
-              cargoHoldTransactions: navigationLogCargoHolds.map(cargoHold => ({
-                id: cargoHold.id,
-                amount: '0',
-              })),
+              navigationBulk: navigationLogDetails?.bulkCargo[0]?.id,
+              amount: '0',
             },
           ],
   })
-
-  const [cargoHoldActions, setCargoHoldActions] = useState([])
-  const [selectedCargoHolds, setSelectedCargoHolds] = useState('')
+  const [selectedCargo, setSelectedCargo] = useState(
+    navlogAction !== undefined ? navlogAction?.navigationBulk?.id : ''
+  )
   const [selectedDate, setSelectedDate] = useState('')
   const [openDatePicker, setOpenDatePicker] = useState(false)
-  const [showCargo, setShowCargo] = useState(false)
-  const navigationLogActionTypes = [
-    {value: 'loading', label: 'Loading'},
-    {value: 'unloading', label: 'Unloading'},
-    {value: 'cleaning', label: 'Cleaning'},
-  ]
+  const [confirmModal, setConfirmModal] = useState(false)
+  const [actionMethod, setActionMethod] = useState('Add')
+  const [newBulkCargoData, setNewBulkCargoData] = useState({})
 
-  const cargoHoldsToTransactions = (cargoHolds: any[]) => {
-    return cargoHolds
-      ? cargoHolds.map(cargoHold => ({
-          id: cargoHold.id,
-          amount: '0',
-        }))
-      : []
+  const dateTimeHeight = useSharedValue(method === 'edit' ? 190 : 0)
+  const dateTimeOpacity = useSharedValue(method === 'edit' ? 1 : 0)
+  const reanimatedStyle = useAnimatedStyle(() => {
+    return {
+      height: dateTimeHeight.value,
+      opacity: dateTimeOpacity.value,
+    }
+  })
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () =>
+        method === 'edit' && (
+          <IconButton
+            source={Icons.trash}
+            onPress={() => {
+              setConfirmModal(true), setActionMethod('Delete')
+            }}
+            size={22}
+          />
+        ),
+    })
+  }, [])
+
+  useEffect(() => {
+    if (isCreateNavLogActionSuccess) {
+      updateBulkCargo(newBulkCargoData)
+      showToast('Action added.', 'success')
+    }
+    if (isUpdateNavLogActionSuccess) {
+      updateBulkCargo(newBulkCargoData)
+      showToast('Action updated.', 'success')
+    }
+    if (isDeleteNavLogActionSuccess) {
+      showToast('Action deleted.', 'success')
+    }
+  }, [
+    isCreateNavLogActionSuccess,
+    isUpdateNavLogActionSuccess,
+    isDeleteNavLogActionSuccess,
+  ])
+
+  const showToast = (text: string, res: string) => {
+    toast.show({
+      duration: 1000,
+      render: () => {
+        return (
+          <Text
+            bg={res === 'success' ? 'emerald.500' : 'red.500'}
+            px="2"
+            py="1"
+            rounded="sm"
+            mb={5}
+            color={Colors.white}
+          >
+            {text}
+          </Text>
+        )
+      },
+      onCloseComplete() {
+        res === 'success' ? onSuccess() : null
+      },
+    })
+  }
+
+  const onSuccess = () => {
+    reset()
+    navigation.goBack()
+  }
+
+  // const renderActionsType = () => {
+  //   return (
+  //     <HStack p={ms(10)}>
+  //       {navigationLogActionTypes.map((actType, index) => (
+  //         <Shadow
+  //           key={`NavLogActionType-${index}`}
+  //           distance={actType.selected ? 0 : 5}
+  //           viewStyle={{width: '100%', borderRadius: 5}}
+  //           containerViewStyle={{marginRight: 10}}
+  //           offset={actType.selected ? undefined : [1, 2]}
+  //         >
+  //           <TouchableOpacity
+  //             activeOpacity={0.7}
+  //             onPress={() => onSelectActionType(index)}
+  //             disabled={method === 'edit' ? true : false}
+  //           >
+  //             <Box
+  //               w={ms(80)}
+  //               h={ms(80)}
+  //               p={ms(10)}
+  //               bg={
+  //                 actType.selected
+  //                   ? Colors.primary
+  //                   : method === 'edit'
+  //                   ? Colors.light
+  //                   : Colors.white
+  //               }
+  //               borderWidth={1}
+  //               borderColor={Colors.light}
+  //               borderRadius={ms(5)}
+  //               alignItems="center"
+  //               justifyContent="center"
+  //             >
+  //               <Image
+  //                 alt="navlog-action-img"
+  //                 source={actType.img}
+  //                 width={ms(40)}
+  //                 height={ms(40)}
+  //                 tintColor={actType.selected ? Colors.white : undefined}
+  //                 resizeMode="contain"
+  //               />
+  //               <Text
+  //                 fontWeight="bold"
+  //                 fontSize={ms(12)}
+  //                 color={actType.selected ? Colors.white : Colors.text}
+  //               >
+  //                 {actType.label}
+  //               </Text>
+  //             </Box>
+  //           </TouchableOpacity>
+  //         </Shadow>
+  //       ))}
+  //     </HStack>
+  //   )
+  // }
+
+  // const onSelectActionType = (index: number) => {
+  //   let newNLAT = [...navigationLogActionTypes]
+  //   newNLAT.forEach(act => (act.selected = false))
+  //   newNLAT[index].selected = !newNLAT[index].selected
+  //   setNavigationLogActionTypes(newNLAT)
+  //   setNavActionDetails({
+  //     ...navActionDetails,
+  //     type: `${newNLAT[index].label}ing`,
+  //   })
+  //   newNLAT[index].label.toLowerCase() === 'clean'
+  //     ? ((cargoOpacity.value = withTiming(0)),
+  //       setNavActionDetails({
+  //         ...navActionDetails,
+  //         cargoHoldActions: [],
+  //       }))
+  //     : (cargoOpacity.value = withTiming(1))
+  // }
+
+  const renderActionTypeIcon = (type: string) => {
+    switch (type.toLowerCase()) {
+      case 'unloading':
+        return Icons.unloading
+      case 'loading':
+        return Icons.loading
+      case 'cleaning':
+        return Icons.broom
+      default:
+        break
+    }
+  }
+
+  const renderActionType = () => {
+    return (
+      <HStack
+        mt={ms(3)}
+        mb={ms(30)}
+        bg="#F7F7F7"
+        borderRadius={ms(5)}
+        p="2"
+        alignItems="center"
+      >
+        <Image
+          alt="navlog-action-animated"
+          source={renderActionTypeIcon(actionType)}
+          width={ms(40)}
+          resizeMode="contain"
+          mr={ms(10)}
+        />
+        <Text fontSize={ms(16)} fontWeight="bold" color={Colors.text}>
+          {actionType}
+        </Text>
+      </HStack>
+    )
   }
 
   const DatetimePicker = ({date, onChangeDate, color}: any) => {
@@ -128,7 +299,9 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
             fontWeight="medium"
             color={date ? Colors.text : Colors.disabled}
           >
-            {date ? moment(date).format('D MMM YYYY') : 'No Date Set'}
+            {date
+              ? moment(date).format('D MMM YYYY | HH:mm')
+              : 'No Date & Time Set'}
           </Text>
         </TouchableOpacity>
         <MaterialIcons name="keyboard-arrow-down" size={ms(22)} />
@@ -136,17 +309,20 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
     )
   }
 
-  const CargoHoldActions = () => {
-    return cargoHoldActions.length > 0
-      ? cargoHoldActions.map((cargoHold, index) => (
-          <HStack key={index} alignItems="center" mb={ms(10)}>
+  const renderCargoHoldActions = () => {
+    const {nameEn, nameNl}: BulkType = navigationLogDetails?.bulkCargo[0]?.type
+    return (
+      <HStack alignItems="center" mb={ms(10)}>
+        <Box flex="2" mr={ms(10)}>
+          <Text fontWeight="medium" color={Colors.disabled} mb={ms(6)}>
+            Cargo
+          </Text>
+          {navigationLogDetails?.bulkCargo?.length > 1 ? (
             <Select
-              minWidth="280"
+              flex="1"
               bg="#F7F7F7"
-              onValueChange={val => {
-                setSelectedCargoHolds(val)
-              }}
-              selectedValue={selectedCargoHolds}
+              onValueChange={val => onSelectCargo(val)}
+              selectedValue={selectedCargo}
             >
               {cargoChoices.map((type: any, index: number) => (
                 <Select.Item
@@ -156,54 +332,100 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
                 />
               ))}
             </Select>
-            <Button
-              bg={Colors.light}
-              size="md"
-              mx={ms(10)}
-              minH={ms(40)}
-              // onPress={() => setCargoHoldActions([])}
-            >
-              <Text
-                color={Colors.danger}
-                fontSize={ms(12)}
-                fontWeight="bold"
-                onPress={() => onRemoveCargoEntry(cargoHold.id)}
-              >
-                Remove
+          ) : (
+            <Box bg="#F7F7F7" borderRadius={ms(5)} py="3" px="1">
+              <Text numberOfLines={1} ellipsizeMode="tail" color={Colors.text}>
+                {nameEn || nameNl}
               </Text>
-            </Button>
-          </HStack>
-        ))
-      : null
+            </Box>
+          )}
+        </Box>
+        <Box flex="1">
+          <Text fontWeight="medium" color={Colors.disabled} mb={ms(6)}>
+            Amount
+          </Text>
+          <Input
+            bg="#F7F7F7"
+            onChangeText={val => onChangeAmount(val)}
+            value={navActionDetails.cargoHoldActions[0].amount}
+            keyboardType="numeric"
+          />
+        </Box>
+      </HStack>
+    )
+  }
+
+  const onChangeAmount = (val: string) => {
+    const newArr = navActionDetails.cargoHoldActions
+    newArr[0].amount = val
+    setNavActionDetails({...navActionDetails, cargoHoldActions: newArr})
   }
 
   const onDatesChange = (date: Date) => {
     if (selectedDate === 'start') {
-      setNavAction({...navAction, start: date})
+      dateTimeHeight.value = withTiming(190, {duration: 800})
+      dateTimeOpacity.value = withTiming(1)
+      setNavActionDetails({...navActionDetails, start: date})
     } else if (selectedDate === 'estimated') {
-      setNavAction({...navAction, estimatedEnd: date})
+      setNavActionDetails({...navActionDetails, estimatedEnd: date})
     } else {
-      setNavAction({...navAction, end: date})
+      setNavActionDetails({...navActionDetails, end: date})
     }
   }
 
-  const onRemoveCargoEntry = (id: string) => {
-    const remove = cargoHoldActions.filter(cargo => cargo.id !== id)
-    setCargoHoldActions(remove)
-  }
-
-  const handleOnAddBulk = () => {
-    setShowCargo(true)
-    const navigationBulk = cargoChoices.length ? cargoChoices[0].value : 0
-    const cargohHoldTransactions = cargoHoldsToTransactions(
-      navigationLogCargoHolds
-    )
+  const onSelectCargo = (cargo: any) => {
+    setSelectedCargo(cargo)
+    const navigationBulk = cargo
     const newCargoHolds = {
       navigationBulk,
-      cargoHoldTransactions: cargohHoldTransactions,
+      amount: navActionDetails.cargoHoldActions[0].amount,
     }
+    setNavActionDetails({
+      ...navActionDetails,
+      cargoHoldActions: [newCargoHolds],
+    })
+  }
 
-    setCargoHoldActions([...cargoHoldActions, newCargoHolds])
+  const confirmSave = () => {
+    setConfirmModal(true)
+    method === 'add' ? setActionMethod('add') : setActionMethod('update')
+  }
+
+  const handleSaveAction = () => {
+    // console.log(navActionDetails)
+    const bulkCargo = navigationLogDetails?.bulkCargo?.find(
+      cargo => cargo.id === navActionDetails.cargoHoldActions[0].navigationBulk
+    )
+    const newBulkCargoAmount =
+      Number(bulkCargo?.actualAmount) +
+      Number(navActionDetails.cargoHoldActions[0].amount)
+    setNewBulkCargoData({
+      id: bulkCargo?.id,
+      typeId: bulkCargo?.type?.id,
+      amount: bulkCargo?.amount,
+      actualAmount: newBulkCargoAmount,
+      isLoading: bulkCargo?.isLoading ? '1' : '0',
+    })
+    if (method === 'add') {
+      createNavigationLogAction(navigationLogDetails?.id, navActionDetails)
+    } else {
+      updateNavigationLogAction(
+        navlogAction?.id,
+        navigationLogDetails?.id,
+        navActionDetails
+      )
+    }
+  }
+
+  const onDeleteNavLogAction = () => {
+    deleteNavLogAction(navlogAction?.id)
+  }
+
+  const onActionConfirmed = () => {
+    setConfirmModal(false)
+    actionMethod === 'add' || actionMethod === 'update'
+      ? handleSaveAction()
+      : onDeleteNavLogAction()
   }
 
   if (isPlanningLoading) return <LoadingAnimated />
@@ -216,73 +438,50 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
         bg={Colors.white}
       >
         <Text fontSize={ms(20)} fontWeight="bold" color={Colors.azure}>
-          {method === 'add' ? 'New Action' : 'Edit Action'}
+          {actionType} Action
         </Text>
 
         <Divider my={ms(10)} />
         <Text fontWeight="medium" color={Colors.disabled}>
-          Type
+          Action
         </Text>
-        <Select
-          minWidth="300"
-          accessibilityLabel=""
-          placeholder={navAction.type}
-          bg={'#F7F7F7'}
-          onValueChange={val => {
-            setNavAction({...navAction, type: val})
-          }}
-          mt={ms(3)}
-          mb={ms(15)}
-        >
-          {navigationLogActionTypes.map((type, index) => (
-            <Select.Item key={index} label={type.label} value={type.value} />
-          ))}
-        </Select>
+        {/* {renderActionsType()} */}
+        {renderActionType()}
         <Text fontWeight="medium" color={Colors.disabled}>
           Start
         </Text>
         <DatetimePicker
-          date={navAction.start}
+          date={navActionDetails.start}
           color={Colors.secondary}
           onChangeDate={() => {
             setSelectedDate('start'), setOpenDatePicker(true)
           }}
         />
-        <Text fontWeight="medium" color={Colors.disabled}>
-          Estimated end
-        </Text>
-        <DatetimePicker
-          date={navAction.estimatedEnd}
-          color={Colors.azure}
-          onChangeDate={() => {
-            setSelectedDate('estimated'), setOpenDatePicker(true)
-          }}
-        />
-        <Text fontWeight="medium" color={Colors.disabled}>
-          End
-        </Text>
-        <DatetimePicker
-          date={navAction.end}
-          color={Colors.danger}
-          onChangeDate={() => {
-            setSelectedDate('end'), setOpenDatePicker(true)
-          }}
-        />
-        <Text fontWeight="medium" color={Colors.disabled} mb={ms(5)}>
-          Cargo
-        </Text>
-        {showCargo ? <CargoHoldActions /> : null}
-        <Box alignItems="flex-end">
-          <Button
-            bg={Colors.primary}
-            leftIcon={<Icon as={MaterialIcons} name="add" size="sm" />}
-            mt={ms(15)}
-            onPress={handleOnAddBulk}
-            minW="50%"
-          >
-            Add bulk
-          </Button>
-        </Box>
+        <Animated.View
+          style={[{opacity: dateTimeHeight.value > 0 ? 1 : 0}, reanimatedStyle]}
+        >
+          <Text fontWeight="medium" color={Colors.disabled}>
+            Estimated end
+          </Text>
+          <DatetimePicker
+            date={navActionDetails.estimatedEnd}
+            color={Colors.azure}
+            onChangeDate={() => {
+              setSelectedDate('estimated'), setOpenDatePicker(true)
+            }}
+          />
+          <Text fontWeight="medium" color={Colors.disabled}>
+            End
+          </Text>
+          <DatetimePicker
+            date={navActionDetails.end}
+            color={Colors.danger}
+            onChangeDate={() => {
+              setSelectedDate('end'), setOpenDatePicker(true)
+            }}
+          />
+        </Animated.View>
+        {actionType === 'Cleaning' ? null : renderCargoHoldActions()}
         <DatePicker
           modal
           open={openDatePicker}
@@ -316,13 +515,56 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
               flex="1"
               m={ms(16)}
               bg={Colors.primary}
-              // onPress={handleOnCreateNewComment}
+              onPress={() => confirmSave()}
             >
               Save
             </Button>
           </HStack>
         </Shadow>
       </Box>
+      <Modal
+        isOpen={confirmModal}
+        size="full"
+        px={ms(12)}
+        animationPreset="slide"
+      >
+        <Modal.Content>
+          <Modal.Header>Confirmation</Modal.Header>
+          <Text my={ms(20)} mx={ms(12)} fontWeight="medium">
+            Are you sure you want to {actionMethod.toLowerCase()} this action?
+          </Text>
+          <HStack>
+            <Button
+              flex="1"
+              m={ms(12)}
+              bg={Colors.grey}
+              onPress={() => setConfirmModal(false)}
+            >
+              <Text fontWeight="medium" color={Colors.disabled}>
+                Cancel
+              </Text>
+            </Button>
+            <Button
+              flex="1"
+              m={ms(12)}
+              bg={
+                actionMethod.toLowerCase() === 'add' ||
+                actionMethod.toLowerCase() === 'update'
+                  ? Colors.primary
+                  : Colors.danger
+              }
+              onPress={onActionConfirmed}
+            >
+              <Text fontWeight="medium" color={Colors.white}>
+                {actionMethod.toLowerCase() === 'add' ||
+                actionMethod.toLowerCase() === 'update'
+                  ? 'Save'
+                  : 'Delete'}
+              </Text>
+            </Button>
+          </HStack>
+        </Modal.Content>
+      </Modal>
     </Box>
   )
 }
