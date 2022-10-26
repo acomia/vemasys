@@ -59,6 +59,14 @@ export const useAuth = create(
         })
         try {
           const response: Auth = await API.login(credentials)
+          if (response === 'Invalid credentials.') {
+            set({
+              hasAuthenticationError: true,
+              isAuthenticatingUser: false,
+              errorMessage: response,
+            })
+            return
+          }
           set({
             token: response.token,
             refreshToken: response.refreshToken,
