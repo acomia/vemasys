@@ -190,7 +190,7 @@ export default function RootNavigator() {
             headerShown: true,
             title:
               route.params.method === 'edit'
-                ? 'Edit Cargo Entry'
+                ? 'Update Cargo Amount'
                 : 'New Cargo Entry',
           })}
         />

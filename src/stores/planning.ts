@@ -378,11 +378,9 @@ export const usePlanning = create(
             id: navigationLogId,
           },
           type,
-          start: start ? moment(start).format('YYYY-MM-DD hh:mm') : null,
-          end: end ? moment(end).format('YYYY-MM-DD hh:mm') : null,
-          estimatedEnd: estimatedEnd
-            ? moment(estimatedEnd).format('YYYY-MM-DD hh:mm')
-            : null,
+          start: start ? start : null,
+          end: end ? end : null,
+          estimatedEnd: estimatedEnd ? estimatedEnd : null,
           navigationBulk: {
             id: cargoHoldActions[0].navigationBulk,
             amount: cargoHoldActions[0].amount,
@@ -412,17 +410,16 @@ export const usePlanning = create(
             id: navigationLogId,
           },
           type,
-          start: start ? moment(start).format('YYYY-MM-DD hh:mm') : null,
-          end: end ? moment(end).format('YYYY-MM-DD hh:mm') : null,
-          estimatedEnd: estimatedEnd
-            ? moment(estimatedEnd).format('YYYY-MM-DD hh:mm')
-            : null,
-          navigationBulk: {
-            id: cargoHoldActions[0].navigationBulk,
-            amount: cargoHoldActions[0].amount,
-          },
+          start: start ? start : null,
+          end: end ? end : null,
+          estimatedEnd: estimatedEnd ? estimatedEnd : null,
+          navigationBulk: cargoHoldActions
+            ? {
+                id: cargoHoldActions[0].navigationBulk,
+                amount: cargoHoldActions[0].amount,
+              }
+            : {},
         }
-
         set({isPlanningLoading: true})
         try {
           const response = await API.updateNavigationLogAction(id, body)

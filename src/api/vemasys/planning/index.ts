@@ -142,11 +142,11 @@ const updateBulkCargoEntry = async (cargo: any) => {
       if (response.data) {
         return response.data
       } else {
-        throw new Error('Update bulk cargo entry failed.')
+        throw new Error('Update bulk cargo failed.')
       }
     })
     .catch(error => {
-      console.error('Error: Update bulk cargo entry data', error)
+      console.error('Error: Update bulk cargo data', error)
     })
 }
 
@@ -226,8 +226,6 @@ const uploadImgFile = async (file: ImageFile) => {
         'X-active-entity-user-id': `${entityUserId}`,
       },
     })
-
-    console.log('res.data', res.data)
     return res.data
   } catch (error) {
     console.error('Error: Upload image file data', error)

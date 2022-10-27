@@ -1,8 +1,7 @@
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useRef, useState} from 'react'
 import {
   Box,
   Button,
-  Flex,
   HStack,
   Image,
   ScrollView,
@@ -19,10 +18,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {useCharters, useEntity, useSettings} from '@bluecentury/stores'
 import {
   CHARTER_CONTRACTOR_STATUS_ACCEPTED,
-  UPDATE_CHARTER_FAILED,
   UPDATE_CHARTER_SUCCESS,
-  UPLOAD_CHARTER_SIGNATURE_FAILED,
-  UPLOAD_CHARTER_SIGNATURE_SUCCESS,
 } from '@bluecentury/constants'
 import {LoadingAnimated} from '@bluecentury/components'
 
@@ -37,10 +33,6 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
     getCharters,
     uploadSignature,
     setSignatureId,
-    signatureId,
-    updateCharterStatusResponse,
-    uploadCharterSignatureResponse,
-    resetResponses,
   } = useCharters()
 
   const {user} = useEntity()
@@ -77,6 +69,10 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
     } else {
       showToast('Signature upload failed.', 'failed')
     }
+  }
+
+  const handleOnValueChange = () => {
+    navigation.navigate('TrackingServiceDialog')
   }
 
   const handleEmpty = () => {
@@ -191,8 +187,8 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
               </Text>
               <Switch
                 size="sm"
-                value={mobileTracker}
-                onToggle={() => setMobileTracker(!mobileTracker)}
+                value={isMobileTracking}
+                onToggle={handleOnValueChange}
               />
             </HStack>
             <HStack p={ms(14)}>

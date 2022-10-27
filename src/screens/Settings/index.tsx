@@ -14,9 +14,13 @@ const Settings = (props: DrawerContentComponentProps) => {
   const language = useSettings(state => state.language)
   const setLanguage = useSettings(state => state.setLanguage)
   const setDarkMode = useSettings(state => state.setDarkMode)
-  const setMobileTracking = useSettings(state => state.setIsMobileTracking)
+  // const setMobileTracking = useSettings(state => state.setIsMobileTracking)
   const setIsQrScanner = useSettings(state => state.setIsQrScanner)
   const isQrScanner = useSettings(state => state.isQrScanner)
+
+  const handleOnValueChange = () => {
+    navigation.navigate('TrackingServiceDialog')
+  }
 
   return (
     <Box
@@ -54,7 +58,7 @@ const Settings = (props: DrawerContentComponentProps) => {
         value="Set this device as Vessel GPS"
         iconSource={Icons.location}
         switchState={isMobileTracking}
-        callback={setMobileTracking}
+        callback={handleOnValueChange}
       />
       <SettingsItem
         type="switch"

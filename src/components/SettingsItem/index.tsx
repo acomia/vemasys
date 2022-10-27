@@ -27,25 +27,14 @@ interface Props {
 
 const SettingsItem = (props: Props) => {
   const {type, value, iconSource, callback, switchState, language} = props
-  const [isSwitchActive, setIsSwitchActive] = useState(switchState)
   const [isSelection, setIsSelection] = useState(false)
   const [selectedValue, setSelectedValue] = useState('')
-
-  useEffect(() => {
-    setIsSwitchActive(switchState)
-  }, [switchState])
 
   useEffect(() => {
     if (language && type === 'select') {
       setSelectedValue(language)
     }
   }, [])
-
-  useEffect(() => {
-    if (type === 'switch') {
-      callback(isSwitchActive)
-    }
-  }, [isSwitchActive])
 
   const languageIcon = (lang: string) => {
     switch (lang) {
@@ -141,10 +130,8 @@ const SettingsItem = (props: Props) => {
         <Switch
           defaultIsChecked
           colorScheme="primary"
-          isChecked={isSwitchActive}
-          onToggle={() => {
-            setIsSwitchActive(!isSwitchActive)
-          }}
+          isChecked={switchState}
+          onToggle={callback}
         />
       )
     }
