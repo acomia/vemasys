@@ -63,7 +63,7 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
     }
     const sign = await uploadSignature(signData)
     if (typeof sign === 'object') {
-      showToast('Signature upload sucessfully.', 'warning')
+      showToast('Signature upload sucessfully.', 'success')
       setSignatureId(sign.id)
       setSignature(signature.replace('data:image/png;base64,', ''))
     } else {
