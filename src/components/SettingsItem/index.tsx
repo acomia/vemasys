@@ -131,7 +131,7 @@ const SettingsItem = (props: Props) => {
           defaultIsChecked
           colorScheme="primary"
           isChecked={switchState}
-          onToggle={callback}
+          onToggle={() => callback(!switchState)}
         />
       )
     }
