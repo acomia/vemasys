@@ -13,7 +13,7 @@ const Sidebar = (props: DrawerContentComponentProps) => {
     navigation.navigate(name)
   }
   return (
-    <Box flex="1" safeArea p={ms(10)} w={240}>
+    <Box flex="1" safeArea p={ms(10)}>
       <VStack flex="1">
         <Image
           alt="Company Logo"
