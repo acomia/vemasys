@@ -46,7 +46,10 @@ function Login() {
   const [isUsernameEmpty, setIsUsernameEmpty] = useState(false)
   const [isPasswordEmpty, setIsPasswordEmpty] = useState(false)
   const passwordRef = useRef<any>()
+  const userNameRef = useRef<any>()
   const handleOnPressLogin = () => {
+    userNameRef.current.blur()
+    passwordRef.current.blur()
     if (user.username === '' && user.password === '') {
       setIsPasswordEmpty(true)
       setIsUsernameEmpty(true)
@@ -61,6 +64,7 @@ function Login() {
 
     authenticate(user)
   }
+
   const handleOnSubmitEditingPassword = () => handleOnPressLogin()
   useEffect(() => {
     Keychain.getGenericPassword()
@@ -96,8 +100,9 @@ function Login() {
             <Text bold fontSize="2xl" color={Colors.azure}>
               Login to your Account
             </Text>
-            <FormControl isInvalid={isUsernameEmpty}>
+            <FormControl isInvalid={isUsernameEmpty || hasAuthenticationError}>
               <Input
+                ref={userNameRef}
                 bg={Colors.white}
                 value={user.username}
                 onChangeText={text => {
@@ -126,10 +131,10 @@ function Login() {
                 leftIcon={<WarningOutlineIcon size="xs" />}
               >
                 {/* {_t(language, 'usernameRequired')} */}
-                {usernameRequired}
+                {hasAuthenticationError ? '' : usernameRequired}
               </FormControl.ErrorMessage>
             </FormControl>
-            <FormControl isInvalid={isPasswordEmpty}>
+            <FormControl isInvalid={isPasswordEmpty || hasAuthenticationError}>
               <Input
                 bg={Colors.white}
                 ref={passwordRef}
@@ -171,16 +176,19 @@ function Login() {
               <FormControl.ErrorMessage
                 leftIcon={<WarningOutlineIcon size="xs" />}
               >
-                {user.username === '' && user.password === ''
-                  ? allFieldsRequired
-                  : passwordRequired}
+                {hasAuthenticationError
+                  ? 'Either your username or your password is incorrect'
+                  : user.username === '' && user.password === ''
+                    ? allFieldsRequired
+                    : passwordRequired
+                }
               </FormControl.ErrorMessage>
             </FormControl>
-            {hasAuthenticationError && (
-              <Box bgColor={Colors.danger} p={2} borderRadius="md">
-                <Text color={Colors.white}>{errorMessage}</Text>
-              </Box>
-            )}
+            {/*{hasAuthenticationError && (*/}
+            {/*  <Box bgColor={Colors.danger} p={2} borderRadius="md">*/}
+            {/*    <Text color={Colors.white}>{errorMessage}</Text>*/}
+            {/*  </Box>*/}
+            {/*)}*/}
             <HStack justifyContent="flex-end">
               <Checkbox
                 isChecked={isRemainLoggedIn}
