@@ -17,29 +17,23 @@ import {
 } from 'native-base'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import {ms} from 'react-native-size-matters'
-
+import {useSafeAreaInsets} from 'react-native-safe-area-context'
+import * as Keychain from 'react-native-keychain'
 import {Colors} from '@bluecentury/styles'
 import {Credentials} from '@bluecentury/models'
 import {Images} from '@bluecentury/assets'
 import {_t} from '@bluecentury/constants'
 import {useAuth, useSettings} from '@bluecentury/stores'
 import {VersionBuildLabel} from '@bluecentury/components/version-build-label'
-import {useSafeAreaInsets} from 'react-native-safe-area-context'
-import * as Keychain from 'react-native-keychain'
 
 const usernameRequired = _t('usernameRequired')
 const passwordRequired = _t('passwordRequired')
 const allFieldsRequired = _t('allFieldsRequired')
 const login = _t('login')
 
-function Login() {
+export default function Login() {
   const insets = useSafeAreaInsets()
-  const {
-    isAuthenticatingUser,
-    authenticate,
-    hasAuthenticationError,
-    errorMessage,
-  } = useAuth()
+  const {isAuthenticatingUser, authenticate, hasAuthenticationError} = useAuth()
   const {isRemainLoggedIn, setIsRemainLoggedIn} = useSettings()
   const [user, setUser] = useState<Credentials>({username: '', password: ''})
   const [isShowPassword, setIsShowPassword] = useState(false)
@@ -47,6 +41,7 @@ function Login() {
   const [isPasswordEmpty, setIsPasswordEmpty] = useState(false)
   const passwordRef = useRef<any>()
   const userNameRef = useRef<any>()
+
   const handleOnPressLogin = () => {
     userNameRef.current.blur()
     passwordRef.current.blur()
@@ -66,10 +61,10 @@ function Login() {
   }
 
   const handleOnSubmitEditingPassword = () => handleOnPressLogin()
+
   useEffect(() => {
     Keychain.getGenericPassword()
       .then(credentials => {
-        console.log('credentials ', credentials)
         if (credentials) {
           const {username, password} = credentials
           setUser({username: username, password: password})
@@ -79,6 +74,7 @@ function Login() {
         console.log('Error: ', error)
       })
   }, [])
+
   return (
     <Box flex="1" safeArea>
       <KeyboardAvoidingView
@@ -179,16 +175,10 @@ function Login() {
                 {hasAuthenticationError
                   ? 'Either your username or your password is incorrect'
                   : user.username === '' && user.password === ''
-                    ? allFieldsRequired
-                    : passwordRequired
-                }
+                  ? allFieldsRequired
+                  : passwordRequired}
               </FormControl.ErrorMessage>
             </FormControl>
-            {/*{hasAuthenticationError && (*/}
-            {/*  <Box bgColor={Colors.danger} p={2} borderRadius="md">*/}
-            {/*    <Text color={Colors.white}>{errorMessage}</Text>*/}
-            {/*  </Box>*/}
-            {/*)}*/}
             <HStack justifyContent="flex-end">
               <Checkbox
                 isChecked={isRemainLoggedIn}
@@ -223,5 +213,3 @@ function Login() {
     </Box>
   )
 }
-
-export default Login
