@@ -9,8 +9,10 @@ import {Colors} from '@bluecentury/styles'
 import {useEntity, useFinancial} from '@bluecentury/stores'
 import {useNavigation} from '@react-navigation/native'
 import {LoadingAnimated} from '@bluecentury/components'
+import {useSafeAreaInsets} from 'react-native-safe-area-context'
 
 const Revenue = () => {
+  const insets = useSafeAreaInsets()
   const navigation = useNavigation()
   const {isFinancialLoading, invoiceStatistics, outgoingInvoices, getInvoices} =
     useFinancial()
@@ -322,23 +324,18 @@ const Revenue = () => {
       </Box>
 
       {isPageChange ? (
-        <Box
-          h={ms(40)}
-          bg={Colors.white}
-          justifyContent="center"
-          style={{zIndex: 999}}
-        >
+        <Box h={ms(40)} bg={Colors.white} justifyContent="center" zIndex={999}>
           <LoadingAnimated />
         </Box>
       ) : totalEnabled ? (
-        <Box bg={Colors.white}>
-          <Shadow
-            viewStyle={{
-              width: '100%',
-            }}
+        <Shadow viewStyle={{width: '100%'}}>
+          <Box
+            bg={Colors.white}
+            p={ms(12)}
+            pb={ms(insets.bottom && insets.bottom)}
           >
             <TouchableOpacity
-              style={{padding: 12, backgroundColor: Colors.white}}
+              style={{backgroundColor: Colors.white}}
               activeOpacity={1}
               onPress={() => setTotalEnabled(!totalEnabled)}
             >
@@ -359,15 +356,11 @@ const Revenue = () => {
                 }
               />
             </TouchableOpacity>
-          </Shadow>
-        </Box>
+          </Box>
+        </Shadow>
       ) : (
-        <Box bg={Colors.white}>
-          <Shadow
-            viewStyle={{
-              width: '100%',
-            }}
-          >
+        <Shadow viewStyle={{width: '100%'}}>
+          <Box bg={Colors.white} pb={ms(insets.bottom && insets.bottom - 12)}>
             <CardTotal
               label="Total revenue"
               value={
@@ -376,8 +369,8 @@ const Revenue = () => {
                   : 0
               }
             />
-          </Shadow>
-        </Box>
+          </Box>
+        </Shadow>
       )}
     </Box>
   )

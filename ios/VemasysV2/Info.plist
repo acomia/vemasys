@@ -46,7 +46,7 @@
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>App requires background tracking</string>
 	<key>NSMotionUsageDescription</key>
-	<string>App requires motion tracking</string>
+	<string>App requires motion tracking as app uses this to detect whether it sends information to the server for the vessel tracking.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Allow App to access library/photos to upload documents, and other reports.</string>
 	<key>UIAppFonts</key>
