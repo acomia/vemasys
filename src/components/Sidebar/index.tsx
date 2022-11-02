@@ -114,7 +114,7 @@ const Sidebar = (props: DrawerContentComponentProps) => {
           active={currentRoute === Screens.Settings}
           onPress={() => handlePressMenu(Screens.Settings)}
           iconSource={Icons.cog}
-          // disabled
+          disabled
         >
           Settings
         </MenuButton>
