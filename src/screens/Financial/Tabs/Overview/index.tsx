@@ -5,8 +5,10 @@ import {ms} from 'react-native-size-matters'
 
 import {useEntity, useFinancial} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
+import {useSafeAreaInsets} from 'react-native-safe-area-context'
 
 const Overview = () => {
+  const insets = useSafeAreaInsets()
   const {isFinancialLoading, invoiceStatistics, getInvoiceStatistics} =
     useFinancial()
   const {vesselId} = useEntity()
@@ -213,6 +215,7 @@ const Overview = () => {
       <HStack
         flex="1"
         p={ms(12)}
+        pb={ms(insets.bottom ? insets.bottom : 12)}
         bg={Colors.white}
         position="absolute"
         bottom={0}
