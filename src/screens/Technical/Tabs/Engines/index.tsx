@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react'
+import {RefreshControl, TouchableOpacity} from 'react-native'
 import {Box, Divider, HStack, ScrollView, Text} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
@@ -8,8 +9,7 @@ import {useNavigation} from '@react-navigation/native'
 import {useEntity, useTechnical} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
 import {LoadingAnimated} from '@bluecentury/components'
-import {formatNumber} from '@bluecentury/constants'
-import {RefreshControl, TouchableOpacity} from 'react-native'
+import {formatNumberWithoutComma} from '@bluecentury/constants'
 
 const Engines = () => {
   const navigation = useNavigation()
@@ -71,7 +71,7 @@ const Engines = () => {
                 fontWeight="bold"
               >
                 {partType.data[pLength].lastMeasurement
-                  ? `${formatNumber(
+                  ? `${formatNumberWithoutComma(
                       partType.data[pLength].lastMeasurement.value,
                       0
                     )}h`

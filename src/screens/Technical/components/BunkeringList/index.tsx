@@ -5,7 +5,7 @@ import {useNavigation} from '@react-navigation/native'
 import {Colors} from '@bluecentury/styles'
 import moment from 'moment'
 import {ms} from 'react-native-size-matters'
-import {formatNumber} from '@bluecentury/constants'
+import {formatNumberWithoutComma} from '@bluecentury/constants'
 
 const BunkeringList = ({bunkering}: any) => {
   const navigation = useNavigation()
@@ -35,7 +35,7 @@ const BunkeringList = ({bunkering}: any) => {
             </Text>
           </VStack>
           <Text color={Colors.highlighted_text} fontWeight="bold">
-            {formatNumber(bunk.value, 0)} L
+            {formatNumberWithoutComma(bunk.value, 0)} L
           </Text>
         </HStack>
       </Pressable>

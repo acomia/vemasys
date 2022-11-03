@@ -37,6 +37,19 @@ export function formatNumber(value: string | number, decimal: number) {
         .toFixed(decimal)
         .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
 }
+export function formatNumberWithoutComma(
+  value: string | number,
+  decimal: number
+) {
+  return Platform.OS === 'ios'
+    ? Number(value).toLocaleString('en-GB', {
+        maximumFractionDigits: decimal,
+        minimumFractionDigits: decimal,
+      })
+    : Number(value)
+        .toFixed(decimal)
+        .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1 ')
+}
 
 export function calculateTotalIn(navigationlog: any): number {
   let totalIn = 0
