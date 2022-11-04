@@ -1,5 +1,5 @@
-import React, {useCallback, useEffect} from 'react'
-import {ImageSourcePropType} from 'react-native'
+import React, {useCallback, useEffect, useRef} from 'react'
+import {ImageSourcePropType, Platform} from 'react-native'
 import {Box, HStack, Pressable} from 'native-base'
 import {createDrawerNavigator} from '@react-navigation/drawer'
 import {
@@ -25,7 +25,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {Screens} from '@bluecentury/constants'
 import {ms} from 'react-native-size-matters'
 import {Colors} from '@bluecentury/styles'
-import {useAuth, useMap, useSettings} from '@bluecentury/stores'
+import {useAuth, useEntity, useMap, useSettings} from '@bluecentury/stores'
 import {navigationRef} from './navigationRef'
 import {
   InitializeTrackingService,
@@ -44,6 +44,7 @@ export default function MainNavigator({navigation}: Props) {
   const token = useAuth(state => state.token)
   const activeFormations = useMap(state => state.activeFormations)
   const getActiveFormations = useMap(state => state.getActiveFormations)
+  const sendCurrentPosition = useMap(state => state.sendCurrentPosition)
   // let scanIcon: ImageSourcePropType = Icons.qr
   const scanIcon: ImageSourcePropType = activeFormations.length
     ? Icons.formations
@@ -52,6 +53,7 @@ export default function MainNavigator({navigation}: Props) {
   const scanNavigateTo = activeFormations.length
     ? () => navigation.navigate(Screens.Formations)
     : () => navigation.navigate(Screens.QRScanner)
+  let refreshId = useRef<any>()
 
   useFocusEffect(
     useCallback(() => {
@@ -70,6 +72,23 @@ export default function MainNavigator({navigation}: Props) {
         BackgroundGeolocation.stop()
       }
     })
+    if (isMobileTracking) {
+      refreshId.current = setInterval(() => {
+        BackgroundGeolocation.on('location', location => {
+          const entityId = useEntity.getState().entityId as string
+          if (Platform.OS === 'ios') {
+            BackgroundGeolocation.startTask(taskKey => {
+              sendCurrentPosition(entityId, location)
+              BackgroundGeolocation.endTask(taskKey)
+            })
+          } else {
+            sendCurrentPosition(entityId, location)
+          }
+        })
+      }, 60000)
+    }
+
+    return () => clearInterval(refreshId.current)
   }, [isMobileTracking])
 
   useEffect(() => {
