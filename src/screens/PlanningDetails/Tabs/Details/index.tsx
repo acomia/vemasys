@@ -71,6 +71,7 @@ const Details = () => {
     selectedEntity,
     ROLE_PERMISSION_NAVIGATION_LOG_ADD_FILE
   )
+  console.log(navlog)
 
   useEffect(() => {
     getNavigationLogDetails(navlog?.id)

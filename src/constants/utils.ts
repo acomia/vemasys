@@ -77,12 +77,12 @@ export function calculateTotalIn(navigationlog: any): number {
   } else if (navigationlog.bulkCargo && navigationlog.bulkCargo.length > 0) {
     totalIn = navigationlog.bulkCargo
       .filter((cargo: {isLoading: any}) => cargo.isLoading)
-      .reduce((accumulator: number, cargo: {tonnage: string}) => {
-        if (typeof cargo.tonnage === 'string') {
-          return accumulator + parseFloat(cargo.tonnage)
+      .reduce((accumulator: number, cargo: {actualTonnage: string}) => {
+        if (typeof cargo.actualTonnage === 'string') {
+          return accumulator + parseFloat(cargo.actualTonnage)
         }
 
-        return accumulator + cargo.tonnage
+        return accumulator + cargo.actualTonnage
       }, totalIn)
   }
   return totalIn
@@ -114,12 +114,12 @@ export function calculateTotalOut(navigationlog: any): number {
   } else if (navigationlog.bulkCargo && navigationlog.bulkCargo.length > 0) {
     totalOut = navigationlog.bulkCargo
       .filter((cargo: {isLoading: any}) => !cargo.isLoading)
-      .reduce((accumulator: number, cargo: {tonnage: string}) => {
-        if (typeof cargo.tonnage === 'string') {
-          return accumulator + parseFloat(cargo.tonnage)
+      .reduce((accumulator: number, cargo: {actualTonnage: string}) => {
+        if (typeof cargo.actualTonnage === 'string') {
+          return accumulator + parseFloat(cargo.actualTonnage)
         }
 
-        return accumulator + cargo.tonnage
+        return accumulator + cargo.actualTonnage
       }, totalOut)
   }
   return totalOut
