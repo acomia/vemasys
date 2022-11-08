@@ -18,7 +18,7 @@ const getPreviousNavLog = async (
     'order[plannedETA]': 'desc',
     exploitationVessel: vesselId,
     itemsPerPage: itemsPerPage || 5,
-    page: page || 1
+    page: page || 1,
   }
 
   let stringParams = queryString(params)
@@ -140,7 +140,7 @@ const verifyTrackingDeviceToken = async (
 
 const createVesselFormations = async (id: string, token: string) => {
   return API.post(`formations`, {
-    masterExploitationVessel: `/api/exploitation_vessels/${id}`
+    masterExploitationVessel: `/api/exploitation_vessels/${id}`,
   })
     .then(response => {
       if (response.data) {
@@ -156,7 +156,7 @@ const createVesselFormations = async (id: string, token: string) => {
 
 const addVesselToFormations = async (id: string, token: string) => {
   return API.put(`formations/${id}/add-vessel`, {
-    staticAuthenticatorToken: token
+    staticAuthenticatorToken: token,
   })
     .then(response => {
       if (response.data) {
@@ -175,7 +175,7 @@ const removeVesselToFormations = async (
   vesselId: string
 ) => {
   return API.put(`formations/${formationId}/remove-vessel`, {
-    exploitationVessel: `/api/exploitation_vessels/${vesselId}`
+    exploitationVessel: `/api/exploitation_vessels/${vesselId}`,
   })
     .then(response => {
       if (response.data) {
@@ -191,7 +191,7 @@ const removeVesselToFormations = async (
 
 const endVesselFormations = async (formationId: string, vesselId: string) => {
   return API.put(`formations/${formationId}/end`, {
-    masterExploitationVessel: `/api/exploitation_vessels/${vesselId}`
+    masterExploitationVessel: `/api/exploitation_vessels/${vesselId}`,
   })
     .then(response => {
       if (response.data) {
@@ -219,14 +219,14 @@ const getCurrentTrackerSource = async (vesselId: string) => {
     })
 }
 
-const sendCurrentPosition = async (entityId: string, position: Location) => {
+const sendCurrentPosition = async (entityId: string, position: GeoPosition) => {
   console.log('LOCATION_FROM_SEND_CURRENT_POSITION', position)
   return API.post('tracking_device/ingest_events/api_tracker', {
     entity: entityId,
     latitude: position?.latitude,
     longitude: position?.longitude,
     heading: 1,
-    speed: position?.speed < 0 ? 1 : position?.speed
+    speed: position?.speed < 0 ? 1 : position?.speed,
   })
     .then(response => {
       if (response.data) {
@@ -271,5 +271,5 @@ export {
   endVesselFormations,
   getCurrentTrackerSource,
   sendCurrentPosition,
-  getVesselStatus
+  getVesselStatus,
 }

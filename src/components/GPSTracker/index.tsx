@@ -30,17 +30,17 @@ export const GPSTracker = ({navigation}: Props) => {
   const netInfo = useNetInfo()
   const [position, setPosition] = useState<Location>()
 
-  useEffect(() => {
-    if (isMobileTracking) {
-      console.log('isMobileTracking ', isMobileTracking)
-      BackgroundGeolocation.checkStatus(status => {
-        if (!status.isRunning) {
-          BackgroundGeolocation.start()
-        }
-      })
-      BackgroundGeolocation.getCurrentLocation(loc => setPosition(loc))
-    }
-  }, [isMobileTracking])
+  // useEffect(() => {
+  //   if (isMobileTracking) {
+  //     console.log('isMobileTracking ', isMobileTracking)
+  //     BackgroundGeolocation.checkStatus(status => {
+  //       if (!status.isRunning) {
+  //         BackgroundGeolocation.start()
+  //       }
+  //     })
+  //     BackgroundGeolocation.getCurrentLocation(loc => setPosition(loc))
+  //   }
+  // }, [isMobileTracking])
 
   const handleOnValueChange = () => {
     navigation.navigate('TrackingServiceDialog')
@@ -108,7 +108,9 @@ export const GPSTracker = ({navigation}: Props) => {
               {/*{!isMobileTracking*/}
               {/*  ? moment(vesselDetails?.lastGeolocation?.locationTime).fromNow()*/}
               {/*  : moment(position?.time).fromNow()}*/}
-              {moment(vesselDetails?.lastGeolocation?.lastIterationTime).fromNow()}
+              {moment(
+                vesselDetails?.lastGeolocation?.lastIterationTime
+              ).fromNow()}
             </Text>
           </Box>
         </HStack>

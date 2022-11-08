@@ -1,5 +1,5 @@
-import React, {useCallback, useEffect, useRef} from 'react'
-import {ImageSourcePropType, Platform} from 'react-native'
+import React, {useCallback, useEffect, useRef, useState} from 'react'
+import {AppState, ImageSourcePropType, Platform} from 'react-native'
 import {Box, HStack, Pressable} from 'native-base'
 import {createDrawerNavigator} from '@react-navigation/drawer'
 import {
@@ -7,6 +7,11 @@ import {
   DrawerActions,
   useFocusEffect,
 } from '@react-navigation/native'
+import {NativeStackScreenProps} from '@react-navigation/native-stack'
+import BackgroundGeolocation from '@mauron85/react-native-background-geolocation'
+import {ms} from 'react-native-size-matters'
+import Geolocation, {GeoPosition} from 'react-native-geolocation-service'
+
 import {
   Notification,
   Entity,
@@ -21,9 +26,7 @@ import {
 } from '@bluecentury/screens'
 import {Sidebar, IconButton} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
-import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {Screens} from '@bluecentury/constants'
-import {ms} from 'react-native-size-matters'
 import {Colors} from '@bluecentury/styles'
 import {useAuth, useEntity, useMap, useSettings} from '@bluecentury/stores'
 import {navigationRef} from './navigationRef'
@@ -31,8 +34,56 @@ import {
   InitializeTrackingService,
   StopTrackingService,
 } from '@bluecentury/helpers'
-import BackgroundGeolocation from '@mauron85/react-native-background-geolocation'
 import {GPSAnimated} from '@bluecentury/components/gps-animated'
+import BackgroundService from 'react-native-background-actions'
+
+const sleep = (time: number) =>
+  new Promise<void>(resolve => setTimeout(() => resolve(), time))
+
+BackgroundService.on('expiration', () => {
+  getCurrentGeolocation()
+})
+
+const backgroundTrackingTask = async (taskData: any) => {
+  await new Promise<void>(async resolve => {
+    const {delay} = taskData
+    for (let i = 0; BackgroundService.isRunning(); i++) {
+      getCurrentGeolocation()
+      await BackgroundService.updateNotification({
+        taskDesc: 'Running gps background tracking...',
+      })
+      await sleep(delay)
+    }
+    resolve()
+  })
+}
+
+const getCurrentGeolocation = () => {
+  Geolocation.getCurrentPosition(
+    position => {
+      const entityId = useEntity.getState().entityId as string
+      useMap.getState().sendCurrentPosition(entityId, position)
+    },
+    error => {
+      console.log(error.code, error.message)
+    },
+    {enableHighAccuracy: true, timeout: 15000, maximumAge: 1000}
+  )
+}
+
+const options = {
+  taskName: 'GPS_Background_Tracking',
+  taskTitle: 'GPS background tracking enabled',
+  taskDesc: 'GPS background tracking of current position',
+  taskIcon: {
+    name: 'ic_launcher_foreground',
+    type: 'mipmap',
+  },
+  color: Colors.primary,
+  parameters: {
+    delay: 1.2 * 60 * 1000,
+  },
+}
 
 const {Navigator, Screen} = createDrawerNavigator<MainStackParamList>()
 
@@ -53,7 +104,9 @@ export default function MainNavigator({navigation}: Props) {
   const scanNavigateTo = activeFormations.length
     ? () => navigation.navigate(Screens.Formations)
     : () => navigation.navigate(Screens.QRScanner)
-  let refreshId = useRef<any>()
+  const appState = useRef(AppState.currentState)
+  const [appStateVisible, setAppStateVisible] = useState(appState.current)
+  let runningInBackground = BackgroundService.isRunning()
 
   useFocusEffect(
     useCallback(() => {
@@ -63,41 +116,24 @@ export default function MainNavigator({navigation}: Props) {
   )
 
   useEffect(() => {
-    BackgroundGeolocation.checkStatus(status => {
-      if (!status.isRunning && isMobileTracking) {
-        BackgroundGeolocation.start()
-      }
-
-      if (status.isRunning && !isMobileTracking) {
-        BackgroundGeolocation.stop()
-      }
-    })
     if (isMobileTracking) {
-      refreshId.current = setInterval(() => {
-        BackgroundGeolocation.on('location', location => {
-          const entityId = useEntity.getState().entityId as string
-          if (Platform.OS === 'ios') {
-            BackgroundGeolocation.startTask(taskKey => {
-              sendCurrentPosition(entityId, location)
-              BackgroundGeolocation.endTask(taskKey)
-            })
-          } else {
-            sendCurrentPosition(entityId, location)
-          }
-        })
-      }, 60000)
+      toggleBackgroundTracking()
     }
-
-    return () => clearInterval(refreshId.current)
+    if (!isMobileTracking) {
+      BackgroundService.stop()
+    }
   }, [isMobileTracking])
 
-  useEffect(() => {
-    InitializeTrackingService()
-
-    return () => {
-      StopTrackingService()
-    }
-  }, [])
+  // useEffect(() => {
+  //   // BackgroundGeolocation.checkStatus(status => {
+  //   //   if (!status.isRunning && isMobileTracking) {
+  //   //     BackgroundGeolocation.start()
+  //   //   }
+  //   //   if (status.isRunning && !isMobileTracking) {
+  //   //     BackgroundGeolocation.stop()
+  //   //   }
+  //   // })
+  // }, [isMobileTracking])
 
   useEffect(() => {
     if (typeof token === 'undefined') {
@@ -114,15 +150,16 @@ export default function MainNavigator({navigation}: Props) {
     }
   }, [token])
 
-  // useEffect(() => {
-  //   if (activeFormations?.length > 0) {
-  //     scanIcon = Icons.qr
-  //     scanNavigateTo = () => navigation.navigate(Screens.QRScanner)
-  //   } else {
-  //     scanIcon = Icons.formations
-  //     scanNavigateTo = () => navigation.navigate('Formations')
-  //   }
-  // }, [activeFormations])
+  const toggleBackgroundTracking = async () => {
+    runningInBackground = !runningInBackground
+    if (runningInBackground) {
+      try {
+        await BackgroundService.start(backgroundTrackingTask, options)
+      } catch (e) {
+        console.log('Error', e)
+      }
+    }
+  }
 
   return (
     <Navigator
