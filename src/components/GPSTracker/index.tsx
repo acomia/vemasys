@@ -18,9 +18,13 @@ import moment from 'moment'
 import {Colors} from '@bluecentury/styles'
 import {Icons} from '@bluecentury/assets'
 import {useEntity, useMap, useSettings} from '@bluecentury/stores'
+// import BackgroundGeolocation, {
+//   Location,
+// } from '@mauron85/react-native-background-geolocation'
 import BackgroundGeolocation, {
   Location,
-} from '@mauron85/react-native-background-geolocation'
+  Subscription
+} from 'react-native-background-geolocation'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 export const GPSTracker = ({navigation}: Props) => {
@@ -30,17 +34,17 @@ export const GPSTracker = ({navigation}: Props) => {
   const netInfo = useNetInfo()
   const [position, setPosition] = useState<Location>()
 
-  useEffect(() => {
-    if (isMobileTracking) {
-      console.log('isMobileTracking ', isMobileTracking)
-      BackgroundGeolocation.checkStatus(status => {
-        if (!status.isRunning) {
-          BackgroundGeolocation.start()
-        }
-      })
-      BackgroundGeolocation.getCurrentLocation(loc => setPosition(loc))
-    }
-  }, [isMobileTracking])
+  // useEffect(() => {
+  //   if (isMobileTracking) {
+  //     console.log('isMobileTracking ', isMobileTracking)
+  //     BackgroundGeolocation.checkStatus(status => {
+  //       if (!status.isRunning) {
+  //         BackgroundGeolocation.start()
+  //       }
+  //     })
+  //     BackgroundGeolocation.getCurrentLocation(loc => setPosition(loc))
+  //   }
+  // }, [isMobileTracking])
 
   const handleOnValueChange = () => {
     navigation.navigate('TrackingServiceDialog')
