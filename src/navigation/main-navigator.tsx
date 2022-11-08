@@ -81,7 +81,7 @@ const options = {
   },
   color: Colors.primary,
   parameters: {
-    delay: 1.2 * 60 * 1000,
+    delay: 1 * 60 * 1000,
   },
 }
 
