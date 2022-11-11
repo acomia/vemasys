@@ -126,12 +126,12 @@ export default function Map({navigation}: Props) {
       init()
     }
 
-    // if (focused) {
-    //   refreshId.current = setInterval(() => {
-    //     // Run updated vessel status
-    //     updateMap()
-    //   }, 30000)
-    // }
+    if (focused) {
+      refreshId.current = setInterval(() => {
+        // Run updated vessel status
+        updateMap()
+      }, 30000)
+    }
     return () => clearInterval(refreshId.current)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vesselId, focused])
