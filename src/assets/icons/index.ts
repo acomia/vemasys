@@ -92,4 +92,5 @@ export const Icons = {
   user_plus: require('./user-plus.png'),
   refused: require('./refused.png'),
   broom: require('./broom.png'),
+  navigating_route: require('./navigating-route.png'),
 }

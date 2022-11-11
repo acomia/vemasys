@@ -13,14 +13,17 @@ type MapState = {
   currentNavLogs: Array<any>
   lastCompleteNavLogs: Array<any>
   activeFormations: Array<any>
+  vesselTracks: Array<any>
   isLoadingMap: boolean
   isLoadingVesselStatus: boolean
   isLoadingPreviousNavLogs: boolean
   isLoadingCurrentNavLogs: boolean
   isLoadingPlannedNavLogs: boolean
+  isLoadingVesselTrack: boolean
   hasErrorLoadingPreviousNavLogs: boolean
   hasErrorLoadingCurrentNavLogs: boolean
   hasErrorLoadingPlannedNavLogs: boolean
+  hasErrorLoadingVesselTrack: boolean
   tokenHasConnectedToShip: boolean
   isMobileTrackingEnable: boolean
   hasErrorLoadingNavigationLogs: boolean
@@ -39,6 +42,7 @@ type MapActions = {
   removeVesselFromFormations: (formationId: string, vesselId: string) => void
   sendCurrentPosition: (entityId: string, position: GeoPosition) => void
   enableMobileTracking: () => void
+  getVesselTrack: (vesselId: string, page: number) => void
   reset: () => void
 }
 
@@ -51,11 +55,13 @@ const initialMapState: MapState = {
   currentNavLogs: [],
   lastCompleteNavLogs: [],
   activeFormations: [],
+  vesselTracks: [],
   isLoadingMap: false,
   isLoadingVesselStatus: false,
   isLoadingCurrentNavLogs: false,
   isLoadingPlannedNavLogs: false,
   isLoadingPreviousNavLogs: false,
+  isLoadingVesselTrack: false,
   tokenHasConnectedToShip: false,
   isMobileTrackingEnable: false,
   hasErrorLoadingCurrentNavLogs: false,
@@ -63,6 +69,7 @@ const initialMapState: MapState = {
   hasErrorLoadingPreviousNavLogs: false,
   hasErrorLoadingNavigationLogs: false,
   hasErrorLoadingVesselStatus: false,
+  hasErrorLoadingVesselTrack: false,
 }
 
 export const useMap = create(
@@ -296,6 +303,30 @@ export const useMap = create(
           set({
             isLoadingVesselStatus: false,
             hasErrorLoadingVesselStatus: true,
+          })
+        }
+      },
+      getVesselTrack: async (vesselId: string, page: number) => {
+        set({isLoadingVesselTrack: true, hasErrorLoadingVesselTrack: false})
+        try {
+          const response = await API.getVesselTrack(vesselId, page)
+          if (Array.isArray(response)) {
+            set({
+              vesselTracks:
+                page === 1 ? response : [...get().vesselTracks, ...response],
+            })
+          } else {
+            set({
+              vesselTracks: [],
+            })
+          }
+          set({
+            isLoadingVesselTrack: false,
+          })
+        } catch (error) {
+          set({
+            isLoadingVesselTrack: false,
+            hasErrorLoadingVesselTrack: true,
           })
         }
       },
