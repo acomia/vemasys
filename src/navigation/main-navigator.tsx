@@ -31,8 +31,9 @@ import {
   InitializeTrackingService,
   StopTrackingService,
 } from '@bluecentury/helpers'
-import BackgroundGeolocation from '@mauron85/react-native-background-geolocation'
+// import BackgroundGeolocation from '@mauron85/react-native-background-geolocation'
 import {GPSAnimated} from '@bluecentury/components/gps-animated'
+import BackgroundGeolocation from 'react-native-background-geolocation'
 
 const {Navigator, Screen} = createDrawerNavigator<MainStackParamList>()
 
@@ -55,15 +56,22 @@ export default function MainNavigator({navigation}: Props) {
   )
 
   useEffect(() => {
-    BackgroundGeolocation.checkStatus(status => {
-      if (!status.isRunning && isMobileTracking) {
-        BackgroundGeolocation.start()
-      }
+    if (isMobileTracking) {
+      BackgroundGeolocation.start()
+    }
 
-      if (status.isRunning && !isMobileTracking) {
-        BackgroundGeolocation.stop()
-      }
-    })
+    if (!isMobileTracking) {
+      BackgroundGeolocation.stop()
+    }
+    // BackgroundGeolocation.checkStatus(status => {
+    //   if (!status.isRunning && isMobileTracking) {
+    //     BackgroundGeolocation.start()
+    //   }
+    //
+    //   if (status.isRunning && !isMobileTracking) {
+    //     BackgroundGeolocation.stop()
+    //   }
+    // })
   }, [isMobileTracking])
 
   useEffect(() => {
