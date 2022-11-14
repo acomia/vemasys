@@ -44,14 +44,8 @@ export default function MainNavigator({navigation}: Props) {
   const token = useAuth(state => state.token)
   const activeFormations = useMap(state => state.activeFormations)
   const getActiveFormations = useMap(state => state.getActiveFormations)
-  // let scanIcon: ImageSourcePropType = Icons.qr
-  const scanIcon: ImageSourcePropType = activeFormations.length
-    ? Icons.formations
-    : Icons.qr
-  // let scanNavigateTo: () => void
-  const scanNavigateTo = activeFormations.length
-    ? () => navigation.navigate(Screens.Formations)
-    : () => navigation.navigate(Screens.QRScanner)
+
+  const testFormations = [0, 1, 2, 3]
 
   useFocusEffect(
     useCallback(() => {
@@ -95,16 +89,6 @@ export default function MainNavigator({navigation}: Props) {
     }
   }, [token])
 
-  // useEffect(() => {
-  //   if (activeFormations?.length > 0) {
-  //     scanIcon = Icons.qr
-  //     scanNavigateTo = () => navigation.navigate(Screens.QRScanner)
-  //   } else {
-  //     scanIcon = Icons.formations
-  //     scanNavigateTo = () => navigation.navigate('Formations')
-  //   }
-  // }, [activeFormations])
-
   return (
     <Navigator
       screenOptions={{
@@ -118,10 +102,17 @@ export default function MainNavigator({navigation}: Props) {
         headerRight: () => (
           <Box flexDirection="row" alignItems="center" mr={2}>
             <HStack space="3">
+              {activeFormations.length ? (
+                <IconButton
+                  source={Icons.formations}
+                  onPress={() => navigation.navigate(Screens.Formations)}
+                  size={ms(25)}
+                />
+              ) : null}
               {isQrScanner ? (
                 <IconButton
-                  source={scanIcon}
-                  onPress={scanNavigateTo}
+                  source={Icons.qr}
+                  onPress={() => navigation.navigate(Screens.QRScanner)}
                   size={ms(25)}
                 />
               ) : null}
