@@ -8,9 +8,8 @@ import {
   useFocusEffect,
 } from '@react-navigation/native'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
-import BackgroundGeolocation from '@mauron85/react-native-background-geolocation'
 import {ms} from 'react-native-size-matters'
-import Geolocation, {GeoPosition} from 'react-native-geolocation-service'
+import BackgroundGeolocation from 'react-native-background-geolocation'
 
 import {
   Notification,
@@ -30,13 +29,11 @@ import {Screens} from '@bluecentury/constants'
 import {Colors} from '@bluecentury/styles'
 import {useAuth, useEntity, useMap, useSettings} from '@bluecentury/stores'
 import {navigationRef} from './navigationRef'
-import {
-  InitializeTrackingService,
-  StopTrackingService,
-} from '@bluecentury/helpers'
-// import BackgroundGeolocation from '@mauron85/react-native-background-geolocation'
+// import {
+//   InitializeTrackingService,
+//   StopTrackingService,
+// } from '@bluecentury/helpers'
 import {GPSAnimated} from '@bluecentury/components/gps-animated'
-import BackgroundGeolocation from 'react-native-background-geolocation'
 
 const {Navigator, Screen} = createDrawerNavigator<MainStackParamList>()
 

@@ -359,7 +359,7 @@ export default function Map({navigation}: Props) {
         <Callout
           onPress={() => (trackViewMode ? onLoadMoreVesselTrack() : null)}
         >
-          <Text>Load more data...</Text>
+          {trackViewMode ? <Text>Load more data...</Text> : null}
         </Callout>
       </Marker>
     )
