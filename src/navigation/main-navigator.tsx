@@ -34,56 +34,9 @@ import {
   InitializeTrackingService,
   StopTrackingService,
 } from '@bluecentury/helpers'
+// import BackgroundGeolocation from '@mauron85/react-native-background-geolocation'
 import {GPSAnimated} from '@bluecentury/components/gps-animated'
-import BackgroundService from 'react-native-background-actions'
-
-const sleep = (time: number) =>
-  new Promise<void>(resolve => setTimeout(() => resolve(), time))
-
-BackgroundService.on('expiration', () => {
-  getCurrentGeolocation()
-})
-
-const backgroundTrackingTask = async (taskData: any) => {
-  await new Promise<void>(async resolve => {
-    const {delay} = taskData
-    for (let i = 0; BackgroundService.isRunning(); i++) {
-      getCurrentGeolocation()
-      await BackgroundService.updateNotification({
-        taskDesc: 'Running gps background tracking...',
-      })
-      await sleep(delay)
-    }
-    resolve()
-  })
-}
-
-const getCurrentGeolocation = () => {
-  Geolocation.getCurrentPosition(
-    position => {
-      const entityId = useEntity.getState().entityId as string
-      useMap.getState().sendCurrentPosition(entityId, position)
-    },
-    error => {
-      console.log(error.code, error.message)
-    },
-    {enableHighAccuracy: true, timeout: 15000, maximumAge: 1000}
-  )
-}
-
-const options = {
-  taskName: 'GPS_Background_Tracking',
-  taskTitle: 'GPS background tracking enabled',
-  taskDesc: 'GPS background tracking of current position',
-  taskIcon: {
-    name: 'ic_launcher_foreground',
-    type: 'mipmap',
-  },
-  color: Colors.primary,
-  parameters: {
-    delay: 1 * 60 * 1000,
-  },
-}
+import BackgroundGeolocation from 'react-native-background-geolocation'
 
 const {Navigator, Screen} = createDrawerNavigator<MainStackParamList>()
 
@@ -95,18 +48,8 @@ export default function MainNavigator({navigation}: Props) {
   const token = useAuth(state => state.token)
   const activeFormations = useMap(state => state.activeFormations)
   const getActiveFormations = useMap(state => state.getActiveFormations)
-  const sendCurrentPosition = useMap(state => state.sendCurrentPosition)
-  // let scanIcon: ImageSourcePropType = Icons.qr
-  const scanIcon: ImageSourcePropType = activeFormations.length
-    ? Icons.formations
-    : Icons.qr
-  // let scanNavigateTo: () => void
-  const scanNavigateTo = activeFormations.length
-    ? () => navigation.navigate(Screens.Formations)
-    : () => navigation.navigate(Screens.QRScanner)
-  const appState = useRef(AppState.currentState)
-  const [appStateVisible, setAppStateVisible] = useState(appState.current)
-  let runningInBackground = BackgroundService.isRunning()
+
+  const testFormations = [0, 1, 2, 3]
 
   useFocusEffect(
     useCallback(() => {
@@ -117,10 +60,10 @@ export default function MainNavigator({navigation}: Props) {
 
   useEffect(() => {
     if (isMobileTracking) {
-      toggleBackgroundTracking()
+      BackgroundGeolocation.start()
     }
     if (!isMobileTracking) {
-      BackgroundService.stop()
+      BackgroundGeolocation.stop()
     }
   }, [isMobileTracking])
 
@@ -150,17 +93,6 @@ export default function MainNavigator({navigation}: Props) {
     }
   }, [token])
 
-  const toggleBackgroundTracking = async () => {
-    runningInBackground = !runningInBackground
-    if (runningInBackground) {
-      try {
-        await BackgroundService.start(backgroundTrackingTask, options)
-      } catch (e) {
-        console.log('Error', e)
-      }
-    }
-  }
-
   return (
     <Navigator
       screenOptions={{
@@ -174,10 +106,17 @@ export default function MainNavigator({navigation}: Props) {
         headerRight: () => (
           <Box flexDirection="row" alignItems="center" mr={2}>
             <HStack space="3">
+              {activeFormations.length ? (
+                <IconButton
+                  source={Icons.formations}
+                  onPress={() => navigation.navigate(Screens.Formations)}
+                  size={ms(25)}
+                />
+              ) : null}
               {isQrScanner ? (
                 <IconButton
-                  source={scanIcon}
-                  onPress={scanNavigateTo}
+                  source={Icons.qr}
+                  onPress={() => navigation.navigate(Screens.QRScanner)}
                   size={ms(25)}
                 />
               ) : null}
