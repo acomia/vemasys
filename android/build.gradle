@@ -8,6 +8,9 @@ buildscript {
         minSdkVersion = 21
         compileSdkVersion = 31
         targetSdkVersion = 31
+        appCompatVersion = "1.4.2"
+        googlePlayServicesLocationVersion = "20.0.0"
+        kotlinVersion = "1.6.0"
 
         if (System.properties['os.arch'] == "aarch64") {
             // For M1 Users we need to use the NDK 24 which added support for aarch64
@@ -60,5 +63,17 @@ allprojects {
         }
         google()
         maven { url 'https://www.jitpack.io' }
+        maven {
+       // Required for react-native-background-geolocation
+           url("${project(':react-native-background-geolocation').projectDir}/libs")
+       }
+       maven {
+      // Required for react-native-background-fetch
+          url("${project(':react-native-background-fetch').projectDir}/libs")
+      }
+      maven {
+        // react-native-background-fetch
+        url("${project(':react-native-background-fetch').projectDir}/libs")
+      }
     }
 }

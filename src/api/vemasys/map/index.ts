@@ -230,6 +230,7 @@ const sendCurrentPosition = async (entityId: string, position: GeoPosition) => {
   })
     .then(response => {
       if (response.data) {
+        console.log(response.data)
         return response.data
       } else {
         throw new Error('Tracking source failed.')
