@@ -93,4 +93,5 @@ export const Icons = {
   refused: require('./refused.png'),
   broom: require('./broom.png'),
   navigating_route: require('./navigating-route.png'),
+  map_marker_question: require('./map-marker-question.png'),
 }

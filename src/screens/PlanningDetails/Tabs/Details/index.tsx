@@ -54,7 +54,7 @@ const Details = () => {
     updateNavlogDates,
   } = usePlanning()
   const {user, selectedEntity, physicalVesselId} = useEntity()
-  const {navlog}: any = route.params
+  const {navlog, title}: any = route.params
   const [dates, setDates] = useState<Dates>({
     plannedEta: null,
     captainDatetimeETA: null,
@@ -71,6 +71,7 @@ const Details = () => {
     selectedEntity,
     ROLE_PERMISSION_NAVIGATION_LOG_ADD_FILE
   )
+  const isUnknownLocation = title === 'Unknown Location' ? true : false
 
   useEffect(() => {
     getNavigationLogDetails(navlog?.id)
@@ -165,7 +166,10 @@ const Details = () => {
         shadow={2}
       >
         <HStack alignItems="center">
-          <Image alt="navglog-cargo-img" source={Icons.cargo} />
+          <Image
+            alt="navglog-cargo-img"
+            source={isUnknownLocation ? Icons.map_marker_question : Icons.cargo}
+          />
           <Text fontSize={ms(16)} fontWeight="medium" ml={ms(15)}>
             {formatLocationLabel(navigationLogDetails?.location)}
           </Text>
@@ -177,7 +181,7 @@ const Details = () => {
               ? dates.plannedEta
               : navigationLogDetails?.plannedEta
           }
-          locked={navigationLogDetails?.locked}
+          locked={isUnknownLocation ? true : navigationLogDetails?.locked}
           onChangeDate={() => {
             setSelectedDate('PLN')
             setOpenDatePicker(true)
@@ -191,7 +195,7 @@ const Details = () => {
               ? navigationLogDetails?.captainDatetimeEta
               : dates.captainDatetimeETA
           }
-          locked={navigationLogDetails?.locked}
+          locked={isUnknownLocation ? true : navigationLogDetails?.locked}
           onChangeDate={() => {
             setSelectedDate('ETA')
             setOpenDatePicker(true)
@@ -206,7 +210,7 @@ const Details = () => {
               ? navigationLogDetails?.announcedDatetime
               : dates.announcedDatetime
           }
-          locked={navigationLogDetails?.locked}
+          locked={isUnknownLocation ? true : navigationLogDetails?.locked}
           onChangeDate={() => {
             setSelectedDate('NOR')
             setOpenDatePicker(true)
@@ -221,7 +225,7 @@ const Details = () => {
               ? navigationLogDetails?.terminalApprovedDeparture
               : dates.terminalApprovedDeparture
           }
-          locked={navigationLogDetails?.locked}
+          locked={isUnknownLocation ? true : navigationLogDetails?.locked}
           onChangeDate={() => {
             setSelectedDate('DOC')
             setOpenDatePicker(true)
@@ -361,33 +365,38 @@ const Details = () => {
         </Text>
         {renderDetails()}
         {/* Contact Information Section */}
-        <Text
-          fontSize={ms(20)}
-          fontWeight="bold"
-          color={Colors.azure}
-          mt={ms(20)}
-        >
-          Contact Information
-        </Text>
-        <Box my={ms(15)}>
-          {navigationLogDetails?.contacts?.length > 0 ? (
-            navigationLogDetails?.contacts.map((contact: any, index: number) =>
-              renderContactInformation(contact.contact, index)
-            )
-          ) : (
-            <Box
-              borderWidth={1}
-              borderColor={Colors.light}
-              borderRadius={5}
-              p={ms(16)}
-              mt={ms(10)}
-              bg={Colors.white}
-              shadow={2}
+        {isUnknownLocation ? null : (
+          <>
+            <Text
+              fontSize={ms(20)}
+              fontWeight="bold"
+              color={Colors.azure}
+              mt={ms(20)}
             >
-              <Text>No contact information found.</Text>
+              Contact Information
+            </Text>
+            <Box my={ms(15)}>
+              {navigationLogDetails?.contacts?.length > 0 ? (
+                navigationLogDetails?.contacts.map(
+                  (contact: any, index: number) =>
+                    renderContactInformation(contact.contact, index)
+                )
+              ) : (
+                <Box
+                  borderWidth={1}
+                  borderColor={Colors.light}
+                  borderRadius={5}
+                  p={ms(16)}
+                  mt={ms(10)}
+                  bg={Colors.white}
+                  shadow={2}
+                >
+                  <Text>No contact information found.</Text>
+                </Box>
+              )}
             </Box>
-          )}
-        </Box>
+          </>
+        )}
 
         {/* Comments Section */}
         <HStack alignItems="center" mt={ms(20)}>

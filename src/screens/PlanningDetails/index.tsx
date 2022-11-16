@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react'
 import {useWindowDimensions} from 'react-native'
 import {Box, Text} from 'native-base'
 import {TabView, TabBar, SceneMap} from 'react-native-tab-view'
+import {NativeStackScreenProps} from '@react-navigation/native-stack'
 
 import {Details, CargoList, CargoHolds, Documents, Map, Actions} from './Tabs'
 import {Colors} from '@bluecentury/styles'
@@ -9,23 +10,33 @@ import {ms} from 'react-native-size-matters'
 import {planningDetailsTabs} from '@bluecentury/constants'
 import {usePlanning} from '@bluecentury/stores'
 
-export default function PlanningDetails() {
+type Props = NativeStackScreenProps<RootStackParamList>
+export default function PlanningDetails({route}: Props) {
+  const {title} = route.params
   const layout = useWindowDimensions()
   const {navigationLogDetails} = usePlanning()
   const [index, setIndex] = useState(0)
   const [routes, setRoutes] = useState(planningDetailsTabs)
+  const isUnknownLocation = title === 'Unknown Location' ? true : false
 
   useEffect(() => {
     if (
       navigationLogDetails?.cargoType !== 'liquid_bulk' &&
       navigationLogDetails?.cargoType !== undefined
     ) {
-      const newRoutes = planningDetailsTabs.filter(
-        route => route.key !== 'cargoHolds'
-      )
+      const newRoutes = planningDetailsTabs
+        .filter(route => route.key !== 'cargoHolds')
+        .filter(route =>
+          isUnknownLocation ? route.key !== 'cargoList' : route
+        )
       setRoutes(newRoutes)
     } else {
-      setRoutes(planningDetailsTabs)
+      const newRoutes = isUnknownLocation
+        ? planningDetailsTabs.filter(
+            route => route.key !== 'cargoHolds' && route.key !== 'cargoList'
+          )
+        : planningDetailsTabs
+      setRoutes(newRoutes)
     }
   }, [navigationLogDetails])
 

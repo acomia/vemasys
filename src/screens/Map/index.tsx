@@ -448,7 +448,8 @@ export default function Map({navigation}: Props) {
     const selectedEntityVessel = entityUsers.find(
       e => e?.entity?.exploitationVessel?.id === vessel?.id
     )
-
+    setPage(1)
+    setTrackViewMode(false)
     if (typeof selectedEntityVessel === 'object' && selectedEntityVessel?.id) {
       selectFleetVessel(index, selectedEntityVessel)
     } else {
@@ -459,7 +460,6 @@ export default function Map({navigation}: Props) {
   const onLoadMoreVesselTrack = () => {
     setPage(page + 1)
     getVesselTrack(vesselId, page + 1)
-    // fitToAllMarkers()
   }
 
   return (
