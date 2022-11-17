@@ -79,21 +79,27 @@ const PlanningLogbook = () => {
                     <Box>
                       {navigationLog?.bulkCargo.map((cargo: any, i: number) => {
                         return (
-                          <Text
-                            key={i}
-                            color={Colors.highlighted_text}
-                            fontWeight="bold"
-                          >
-                            {`${Math.ceil(cargo.tonnage)} MT - ${
-                              cargo.type ? cargo.type.nameEn : 'Unknown'
-                            }  `}
+                          <HStack key={i} alignItems="center">
+                            <Text color={Colors.disabled} fontWeight="bold">
+                              {`(${Math.ceil(cargo.tonnage)} MT) `}
+                            </Text>
+                            <Text
+                              color={Colors.highlighted_text}
+                              fontWeight="bold"
+                            >
+                              {` ${Math.ceil(cargo.actualTonnage)} MT - ${
+                                cargo.type.nameEn !== null
+                                  ? cargo.type.nameEn
+                                  : 'Unknown'
+                              }  `}
+                            </Text>
                             <Image
                               alt="navlogs-tags"
                               source={Icons.tags}
                               mx={ms(5)}
                               resizeMode="contain"
                             />
-                          </Text>
+                          </HStack>
                         )
                       })}
                     </Box>
@@ -148,9 +154,9 @@ const PlanningLogbook = () => {
             </Center>
           </Box>
         ) : (
-          plannedNavigationLogs.map((navigationLog: any, i: number) => {
-            return <NavLogCard key={i} navigationLog={navigationLog} />
-          })
+          plannedNavigationLogs.map((navigationLog: any, i: number) => (
+            <NavLogCard key={i} navigationLog={navigationLog} />
+          ))
         )}
       </ScrollView>
     </Box>

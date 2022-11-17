@@ -39,7 +39,9 @@ export default function CharterDetails({navigation, route}: Props) {
 
   const computeCargo = (cargo: any[]) => {
     return cargo.reduce(
-      (accumulator, cargo) => accumulator + parseInt(cargo.amount),
+      (accumulator, cargo) =>
+        accumulator +
+        parseInt(cargo.actualAmount == null ? 0 : cargo.actualAmount),
       0
     )
   }
@@ -258,7 +260,9 @@ export default function CharterDetails({navigation, route}: Props) {
 
   const handlePDFView = async () => {
     // const path = await viewPdf(charter.id)
-    const path = signedDocumentsArray.find(item => item.charter_id === charter.id)
+    const path = signedDocumentsArray.find(
+      item => item.charter_id === charter.id
+    )
     navigation.navigate('PDFView', {
       path: `${path.path}`,
     })

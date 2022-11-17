@@ -14,13 +14,13 @@ export const CurrentNavLogInfo = () => {
   const {currentNavLogs, prevNavLogs, vesselStatus}: any = useMap()
 
   const handleOnPressNavigation = () => {
-    if (vesselStatus?.speed > 0) {
-    } else {
-      navigation.navigate('PlanningDetails', {
-        navlog: currentNavLogs[currentNavLogs?.length - 1],
-        title: currentNavLogs[currentNavLogs?.length - 1]?.location?.name,
-      })
-    }
+    // if (vesselStatus?.speed > 0) {
+    // } else {
+    navigation.navigate('PlanningDetails', {
+      navlog: currentNavLogs[currentNavLogs?.length - 1],
+      title: currentNavLogs[currentNavLogs?.length - 1]?.location?.name,
+    })
+    // }
   }
 
   return (

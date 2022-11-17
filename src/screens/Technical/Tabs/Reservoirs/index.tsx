@@ -6,7 +6,7 @@ import {useNavigation} from '@react-navigation/native'
 import moment from 'moment'
 
 import {Colors} from '@bluecentury/styles'
-import {formatNumber} from '@bluecentury/constants'
+import {formatNumberWithoutComma} from '@bluecentury/constants'
 import {useEntity, useTechnical} from '@bluecentury/stores'
 import {LoadingAnimated} from '@bluecentury/components'
 
@@ -90,7 +90,7 @@ const Reservoirs = () => {
                       fontSize={ms(16)}
                       fontWeight="bold"
                     >
-                      {formatNumber(value, 0)} L (
+                      {formatNumberWithoutComma(value, 0)} L (
                       {isNaN(fillPct) || fillPct === Infinity
                         ? 0
                         : Math.floor(fillPct)}

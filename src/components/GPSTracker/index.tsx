@@ -112,7 +112,9 @@ export const GPSTracker = ({navigation}: Props) => {
               {/*{!isMobileTracking*/}
               {/*  ? moment(vesselDetails?.lastGeolocation?.locationTime).fromNow()*/}
               {/*  : moment(position?.time).fromNow()}*/}
-              {moment(vesselDetails?.lastGeolocation?.lastIterationTime).fromNow()}
+              {moment(
+                vesselDetails?.lastGeolocation?.lastIterationTime
+              ).fromNow()}
             </Text>
           </Box>
         </HStack>

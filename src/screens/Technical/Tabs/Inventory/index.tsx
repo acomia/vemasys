@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react'
+import {TouchableOpacity} from 'react-native'
 import {
   Box,
   Button,
@@ -12,14 +13,14 @@ import {
   Text,
   useToast,
 } from 'native-base'
-import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
 import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+
 import {Icons} from '@bluecentury/assets'
 import {useEntity, useTechnical} from '@bluecentury/stores'
-import {TouchableOpacity} from 'react-native'
 import {formatConsumableLabel} from '@bluecentury/constants'
 import {LoadingAnimated} from '@bluecentury/components'
+import {Colors} from '@bluecentury/styles'
 
 const Inventory = () => {
   const toast = useToast()

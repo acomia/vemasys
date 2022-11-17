@@ -1,5 +1,5 @@
-import React, {useCallback, useEffect} from 'react'
-import {ImageSourcePropType} from 'react-native'
+import React, {useCallback, useEffect, useRef, useState} from 'react'
+import {AppState, ImageSourcePropType, Platform} from 'react-native'
 import {Box, HStack, Pressable} from 'native-base'
 import {createDrawerNavigator} from '@react-navigation/drawer'
 import {
@@ -7,6 +7,10 @@ import {
   DrawerActions,
   useFocusEffect,
 } from '@react-navigation/native'
+import {NativeStackScreenProps} from '@react-navigation/native-stack'
+import {ms} from 'react-native-size-matters'
+import BackgroundGeolocation from 'react-native-background-geolocation'
+
 import {
   Notification,
   Entity,
@@ -21,19 +25,15 @@ import {
 } from '@bluecentury/screens'
 import {Sidebar, IconButton} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
-import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {Screens} from '@bluecentury/constants'
-import {ms} from 'react-native-size-matters'
 import {Colors} from '@bluecentury/styles'
-import {useAuth, useMap, useSettings} from '@bluecentury/stores'
+import {useAuth, useEntity, useMap, useSettings} from '@bluecentury/stores'
 import {navigationRef} from './navigationRef'
-import {
-  InitializeTrackingService,
-  StopTrackingService,
-} from '@bluecentury/helpers'
-// import BackgroundGeolocation from '@mauron85/react-native-background-geolocation'
+// import {
+//   InitializeTrackingService,
+//   StopTrackingService,
+// } from '@bluecentury/helpers'
 import {GPSAnimated} from '@bluecentury/components/gps-animated'
-import BackgroundGeolocation from 'react-native-background-geolocation'
 
 const {Navigator, Screen} = createDrawerNavigator<MainStackParamList>()
 
@@ -59,28 +59,21 @@ export default function MainNavigator({navigation}: Props) {
     if (isMobileTracking) {
       BackgroundGeolocation.start()
     }
-
     if (!isMobileTracking) {
       BackgroundGeolocation.stop()
     }
-    // BackgroundGeolocation.checkStatus(status => {
-    //   if (!status.isRunning && isMobileTracking) {
-    //     BackgroundGeolocation.start()
-    //   }
-    //
-    //   if (status.isRunning && !isMobileTracking) {
-    //     BackgroundGeolocation.stop()
-    //   }
-    // })
   }, [isMobileTracking])
 
-  useEffect(() => {
-    InitializeTrackingService()
-
-    return () => {
-      StopTrackingService()
-    }
-  }, [])
+  // useEffect(() => {
+  //   // BackgroundGeolocation.checkStatus(status => {
+  //   //   if (!status.isRunning && isMobileTracking) {
+  //   //     BackgroundGeolocation.start()
+  //   //   }
+  //   //   if (status.isRunning && !isMobileTracking) {
+  //   //     BackgroundGeolocation.stop()
+  //   //   }
+  //   // })
+  // }, [isMobileTracking])
 
   useEffect(() => {
     if (typeof token === 'undefined') {
