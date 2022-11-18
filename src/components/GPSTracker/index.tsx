@@ -17,7 +17,6 @@ import moment from 'moment'
 import {Colors} from '@bluecentury/styles'
 import {Icons} from '@bluecentury/assets'
 import {useEntity, useSettings} from '@bluecentury/stores'
-import {Location} from 'react-native-background-geolocation'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 export const GPSTracker = ({navigation}: Props) => {
@@ -33,6 +32,7 @@ export const GPSTracker = ({navigation}: Props) => {
       updateVesselDetails()
     }, 30000)
     return () => clearInterval(refreshId.current)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleOnValueChange = () => {
