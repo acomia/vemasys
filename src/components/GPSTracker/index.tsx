@@ -16,16 +16,14 @@ import {useNetInfo} from '@react-native-community/netinfo'
 import moment from 'moment'
 import {Colors} from '@bluecentury/styles'
 import {Icons} from '@bluecentury/assets'
-import {useEntity, useMap, useSettings} from '@bluecentury/stores'
+import {useEntity, useSettings} from '@bluecentury/stores'
 import {Location} from 'react-native-background-geolocation'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 export const GPSTracker = ({navigation}: Props) => {
   const isMobileTracking = useSettings(state => state.isMobileTracking)
-  const isLoadingMap = useMap(state => state.isLoadingMap)
   const vesselDetails = useEntity(state => state.vesselDetails)
   const netInfo = useNetInfo()
-  const [position, setPosition] = useState<Location>()
   let refreshId = useRef<any>()
   const {updateVesselDetails} = useEntity()
 
@@ -161,7 +159,6 @@ export const GPSTracker = ({navigation}: Props) => {
             value={isMobileTracking}
             onTouchStart={handleOnValueChange}
             onToggle={handleOnValueChange}
-            // onValueChange={handleOnValueChange}
           />
         </HStack>
         <HStack
