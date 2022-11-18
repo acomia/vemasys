@@ -1,5 +1,4 @@
-import React, {useEffect, useState} from 'react'
-import {Image as RNImage} from 'react-native'
+import React, {useEffect, useRef, useState} from 'react'
 import {
   HStack,
   Text,
@@ -18,13 +17,7 @@ import moment from 'moment'
 import {Colors} from '@bluecentury/styles'
 import {Icons} from '@bluecentury/assets'
 import {useEntity, useMap, useSettings} from '@bluecentury/stores'
-// import BackgroundGeolocation, {
-//   Location,
-// } from '@mauron85/react-native-background-geolocation'
-import BackgroundGeolocation, {
-  Location,
-  Subscription
-} from 'react-native-background-geolocation'
+import {Location} from 'react-native-background-geolocation'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 export const GPSTracker = ({navigation}: Props) => {
@@ -33,18 +26,16 @@ export const GPSTracker = ({navigation}: Props) => {
   const vesselDetails = useEntity(state => state.vesselDetails)
   const netInfo = useNetInfo()
   const [position, setPosition] = useState<Location>()
+  let refreshId = useRef<any>()
+  const {updateVesselDetails} = useEntity()
 
-  // useEffect(() => {
-  //   if (isMobileTracking) {
-  //     console.log('isMobileTracking ', isMobileTracking)
-  //     BackgroundGeolocation.checkStatus(status => {
-  //       if (!status.isRunning) {
-  //         BackgroundGeolocation.start()
-  //       }
-  //     })
-  //     BackgroundGeolocation.getCurrentLocation(loc => setPosition(loc))
-  //   }
-  // }, [isMobileTracking])
+  useEffect(() => {
+    refreshId.current = setInterval(() => {
+      // Run updated vessel status
+      updateVesselDetails()
+    }, 30000)
+    return () => clearInterval(refreshId.current)
+  }, [])
 
   const handleOnValueChange = () => {
     navigation.navigate('TrackingServiceDialog')
@@ -62,7 +53,6 @@ export const GPSTracker = ({navigation}: Props) => {
   const renderTrackerSourceText = () => {
     //TODO we need to define should we always show 'Current device' as data source if gps tracker is enabled or should we take this data from backend
     const sourceData = vesselDetails?.lastGeolocation?.sourceOfData
-    if (isMobileTracking) return 'Current device'
     if (typeof sourceData === 'undefined') return 'Unknown'
     if (sourceData.includes('ais')) return 'AIS Hub'
     if (sourceData.includes('vematrack sp')) return 'Vematrack SP'
@@ -109,9 +99,6 @@ export const GPSTracker = ({navigation}: Props) => {
             justifyContent="center"
           >
             <Text fontWeight="medium" ml={ms(15)}>
-              {/*{!isMobileTracking*/}
-              {/*  ? moment(vesselDetails?.lastGeolocation?.locationTime).fromNow()*/}
-              {/*  : moment(position?.time).fromNow()}*/}
               {moment(
                 vesselDetails?.lastGeolocation?.lastIterationTime
               ).fromNow()}
@@ -232,11 +219,6 @@ export const GPSTracker = ({navigation}: Props) => {
             justifyContent="center"
           >
             <Text fontWeight="medium" ml={ms(15)}>
-              {/*{!isMobileTracking*/}
-              {/*  ? `${vesselDetails?.lastGeolocation?.latitude} | ${vesselDetails?.lastGeolocation?.longitude}`*/}
-              {/*  : isLoadingMap*/}
-              {/*  ? 'Loading...'*/}
-              {/*  : `${position?.latitude} | ${position?.longitude}`}*/}
               {`${vesselDetails?.lastGeolocation?.latitude} | ${vesselDetails?.lastGeolocation?.longitude}`}
             </Text>
           </Box>

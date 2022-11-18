@@ -33,6 +33,7 @@ type EntityActions = {
   selectFleetVessel: (index: number, entity: any) => void
   setHasHydrated: (state: boolean) => void
   reset: () => void
+  updateVesselDetails: () => void
 }
 
 type EntityStore = EntityState & EntityActions
@@ -62,6 +63,19 @@ export const useEntity = create(
   persist<EntityStore>(
     (set, get) => ({
       ...initialEntityState,
+      updateVesselDetails: async () => {
+        try {
+          const response = await API.getVesselNavigationDetails(get().vesselId)
+          console.log('VESSEL_UPDATE_RESPONSE', response)
+          set({
+            vesselDetails: response,
+          })
+        } catch (error) {
+          set({
+            isLoadingEntityUsers: false,
+          })
+        }
+      },
       getUserInfo: async () => {
         set({
           user: [],
