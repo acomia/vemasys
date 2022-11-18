@@ -8,8 +8,15 @@ import {
   useFocusEffect,
 } from '@react-navigation/native'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
+import BackgroundGeolocation, {
+  Location,
+} from 'react-native-background-geolocation'
+import BackgroundFetch from 'react-native-background-fetch'
 import {ms} from 'react-native-size-matters'
-
+import {Icons} from '@bluecentury/assets'
+import {Sidebar, IconButton} from '@bluecentury/components'
+import {GPSAnimated} from '@bluecentury/components/gps-animated'
+import {Screens} from '@bluecentury/constants'
 import {
   Notification,
   Entity,
@@ -22,15 +29,9 @@ import {
   Crew,
   Settings,
 } from '@bluecentury/screens'
-import {Sidebar, IconButton} from '@bluecentury/components'
-import {Icons} from '@bluecentury/assets'
-import {Screens} from '@bluecentury/constants'
-import {Colors} from '@bluecentury/styles'
 import {useAuth, useEntity, useMap, useSettings} from '@bluecentury/stores'
+import {Colors} from '@bluecentury/styles'
 import {navigationRef} from './navigationRef'
-import {GPSAnimated} from '@bluecentury/components/gps-animated'
-import BackgroundGeolocation from 'react-native-background-geolocation'
-import BackgroundFetch from 'react-native-background-fetch'
 import {InitializeTrackingService} from '@bluecentury/helpers'
 
 const {Navigator, Screen} = createDrawerNavigator<MainStackParamList>()
@@ -43,8 +44,6 @@ export default function MainNavigator({navigation}: Props) {
   const token = useAuth(state => state.token)
   const activeFormations = useMap(state => state.activeFormations)
   const getActiveFormations = useMap(state => state.getActiveFormations)
-
-  const testFormations = [0, 1, 2, 3]
 
   useFocusEffect(
     useCallback(() => {
@@ -90,13 +89,13 @@ export default function MainNavigator({navigation}: Props) {
   const initBackgroundFetch = async () => {
     const entityId = useEntity.getState().entityId as string
     // BackgroundFetch event handler.
-    const onEvent = async taskId => {
+    const onEvent = async (taskId: string) => {
       console.log('[BackgroundFetch] task: ', taskId)
       // Do your background work...
       BackgroundGeolocation.getCurrentPosition({
         samples: 1,
         persist: true,
-      }).then(location => {
+      }).then((location: Location) => {
         console.log('[GROUND_FETCH_LOCATION] ', location)
         useMap.getState().sendCurrentPosition(entityId, location.coords)
       })
@@ -106,7 +105,7 @@ export default function MainNavigator({navigation}: Props) {
 
     // Timeout callback is executed when your Task has exceeded its allowed running-time.
     // You must stop what you're doing immediately BackgroundFetch.finish(taskId)
-    const onTimeout = async taskId => {
+    const onTimeout = async (taskId: string) => {
       console.warn('[groundFetch] TIMEOUT task: ', taskId)
       BackgroundFetch.finish(taskId)
     }

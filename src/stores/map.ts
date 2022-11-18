@@ -2,7 +2,7 @@ import create from 'zustand'
 import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as API from '@bluecentury/api/vemasys'
-import {Location} from 'react-native-background-geolocation'
+import {Coords} from 'react-native-background-geolocation'
 
 type MapState = {
   vesselStatus: any
@@ -38,7 +38,7 @@ type MapActions = {
   verifyTrackingDeviceToken: (id: string, token: string, method: string) => void
   endVesselFormations: (formationId: string, vesselId: string) => void
   removeVesselFromFormations: (formationId: string, vesselId: string) => void
-  sendCurrentPosition: (entityId: string, position: Location) => void
+  sendCurrentPosition: (entityId: string, position: Coords) => void
   enableMobileTracking: () => void
   getVesselTrack: (vesselId: string, page: number) => void
   reset: () => void
