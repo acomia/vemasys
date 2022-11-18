@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect} from 'react'
-import {ImageSourcePropType, Platform} from 'react-native'
+import {Platform} from 'react-native'
 import {Box, HStack, Pressable} from 'native-base'
 import {createDrawerNavigator} from '@react-navigation/drawer'
 import {
@@ -9,7 +9,6 @@ import {
 } from '@react-navigation/native'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {ms} from 'react-native-size-matters'
-import BackgroundGeolocation from 'react-native-background-geolocation'
 
 import {
   Notification,
@@ -29,14 +28,10 @@ import {Screens} from '@bluecentury/constants'
 import {Colors} from '@bluecentury/styles'
 import {useAuth, useEntity, useMap, useSettings} from '@bluecentury/stores'
 import {navigationRef} from './navigationRef'
-// import {
-//   InitializeTrackingService,
-//   StopTrackingService,
-// } from '@bluecentury/helpers'
 import {GPSAnimated} from '@bluecentury/components/gps-animated'
 import BackgroundGeolocation from 'react-native-background-geolocation'
-import BackgroundService from 'react-native-background-actions'
 import BackgroundFetch from 'react-native-background-fetch'
+import {InitializeTrackingService} from '@bluecentury/helpers'
 
 const {Navigator, Screen} = createDrawerNavigator<MainStackParamList>()
 
@@ -73,9 +68,9 @@ export default function MainNavigator({navigation}: Props) {
     }
   }, [isMobileTracking])
 
-  // useEffect(() => {
-  //   InitializeTrackingService()
-  // }, [])
+  useEffect(() => {
+    InitializeTrackingService()
+  }, [])
 
   useEffect(() => {
     if (typeof token === 'undefined') {
