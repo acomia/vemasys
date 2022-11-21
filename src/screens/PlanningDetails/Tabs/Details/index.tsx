@@ -52,7 +52,9 @@ const Details = () => {
     getNavigationLogComments,
     getNavigationLogDocuments,
     updateNavlogDates,
-    isUpdateNavlogDatesSuccess,
+    updateNavlogDatesSuccess,
+    updateNavlogDatesFailed,
+    updateNavlogDatesMessage,
     reset,
   } = usePlanning()
   const {user, selectedEntity, physicalVesselId} = useEntity()
@@ -91,14 +93,21 @@ const Details = () => {
   }, [])
 
   useEffect(() => {
-    if (isUpdateNavlogDatesSuccess) {
+    if (updateNavlogDatesSuccess === 'SUCCESS') {
       showToast('Updates saved.', 'success')
     }
-  }, [isUpdateNavlogDatesSuccess])
+    if (updateNavlogDatesFailed === 'FAILED') {
+      showToast(updateNavlogDatesMessage, 'failed')
+    }
+  }, [
+    updateNavlogDatesSuccess,
+    updateNavlogDatesFailed,
+    updateNavlogDatesMessage,
+  ])
 
   const showToast = (text: string, res: string) => {
     toast.show({
-      duration: 1000,
+      duration: 2000,
       render: () => {
         return (
           <Text
@@ -114,7 +123,7 @@ const Details = () => {
         )
       },
       onCloseComplete() {
-        res === 'success' ? onSuccess() : null
+        res === 'success' ? onSuccess() : reset()
       },
     })
   }
