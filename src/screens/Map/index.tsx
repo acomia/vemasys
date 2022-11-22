@@ -242,7 +242,7 @@ export default function Map({navigation}: Props) {
           longitude: previousLocation?.location?.longitude,
         }}
         title={`From: ${previousLocation?.location?.name}`}
-        // zIndex={1}
+        zIndex={1}
         tracksViewChanges={false}
       >
         <Callout
