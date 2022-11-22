@@ -9,7 +9,7 @@ import {useNavigation} from '@react-navigation/native'
 import {useEntity, useTechnical} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
 import {LoadingAnimated} from '@bluecentury/components'
-import {formatNumberWithoutComma} from '@bluecentury/constants'
+import {formatNumber} from '@bluecentury/constants'
 
 const Engines = () => {
   const navigation = useNavigation()
@@ -71,9 +71,10 @@ const Engines = () => {
                 fontWeight="bold"
               >
                 {partType.data[pLength].lastMeasurement
-                  ? `${formatNumberWithoutComma(
+                  ? `${formatNumber(
                       partType.data[pLength].lastMeasurement.value,
-                      0
+                      0,
+                      ' '
                     )}h`
                   : 'Loading...'}
               </Text>
@@ -115,6 +116,7 @@ const Engines = () => {
         refreshControl={
           <RefreshControl onRefresh={onPullToReload} refreshing={pullRefresh} />
         }
+        showsVerticalScrollIndicator={false}
       >
         <Text
           color={Colors.azure}

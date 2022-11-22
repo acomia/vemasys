@@ -43,6 +43,7 @@ const Bunkering = () => {
         refreshControl={
           <RefreshControl onRefresh={onPullToReload} refreshing={pullRefresh} />
         }
+        showsVerticalScrollIndicator={false}
       >
         <Text color={Colors.azure} fontSize={ms(20)} fontWeight="bold">
           Gasoil
