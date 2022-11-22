@@ -242,7 +242,8 @@ export default function Map({navigation}: Props) {
           longitude: previousLocation?.location?.longitude,
         }}
         title={`From: ${previousLocation?.location?.name}`}
-        zIndex={1}
+        // zIndex={1}
+        tracksViewChanges={false}
       >
         <Callout
           onPress={() =>
@@ -301,6 +302,7 @@ export default function Map({navigation}: Props) {
         }}
         title={`To: ${nextLocation?.location?.name}`}
         zIndex={1}
+        tracksViewChanges={false}
       >
         <Callout
           onPress={() =>
@@ -355,6 +357,7 @@ export default function Map({navigation}: Props) {
         }}
         image={Number(speed) > 0 ? Icons.navigating : Icons.anchor}
         zIndex={1}
+        tracksViewChanges={false}
       >
         <Callout
           onPress={() => (trackViewMode ? onLoadMoreVesselTrack() : null)}
@@ -378,6 +381,7 @@ export default function Map({navigation}: Props) {
           longitude: log.location?.longitude,
         }}
         zIndex={0}
+        tracksViewChanges={false}
       >
         <HStack zIndex={0}>
           <Box
