@@ -21,6 +21,7 @@ type PlanningState = {
   isCreateNavLogActionSuccess: boolean
   isUpdateNavLogActionSuccess: boolean
   isDeleteNavLogActionSuccess: boolean
+  isUpdateNavlogDatesSuccess: boolean
 }
 
 type PlanningActions = {
@@ -71,6 +72,7 @@ export const usePlanning = create(
       isCreateNavLogActionSuccess: false,
       isUpdateNavLogActionSuccess: false,
       isDeleteNavLogActionSuccess: false,
+      isUpdateNavlogDatesSuccess: false,
       getVesselHistoryNavLogs: async (vesselId: string, page: number) => {
         set({
           isPlanningLoading: true,
@@ -257,8 +259,7 @@ export const usePlanning = create(
             navLogId,
             dates
           )
-          set({isPlanningLoading: false})
-          return response
+          set({isPlanningLoading: false, isUpdateNavlogDatesSuccess: response})
         } catch (error) {
           set({isPlanningLoading: false})
         }
@@ -450,6 +451,7 @@ export const usePlanning = create(
           isCreateNavLogActionSuccess: false,
           isUpdateNavLogActionSuccess: false,
           isDeleteNavLogActionSuccess: false,
+          isUpdateNavlogDatesSuccess: false,
         })
       },
     }),

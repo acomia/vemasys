@@ -32,10 +32,10 @@ import {PROD_URL} from '@vemasys/env'
 import {LoadingAnimated} from '@bluecentury/components'
 
 type Dates = {
-  plannedEta: Date | null
-  captainDatetimeETA: Date | null
-  announcedDatetime: Date | null
-  terminalApprovedDeparture: Date | null
+  plannedEta: Date | undefined | StringOrNull
+  captainDatetimeEta: Date | undefined | StringOrNull
+  announcedDatetime: Date | undefined | StringOrNull
+  terminalApprovedDeparture: Date | undefined | StringOrNull
 }
 
 const Details = () => {
@@ -52,15 +52,23 @@ const Details = () => {
     getNavigationLogComments,
     getNavigationLogDocuments,
     updateNavlogDates,
+    isUpdateNavlogDatesSuccess,
+    reset,
   } = usePlanning()
   const {user, selectedEntity, physicalVesselId} = useEntity()
   const {navlog, title}: any = route.params
   const [dates, setDates] = useState<Dates>({
-    plannedEta: null,
-    captainDatetimeETA: null,
-    announcedDatetime: null,
-    terminalApprovedDeparture: null,
+    plannedEta: navlog !== undefined ? navigationLogDetails?.plannedEta : null,
+    captainDatetimeEta:
+      navlog !== undefined ? navigationLogDetails?.captainDatetimeEta : null,
+    announcedDatetime:
+      navlog !== undefined ? navigationLogDetails?.announcedDatetime : null,
+    terminalApprovedDeparture:
+      navlog !== undefined
+        ? navigationLogDetails?.terminalApprovedDeparture
+        : null,
   })
+
   const [selectedDate, setSelectedDate] = useState('')
   const [openDatePicker, setOpenDatePicker] = useState(false)
   const hasAddCommentPermission = hasSelectedEntityUserPermission(
@@ -82,59 +90,42 @@ const Details = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const handleOnSaveDateUpdates = async () => {
-    let updates = Object.entries([dates]).map(keyValue => {
-      return keyValue[1]
-    })
-    const body = {}
-    Object.entries(updates[0]).forEach(update => {
-      const [field, datetime] = update
-      body[field] = datetime
-        ? moment(datetime).format()
-        : Object.entries(navigationLogDetails).find(keyValue => {
-            if (keyValue[0] === field) {
-              return keyValue[1]
-            }
-          })[1]
-      if (field === 'departureDatetime') {
-        body['modifiedByUser'] = {
-          id: user?.id,
-        }
-        body['modificationDate'] = new Date()
-      }
-    })
-
-    const isSuccess = await updateNavlogDates(navlog?.id, body)
-    if (typeof isSuccess === 'object') {
-      toast.show({
-        duration: 2000,
-        render: () => {
-          return (
-            <Text
-              bg="emerald.500"
-              px="2"
-              py="1"
-              rounded="sm"
-              mb={5}
-              color={Colors.white}
-            >
-              Updates saved.
-            </Text>
-          )
-        },
-      })
-    } else {
-      toast.show({
-        duration: 2000,
-        render: () => {
-          return (
-            <Box bg="red.500" px="2" py="1" rounded="sm" mb={5}>
-              Updates failed.
-            </Box>
-          )
-        },
-      })
+  useEffect(() => {
+    if (isUpdateNavlogDatesSuccess) {
+      showToast('Updates saved.', 'success')
     }
+  }, [isUpdateNavlogDatesSuccess])
+
+  const showToast = (text: string, res: string) => {
+    toast.show({
+      duration: 1000,
+      render: () => {
+        return (
+          <Text
+            bg={res === 'success' ? 'emerald.500' : 'red.500'}
+            px="2"
+            py="1"
+            rounded="sm"
+            mb={5}
+            color={Colors.white}
+          >
+            {text}
+          </Text>
+        )
+      },
+      onCloseComplete() {
+        res === 'success' ? onSuccess() : null
+      },
+    })
+  }
+
+  const onSuccess = () => {
+    getNavigationLogDetails(navlog?.id)
+    reset()
+  }
+
+  const handleOnSaveDateUpdates = async () => {
+    updateNavlogDates(navlog?.id, dates)
   }
 
   const onDatesChange = (date: Date) => {
@@ -143,7 +134,7 @@ const Details = () => {
         setDates({...dates, plannedEta: date})
         return
       case 'ETA':
-        setDates({...dates, captainDatetimeETA: date})
+        setDates({...dates, captainDatetimeEta: date})
         return
       case 'NOR':
         setDates({...dates, announcedDatetime: date})
@@ -176,11 +167,7 @@ const Details = () => {
         </HStack>
         <DatetimePickerList
           title="PLN"
-          date={
-            dates.plannedEta
-              ? dates.plannedEta
-              : navigationLogDetails?.plannedEta
-          }
+          date={dates.plannedEta}
           locked={isUnknownLocation ? true : navigationLogDetails?.locked}
           onChangeDate={() => {
             setSelectedDate('PLN')
@@ -190,26 +177,18 @@ const Details = () => {
         />
         <DatetimePickerList
           title="ETA"
-          date={
-            _.isNull(dates.captainDatetimeETA)
-              ? navigationLogDetails?.captainDatetimeEta
-              : dates.captainDatetimeETA
-          }
+          date={dates.captainDatetimeEta}
           locked={isUnknownLocation ? true : navigationLogDetails?.locked}
           onChangeDate={() => {
             setSelectedDate('ETA')
             setOpenDatePicker(true)
           }}
-          onClearDate={() => setDates({...dates, captainDatetimeETA: null})}
+          onClearDate={() => setDates({...dates, captainDatetimeEta: null})}
         />
 
         <DatetimePickerList
           title="NOR"
-          date={
-            _.isNull(dates.announcedDatetime)
-              ? navigationLogDetails?.announcedDatetime
-              : dates.announcedDatetime
-          }
+          date={dates.announcedDatetime}
           locked={isUnknownLocation ? true : navigationLogDetails?.locked}
           onChangeDate={() => {
             setSelectedDate('NOR')
@@ -220,11 +199,7 @@ const Details = () => {
 
         <DatetimePickerList
           title="DOC"
-          date={
-            _.isNull(dates.terminalApprovedDeparture)
-              ? navigationLogDetails?.terminalApprovedDeparture
-              : dates.terminalApprovedDeparture
-          }
+          date={dates.terminalApprovedDeparture}
           locked={isUnknownLocation ? true : navigationLogDetails?.locked}
           onChangeDate={() => {
             setSelectedDate('DOC')
@@ -239,7 +214,7 @@ const Details = () => {
           bg={
             _.isNull(
               dates.terminalApprovedDeparture ||
-                dates.captainDatetimeETA ||
+                dates.captainDatetimeEta ||
                 dates.announcedDatetime
             )
               ? Colors.disabled
@@ -250,7 +225,7 @@ const Details = () => {
           disabled={
             _.isNull(
               dates.terminalApprovedDeparture ||
-                dates.captainDatetimeETA ||
+                dates.captainDatetimeEta ||
                 dates.announcedDatetime
             )
               ? true

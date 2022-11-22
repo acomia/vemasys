@@ -79,7 +79,11 @@ const updateNavigationLogDatetimeFields = async (
   return API.put(`navigation_logs/${navLogId}`, dates)
     .then(response => {
       if (response.data) {
-        return response.data
+        if (typeof response.data === 'object' && response.data.id) {
+          return true
+        } else {
+          return false
+        }
       } else {
         throw new Error('Update navlog datetime failed.')
       }
