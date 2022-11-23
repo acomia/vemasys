@@ -76,21 +76,32 @@ const updateNavigationLogDatetimeFields = async (
   navLogId: string,
   dates: object
 ) => {
-  return API.put(`navigation_logs/${navLogId}`, dates)
-    .then(response => {
-      if (response.data) {
-        if (typeof response.data === 'object' && response.data.id) {
-          return true
-        } else {
-          return false
-        }
-      } else {
-        throw new Error('Update navlog datetime failed.')
-      }
-    })
-    .catch(error => {
-      console.error('Error: Update navlog datetime data', error)
-    })
+  const token = useAuth.getState().token
+  const entityUserId = useEntity.getState().entityUserId
+  const API_URL = useSettings.getState().apiUrl
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+      'Jwt-Auth': `Bearer ${token}`,
+      'X-active-entity-user-id': `${entityUserId}`,
+    },
+  }
+
+  try {
+    const res = await axios.put(
+      `${API_URL}navigation_logs/${navLogId}`,
+      dates,
+      config
+    )
+    if (!res?.data) {
+      throw new Error('Update navlog datetime failed.')
+    }
+    return res?.data?.id ? 'SUCCESS' : 'Update failed.'
+  } catch (error) {
+    return error?.response?.data
+      ? error?.response?.data?.violations[0]?.message
+      : 'Update failed.'
+  }
 }
 
 const createNavlogComment = async (

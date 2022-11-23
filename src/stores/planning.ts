@@ -21,7 +21,9 @@ type PlanningState = {
   isCreateNavLogActionSuccess: boolean
   isUpdateNavLogActionSuccess: boolean
   isDeleteNavLogActionSuccess: boolean
-  isUpdateNavlogDatesSuccess: boolean
+  updateNavlogDatesSuccess: string
+  updateNavlogDatesFailed: string
+  updateNavlogDatesMessage: string
 }
 
 type PlanningActions = {
@@ -72,7 +74,9 @@ export const usePlanning = create(
       isCreateNavLogActionSuccess: false,
       isUpdateNavLogActionSuccess: false,
       isDeleteNavLogActionSuccess: false,
-      isUpdateNavlogDatesSuccess: false,
+      updateNavlogDatesSuccess: '',
+      updateNavlogDatesFailed: '',
+      updateNavlogDatesMessage: '',
       getVesselHistoryNavLogs: async (vesselId: string, page: number) => {
         set({
           isPlanningLoading: true,
@@ -259,7 +263,14 @@ export const usePlanning = create(
             navLogId,
             dates
           )
-          set({isPlanningLoading: false, isUpdateNavlogDatesSuccess: response})
+          if (response === 'SUCCESS')
+            set({isPlanningLoading: false, updateNavlogDatesSuccess: response})
+          else
+            set({
+              isPlanningLoading: false,
+              updateNavlogDatesFailed: 'FAILED',
+              updateNavlogDatesMessage: response,
+            })
         } catch (error) {
           set({isPlanningLoading: false})
         }
@@ -451,7 +462,9 @@ export const usePlanning = create(
           isCreateNavLogActionSuccess: false,
           isUpdateNavLogActionSuccess: false,
           isDeleteNavLogActionSuccess: false,
-          isUpdateNavlogDatesSuccess: false,
+          updateNavlogDatesSuccess: '',
+          updateNavlogDatesFailed: '',
+          updateNavlogDatesMessage: '',
         })
       },
     }),
