@@ -76,16 +76,6 @@ const updateNavigationLogDatetimeFields = async (
   navLogId: string,
   dates: object
 ) => {
-  // return API.put(`navigation_logs/${navLogId}`, dates)
-  //   .then(response => {
-  //     if (!response?.data) {
-  //       throw new Error('Update navlog datetime failed.')
-  //     }
-  //     return Boolean(response?.data?.id) || false
-  //   })
-  //   .catch(error => {
-  //     console.error('Error: Update navlog datetime data', error)
-  //   })
   const token = useAuth.getState().token
   const entityUserId = useEntity.getState().entityUserId
   const API_URL = useSettings.getState().apiUrl
@@ -111,7 +101,6 @@ const updateNavigationLogDatetimeFields = async (
     return error?.response?.data
       ? error?.response?.data?.violations[0]?.message
       : 'Update failed.'
-    // console.log('Error: Update navlog datetime data', error)
   }
 }
 
