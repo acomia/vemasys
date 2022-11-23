@@ -19,7 +19,7 @@ import {Shadow} from 'react-native-shadow-2'
 import {ms} from 'react-native-size-matters'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 
-import {formatNumberWithoutComma} from '@bluecentury/constants'
+import {formatNumber} from '@bluecentury/constants'
 import {useEntity, useTechnical} from '@bluecentury/stores'
 import {LoadingAnimated} from '@bluecentury/components'
 import {Colors} from '@bluecentury/styles'
@@ -126,7 +126,7 @@ const Measurements = ({navigation, route}: Props) => {
             startColor={Colors.light}
           >
             <Text color={Colors.azure} fontSize={ms(16)} fontWeight="bold">
-              {formatNumberWithoutComma(value, 0)} L (
+              {formatNumber(value, 0, ' ')} L (
               {isNaN(fillPct) || fillPct === Infinity ? 0 : Math.floor(fillPct)}
               %)
             </Text>
@@ -199,11 +199,12 @@ const Measurements = ({navigation, route}: Props) => {
             startColor={Colors.light}
           >
             <Text color={Colors.azure} fontSize={ms(16)} fontWeight="bold">
-              {formatNumberWithoutComma(
+              {formatNumber(
                 Array.isArray(lastMeasurements) && lastMeasurements
                   ? lastMeasurements[0]?.value
                   : 0,
-                0
+                0,
+                ' '
               )}{' '}
               h
             </Text>
@@ -295,7 +296,7 @@ const Measurements = ({navigation, route}: Props) => {
                     </Text>
                   </Box>
                   <Text fontWeight="bold" color={Colors.highlighted_text}>
-                    {formatNumberWithoutComma(item?.value, 0)}{' '}
+                    {formatNumber(item?.value, 0, ' ')}{' '}
                     {routeFrom === 'reservoir' ? 'L' : 'h'}
                   </Text>
                 </HStack>

@@ -127,7 +127,8 @@ const CargoList = () => {
                     {cargo.isLoading ? 'In: ' : 'Out: '}
                     {formatNumber(
                       cargo ? cargo.actualTonnage || cargo.tonnage : 0,
-                      0
+                      0,
+                      ','
                     )}
                   </Text>
                 </Box>

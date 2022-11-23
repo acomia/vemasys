@@ -95,8 +95,10 @@ export default function Map({navigation}: Props) {
   const [zoomLevel, setZoomLevel] = useState(null)
   const [trackViewMode, setTrackViewMode] = useState(false)
   const [page, setPage] = useState(1)
+  const [vesselUpdated, setVesselUpdated] = useState(false)
   const uniqueTracks: any[] = []
   const uniqueVesselTracks: {latitude: any; longitude: any}[] = []
+
   const uniqueVesselTrack = vesselTracks?.filter(element => {
     const isDuplicate = uniqueTracks.includes(element.latitude)
     if (!isDuplicate) {
@@ -105,6 +107,7 @@ export default function Map({navigation}: Props) {
     }
     return false
   })
+
   uniqueVesselTrack?.forEach(track => {
     uniqueVesselTracks.push({
       latitude: track.latitude,
@@ -129,6 +132,7 @@ export default function Map({navigation}: Props) {
     if (focused) {
       refreshId.current = setInterval(() => {
         // Run updated vessel status
+        setVesselUpdated(true)
         updateMap()
       }, 30000)
     }
@@ -148,7 +152,7 @@ export default function Map({navigation}: Props) {
   }, [currentNavLogs])
 
   useEffect(() => {
-    if (vesselStatus) {
+    if (vesselStatus && !vesselUpdated) {
       const {latitude, longitude}: VesselGeolocation = vesselStatus
       let camera = {
         center: {

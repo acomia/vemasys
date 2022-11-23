@@ -40,6 +40,7 @@ const Tasks = () => {
         refreshControl={
           <RefreshControl onRefresh={onPullRefresh} refreshing={pullRefresh} />
         }
+        showsVerticalScrollIndicator={false}
         px={ms(12)}
         py={ms(20)}
         bg={Colors.white}

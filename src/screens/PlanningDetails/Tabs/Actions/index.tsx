@@ -25,7 +25,7 @@ import {Shadow} from 'react-native-shadow-2'
 import {Colors} from '@bluecentury/styles'
 import {Animated, Icons} from '@bluecentury/assets'
 import {usePlanning} from '@bluecentury/stores'
-import {formatNumber, titleCase} from '@bluecentury/constants'
+import {titleCase} from '@bluecentury/constants'
 import {LoadingAnimated} from '@bluecentury/components'
 
 const Actions = () => {
@@ -195,19 +195,6 @@ const Actions = () => {
                       >
                         {titleCase(action.type)}
                       </Text>
-                      {/* {action.type.toLowerCase() !== 'cleaning' &&
-                      action.navigationBulk ? (
-                        <Text
-                          fontWeight="medium"
-                          color={Colors.text}
-                          ml={ms(5)}
-                        >
-                          {action.navigationBulk.type.nameEN}
-                        </Text>
-                      ) : null}
-                      <Text fontWeight="bold" color={Colors.text} ml={ms(5)}>
-                        {action.value && formatNumber(action.value, 0)}
-                      </Text> */}
                     </HStack>
                     <Text color={Colors.secondary} fontWeight="medium">
                       Start -{' '}
