@@ -1,15 +1,6 @@
-import React, {useEffect, useLayoutEffect, useRef, useState} from 'react'
-import {StyleSheet, Dimensions, Platform} from 'react-native'
-import {
-  Box,
-  Text,
-  Button,
-  Pressable,
-  HStack,
-  Image,
-  Icon,
-  VStack,
-} from 'native-base'
+import React, {useEffect, useRef, useState} from 'react'
+import {StyleSheet, Dimensions} from 'react-native'
+import {Box, Text, Button, HStack, Image, Icon, VStack} from 'native-base'
 import MapView, {
   PROVIDER_GOOGLE,
   Marker,
@@ -33,12 +24,11 @@ import {
 } from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
-import {useMap, useEntity, useAuth} from '@bluecentury/stores'
+import {useMap, useEntity} from '@bluecentury/stores'
 import {
   ENTITY_TYPE_EXPLOITATION_GROUP,
   formatLocationLabel,
 } from '@bluecentury/constants'
-import Feather from 'react-native-vector-icons/Feather'
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5'
 
 const {width, height} = Dimensions.get('window')
@@ -357,7 +347,6 @@ export default function Map({navigation}: Props) {
         }}
         image={Number(speed) > 0 ? Icons.navigating : Icons.anchor}
         zIndex={1}
-        tracksViewChanges={false}
       >
         <Callout
           onPress={() => (trackViewMode ? onLoadMoreVesselTrack() : null)}
