@@ -315,7 +315,9 @@ const Measurements = ({navigation, route}: Props) => {
               variant="filled"
               backgroundColor="#F7F7F7"
               keyboardType="number-pad"
-              size="sm"
+              height={ms(40)}
+              fontSize={ms(15)}
+              fontWeight="bold"
               value={newMeasurement}
               onChangeText={e => setNewMeasurement(e)}
             />
