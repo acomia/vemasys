@@ -78,6 +78,8 @@ const CargoList = () => {
 
   if (isPlanningLoading) return <LoadingAnimated />
 
+  const fValue = cargo ? cargo.actualTonnage || cargo.tonnage : 0
+
   return (
     <Box flex="1">
       <ScrollView
@@ -125,11 +127,7 @@ const CargoList = () => {
                   </Text>
                   <Text color={Colors.disabled}>
                     {cargo.isLoading ? 'In: ' : 'Out: '}
-                    {formatNumber(
-                      cargo ? cargo.actualTonnage || cargo.tonnage : 0,
-                      0,
-                      ','
-                    )}
+                    {formatNumber(fValue, 0, ',')}
                   </Text>
                 </Box>
                 <IconButton
