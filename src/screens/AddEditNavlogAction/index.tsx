@@ -348,7 +348,10 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
             bg="#F7F7F7"
             onChangeText={val => onChangeAmount(val)}
             value={navActionDetails.cargoHoldActions[0].amount}
-            keyboardType="numeric"
+            keyboardType="number-pad"
+            height={ms(40)}
+            fontSize={ms(15)}
+            fontWeight="bold"
           />
         </Box>
       </HStack>
