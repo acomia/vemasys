@@ -290,7 +290,10 @@ export default function Charters({navigation, route}: any) {
     if (!signatureId) {
       navigateToGetSignatureScreen()
     } else {
-      const response = await getSignature(signatureId, navigateToGetSignatureScreen)
+      const response = await getSignature(
+        signatureId,
+        navigateToGetSignatureScreen
+      )
       if (response.signature) {
         setSignature(response.signature.replace('data:image/png;base64,', ''))
         onCharterSelected(selectedCharter)
@@ -374,7 +377,7 @@ export default function Charters({navigation, route}: any) {
           setIsPdfSigned(true)
           const newSignedDocument = {
             charter_id: selectedCharter.id,
-            path: `${path}_signed`
+            path: `${path}_signed`,
           }
           addSignedDocument([...signedDocumentsArray, newSignedDocument])
 

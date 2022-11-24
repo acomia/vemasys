@@ -25,7 +25,7 @@ type Props = NativeStackScreenProps<RootStackParamList>
 
 export default function Entity({route, navigation}: Props) {
   const insets = useSafeAreaInsets()
-  const paddingTop = route.name === 'ChangeRole' ? 2 : 0
+  const paddingTop = route.name === 'ChangeRole' ? 2 : insets.top
   const borderTopRadius = route.name === 'ChangeRole' ? '3xl' : 0
   const {
     entityUsers,

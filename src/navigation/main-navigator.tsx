@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect} from 'react'
-import {ImageSourcePropType} from 'react-native'
+import {Platform} from 'react-native'
 import {Box, HStack, Pressable} from 'native-base'
 import {createDrawerNavigator} from '@react-navigation/drawer'
 import {
@@ -7,6 +7,16 @@ import {
   DrawerActions,
   useFocusEffect,
 } from '@react-navigation/native'
+import {NativeStackScreenProps} from '@react-navigation/native-stack'
+import BackgroundGeolocation, {
+  Location,
+} from 'react-native-background-geolocation'
+import BackgroundFetch from 'react-native-background-fetch'
+import {ms} from 'react-native-size-matters'
+import {Icons} from '@bluecentury/assets'
+import {Sidebar, IconButton} from '@bluecentury/components'
+import {GPSAnimated} from '@bluecentury/components/gps-animated'
+import {Screens} from '@bluecentury/constants'
 import {
   Notification,
   Entity,
@@ -19,20 +29,10 @@ import {
   Crew,
   Settings,
 } from '@bluecentury/screens'
-import {Sidebar, IconButton} from '@bluecentury/components'
-import {Icons} from '@bluecentury/assets'
-import {NativeStackScreenProps} from '@react-navigation/native-stack'
-import {Screens} from '@bluecentury/constants'
-import {ms} from 'react-native-size-matters'
+import {useAuth, useEntity, useMap, useSettings} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
-import {useAuth, useMap, useSettings} from '@bluecentury/stores'
 import {navigationRef} from './navigationRef'
-import {
-  InitializeTrackingService,
-  StopTrackingService,
-} from '@bluecentury/helpers'
-import BackgroundGeolocation from '@mauron85/react-native-background-geolocation'
-import {GPSAnimated} from '@bluecentury/components/gps-animated'
+import {InitializeTrackingService} from '@bluecentury/helpers'
 
 const {Navigator, Screen} = createDrawerNavigator<MainStackParamList>()
 
@@ -44,8 +44,6 @@ export default function MainNavigator({navigation}: Props) {
   const token = useAuth(state => state.token)
   const activeFormations = useMap(state => state.activeFormations)
   const getActiveFormations = useMap(state => state.getActiveFormations)
-  let scanIcon: ImageSourcePropType = Icons.qr
-  let scanNavigateTo: () => void
 
   useFocusEffect(
     useCallback(() => {
@@ -55,23 +53,22 @@ export default function MainNavigator({navigation}: Props) {
   )
 
   useEffect(() => {
-    BackgroundGeolocation.checkStatus(status => {
-      if (!status.isRunning && isMobileTracking) {
-        BackgroundGeolocation.start()
+    if (isMobileTracking) {
+      console.log('START_BG_LOCATION')
+      BackgroundGeolocation.start()
+      if (Platform.OS === 'android') {
+        initBackgroundFetch()
       }
-
-      if (status.isRunning && !isMobileTracking) {
-        BackgroundGeolocation.stop()
-      }
-    })
+    }
+    if (!isMobileTracking) {
+      console.log('STOP_BG_LOCATION')
+      BackgroundGeolocation.stop()
+      BackgroundFetch.stop()
+    }
   }, [isMobileTracking])
 
   useEffect(() => {
     InitializeTrackingService()
-
-    return () => {
-      StopTrackingService()
-    }
   }, [])
 
   useEffect(() => {
@@ -89,15 +86,39 @@ export default function MainNavigator({navigation}: Props) {
     }
   }, [token])
 
-  useEffect(() => {
-    if (activeFormations?.length > 0) {
-      scanIcon = Icons.qr
-      scanNavigateTo = () => navigation.navigate('QRScanner')
-    } else {
-      scanIcon = Icons.formations
-      scanNavigateTo = () => navigation.navigate('Formations')
+  const initBackgroundFetch = async () => {
+    const entityId = useEntity.getState().entityId as string
+    // BackgroundFetch event handler.
+    const onEvent = async (taskId: string) => {
+      console.log('[BackgroundFetch] task: ', taskId)
+      // Do your background work...
+      BackgroundGeolocation.getCurrentPosition({
+        samples: 1,
+        persist: true,
+      }).then((location: Location) => {
+        console.log('[GROUND_FETCH_LOCATION] ', location)
+        useMap.getState().sendCurrentPosition(entityId, location.coords)
+      })
+      // IMPORTANT:  You must signal to the OS that your task is complete.
+      BackgroundFetch.finish(taskId)
     }
-  }, [activeFormations])
+
+    // Timeout callback is executed when your Task has exceeded its allowed running-time.
+    // You must stop what you're doing immediately BackgroundFetch.finish(taskId)
+    const onTimeout = async (taskId: string) => {
+      console.warn('[groundFetch] TIMEOUT task: ', taskId)
+      BackgroundFetch.finish(taskId)
+    }
+
+    // Initialize BackgroundFetch only once when component mounts.
+    let status = await BackgroundFetch.configure(
+      {minimumFetchInterval: 15, enableHeadless: true, stopOnTerminate: false},
+      onEvent,
+      onTimeout
+    )
+
+    console.log('[groundFetch] configure status: ', status)
+  }
 
   return (
     <Navigator
@@ -112,10 +133,17 @@ export default function MainNavigator({navigation}: Props) {
         headerRight: () => (
           <Box flexDirection="row" alignItems="center" mr={2}>
             <HStack space="3">
+              {activeFormations.length ? (
+                <IconButton
+                  source={Icons.formations}
+                  onPress={() => navigation.navigate(Screens.Formations)}
+                  size={ms(25)}
+                />
+              ) : null}
               {isQrScanner ? (
                 <IconButton
-                  source={scanIcon}
-                  onPress={() => scanNavigateTo()}
+                  source={Icons.qr}
+                  onPress={() => navigation.navigate(Screens.QRScanner)}
                   size={ms(25)}
                 />
               ) : null}

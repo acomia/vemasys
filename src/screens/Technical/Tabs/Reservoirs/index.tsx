@@ -34,6 +34,7 @@ const Reservoirs = () => {
         refreshControl={
           <RefreshControl onRefresh={onPullRefresh} refreshing={pullRefresh} />
         }
+        showsVerticalScrollIndicator={false}
         px={ms(12)}
         py={ms(20)}
       >
@@ -90,7 +91,7 @@ const Reservoirs = () => {
                       fontSize={ms(16)}
                       fontWeight="bold"
                     >
-                      {formatNumber(value, 0)} L (
+                      {formatNumber(value, 0, ' ')} L (
                       {isNaN(fillPct) || fillPct === Infinity
                         ? 0
                         : Math.floor(fillPct)}

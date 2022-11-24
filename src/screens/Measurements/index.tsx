@@ -4,7 +4,6 @@ import {
   Button,
   Divider,
   FlatList,
-  FormControl,
   HStack,
   Icon,
   Input,
@@ -14,15 +13,16 @@ import {
   Text,
   useToast,
 } from 'native-base'
-import {Colors} from '@bluecentury/styles'
-import {ms} from 'react-native-size-matters'
-import {NativeStackScreenProps} from '@react-navigation/native-stack'
-import {formatNumber} from '@bluecentury/constants'
+import Ionicons from 'react-native-vector-icons/Ionicons'
 import moment from 'moment'
 import {Shadow} from 'react-native-shadow-2'
-import Ionicons from 'react-native-vector-icons/Ionicons'
+import {ms} from 'react-native-size-matters'
+import {NativeStackScreenProps} from '@react-navigation/native-stack'
+
+import {formatNumber} from '@bluecentury/constants'
 import {useEntity, useTechnical} from '@bluecentury/stores'
 import {LoadingAnimated} from '@bluecentury/components'
+import {Colors} from '@bluecentury/styles'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const Measurements = ({navigation, route}: Props) => {
@@ -126,7 +126,7 @@ const Measurements = ({navigation, route}: Props) => {
             startColor={Colors.light}
           >
             <Text color={Colors.azure} fontSize={ms(16)} fontWeight="bold">
-              {formatNumber(value, 0)} L (
+              {formatNumber(value, 0, ' ')} L (
               {isNaN(fillPct) || fillPct === Infinity ? 0 : Math.floor(fillPct)}
               %)
             </Text>
@@ -203,7 +203,8 @@ const Measurements = ({navigation, route}: Props) => {
                 Array.isArray(lastMeasurements) && lastMeasurements
                   ? lastMeasurements[0]?.value
                   : 0,
-                0
+                0,
+                ' '
               )}{' '}
               h
             </Text>
@@ -295,7 +296,7 @@ const Measurements = ({navigation, route}: Props) => {
                     </Text>
                   </Box>
                   <Text fontWeight="bold" color={Colors.highlighted_text}>
-                    {formatNumber(item?.value, 0)}{' '}
+                    {formatNumber(item?.value, 0, ' ')}{' '}
                     {routeFrom === 'reservoir' ? 'L' : 'h'}
                   </Text>
                 </HStack>
@@ -314,7 +315,9 @@ const Measurements = ({navigation, route}: Props) => {
               variant="filled"
               backgroundColor="#F7F7F7"
               keyboardType="number-pad"
-              size="sm"
+              height={ms(40)}
+              fontSize={ms(15)}
+              fontWeight="bold"
               value={newMeasurement}
               onChangeText={e => setNewMeasurement(e)}
             />

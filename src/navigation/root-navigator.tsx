@@ -33,7 +33,7 @@ import {
   SelectEnvironment,
   ImgViewer,
   CharterAcceptSign,
-  TrackingServiceDialog
+  TrackingServiceDialog,
 } from '@bluecentury/screens'
 import {Colors} from '@bluecentury/styles'
 
@@ -49,7 +49,7 @@ export default function RootNavigator() {
         headerShadowVisible: false,
         headerStyle: {backgroundColor: Colors.light},
         headerTitleStyle: {fontSize: 16, fontWeight: 'bold'},
-        animation: 'fade'
+        animation: 'fade',
       }}
     >
       <Group>
@@ -58,14 +58,14 @@ export default function RootNavigator() {
           name="Login"
           component={Login}
           options={{
-            headerShown: false
+            headerShown: false,
           }}
         />
         <Screen
           name="SelectEnvironment"
           component={SelectEnvironment}
           options={{
-            headerShown: false
+            headerShown: false,
           }}
         />
         <Screen
@@ -73,7 +73,7 @@ export default function RootNavigator() {
           component={Entity}
           options={{
             title: 'Select your role',
-            headerStyle: {backgroundColor: '#F0F0F0'}
+            headerStyle: {backgroundColor: '#F0F0F0'},
           }}
         />
         <Screen
@@ -91,7 +91,7 @@ export default function RootNavigator() {
           component={Formations}
           options={{
             title: 'Active Formations',
-            headerShown: true
+            headerShown: true,
           }}
         />
         <Screen
@@ -119,7 +119,7 @@ export default function RootNavigator() {
           component={PlanningDetails}
           options={({route}) => ({
             headerShown: true,
-            title: route.params.title
+            title: route.params.title,
           })}
         />
         <Screen
@@ -132,7 +132,12 @@ export default function RootNavigator() {
           component={AddEditNavlogAction}
           options={({route}) => ({
             headerShown: true,
-            title: route.params.method === 'add' ? 'Add Action' : 'Edit Action'
+            title:
+              route.params.method === 'edit'
+                ? `Edit ${route.params.actionType}`
+                : route.params.actionType === 'Cleaning'
+                ? route.params.actionType
+                : `New ${route.params.actionType}`,
           })}
         />
         <Screen
@@ -140,7 +145,7 @@ export default function RootNavigator() {
           component={TechnicalTasksList}
           options={({route}) => ({
             headerShown: true,
-            title: route.params.title
+            title: route.params.title,
           })}
         />
         <Screen
@@ -158,7 +163,7 @@ export default function RootNavigator() {
           component={AddEditTechnicalTask}
           options={({route}) => ({
             headerShown: true,
-            title: route.params.method === 'add' ? 'Add a Task' : 'Edit Task'
+            title: route.params.method === 'add' ? 'Add a Task' : 'Edit Task',
           })}
         />
 
@@ -167,7 +172,7 @@ export default function RootNavigator() {
           component={TechnicalCertificateList}
           options={({route}) => ({
             headerShown: true,
-            title: route.params.title
+            title: route.params.title,
           })}
         />
         <Screen
@@ -175,7 +180,7 @@ export default function RootNavigator() {
           component={TechnicalCertificateDetails}
           options={{
             headerShown: true,
-            title: 'Certificate Details'
+            title: 'Certificate Details',
           }}
         />
         <Screen
@@ -185,8 +190,8 @@ export default function RootNavigator() {
             headerShown: true,
             title:
               route.params.method === 'edit'
-                ? 'Edit Cargo Entry'
-                : 'New Cargo Entry'
+                ? 'Update Cargo Amount'
+                : 'New Cargo Entry',
           })}
         />
         <Screen
@@ -195,7 +200,7 @@ export default function RootNavigator() {
           options={({route}) => ({
             headerShown: true,
             title:
-              route.params.method === 'edit' ? 'Edit Comment' : 'New Comment'
+              route.params.method === 'edit' ? 'Edit Comment' : 'New Comment',
           })}
         />
         <Screen
@@ -203,7 +208,7 @@ export default function RootNavigator() {
           component={Measurements}
           options={{
             headerShown: true,
-            title: 'Measurements'
+            title: 'Measurements',
           }}
         />
         <Screen
@@ -211,7 +216,7 @@ export default function RootNavigator() {
           component={TechnicalRoutinesList}
           options={({route}) => ({
             headerShown: true,
-            title: route.params.title
+            title: route.params.title,
           })}
         />
         <Screen
@@ -219,7 +224,7 @@ export default function RootNavigator() {
           component={TechnicalRoutineDetails}
           options={({route}) => ({
             headerShown: true,
-            title: route.params.title
+            title: route.params.title,
           })}
         />
         <Screen
@@ -227,7 +232,7 @@ export default function RootNavigator() {
           component={FinancialInvoiceDetails}
           options={({route}) => ({
             headerShown: true,
-            title: route.params.title
+            title: route.params.title,
           })}
         />
         <Screen
@@ -235,7 +240,7 @@ export default function RootNavigator() {
           component={TickerOilPriceDetails}
           options={{
             headerShown: true,
-            title: 'Ticker oil price details'
+            title: 'Ticker oil price details',
           }}
         />
         <Screen
@@ -243,7 +248,7 @@ export default function RootNavigator() {
           component={AddCrewMember}
           options={{
             headerShown: true,
-            title: 'Add crew member'
+            title: 'Add crew member',
           }}
         />
         <Screen
@@ -251,7 +256,7 @@ export default function RootNavigator() {
           component={InformationPegelDetails}
           options={{
             headerShown: true,
-            title: 'Pegel details'
+            title: 'Pegel details',
           }}
         />
         <Screen
@@ -259,7 +264,7 @@ export default function RootNavigator() {
           component={ImgViewer}
           options={({route}) => ({
             headerShown: true,
-            title: route.params.title
+            title: route.params.title,
           })}
         />
         <Screen
@@ -267,14 +272,14 @@ export default function RootNavigator() {
           component={CharterAcceptSign}
           options={{
             headerShown: true,
-            title: 'Signature'
+            title: 'Signature',
           }}
         />
       </Group>
       <Group
         screenOptions={{
           presentation: 'containedTransparentModal',
-          animation: 'slide_from_bottom'
+          animation: 'slide_from_bottom',
         }}
       >
         <Screen

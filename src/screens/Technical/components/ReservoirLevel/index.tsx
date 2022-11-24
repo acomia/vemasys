@@ -52,7 +52,7 @@ const ReservoirLevel = ({reservoir, physicalVesselId}: any) => {
                 {reservoir.name}
               </Text>
               <Text color={Colors.azure} fontSize={ms(16)} fontWeight="bold">
-                {formatNumber(value, 0)} L (
+                {formatNumber(value, 0, ' ')} L (
                 {isNaN(fillPct) || fillPct === Infinity
                   ? 0
                   : Math.floor(fillPct)}
@@ -95,7 +95,7 @@ const ReservoirLevel = ({reservoir, physicalVesselId}: any) => {
           Total gasoil
         </Text>
         <Text color={Colors.azure} fontSize={ms(20)} fontWeight="bold">
-          {formatNumber(totalGasoil, 0)} L
+          {formatNumber(totalGasoil, 0, ' ')} L
         </Text>
       </HStack>
       {reservoir.length > 0 ? (

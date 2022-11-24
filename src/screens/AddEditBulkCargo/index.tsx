@@ -193,34 +193,47 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
     >
       <Box flex="1" px={ms(12)} py={ms(20)}>
         <Text fontWeight="medium" color={Colors.disabled} mb={ms(6)}>
-          Cargo Entry
+          Cargo
         </Text>
-        <Select
-          defaultValue={defaultType}
-          minWidth="280"
-          accessibilityLabel=""
-          placeholder={defaultType}
-          bg="#F7F7F7"
-          onValueChange={val => setCargoData({...cargoData, typeId: val})}
-        >
-          {bulkTypesData?.map((type: any, index: number) => (
-            <Select.Item key={index} label={type.label} value={type.value} />
-          ))}
-        </Select>
+        {method === 'edit' ? (
+          <Box bg="#F7F7F7" borderRadius={ms(5)} py="3" px="2">
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              color={Colors.text}
+              fontWeight="medium"
+            >
+              {defaultType}
+            </Text>
+          </Box>
+        ) : (
+          <Select
+            selectedValue={defaultType}
+            minWidth="280"
+            bg="#F7F7F7"
+            onValueChange={val => setCargoData({...cargoData, typeId: val})}
+          >
+            {bulkTypesData?.map((type: any, index: number) => (
+              <Select.Item key={index} label={type.label} value={type.value} />
+            ))}
+          </Select>
+        )}
+
         <Text
           fontWeight="medium"
           color={Colors.disabled}
           mb={ms(6)}
           mt={ms(20)}
         >
-          Amount
+          Booked Amount
         </Text>
         <Input
           bg={'#F7F7F7'}
-          type="text"
-          returnKeyType="next"
-          value={cargoData.amount.toString()}
           keyboardType="number-pad"
+          height={ms(40)}
+          fontSize={ms(15)}
+          fontWeight="bold"
+          value={cargoData.amount.toString()}
           onChangeText={e => setCargoData({...cargoData, amount: e})}
         />
         <Text
@@ -233,9 +246,10 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
         </Text>
         <Input
           bg={'#F7F7F7'}
-          type="text"
-          returnKeyType="next"
           keyboardType="number-pad"
+          height={ms(40)}
+          fontSize={ms(15)}
+          fontWeight="bold"
           value={cargoData.actualAmount.toString()}
           onChangeText={e => setCargoData({...cargoData, actualAmount: e})}
         />

@@ -27,36 +27,33 @@ interface Props {
 
 const SettingsItem = (props: Props) => {
   const {type, value, iconSource, callback, switchState, language} = props
-  const [isSwitchActive, setIsSwitchActive] = useState(switchState)
   const [isSelection, setIsSelection] = useState(false)
-  const [selectedValue, setSelectedValue] = useState('')
-
-  useEffect(() => {
-    setIsSwitchActive(switchState)
-  }, [switchState])
-
-  useEffect(() => {
-    if (language && type === 'select') {
-      setSelectedValue(language)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (type === 'switch') {
-      callback(isSwitchActive)
-    }
-  }, [isSwitchActive])
 
   const languageIcon = (lang: string) => {
     switch (lang) {
-      case 'English':
+      case 'en':
         return Icons.english
-      case 'Dutch':
+      case 'nl':
         return Icons.dutch
-      case 'French':
+      case 'fr':
         return Icons.french
-      case 'German':
+      case 'de':
         return Icons.german
+      default:
+        break
+    }
+  }
+
+  const languageName = (shortName: string) => {
+    switch (shortName) {
+      case 'en':
+        return 'English'
+      case 'nl':
+        return 'Dutch'
+      case 'fr':
+        return 'French'
+      case 'de':
+        return 'German'
       default:
         break
     }
@@ -89,8 +86,7 @@ const SettingsItem = (props: Props) => {
         <Menu.Item
           w="100%"
           onPress={() => {
-            callback('English')
-            setSelectedValue('English')
+            callback('en')
           }}
         >
           <HStack>
@@ -100,8 +96,7 @@ const SettingsItem = (props: Props) => {
         </Menu.Item>
         <Menu.Item
           onPress={() => {
-            callback('Dutch')
-            setSelectedValue('Dutch')
+            callback('nl')
           }}
         >
           <HStack>
@@ -111,8 +106,7 @@ const SettingsItem = (props: Props) => {
         </Menu.Item>
         <Menu.Item
           onPress={() => {
-            callback('French')
-            setSelectedValue('French')
+            callback('fr')
           }}
         >
           <HStack>
@@ -122,8 +116,7 @@ const SettingsItem = (props: Props) => {
         </Menu.Item>
         <Menu.Item
           onPress={() => {
-            callback('German')
-            setSelectedValue('German')
+            callback('de')
           }}
         >
           <HStack>
@@ -141,10 +134,8 @@ const SettingsItem = (props: Props) => {
         <Switch
           defaultIsChecked
           colorScheme="primary"
-          isChecked={isSwitchActive}
-          onToggle={() => {
-            setIsSwitchActive(!isSwitchActive)
-          }}
+          isChecked={switchState}
+          onToggle={() => callback(!switchState)}
         />
       )
     }
@@ -177,9 +168,9 @@ const SettingsItem = (props: Props) => {
         <HStack alignItems={'center'}>
           {type === 'select' ? (
             <Image
-              key={selectedValue}
+              key={language}
               alt="Company Logo"
-              source={languageIcon(selectedValue)}
+              source={languageIcon(language)}
               resizeMode="contain"
               w={ms(17)}
               h={ms(17)}
@@ -198,7 +189,7 @@ const SettingsItem = (props: Props) => {
             />
           )}
           <Text w="70%" color={Colors.text} fontWeight="500">
-            {type === 'select' ? selectedValue : value}
+            {type === 'select' ? languageName(language) : value}
           </Text>
         </HStack>
         {renderItem(type)}

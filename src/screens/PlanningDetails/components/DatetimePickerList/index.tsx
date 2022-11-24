@@ -36,7 +36,7 @@ const DatetimePickerList = ({
           onPress={onChangeDate}
           disabled={locked}
         >
-          <HStack space="2">
+          <HStack space="2" alignItems="center">
             <Icon
               name="calendar-month-outline"
               size={ms(22)}
