@@ -1,11 +1,10 @@
 import React, {useEffect, useState} from 'react'
-import {Alert, TouchableOpacity, YellowBox} from 'react-native'
+import {TouchableOpacity} from 'react-native'
 import {
   Box,
   Button,
   Divider,
   HStack,
-  Icon,
   Image,
   Input,
   Modal,
@@ -48,6 +47,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
     isDeleteNavLogActionSuccess,
     reset,
     updateBulkCargo,
+    navigationLogActions,
   } = usePlanning()
 
   const cargoChoices =
@@ -159,80 +159,6 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
     reset()
     navigation.goBack()
   }
-
-  // const renderActionsType = () => {
-  //   return (
-  //     <HStack p={ms(10)}>
-  //       {navigationLogActionTypes.map((actType, index) => (
-  //         <Shadow
-  //           key={`NavLogActionType-${index}`}
-  //           distance={actType.selected ? 0 : 5}
-  //           viewStyle={{width: '100%', borderRadius: 5}}
-  //           containerViewStyle={{marginRight: 10}}
-  //           offset={actType.selected ? undefined : [1, 2]}
-  //         >
-  //           <TouchableOpacity
-  //             activeOpacity={0.7}
-  //             onPress={() => onSelectActionType(index)}
-  //             disabled={method === 'edit' ? true : false}
-  //           >
-  //             <Box
-  //               w={ms(80)}
-  //               h={ms(80)}
-  //               p={ms(10)}
-  //               bg={
-  //                 actType.selected
-  //                   ? Colors.primary
-  //                   : method === 'edit'
-  //                   ? Colors.light
-  //                   : Colors.white
-  //               }
-  //               borderWidth={1}
-  //               borderColor={Colors.light}
-  //               borderRadius={ms(5)}
-  //               alignItems="center"
-  //               justifyContent="center"
-  //             >
-  //               <Image
-  //                 alt="navlog-action-img"
-  //                 source={actType.img}
-  //                 width={ms(40)}
-  //                 height={ms(40)}
-  //                 tintColor={actType.selected ? Colors.white : undefined}
-  //                 resizeMode="contain"
-  //               />
-  //               <Text
-  //                 fontWeight="bold"
-  //                 fontSize={ms(12)}
-  //                 color={actType.selected ? Colors.white : Colors.text}
-  //               >
-  //                 {actType.label}
-  //               </Text>
-  //             </Box>
-  //           </TouchableOpacity>
-  //         </Shadow>
-  //       ))}
-  //     </HStack>
-  //   )
-  // }
-
-  // const onSelectActionType = (index: number) => {
-  //   let newNLAT = [...navigationLogActionTypes]
-  //   newNLAT.forEach(act => (act.selected = false))
-  //   newNLAT[index].selected = !newNLAT[index].selected
-  //   setNavigationLogActionTypes(newNLAT)
-  //   setNavActionDetails({
-  //     ...navActionDetails,
-  //     type: `${newNLAT[index].label}ing`,
-  //   })
-  //   newNLAT[index].label.toLowerCase() === 'clean'
-  //     ? ((cargoOpacity.value = withTiming(0)),
-  //       setNavActionDetails({
-  //         ...navActionDetails,
-  //         cargoHoldActions: [],
-  //       }))
-  //     : (cargoOpacity.value = withTiming(1))
-  // }
 
   const renderActionTypeIcon = (type: string) => {
     switch (type.toLowerCase()) {
@@ -395,13 +321,14 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
   }
 
   const handleSaveAction = () => {
-    // console.log(navActionDetails)
     const bulkCargo = navigationLogDetails?.bulkCargo?.find(
       cargo => cargo.id === navActionDetails.cargoHoldActions[0].navigationBulk
     )
     const newBulkCargoAmount =
-      Number(bulkCargo?.actualAmount) +
-      Number(navActionDetails.cargoHoldActions[0].amount)
+      navigationLogActions?.length >= 1 && method === 'add'
+        ? Number(bulkCargo?.actualAmount) +
+          Number(navActionDetails.cargoHoldActions[0].amount)
+        : Number(navActionDetails.cargoHoldActions[0].amount)
     setNewBulkCargoData({
       id: bulkCargo?.id,
       typeId: bulkCargo?.type?.id,
