@@ -397,7 +397,9 @@ const Inventory = () => {
                 variant="filled"
                 backgroundColor="#F7F7F7"
                 keyboardType="number-pad"
-                size="sm"
+                height={ms(40)}
+                fontSize={ms(15)}
+                fontWeight="bold"
                 value={quantity}
                 onChangeText={e => setQuantity(e)}
               />

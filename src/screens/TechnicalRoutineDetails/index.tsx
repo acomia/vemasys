@@ -43,9 +43,6 @@ const TechnicalRoutineDetails = ({navigation, route}: Props) => {
     getVesselRoutineDetails(id)
   }, [])
 
-  const {routineType, vesselPart, scheduleLabel, openTasks}: any =
-    routineDetails
-
   const renderTitleDescriptionSection = () => (
     <Box
       borderRadius={ms(5)}
@@ -131,18 +128,21 @@ const TechnicalRoutineDetails = ({navigation, route}: Props) => {
           alignItems="center"
         >
           {withIcon ? renderType(value) : null}
-          <Text
-            fontWeight="medium"
+          <Box
             ml={ms(withIcon ? 5 : 15)}
-            color={label === 'Labels' ? Colors.white : Colors.azure}
-            // Label styles
-            py={ms(label === 'Labels' ? 5 : 0)}
-            px={ms(label === 'Labels' ? 10 : 0)}
             bg={bgColor}
             borderRadius={ms(label === 'Labels' ? 25 : 0)}
+            py={ms(label === 'Labels' ? 5 : 0)}
+            px={ms(label === 'Labels' ? 10 : 0)}
           >
-            {value}
-          </Text>
+            <Text
+              fontWeight="medium"
+              color={label === 'Labels' ? Colors.white : Colors.azure}
+              textAlign="center"
+            >
+              {value}
+            </Text>
+          </Box>
         </HStack>
       </HStack>
     )
@@ -209,29 +209,44 @@ const TechnicalRoutineDetails = ({navigation, route}: Props) => {
               ? routineDetails?.labels[0]?.title
               : ''
           )}
-          {renderDetailsCard('Routine Type', routineType?.title)}
-          {vesselPart && vesselPart?.vesselZone
-            ? renderDetailsCard('Vessel Zone', vesselPart?.vesselZone?.title)
-            : null}
-          {renderDetailsCard('Part', vesselPart?.name)}
-          {renderDetailsCard('Planning', scheduleLabel, true)}
-          {openTasks && openTasks?.length > 0
+          {renderDetailsCard(
+            'Routine Type',
+            routineDetails?.routineType?.title
+          )}
+          {routineDetails?.vesselPart && routineDetails?.vesselPart?.vesselZone
             ? renderDetailsCard(
-                'Next Occurence',
-                `${openTasks[openTasks?.length - 1]?.dueHours} hours`
+                'Vessel Zone',
+                routineDetails?.vesselPart?.vesselZone?.title
               )
             : null}
-          {openTasks && openTasks?.length > 0
+          {renderDetailsCard('Part', routineDetails?.vesselPart?.name)}
+          {renderDetailsCard('Planning', routineDetails?.scheduleLabel, true)}
+          {routineDetails?.openTasks && routineDetails?.openTasks?.length > 0
+            ? renderDetailsCard(
+                'Next Occurence',
+                `${
+                  routineDetails?.openTasks[
+                    routineDetails?.openTasks?.length - 1
+                  ]?.dueHours
+                } hours`
+              )
+            : null}
+          {routineDetails?.openTasks && routineDetails?.openTasks?.length > 0
             ? renderDetailsCard(
                 'Due Date',
-                moment(openTasks[openTasks.length - 1]?.deadline).format(
-                  'D MMM YYYY'
-                )
+                moment(
+                  routineDetails?.openTasks[
+                    routineDetails?.openTasks.length - 1
+                  ]?.deadline
+                ).format('D MMM YYYY')
               )
             : null}
           {/* {renderDetailsCard(
             'Due in',
-            `${openTasks[openTasks.length - 1].dueHours} hours`
+            `${
+              routineDetails?.openTasks[routineDetails?.openTasks.length - 1]
+                .dueHours
+            } hours`
           )} */}
           {/* {renderDetailsCard('Consumables', routineDetails?.labels[0]?.title)} */}
         </Box>

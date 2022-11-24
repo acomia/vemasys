@@ -78,8 +78,6 @@ const CargoList = () => {
 
   if (isPlanningLoading) return <LoadingAnimated />
 
-  const fValue = cargo ? cargo.actualTonnage || cargo.tonnage : 0
-
   return (
     <Box flex="1">
       <ScrollView
@@ -108,6 +106,7 @@ const CargoList = () => {
         <Divider mt={ms(5)} mb={ms(15)} />
         {navigationLogDetails?.bulkCargo?.length > 0 ? (
           navigationLogDetails?.bulkCargo?.map((cargo, index) => {
+            const fValue = cargo ? cargo.actualTonnage || cargo.tonnage : 0
             return (
               <HStack
                 key={index}

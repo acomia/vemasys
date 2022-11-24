@@ -155,6 +155,9 @@ export default function NewBunkering() {
           </FormControl.Label>
           <Select
             minWidth="300"
+            height={ms(40)}
+            fontSize={ms(15)}
+            fontWeight="medium"
             accessibilityLabel=""
             placeholder=""
             bg={'#F7F7F7'}
@@ -179,8 +182,10 @@ export default function NewBunkering() {
           <FormControl.Label color={Colors.disabled}>Amount</FormControl.Label>
           <Input
             bg={'#F7F7F7'}
-            type="text"
-            keyboardType="numeric"
+            keyboardType="number-pad"
+            height={ms(40)}
+            fontSize={ms(15)}
+            fontWeight="bold"
             value={bunkering.amount}
             onChangeText={e => {
               setBunkering({...bunkering, amount: e})
