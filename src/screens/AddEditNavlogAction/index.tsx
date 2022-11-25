@@ -324,11 +324,16 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
     const bulkCargo = navigationLogDetails?.bulkCargo?.find(
       cargo => cargo.id === navActionDetails.cargoHoldActions[0].navigationBulk
     )
-    const newBulkCargoAmount =
-      navigationLogActions?.length >= 1 && method === 'add'
-        ? Number(bulkCargo?.actualAmount) +
-          Number(navActionDetails.cargoHoldActions[0].amount)
-        : Number(navActionDetails.cargoHoldActions[0].amount)
+    let newBulkCargoAmount: number = Number(
+      navActionDetails.cargoHoldActions[0].amount
+    )
+    if (
+      navigationLogActions &&
+      navigationLogActions.length > 0 &&
+      method === 'add'
+    ) {
+      newBulkCargoAmount += Number(bulkCargo?.actualAmount)
+    }
     setNewBulkCargoData({
       id: bulkCargo?.id,
       typeId: bulkCargo?.type?.id,
