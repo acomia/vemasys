@@ -1,4 +1,5 @@
 import React, {useState} from 'react'
+import {PermissionsAndroid, Platform} from 'react-native'
 import {Box, Button, Image, Text, useDisclose, useToast} from 'native-base'
 import {Animated} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
@@ -8,7 +9,6 @@ import {useFinancial, usePlanning} from '@bluecentury/stores'
 import {LoadingAnimated} from '@bluecentury/components'
 import {convertToPdfAndUpload} from '@bluecentury/utils'
 import DocumentPicker, {isInProgress, types} from 'react-native-document-picker'
-import moment from "moment";
 
 const Scan = () => {
   const {uploadImgFile} = usePlanning()
@@ -16,6 +16,21 @@ const Scan = () => {
   const {isOpen, onOpen, onClose} = useDisclose()
   const toast = useToast()
   const [result, setResult] = useState<ImageFile>({})
+
+  const requestCameraPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA
+      )
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log("You can use the camera")
+      } else {
+        console.log("Camera permission denied")
+      }
+    } catch (err) {
+      console.warn(err)
+    }
+  }
 
   const showToast = (text: string, res: string) => {
     toast.show({
@@ -39,6 +54,9 @@ const Scan = () => {
 
   const scanDocument = async () => {
     // start the document scanner
+    if (Platform.OS === 'android') {
+      await requestCameraPermission()
+    }
     const {scannedImages} = await DocumentScanner.scanDocument()
     await convertToPdfAndUpload(scannedImages, showToast)
   }
