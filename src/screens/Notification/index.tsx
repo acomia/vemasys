@@ -21,11 +21,18 @@ import {ENTITY_TYPE_EXPLOITATION_GROUP} from '@bluecentury/constants'
 const screenWidth = Dimensions.get('screen').width
 
 export default function Notification() {
-  const {entityType, entityUsers, selectFleetVessel, vesselId} = useEntity()
+  const {
+    entityType,
+    entityUsers,
+    selectFleetVessel,
+    vesselId,
+    getRoleForAccept,
+  } = useEntity()
   const {isLoadingNotification, notifications, getAllNotifications} = useNotif()
 
   useEffect(() => {
     getAllNotifications()
+    getRoleForAccept()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vesselId])
 

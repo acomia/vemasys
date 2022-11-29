@@ -34,6 +34,7 @@ type EntityActions = {
   setHasHydrated: (state: boolean) => void
   reset: () => void
   updateVesselDetails: () => void
+  getRoleForAccept: () => void
 }
 
 type EntityStore = EntityState & EntityActions
@@ -205,6 +206,17 @@ export const useEntity = create(
         set({
           hasEntityHydrated: state,
         })
+      },
+      getRoleForAccept: async () => {
+        console.log('userID', get().user?.id)
+        try {
+          const response = await API.getRoleForAccept(get().user?.id)
+          console.log('Accept Role', response)
+        } catch (error) {
+          set({
+            isLoadingEntityUsers: false,
+          })
+        }
       },
       reset: () => {
         set({

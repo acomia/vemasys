@@ -35,6 +35,7 @@ export default function Entity({route, navigation}: Props) {
     getUserInfo,
     getEntityUsers,
     selectEntityUser,
+    getRoleForAccept,
   } = useEntity()
   const [entityItems, setEntityItems] = useState<EntityUser[]>()
   const {logout, isLoggingOut} = useAuth()
@@ -47,6 +48,7 @@ export default function Entity({route, navigation}: Props) {
     useCallback(() => {
       getUserInfo()
       getEntityUsers()
+      getRoleForAccept()
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
   )
