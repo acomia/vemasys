@@ -395,6 +395,8 @@ PODS:
     - React-Core
   - RNCAsyncStorage (1.17.6):
     - React-Core
+  - RNDeviceInfo (10.3.0):
+    - React-Core
   - RNFS (2.20.0):
     - React-Core
   - RNGestureHandler (2.4.2):
@@ -504,6 +506,7 @@ DEPENDENCIES:
   - RNBackgroundFetch (from `../node_modules/react-native-background-fetch`)
   - RNBackgroundGeolocation (from `../node_modules/react-native-background-geolocation`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
+  - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - RNFS (from `../node_modules/react-native-fs`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNImageToPdf (from `../node_modules/react-native-image-to-pdf`)
@@ -640,6 +643,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-background-geolocation"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-async-storage/async-storage"
+  RNDeviceInfo:
+    :path: "../node_modules/react-native-device-info"
   RNFS:
     :path: "../node_modules/react-native-fs"
   RNGestureHandler:
@@ -726,6 +731,7 @@ SPEC CHECKSUMS:
   RNBackgroundFetch: 0d378f04faa1244f6eb3787f51f7d99520c1fe5e
   RNBackgroundGeolocation: 6257657303021fb42a023af00426579bf996f7a4
   RNCAsyncStorage: 466b9df1a14bccda91da86e0b7d9a345d78e1673
+  RNDeviceInfo: 4701f0bf2a06b34654745053db0ce4cb0c53ada7
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   RNGestureHandler: 61628a2c859172551aa2100d3e73d1e57878392f
   RNImageToPdf: 43fd91d019b3ee8ae6aba7f2d8c40ca4a55088ff
