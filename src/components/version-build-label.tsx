@@ -1,17 +1,23 @@
 import React, {useCallback, useEffect, useState} from 'react'
 import {Link} from 'native-base'
+import _ from 'lodash'
+import DeviceInfo from 'react-native-device-info'
 import {useSettings} from '@bluecentury/stores'
 import {
   CommonActions,
   useFocusEffect,
   useNavigation,
 } from '@react-navigation/native'
-import _ from 'lodash'
+import {Platform} from 'react-native'
 
 export function VersionBuildLabel() {
   const navigation = useNavigation()
   const {env} = useSettings()
   const [count, setCount] = useState(0)
+  const version =
+    Platform.OS === 'ios'
+      ? DeviceInfo.getReadableVersion()
+      : DeviceInfo.getVersion()
 
   // resets the count back to 0 when screen is focused
   useFocusEffect(
@@ -42,7 +48,7 @@ export function VersionBuildLabel() {
   }
   return (
     <Link isUnderlined={false} onPress={handleOnPressChangeEnvironment}>
-      Vemasys &copy; 2022 {env === 'UAT' ? env : ''}
+      Vemasys &copy; 2022 {env === 'UAT' ? env : ''} v{version}
     </Link>
   )
 }
