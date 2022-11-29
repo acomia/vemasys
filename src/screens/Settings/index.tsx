@@ -21,7 +21,6 @@ const Settings = (props: DrawerContentComponentProps) => {
   const handleOnValueChange = () => {
     navigation.navigate('TrackingServiceDialog')
   }
-
   return (
     <Box
       flex="1"
@@ -30,8 +29,8 @@ const Settings = (props: DrawerContentComponentProps) => {
       backgroundColor={Colors.white}
       borderRadius="15"
     >
-      <SettingsItem
-        type="navigation"
+      {' '}
+      {/* <SettingsItem type="navigation"
         value="User information"
         iconSource={Icons.user}
         callback={() => {
@@ -53,6 +52,7 @@ const Settings = (props: DrawerContentComponentProps) => {
         language={language}
         callback={(lang: string) => setLanguage(lang)}
       />
+        */}
       <SettingsItem
         type="switch"
         value="Set this device as Vessel GPS"
@@ -67,13 +67,14 @@ const Settings = (props: DrawerContentComponentProps) => {
         switchState={isQrScanner}
         callback={setIsQrScanner}
       />
+      {/*
       <SettingsItem
         type="switch"
         value="Dark mode"
         iconSource={Icons.adjust}
         switchState={isDarkMode}
         callback={setDarkMode}
-      />
+      />*/}
     </Box>
   )
 }
