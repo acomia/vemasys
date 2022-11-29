@@ -369,8 +369,9 @@ export default function Map({navigation}: Props) {
           latitude: Number(latitude),
           longitude: Number(longitude),
         }}
-        image={Icons.ellipsis}
+        image={Icons.ellipsis_marker}
         anchor={{x: 0.5, y: 0.5}}
+        zIndex={1}
       >
         <Callout
           onPress={() => (trackViewMode ? onLoadMoreVesselTrack() : null)}
