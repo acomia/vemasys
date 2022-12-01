@@ -170,8 +170,10 @@ export default function Map({navigation}: Props) {
   useEffect(() => {
     if (trackViewMode) {
       if (page > 1) fitToAllMarkers()
+      else centerMapToBeginningTrackLine()
     }
   }, [vesselTracks])
+
   const updateMap = async () => {
     if (vesselId) {
       await getPreviousNavigationLogs(vesselId)
@@ -238,6 +240,7 @@ export default function Map({navigation}: Props) {
         title={`From: ${previousLocation?.location?.name}`}
         zIndex={1}
         tracksViewChanges={false}
+        anchor={{x: 0.5, y: 0.5}}
       >
         <Callout
           onPress={() =>
@@ -297,6 +300,7 @@ export default function Map({navigation}: Props) {
         title={`To: ${nextLocation?.location?.name}`}
         zIndex={1}
         tracksViewChanges={false}
+        anchor={{x: 0.5, y: 0.5}}
       >
         <Callout
           onPress={() =>
@@ -351,11 +355,28 @@ export default function Map({navigation}: Props) {
         }}
         image={Number(speed) > 0 ? Icons.navigating : Icons.anchor}
         zIndex={1}
+        anchor={{x: 0.5, y: 0.5}}
+      />
+    )
+  }
+
+  const renderTrackLineBeginningMarker = () => {
+    const {latitude, longitude}: VesselGeolocation =
+      uniqueVesselTracks[uniqueVesselTracks.length - 1]
+    return (
+      <Marker
+        coordinate={{
+          latitude: Number(latitude),
+          longitude: Number(longitude),
+        }}
+        image={Icons.ellipsis_marker}
+        anchor={{x: 0.5, y: 0.5}}
+        zIndex={1}
       >
         <Callout
           onPress={() => (trackViewMode ? onLoadMoreVesselTrack() : null)}
         >
-          {trackViewMode ? <Text>Load more data...</Text> : null}
+          <Text>Load more data...</Text>
         </Callout>
       </Marker>
     )
@@ -375,6 +396,7 @@ export default function Map({navigation}: Props) {
         }}
         zIndex={0}
         tracksViewChanges={false}
+        anchor={{x: 0.5, y: 0.5}}
       >
         <HStack zIndex={0}>
           <Box
@@ -422,6 +444,25 @@ export default function Map({navigation}: Props) {
           longitude: Number(longitude),
         },
         zoom: 15,
+        heading: 0,
+        pitch: 0,
+        altitude: 5,
+      }
+      let duration = 1000 * 3
+      mapRef.current?.animateCamera(camera, {duration: duration})
+    }
+  }
+
+  const centerMapToBeginningTrackLine = () => {
+    if (uniqueVesselTracks) {
+      const {latitude, longitude}: VesselGeolocation =
+        uniqueVesselTracks[uniqueVesselTracks?.length - 1]
+      let camera: Camera = {
+        center: {
+          latitude: Number(latitude),
+          longitude: Number(longitude),
+        },
+        zoom: 14,
         heading: 0,
         pitch: 0,
         altitude: 5,
@@ -490,13 +531,16 @@ export default function Map({navigation}: Props) {
             lastCompleteNavLogs?.map((log: any, index: number) =>
               renderLastCompleteNavLogs(log, index)
             )}
-          {trackViewMode && (
+          {trackViewMode && uniqueVesselTracks.length > 0 && (
             <Polyline
               coordinates={uniqueVesselTracks}
               strokeColor={Colors.warning}
               strokeWidth={5}
             />
           )}
+          {trackViewMode &&
+            uniqueVesselTracks.length > 0 &&
+            renderTrackLineBeginningMarker()}
         </MapView>
         <Box position="absolute" right="0">
           <VStack space="5" justifyContent="flex-start" m="4">
