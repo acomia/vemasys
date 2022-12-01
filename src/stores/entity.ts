@@ -11,6 +11,7 @@ type EntityState = {
   hasErrorLoadingEntityUsers: boolean
   isLoadingCurrentUserInfo: boolean
   isLoadingEntityUsers: boolean
+  isLoadingPendingRoles: boolean
   user: Array<any>
   userVessels: Array<any>
   entityUsers: Array<EntityUser>
@@ -24,6 +25,7 @@ type EntityState = {
   selectedEntity: {}
   physicalVesselId: string
   fleetVessel: number
+  pendingRoles: Array<any>
 }
 
 type EntityActions = {
@@ -35,6 +37,7 @@ type EntityActions = {
   reset: () => void
   updateVesselDetails: () => void
   getRoleForAccept: () => void
+  updatePendingRole: (id: string, state: boolean) => void
 }
 
 type EntityStore = EntityState & EntityActions
@@ -45,6 +48,7 @@ const initialEntityState: EntityState = {
   hasErrorLoadingEntityUsers: false,
   isLoadingCurrentUserInfo: false,
   isLoadingEntityUsers: false,
+  isLoadingPendingRoles: false,
   user: [],
   userVessels: [],
   entityUsers: [],
@@ -58,6 +62,7 @@ const initialEntityState: EntityState = {
   selectedEntity: {},
   physicalVesselId: '',
   fleetVessel: 0,
+  pendingRoles: [],
 }
 
 export const useEntity = create(
@@ -208,14 +213,23 @@ export const useEntity = create(
         })
       },
       getRoleForAccept: async () => {
-        console.log('userID', get().user?.id)
+        set({isLoadingPendingRoles: true})
         try {
           const response = await API.getRoleForAccept(get().user?.id)
-          console.log('Accept Role', response)
+          set({pendingRoles: response, isLoadingPendingRoles: false})
         } catch (error) {
           set({
             isLoadingEntityUsers: false,
           })
+        }
+      },
+      updatePendingRole: async (id: string, state: boolean) => {
+        set({isLoadingPendingRoles: true})
+        try {
+          const response = await API.updatePendingRole(id, state)
+          set({isLoadingPendingRoles: false})
+        } catch (error) {
+          set({isLoadingPendingRoles: false})
         }
       },
       reset: () => {

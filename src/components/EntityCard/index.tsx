@@ -5,13 +5,24 @@ import {ms} from 'react-native-size-matters'
 
 import {Colors} from '@bluecentury/styles'
 import {PROD_URL} from '@vemasys/env'
+import {IconButton} from '../IconButton'
+import {Icons} from '@bluecentury/assets'
+import {titleCase} from '@bluecentury/constants'
 
 type IProps = {
   item: any
   selected: boolean | string
   onPress: () => void
+  onPressAcceptPendingRole: (id: string, state: boolean) => void
 }
-export const EntityCard: FC<IProps> = ({item, selected, onPress}) => {
+export const EntityCard: FC<IProps> = ({
+  item,
+  selected,
+  onPress,
+  onPressAcceptPendingRole,
+}) => {
+  console.log(item?.hasUserAccepted)
+
   return (
     <Box
       key={item?.id}
@@ -20,8 +31,19 @@ export const EntityCard: FC<IProps> = ({item, selected, onPress}) => {
       py="2"
       my="1.5"
       bg="#fff"
-      shadow={'1'}
-      borderColor="#F0F0F0"
+      shadow={1}
+      borderColor={
+        !item?.hasUserAccepted && item?.hasUserAccepted !== undefined
+          ? '#F9790B'
+          : selected
+          ? Colors.secondary
+          : '#F0F0F0'
+      }
+      borderStyle={
+        !item?.hasUserAccepted && item?.hasUserAccepted !== undefined
+          ? 'dashed'
+          : 'solid'
+      }
       borderWidth="1"
       borderRadius="md"
     >
@@ -32,12 +54,14 @@ export const EntityCard: FC<IProps> = ({item, selected, onPress}) => {
             source={{
               uri: item?.entity?.icon
                 ? `${PROD_URL}/upload/documents/${item?.entity?.icon?.path}`
-                : ''
+                : '',
             }}
           />
           <VStack>
             <Text bold>{item?.entity?.alias}</Text>
-            <Text color={Colors.primary}>{item?.role?.title}</Text>
+            <Text color={Colors.primary} fontWeight="medium">
+              {titleCase(item?.role?.title)}
+            </Text>
           </VStack>
           <Spacer />
           {selected ? (
@@ -53,6 +77,20 @@ export const EntityCard: FC<IProps> = ({item, selected, onPress}) => {
                 active
               </Text>
             </Button>
+          ) : !item?.hasUserAccepted && item?.hasUserAccepted !== undefined ? (
+            <HStack>
+              <IconButton
+                source={Icons.status_x}
+                onPress={() => onPressAcceptPendingRole(item?.id, false)}
+                size={ms(30)}
+                styles={{marginRight: 10}}
+              />
+              <IconButton
+                source={Icons.status_check}
+                onPress={() => onPressAcceptPendingRole(item?.id, true)}
+                size={ms(30)}
+              />
+            </HStack>
           ) : null}
         </HStack>
       </TouchableOpacity>

@@ -7,6 +7,8 @@ import {
   Button,
   Image,
   HStack,
+  Text,
+  Modal,
 } from 'native-base'
 import {CommonActions, useFocusEffect} from '@react-navigation/native'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
@@ -31,11 +33,13 @@ export default function Entity({route, navigation}: Props) {
     entityUsers,
     entityUserId,
     isLoadingEntityUsers,
+    isLoadingPendingRoles,
     selectedVessel,
     getUserInfo,
     getEntityUsers,
     selectEntityUser,
     getRoleForAccept,
+    pendingRoles,
   } = useEntity()
   const [entityItems, setEntityItems] = useState<EntityUser[]>()
   const {logout, isLoggingOut} = useAuth()
@@ -43,7 +47,9 @@ export default function Entity({route, navigation}: Props) {
   const [isOpenLogoutAlert, setIsOpenLogoutAlert] = useState(false)
   const [isOpenAlertIsMobileTracking, setIsOpenAlertIsMobileTracking] =
     useState(false)
+  const [confirmModal, setConfirmModal] = useState(false)
   const logoutCancelRef = useRef<any>(null)
+
   useFocusEffect(
     useCallback(() => {
       getUserInfo()
@@ -52,36 +58,43 @@ export default function Entity({route, navigation}: Props) {
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
   )
+
   useEffect(() => {
-    console.log('entityUserId ', entityUserId)
     if (typeof entityUserId === 'undefined') {
-      setEntityItems(entityUsers)
+      const entities = [...pendingRoles, ...entityUsers]
+      setEntityItems(entities)
       return
     }
     const first = entityUsers.filter(e => e.id === parseInt(entityUserId))
     const rest = entityUsers.filter(e => e.id !== parseInt(entityUserId))
-    const entities = [...first, ...rest]
+    const entities = [...pendingRoles, ...first, ...rest]
     setEntityItems(entities)
-  }, [entityUsers, entityUserId])
+  }, [pendingRoles, entityUsers, entityUserId])
+
   const onSelectEntityUser = (entity: any) => {
     if (isMobileTracking) {
       setIsOpenAlertIsMobileTracking(true)
       return
     }
-    selectEntityUser(entity)
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [{name: 'Main'}],
-      })
-    )
+    if (entity?.hasUserAccepted !== undefined) {
+    } else {
+      selectEntityUser(entity)
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{name: 'Main'}],
+        })
+      )
+    }
   }
+
   const onPressRefresh = () => {
     if (!isLoadingEntityUsers) {
       getUserInfo()
       getEntityUsers()
     }
   }
+
   const handleOnPressLogout = () => {
     if (isMobileTracking) {
       setIsOpenAlertIsMobileTracking(true)
@@ -89,10 +102,16 @@ export default function Entity({route, navigation}: Props) {
     }
     setIsOpenLogoutAlert(true)
   }
+
   const handleOnPressYesLogout = () => {
     resetAllStates()
     logout()
   }
+
+  const onAcceptRole = (id: string, state: boolean) => {
+    console.log('Pending', id, state)
+  }
+
   return (
     <Box flex="1" bg={Colors.light} pt={paddingTop}>
       <Box
@@ -111,7 +130,7 @@ export default function Entity({route, navigation}: Props) {
           </Button>
         </HStack>
         <Divider mb="5" />
-        {isLoadingEntityUsers && <LoadingAnimated />}
+        {isLoadingEntityUsers && isLoadingPendingRoles && <LoadingAnimated />}
         <FlatList
           data={entityItems}
           renderItem={({item}: any) => {
@@ -120,6 +139,9 @@ export default function Entity({route, navigation}: Props) {
                 item={item}
                 selected={item.id === entityUserId}
                 onPress={() => onSelectEntityUser(item)}
+                onPressAcceptPendingRole={(id, state) =>
+                  onAcceptRole(id, state)
+                }
               />
             )
           }}
@@ -215,6 +237,36 @@ export default function Entity({route, navigation}: Props) {
           },
         ]}
       />
+      <Modal
+        isOpen={confirmModal}
+        size="full"
+        px={ms(12)}
+        animationPreset="slide"
+      >
+        <Modal.Content>
+          <Modal.Header>Confirmation</Modal.Header>
+          <Text my={ms(20)} mx={ms(12)} fontWeight="medium">
+            Are you sure you want to accept this role?
+          </Text>
+          <HStack>
+            <Button
+              flex="1"
+              m={ms(12)}
+              bg={Colors.grey}
+              onPress={() => setConfirmModal(false)}
+            >
+              <Text fontWeight="medium" color={Colors.disabled}>
+                Cancel
+              </Text>
+            </Button>
+            <Button flex="1" m={ms(12)} bg={Colors.primary}>
+              <Text fontWeight="medium" color={Colors.white}>
+                Accept
+              </Text>
+            </Button>
+          </HStack>
+        </Modal.Content>
+      </Modal>
     </Box>
   )
 }
