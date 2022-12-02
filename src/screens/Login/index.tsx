@@ -207,7 +207,7 @@ export default function Login() {
       </KeyboardAvoidingView>
       <Box position="absolute" bottom={0} left={0} right={0} safeAreaBottom>
         <Center pb={insets.bottom > 0 ? 0 : 5}>
-          <VersionBuildLabel />
+          <VersionBuildLabel hideVersionName={true} />
         </Center>
       </Box>
     </Box>
