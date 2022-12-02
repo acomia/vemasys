@@ -10,7 +10,11 @@ import {
 } from '@react-navigation/native'
 import {Platform} from 'react-native'
 
-export function VersionBuildLabel() {
+interface Props {
+  hideVersionName?: boolean
+}
+
+export function VersionBuildLabel({hideVersionName = false}: Props) {
   const navigation = useNavigation()
   const {env} = useSettings()
   const [count, setCount] = useState(0)
@@ -48,7 +52,8 @@ export function VersionBuildLabel() {
   }
   return (
     <Link isUnderlined={false} onPress={handleOnPressChangeEnvironment}>
-      Vemasys &copy; 2022 {env === 'UAT' ? env : ''} v{version}
+      Vemasys &copy; 2022 {env === 'UAT' ? env : ''}{' '}
+      {!hideVersionName && `v${version}`}
     </Link>
   )
 }
