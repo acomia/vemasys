@@ -34,7 +34,7 @@
         android:value="AIzaSyA82pm9wxBLRa9eELZiN6giho9CfIsSHdE"/>
       <!-- Must securely store data next -->
       <meta-data
-        android:name="com.vemasysreactnativeapp"
+        android:name="com.transistorsoft.locationmanager.license"
         android:value="17b644a2585afe1bc93526dd94db0e4f90a5228ac76a3b7a4718de8373e5d62d" />
       <service android:name="com.asterinet.react.bgactions.RNBackgroundActionsTask" />
     </application>
