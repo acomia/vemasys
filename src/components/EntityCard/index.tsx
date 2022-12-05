@@ -13,7 +13,7 @@ type IProps = {
   item: any
   selected: boolean | string
   onPress: () => void
-  onPressAcceptPendingRole: (id: string, state: boolean) => void
+  onPressAcceptPendingRole: (id: string, accept: boolean) => void
 }
 export const EntityCard: FC<IProps> = ({
   item,

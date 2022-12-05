@@ -1,14 +1,17 @@
 import React from 'react'
 import {ScrollView} from 'react-native'
-import {Box, Image, VStack, Divider} from 'native-base'
+import {Box, Image, VStack, Divider, Icon} from 'native-base'
 import {DrawerContentComponentProps} from '@react-navigation/drawer'
-import {Icons, Images} from '@bluecentury/assets'
 import {ms} from 'react-native-size-matters'
+
 import MenuButton from '../MenuButton'
 import {Screens} from '@bluecentury/constants'
+import {Icons, Images} from '@bluecentury/assets'
+import {useEntity} from '@bluecentury/stores'
 
 const Sidebar = (props: DrawerContentComponentProps) => {
   const {state, navigation} = props
+  const {pendingRoles} = useEntity()
   const currentRoute = state.routeNames[state.index]
   const handlePressMenu = (name: string) => {
     navigation.navigate(name)
@@ -108,6 +111,9 @@ const Sidebar = (props: DrawerContentComponentProps) => {
             active={currentRoute === Screens.ChangeRole}
             onPress={() => handlePressMenu(Screens.ChangeRole)}
             iconSource={Icons.userCircle}
+            rightIcon={
+              pendingRoles?.length > 0 ? Icons.status_exclamation : undefined
+            }
           >
             Change role
           </MenuButton>

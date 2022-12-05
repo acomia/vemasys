@@ -9,6 +9,7 @@ import {
   HStack,
   Text,
   Modal,
+  useToast,
 } from 'native-base'
 import {CommonActions, useFocusEffect} from '@react-navigation/native'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
@@ -26,6 +27,7 @@ import {EntityUser} from '@bluecentury/models'
 type Props = NativeStackScreenProps<RootStackParamList>
 
 export default function Entity({route, navigation}: Props) {
+  const toast = useToast()
   const insets = useSafeAreaInsets()
   const paddingTop = route.name === 'ChangeRole' ? 2 : insets.top
   const borderTopRadius = route.name === 'ChangeRole' ? '3xl' : 0
@@ -40,6 +42,8 @@ export default function Entity({route, navigation}: Props) {
     selectEntityUser,
     getRoleForAccept,
     pendingRoles,
+    updatePendingRole,
+    acceptRoleStatus,
   } = useEntity()
   const [entityItems, setEntityItems] = useState<EntityUser[]>()
   const {logout, isLoggingOut} = useAuth()
@@ -48,6 +52,7 @@ export default function Entity({route, navigation}: Props) {
   const [isOpenAlertIsMobileTracking, setIsOpenAlertIsMobileTracking] =
     useState(false)
   const [confirmModal, setConfirmModal] = useState(false)
+  const [acceptRoleData, setAcceptRoleData] = useState({id: '', accept: false})
   const logoutCancelRef = useRef<any>(null)
 
   useFocusEffect(
@@ -71,6 +76,43 @@ export default function Entity({route, navigation}: Props) {
     setEntityItems(entities)
   }, [pendingRoles, entityUsers, entityUserId])
 
+  useEffect(() => {
+    if (acceptRoleStatus === 'SUCCESS') {
+      showToast('Role accepted.', 'success')
+    }
+    if (acceptRoleStatus === 'FAILED') {
+      showToast('Role failed.', 'failed')
+    }
+  }, [acceptRoleStatus])
+
+  const showToast = (text: string, res: string) => {
+    toast.show({
+      duration: 2000,
+      render: () => {
+        return (
+          <Text
+            bg={res === 'success' ? 'emerald.500' : 'red.500'}
+            px="2"
+            py="1"
+            rounded="sm"
+            mb={5}
+            color={Colors.white}
+          >
+            {text}
+          </Text>
+        )
+      },
+      onCloseComplete() {
+        res === 'success' ? onSuccess() : null
+      },
+    })
+  }
+
+  const onSuccess = () => {
+    useEntity.setState({acceptRoleStatus: ''})
+    onPressRefresh()
+  }
+
   const onSelectEntityUser = (entity: any) => {
     if (isMobileTracking) {
       setIsOpenAlertIsMobileTracking(true)
@@ -89,9 +131,10 @@ export default function Entity({route, navigation}: Props) {
   }
 
   const onPressRefresh = () => {
-    if (!isLoadingEntityUsers) {
+    if (!isLoadingEntityUsers || !isLoadingPendingRoles) {
       getUserInfo()
       getEntityUsers()
+      getRoleForAccept()
     }
   }
 
@@ -108,8 +151,14 @@ export default function Entity({route, navigation}: Props) {
     logout()
   }
 
-  const onAcceptRole = (id: string, state: boolean) => {
-    console.log('Pending', id, state)
+  const onAcceptRoleConfirm = (id: string, accept: boolean) => {
+    setAcceptRoleData({...acceptRoleData, id: id, accept: accept})
+    setConfirmModal(true)
+  }
+
+  const onAcceptDeclineRole = () => {
+    setConfirmModal(false)
+    updatePendingRole(acceptRoleData.id, acceptRoleData.accept)
   }
 
   return (
@@ -130,26 +179,29 @@ export default function Entity({route, navigation}: Props) {
           </Button>
         </HStack>
         <Divider mb="5" />
-        {isLoadingEntityUsers && isLoadingPendingRoles && <LoadingAnimated />}
-        <FlatList
-          data={entityItems}
-          renderItem={({item}: any) => {
-            return (
-              <EntityCard
-                item={item}
-                selected={item.id === entityUserId}
-                onPress={() => onSelectEntityUser(item)}
-                onPressAcceptPendingRole={(id, state) =>
-                  onAcceptRole(id, state)
-                }
-              />
-            )
-          }}
-          keyExtractor={(item: any) => `entity-${item?.id}`}
-          // eslint-disable-next-line react-native/no-inline-styles
-          contentContainerStyle={{paddingBottom: 150}}
-          showsVerticalScrollIndicator={false}
-        />
+        {isLoadingEntityUsers || isLoadingPendingRoles ? (
+          <LoadingAnimated />
+        ) : (
+          <FlatList
+            data={entityItems}
+            renderItem={({item}: any) => {
+              return (
+                <EntityCard
+                  item={item}
+                  selected={item.id === entityUserId}
+                  onPress={() => onSelectEntityUser(item)}
+                  onPressAcceptPendingRole={(id, accept) =>
+                    onAcceptRoleConfirm(id, accept)
+                  }
+                />
+              )
+            }}
+            keyExtractor={(item: any) => `entity-${item?.id}`}
+            // eslint-disable-next-line react-native/no-inline-styles
+            contentContainerStyle={{paddingBottom: 150}}
+            showsVerticalScrollIndicator={false}
+          />
+        )}
       </Box>
       <Box bg={Colors.white} position="absolute" left={0} right={0} bottom={0}>
         <Shadow
@@ -246,7 +298,8 @@ export default function Entity({route, navigation}: Props) {
         <Modal.Content>
           <Modal.Header>Confirmation</Modal.Header>
           <Text my={ms(20)} mx={ms(12)} fontWeight="medium">
-            Are you sure you want to accept this role?
+            Are you sure you want to{' '}
+            {acceptRoleData.accept ? 'accept' : 'decline'} this role?
           </Text>
           <HStack>
             <Button
@@ -254,15 +307,28 @@ export default function Entity({route, navigation}: Props) {
               m={ms(12)}
               bg={Colors.grey}
               onPress={() => setConfirmModal(false)}
+              _light={{
+                _text: {
+                  fontWeight: 'medium',
+                  color: Colors.disabled,
+                },
+              }}
             >
-              <Text fontWeight="medium" color={Colors.disabled}>
-                Cancel
-              </Text>
+              Cancel
             </Button>
-            <Button flex="1" m={ms(12)} bg={Colors.primary}>
-              <Text fontWeight="medium" color={Colors.white}>
-                Accept
-              </Text>
+            <Button
+              flex="1"
+              m={ms(12)}
+              bg={acceptRoleData.accept ? Colors.secondary : Colors.danger}
+              onPress={onAcceptDeclineRole}
+              _light={{
+                _text: {
+                  fontWeight: 'medium',
+                  color: Colors.white,
+                },
+              }}
+            >
+              {acceptRoleData.accept ? 'Accept' : 'Decline'}
             </Button>
           </HStack>
         </Modal.Content>
