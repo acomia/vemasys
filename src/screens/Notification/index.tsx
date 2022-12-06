@@ -14,7 +14,7 @@ import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import {Icons, Animated} from '@bluecentury/assets'
-import {useNotif, useAuth, useEntity} from '@bluecentury/stores'
+import {useNotif, useEntity} from '@bluecentury/stores'
 import {FleetHeader, LoadingAnimated} from '@bluecentury/components'
 import {ENTITY_TYPE_EXPLOITATION_GROUP} from '@bluecentury/constants'
 

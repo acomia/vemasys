@@ -1,5 +1,5 @@
 import React from 'react'
-import {Button, Image, IButtonProps} from 'native-base'
+import {Button, Image, IButtonProps, Box, Text} from 'native-base'
 import {ImageSourcePropType} from 'react-native'
 import {ms} from 'react-native-size-matters'
 import {Colors} from '@bluecentury/styles'
@@ -8,9 +8,16 @@ interface Props extends IButtonProps {
   active: boolean
   children: React.ReactNode
   iconSource: ImageSourcePropType
+  rightIcon?: ImageSourcePropType
 }
 
-const MenuButton = ({active, children, iconSource, ...props}: Props) => {
+const MenuButton = ({
+  active,
+  children,
+  iconSource,
+  rightIcon,
+  ...props
+}: Props) => {
   return (
     <Button
       size="md"
@@ -20,8 +27,8 @@ const MenuButton = ({active, children, iconSource, ...props}: Props) => {
           bg: Colors.primary,
           tintColor: Colors.white,
           _text: {
-            color: Colors.white
-          }
+            color: Colors.white,
+          },
         },
         _text: {
           color: active
@@ -30,8 +37,8 @@ const MenuButton = ({active, children, iconSource, ...props}: Props) => {
             ? 'gray.400'
             : Colors.text,
           fontWeight: '500',
-          paddingLeft: ms(15)
-        }
+          paddingLeft: ms(15),
+        },
       }}
       bg={active ? Colors.primary : 'transparent'}
       variant="solid"
@@ -46,6 +53,19 @@ const MenuButton = ({active, children, iconSource, ...props}: Props) => {
             active ? Colors.white : props.disabled ? 'gray.400' : Colors.text
           }
         />
+      }
+      rightIcon={
+        rightIcon !== undefined ? (
+          <Image
+            alt="Right Icon"
+            source={rightIcon}
+            size={ms(20)}
+            resizeMode="contain"
+            ml={ms(10)}
+          />
+        ) : (
+          <></>
+        )
       }
       {...props}
     >

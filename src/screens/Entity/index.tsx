@@ -7,6 +7,9 @@ import {
   Button,
   Image,
   HStack,
+  Text,
+  Modal,
+  useToast,
 } from 'native-base'
 import {CommonActions, useFocusEffect} from '@react-navigation/native'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
@@ -24,6 +27,7 @@ import {EntityUser} from '@bluecentury/models'
 type Props = NativeStackScreenProps<RootStackParamList>
 
 export default function Entity({route, navigation}: Props) {
+  const toast = useToast()
   const insets = useSafeAreaInsets()
   const paddingTop = route.name === 'ChangeRole' ? 2 : insets.top
   const borderTopRadius = route.name === 'ChangeRole' ? '3xl' : 0
@@ -31,10 +35,15 @@ export default function Entity({route, navigation}: Props) {
     entityUsers,
     entityUserId,
     isLoadingEntityUsers,
+    isLoadingPendingRoles,
     selectedVessel,
     getUserInfo,
     getEntityUsers,
     selectEntityUser,
+    getRoleForAccept,
+    pendingRoles,
+    updatePendingRole,
+    acceptRoleStatus,
   } = useEntity()
   const [entityItems, setEntityItems] = useState<EntityUser[]>()
   const {logout, isLoggingOut} = useAuth()
@@ -42,44 +51,93 @@ export default function Entity({route, navigation}: Props) {
   const [isOpenLogoutAlert, setIsOpenLogoutAlert] = useState(false)
   const [isOpenAlertIsMobileTracking, setIsOpenAlertIsMobileTracking] =
     useState(false)
+  const [confirmModal, setConfirmModal] = useState(false)
+  const [acceptRoleData, setAcceptRoleData] = useState({id: '', accept: false})
   const logoutCancelRef = useRef<any>(null)
+
   useFocusEffect(
     useCallback(() => {
       getUserInfo()
       getEntityUsers()
+      getRoleForAccept()
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
   )
+
   useEffect(() => {
-    console.log('entityUserId ', entityUserId)
     if (typeof entityUserId === 'undefined') {
-      setEntityItems(entityUsers)
+      const entities = [...pendingRoles, ...entityUsers]
+      setEntityItems(entities)
       return
     }
     const first = entityUsers.filter(e => e.id === parseInt(entityUserId))
     const rest = entityUsers.filter(e => e.id !== parseInt(entityUserId))
-    const entities = [...first, ...rest]
+    const entities = [...pendingRoles, ...first, ...rest]
     setEntityItems(entities)
-  }, [entityUsers, entityUserId])
+  }, [pendingRoles, entityUsers, entityUserId])
+
+  useEffect(() => {
+    if (acceptRoleStatus === 'SUCCESS') {
+      showToast('Role accepted.', 'success')
+    }
+    if (acceptRoleStatus === 'FAILED') {
+      showToast('Role failed.', 'failed')
+    }
+  }, [acceptRoleStatus])
+
+  const showToast = (text: string, res: string) => {
+    toast.show({
+      duration: 2000,
+      render: () => {
+        return (
+          <Text
+            bg={res === 'success' ? 'emerald.500' : 'red.500'}
+            px="2"
+            py="1"
+            rounded="sm"
+            mb={5}
+            color={Colors.white}
+          >
+            {text}
+          </Text>
+        )
+      },
+      onCloseComplete() {
+        res === 'success' ? onSuccess() : null
+      },
+    })
+  }
+
+  const onSuccess = () => {
+    useEntity.setState({acceptRoleStatus: ''})
+    onPressRefresh()
+  }
+
   const onSelectEntityUser = (entity: any) => {
     if (isMobileTracking) {
       setIsOpenAlertIsMobileTracking(true)
       return
     }
-    selectEntityUser(entity)
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [{name: 'Main'}],
-      })
-    )
-  }
-  const onPressRefresh = () => {
-    if (!isLoadingEntityUsers) {
-      getUserInfo()
-      getEntityUsers()
+    if (entity?.hasUserAccepted !== undefined) {
+    } else {
+      selectEntityUser(entity)
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{name: 'Main'}],
+        })
+      )
     }
   }
+
+  const onPressRefresh = () => {
+    if (!isLoadingEntityUsers || !isLoadingPendingRoles) {
+      getUserInfo()
+      getEntityUsers()
+      getRoleForAccept()
+    }
+  }
+
   const handleOnPressLogout = () => {
     if (isMobileTracking) {
       setIsOpenAlertIsMobileTracking(true)
@@ -87,10 +145,22 @@ export default function Entity({route, navigation}: Props) {
     }
     setIsOpenLogoutAlert(true)
   }
+
   const handleOnPressYesLogout = () => {
     resetAllStates()
     logout()
   }
+
+  const onAcceptRoleConfirm = (id: string, accept: boolean) => {
+    setAcceptRoleData({...acceptRoleData, id: id, accept: accept})
+    setConfirmModal(true)
+  }
+
+  const onAcceptDeclineRole = () => {
+    setConfirmModal(false)
+    updatePendingRole(acceptRoleData.id, acceptRoleData.accept)
+  }
+
   return (
     <Box flex="1" bg={Colors.light} pt={paddingTop}>
       <Box
@@ -109,23 +179,29 @@ export default function Entity({route, navigation}: Props) {
           </Button>
         </HStack>
         <Divider mb="5" />
-        {isLoadingEntityUsers && <LoadingAnimated />}
-        <FlatList
-          data={entityItems}
-          renderItem={({item}: any) => {
-            return (
-              <EntityCard
-                item={item}
-                selected={item.id === entityUserId}
-                onPress={() => onSelectEntityUser(item)}
-              />
-            )
-          }}
-          keyExtractor={(item: any) => `entity-${item?.id}`}
-          // eslint-disable-next-line react-native/no-inline-styles
-          contentContainerStyle={{paddingBottom: 150}}
-          showsVerticalScrollIndicator={false}
-        />
+        {isLoadingEntityUsers || isLoadingPendingRoles ? (
+          <LoadingAnimated />
+        ) : (
+          <FlatList
+            data={entityItems}
+            renderItem={({item}: any) => {
+              return (
+                <EntityCard
+                  item={item}
+                  selected={item.id === entityUserId}
+                  onPress={() => onSelectEntityUser(item)}
+                  onPressAcceptPendingRole={(id, accept) =>
+                    onAcceptRoleConfirm(id, accept)
+                  }
+                />
+              )
+            }}
+            keyExtractor={(item: any) => `entity-${item?.id}`}
+            // eslint-disable-next-line react-native/no-inline-styles
+            contentContainerStyle={{paddingBottom: 150}}
+            showsVerticalScrollIndicator={false}
+          />
+        )}
       </Box>
       <Box bg={Colors.white} position="absolute" left={0} right={0} bottom={0}>
         <Shadow
@@ -213,6 +289,50 @@ export default function Entity({route, navigation}: Props) {
           },
         ]}
       />
+      <Modal
+        isOpen={confirmModal}
+        size="full"
+        px={ms(12)}
+        animationPreset="slide"
+      >
+        <Modal.Content>
+          <Modal.Header>Confirmation</Modal.Header>
+          <Text my={ms(20)} mx={ms(12)} fontWeight="medium">
+            Are you sure you want to{' '}
+            {acceptRoleData.accept ? 'accept' : 'decline'} this role?
+          </Text>
+          <HStack>
+            <Button
+              flex="1"
+              m={ms(12)}
+              bg={Colors.grey}
+              onPress={() => setConfirmModal(false)}
+              _light={{
+                _text: {
+                  fontWeight: 'medium',
+                  color: Colors.disabled,
+                },
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              flex="1"
+              m={ms(12)}
+              bg={acceptRoleData.accept ? Colors.secondary : Colors.danger}
+              onPress={onAcceptDeclineRole}
+              _light={{
+                _text: {
+                  fontWeight: 'medium',
+                  color: Colors.white,
+                },
+              }}
+            >
+              {acceptRoleData.accept ? 'Accept' : 'Decline'}
+            </Button>
+          </HStack>
+        </Modal.Content>
+      </Modal>
     </Box>
   )
 }
