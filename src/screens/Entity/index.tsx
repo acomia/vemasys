@@ -65,20 +65,29 @@ export default function Entity({route, navigation}: Props) {
   )
 
   useEffect(() => {
+    let uniqPendingRoles: any[] = []
+    if (pendingRoles) {
+      uniqPendingRoles = pendingRoles.filter(
+        pr => !entityUsers.some(eu => pr.entity.id === eu.entity.id)
+      )
+    }
     if (typeof entityUserId === 'undefined') {
-      const entities = [...pendingRoles, ...entityUsers]
+      const entities = [...uniqPendingRoles, ...entityUsers]
       setEntityItems(entities)
       return
     }
     const first = entityUsers.filter(e => e.id === parseInt(entityUserId))
     const rest = entityUsers.filter(e => e.id !== parseInt(entityUserId))
-    const entities = [...pendingRoles, ...first, ...rest]
+    const entities = [...uniqPendingRoles, ...first, ...rest]
     setEntityItems(entities)
   }, [pendingRoles, entityUsers, entityUserId])
 
   useEffect(() => {
     if (acceptRoleStatus === 'SUCCESS') {
       showToast('Role accepted.', 'success')
+    }
+    if (acceptRoleStatus === 'REJECTED') {
+      showToast('Role rejected.', 'success')
     }
     if (acceptRoleStatus === 'FAILED') {
       showToast('Role failed.', 'failed')
