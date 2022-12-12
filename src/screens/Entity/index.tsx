@@ -58,8 +58,8 @@ export default function Entity({route, navigation}: Props) {
   useFocusEffect(
     useCallback(() => {
       getUserInfo()
-      getEntityUsers()
       getRoleForAccept()
+      getEntityUsers()
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
   )
