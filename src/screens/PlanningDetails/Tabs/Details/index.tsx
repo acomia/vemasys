@@ -183,7 +183,7 @@ const Details = () => {
         borderWidth={1}
         borderColor={Colors.light}
         borderRadius={5}
-        p={ms(20)}
+        p={ms(18)}
         mt={ms(10)}
         bg={Colors.white}
         shadow={2}
@@ -193,7 +193,7 @@ const Details = () => {
             alt="navglog-cargo-img"
             source={isUnknownLocation ? Icons.map_marker_question : Icons.cargo}
           />
-          <Text fontSize={ms(16)} fontWeight="medium" ml={ms(15)}>
+          <Text fontSize={ms(16)} fontWeight="medium" ml={ms(20)}>
             {formatLocationLabel(navigationLogDetails?.location)}
           </Text>
         </HStack>
