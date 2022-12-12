@@ -68,11 +68,25 @@ const getRoleForAccept = async (userId: string) => {
     })
 }
 
-const updatePendingRole = async (id: string, state: boolean) => {
-  return API.put(`entity_users/${id}`, {hasUserAccepted: state})
+const acceptPendingRole = async (id: string) => {
+  return API.put(`entity_users/${id}/accept_by_user`, {})
     .then(response => {
       if (response.data) {
         return response?.data?.id ? 'SUCCESS' : 'FAILED'
+      } else {
+        throw Error('Request Failed')
+      }
+    })
+    .catch(error => {
+      console.error('Error: API Role for accept', error)
+    })
+}
+
+const rejectPendingRole = async (id: string) => {
+  return API.put(`entity_users/${id}/reject_by_user`, {})
+    .then(response => {
+      if (response.data) {
+        return response?.data?.id ? 'REJECTED' : 'FAILED'
       } else {
         throw Error('Request Failed')
       }
@@ -88,5 +102,6 @@ export {
   getVesselNavigationDetails,
   selectEntityUser,
   getRoleForAccept,
-  updatePendingRole,
+  acceptPendingRole,
+  rejectPendingRole,
 }
