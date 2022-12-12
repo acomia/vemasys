@@ -13,6 +13,7 @@ const getPreviousNavLog = async (
   const params = {
     isCompleted: 1,
     'exists[plannedETA]': 1,
+    'exists[arrivalDatetime]': 1,
     'exists[departureDatetime]': 1,
     'order[plannedETA]': 'desc',
     exploitationVessel: vesselId,
