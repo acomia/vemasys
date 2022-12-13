@@ -228,7 +228,9 @@ export const useEntity = create(
       updatePendingRole: async (id: string, accept: boolean) => {
         set({isLoadingPendingRoles: true})
         try {
-          const response = await API.updatePendingRole(id, accept)
+          let response
+          if (accept) response = await API.acceptPendingRole(id)
+          else response = await API.rejectPendingRole(id)
           set({acceptRoleStatus: response})
         } catch (error) {
           set({isLoadingPendingRoles: false})

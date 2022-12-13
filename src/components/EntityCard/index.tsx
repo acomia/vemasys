@@ -21,8 +21,6 @@ export const EntityCard: FC<IProps> = ({
   onPress,
   onPressAcceptPendingRole,
 }) => {
-  console.log(item?.hasUserAccepted)
-
   return (
     <Box
       key={item?.id}
