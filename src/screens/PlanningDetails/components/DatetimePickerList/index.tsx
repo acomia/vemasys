@@ -17,7 +17,7 @@ const DatetimePickerList = ({
 }: any) => {
   return (
     <HStack alignItems="center" mt={ms(15)}>
-      <Text fontSize={ms(16)} fontWeight="medium">
+      <Text fontSize={ms(16)} fontWeight="medium" minW={ms(35)}>
         {title}
       </Text>
       <HStack
@@ -40,7 +40,7 @@ const DatetimePickerList = ({
             <Icon
               name="calendar-month-outline"
               size={ms(22)}
-              color={Colors.highlighted_text}
+              color={locked ? Colors.disabled : Colors.highlighted_text}
             />
             <Text
               fontSize="md"

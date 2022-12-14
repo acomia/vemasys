@@ -58,8 +58,8 @@ export default function Entity({route, navigation}: Props) {
   useFocusEffect(
     useCallback(() => {
       getUserInfo()
-      getEntityUsers()
       getRoleForAccept()
+      getEntityUsers()
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
   )
@@ -67,7 +67,7 @@ export default function Entity({route, navigation}: Props) {
   useEffect(() => {
     let uniqPendingRoles: any[] = []
     if (pendingRoles) {
-      uniqPendingRoles = pendingRoles.filter(
+      uniqPendingRoles = pendingRoles?.filter(
         pr => !entityUsers.some(eu => pr.entity.id === eu.entity.id)
       )
     }

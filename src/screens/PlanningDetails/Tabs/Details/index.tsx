@@ -7,26 +7,33 @@ import {
   HStack,
   Icon,
   Image,
+  Modal,
   ScrollView,
   Text,
   useToast,
 } from 'native-base'
 import {ms} from 'react-native-size-matters'
 import DatePicker from 'react-native-date-picker'
-import {NavigationProp, useNavigation, useRoute} from '@react-navigation/native'
+import {
+  NavigationProp,
+  useIsFocused,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import moment from 'moment'
 import _ from 'lodash'
 
 import {DatetimePickerList} from '../../components'
 import {Colors} from '@bluecentury/styles'
-import {Icons} from '@bluecentury/assets'
+import {Animated, Icons} from '@bluecentury/assets'
 import {useEntity, usePlanning} from '@bluecentury/stores'
 import {
   formatLocationLabel,
   hasSelectedEntityUserPermission,
   ROLE_PERMISSION_NAVIGATION_LOG_ADD_COMMENT,
   ROLE_PERMISSION_NAVIGATION_LOG_ADD_FILE,
+  titleCase,
 } from '@bluecentury/constants'
 import {PROD_URL} from '@vemasys/env'
 import {LoadingAnimated} from '@bluecentury/components'
@@ -42,10 +49,12 @@ const Details = () => {
   const toast = useToast()
   const navigation = useNavigation<NavigationProp<RootStackParamList>>()
   const route = useRoute()
+  const focused = useIsFocused()
   const {
     isPlanningLoading,
     navigationLogDetails,
     navigationLogComments,
+    navigationLogActions,
     getNavigationLogDetails,
     getNavigationLogActions,
     getNavigationLogCargoHolds,
@@ -55,6 +64,8 @@ const Details = () => {
     updateNavlogDatesSuccess,
     updateNavlogDatesFailed,
     updateNavlogDatesMessage,
+    updateNavigationLogAction,
+    isUpdateNavLogActionSuccess,
     reset,
   } = usePlanning()
   const {user, selectedEntity, physicalVesselId} = useEntity()
@@ -73,6 +84,9 @@ const Details = () => {
 
   const [selectedDate, setSelectedDate] = useState('')
   const [openDatePicker, setOpenDatePicker] = useState(false)
+  const [activeActions, setActiveActions] = useState([])
+  const [selectedAction, setSelectedAction] = useState<NavigationLogAction>({})
+  const [confirmModal, setConfirmModal] = useState(false)
   const hasAddCommentPermission = hasSelectedEntityUserPermission(
     selectedEntity,
     ROLE_PERMISSION_NAVIGATION_LOG_ADD_COMMENT
@@ -93,16 +107,25 @@ const Details = () => {
   }, [])
 
   useEffect(() => {
+    const active = navigationLogActions?.filter(action => _.isNull(action?.end))
+    setActiveActions(active)
+  }, [navigationLogActions])
+
+  useEffect(() => {
     if (updateNavlogDatesSuccess === 'SUCCESS') {
       showToast('Updates saved.', 'success')
     }
     if (updateNavlogDatesFailed === 'FAILED') {
       showToast(updateNavlogDatesMessage, 'failed')
     }
+    if (isUpdateNavLogActionSuccess && focused) {
+      showToast('Action ended.', 'success')
+    }
   }, [
     updateNavlogDatesSuccess,
     updateNavlogDatesFailed,
     updateNavlogDatesMessage,
+    isUpdateNavLogActionSuccess,
   ])
 
   const showToast = (text: string, res: string) => {
@@ -129,7 +152,7 @@ const Details = () => {
   }
 
   const onSuccess = () => {
-    getNavigationLogDetails(navlog?.id)
+    onPullToReload()
     reset()
   }
 
@@ -160,7 +183,7 @@ const Details = () => {
         borderWidth={1}
         borderColor={Colors.light}
         borderRadius={5}
-        p={ms(20)}
+        p={ms(18)}
         mt={ms(10)}
         bg={Colors.white}
         shadow={2}
@@ -170,7 +193,7 @@ const Details = () => {
             alt="navglog-cargo-img"
             source={isUnknownLocation ? Icons.map_marker_question : Icons.cargo}
           />
-          <Text fontSize={ms(16)} fontWeight="medium" ml={ms(15)}>
+          <Text fontSize={ms(16)} fontWeight="medium" ml={ms(20)}>
             {formatLocationLabel(navigationLogDetails?.location)}
           </Text>
         </HStack>
@@ -320,8 +343,49 @@ const Details = () => {
     )
   }
 
+  const renderAnimatedIcon = (type: string, end: Date) => {
+    switch (type?.toLowerCase()) {
+      case 'unloading':
+        return _.isNull(end) ? Animated.nav_unloading : Icons.unloading
+      case 'loading':
+        return _.isNull(end) ? Animated.nav_loading : Icons.loading
+      case 'cleaning':
+        return _.isNull(end) ? Animated.cleaning : Icons.broom
+      default:
+        break
+    }
+  }
+
+  const confirmStopAction = (action: any) => {
+    setConfirmModal(true)
+    setSelectedAction({
+      ...selectedAction,
+      id: action.id,
+      type: titleCase(action.type),
+      start: action.start,
+      estimatedEnd: action.estimatedEnd,
+      end: new Date(),
+      cargoHoldActions: [
+        {
+          navigationBulk: action?.navigationBulk?.id,
+          amount: action?.navigationBulk?.amount.toString(),
+        },
+      ],
+    })
+  }
+
+  const onStopAction = () => {
+    setConfirmModal(false)
+    updateNavigationLogAction(
+      selectedAction?.id,
+      navigationLogDetails?.id,
+      selectedAction
+    )
+  }
+
   const onPullToReload = () => {
     getNavigationLogDetails(navlog.id)
+    getNavigationLogActions(navlog?.id)
     getNavigationLogComments(navlog.id)
     getNavigationLogDocuments(navlog.id)
     getNavigationLogCargoHolds(physicalVesselId)
@@ -348,6 +412,87 @@ const Details = () => {
           Details
         </Text>
         {renderDetails()}
+        {/* End of Details Section */}
+
+        {/* Actions Section */}
+        {activeActions?.length > 0 ? (
+          <>
+            <Text
+              fontSize={ms(20)}
+              fontWeight="bold"
+              color={Colors.azure}
+              mt={ms(20)}
+            >
+              Actions
+            </Text>
+            {activeActions.map((action, index) => (
+              <TouchableOpacity
+                key={`action-${index}`}
+                activeOpacity={0.7}
+                onPress={() =>
+                  navigation.navigate('AddEditNavlogAction', {
+                    method: 'edit',
+                    navlogAction: action,
+                    actionType: action?.type,
+                  })
+                }
+              >
+                <HStack
+                  borderWidth={1}
+                  borderColor={Colors.light}
+                  borderRadius={5}
+                  px={ms(12)}
+                  py={ms(8)}
+                  mt={ms(10)}
+                  bg={Colors.white}
+                  shadow={1}
+                  alignItems="center"
+                >
+                  <Image
+                    alt="navlog-action-animated"
+                    source={renderAnimatedIcon(action?.type, action?.end)}
+                    width={ms(40)}
+                    height={ms(40)}
+                    resizeMode="contain"
+                    mr={ms(10)}
+                  />
+                  <Box flex="1">
+                    <HStack alignItems="center">
+                      <Text
+                        fontWeight="bold"
+                        fontSize={ms(15)}
+                        color={Colors.text}
+                      >
+                        {titleCase(action?.type)}
+                      </Text>
+                    </HStack>
+                    <Text color={Colors.secondary} fontWeight="medium">
+                      Start -{' '}
+                      {moment(action?.start).format('D MMM YYYY | hh:mm')}
+                    </Text>
+                    {_.isNull(action?.end) ? null : (
+                      <Text color={Colors.danger} fontWeight="medium">
+                        End - {moment(action?.end).format('D MMM YYYY | hh:mm')}
+                      </Text>
+                    )}
+                  </Box>
+                  <TouchableOpacity
+                    disabled={_.isNull(action?.end) ? false : true}
+                    activeOpacity={0.7}
+                    onPress={() => confirmStopAction(action)}
+                  >
+                    <Image
+                      alt="navlog-action-icon"
+                      source={_.isNull(action?.end) ? Icons.stop : null}
+                    />
+                  </TouchableOpacity>
+                </HStack>
+              </TouchableOpacity>
+            ))}
+          </>
+        ) : null}
+        {/* End of Actions Section */}
+
         {/* Contact Information Section */}
         {isUnknownLocation ? null : (
           <>
@@ -443,6 +588,41 @@ const Details = () => {
             setOpenDatePicker(false)
           }}
         />
+        <Modal
+          isOpen={confirmModal}
+          size="full"
+          px={ms(12)}
+          animationPreset="slide"
+        >
+          <Modal.Content>
+            <Modal.Header>Confirmation</Modal.Header>
+            <Text my={ms(20)} mx={ms(12)} fontWeight="medium">
+              Are you sure you want to stop this action?
+            </Text>
+            <HStack>
+              <Button
+                flex="1"
+                m={ms(12)}
+                bg={Colors.grey}
+                onPress={() => setConfirmModal(false)}
+              >
+                <Text fontWeight="medium" color={Colors.disabled}>
+                  Cancel
+                </Text>
+              </Button>
+              <Button
+                flex="1"
+                m={ms(12)}
+                bg={Colors.danger}
+                onPress={onStopAction}
+              >
+                <Text fontWeight="medium" color={Colors.white}>
+                  Stop
+                </Text>
+              </Button>
+            </HStack>
+          </Modal.Content>
+        </Modal>
       </ScrollView>
     </Box>
   )
