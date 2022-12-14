@@ -202,7 +202,9 @@ export default function Charters({navigation, route}: any) {
                             }
                           >
                             {parseInt(cargo.amount) || 0} MT -{' '}
-                            {cargo.type.nameEn || cargo.type.nameNl}
+                            {cargo.type
+                              ? cargo.type.nameEn || cargo.type.nameNl
+                              : null}
                           </Text>
                         )
                       }
