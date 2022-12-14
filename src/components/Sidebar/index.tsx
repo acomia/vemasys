@@ -12,9 +12,12 @@ import {useEntity} from '@bluecentury/stores'
 const Sidebar = (props: DrawerContentComponentProps) => {
   const {state, navigation} = props
   const {pendingRoles, entityUsers} = useEntity()
-  const uniqPendingRoles = pendingRoles.filter(
-    pr => !entityUsers.some(eu => pr.entity.id === eu.entity.id)
-  )
+  let uniqPendingRoles: any[] = []
+  if (pendingRoles) {
+    uniqPendingRoles = pendingRoles?.filter(
+      pr => !entityUsers.some(eu => pr.entity.id === eu.entity.id)
+    )
+  }
   const currentRoute = state.routeNames[state.index]
   const handlePressMenu = (name: string) => {
     navigation.navigate(name)

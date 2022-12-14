@@ -152,7 +152,7 @@ const Details = () => {
   }
 
   const onSuccess = () => {
-    getNavigationLogDetails(navlog?.id)
+    onPullToReload()
     reset()
   }
 
@@ -385,6 +385,7 @@ const Details = () => {
 
   const onPullToReload = () => {
     getNavigationLogDetails(navlog.id)
+    getNavigationLogActions(navlog?.id)
     getNavigationLogComments(navlog.id)
     getNavigationLogDocuments(navlog.id)
     getNavigationLogCargoHolds(physicalVesselId)

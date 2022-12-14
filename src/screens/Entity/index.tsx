@@ -67,7 +67,7 @@ export default function Entity({route, navigation}: Props) {
   useEffect(() => {
     let uniqPendingRoles: any[] = []
     if (pendingRoles) {
-      uniqPendingRoles = pendingRoles.filter(
+      uniqPendingRoles = pendingRoles?.filter(
         pr => !entityUsers.some(eu => pr.entity.id === eu.entity.id)
       )
     }
