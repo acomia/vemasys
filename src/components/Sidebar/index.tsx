@@ -11,20 +11,27 @@ import {useEntity} from '@bluecentury/stores'
 
 const Sidebar = (props: DrawerContentComponentProps) => {
   const {state, navigation} = props
-  const {pendingRoles, entityUsers} = useEntity()
+  const {pendingRoles, entityUsers, selectedEntity, entityRole} = useEntity()
   let uniqPendingRoles: any[] = []
   if (pendingRoles) {
     uniqPendingRoles = pendingRoles?.filter(
       pr => !entityUsers.some(eu => pr.entity.id === eu.entity.id)
     )
   }
+
   const currentRoute = state.routeNames[state.index]
   const handlePressMenu = (name: string) => {
     navigation.navigate(name)
   }
+
+  console.log('entity', selectedEntity?.role)
+
   return (
     <Box flex="1" safeArea p={ms(10)}>
-      <ScrollView>
+      <ScrollView
+        contentContainerStyle={{flexGrow: 1}}
+        showsVerticalScrollIndicator={false}
+      >
         <VStack flex="1">
           <Image
             alt="Company Logo"
@@ -69,14 +76,16 @@ const Sidebar = (props: DrawerContentComponentProps) => {
           >
             Technical
           </MenuButton>
-          <MenuButton
-            active={currentRoute === ''}
-            onPress={() => handlePressMenu(Screens.Financial)}
-            iconSource={Icons.card}
-            // disabled
-          >
-            Financial
-          </MenuButton>
+          {entityRole.toLowerCase() === 'admin' ? (
+            <MenuButton
+              active={currentRoute === ''}
+              onPress={() => handlePressMenu(Screens.Financial)}
+              iconSource={Icons.card}
+              // disabled
+            >
+              Financial
+            </MenuButton>
+          ) : null}
           <MenuButton
             active={currentRoute === Screens.Information}
             onPress={() => handlePressMenu(Screens.Information)}
@@ -110,31 +119,28 @@ const Sidebar = (props: DrawerContentComponentProps) => {
             QSHE
           </MenuButton>
         </VStack>
-
-        <Divider />
-        <VStack>
-          <MenuButton
-            active={currentRoute === Screens.ChangeRole}
-            onPress={() => handlePressMenu(Screens.ChangeRole)}
-            iconSource={Icons.userCircle}
-            rightIcon={
-              uniqPendingRoles?.length > 0
-                ? Icons.status_exclamation
-                : undefined
-            }
-          >
-            Change role
-          </MenuButton>
-
-          <MenuButton
-            active={currentRoute === Screens.Settings}
-            onPress={() => handlePressMenu(Screens.Settings)}
-            iconSource={Icons.cog}
-          >
-            Settings
-          </MenuButton>
-        </VStack>
       </ScrollView>
+      <Divider />
+      <VStack>
+        <MenuButton
+          active={currentRoute === Screens.ChangeRole}
+          onPress={() => handlePressMenu(Screens.ChangeRole)}
+          iconSource={Icons.userCircle}
+          rightIcon={
+            uniqPendingRoles?.length > 0 ? Icons.status_exclamation : undefined
+          }
+        >
+          Change role
+        </MenuButton>
+
+        <MenuButton
+          active={currentRoute === Screens.Settings}
+          onPress={() => handlePressMenu(Screens.Settings)}
+          iconSource={Icons.cog}
+        >
+          Settings
+        </MenuButton>
+      </VStack>
     </Box>
   )
 }
