@@ -1,6 +1,8 @@
 import create from 'zustand'
 import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import moment from 'moment'
+
 import * as API from '@bluecentury/api/vemasys'
 import {NavigationLog} from '@bluecentury/models'
 
@@ -16,6 +18,12 @@ type PlanningState = {
   bulkTypes?: []
   hasErrorLoadingPlannedNavigationLogs: boolean
   hasErrorLoadingVesselHistoryNavLogs: boolean
+  isCreateNavLogActionSuccess: boolean
+  isUpdateNavLogActionSuccess: boolean
+  isDeleteNavLogActionSuccess: boolean
+  updateNavlogDatesSuccess: string
+  updateNavlogDatesFailed: string
+  updateNavlogDatesMessage: string
 }
 
 type PlanningActions = {
@@ -40,6 +48,17 @@ type PlanningActions = {
   uploadImgFile: (file: ImageFile) => void
   deleteComment: (id: string) => void
   uploadVesselNavigationLogFile: (navLogId: string, body: any) => void
+  createNavigationLogAction?: (
+    navigationLogId: string,
+    navigationLogActionDetails: NavigationLogAction
+  ) => void
+  updateNavigationLogAction?: (
+    id: string,
+    navigationLogId: string,
+    navigationLogActionDetails: NavigationLogAction
+  ) => void
+  deleteNavLogAction?: (id: string) => void
+  reset?: () => void
 }
 
 export type PlanningStore = PlanningState & PlanningActions
@@ -52,6 +71,12 @@ export const usePlanning = create(
       historyNavigationLogs: [],
       hasErrorLoadingPlannedNavigationLogs: false,
       hasErrorLoadingVesselHistoryNavLogs: false,
+      isCreateNavLogActionSuccess: false,
+      isUpdateNavLogActionSuccess: false,
+      isDeleteNavLogActionSuccess: false,
+      updateNavlogDatesSuccess: '',
+      updateNavlogDatesFailed: '',
+      updateNavlogDatesMessage: '',
       getVesselHistoryNavLogs: async (vesselId: string, page: number) => {
         set({
           isPlanningLoading: true,
@@ -91,9 +116,13 @@ export const usePlanning = create(
         try {
           const response = await API.getPlannedNavLog(vesselId)
           if (Array.isArray(response)) {
-            set({
-              isPlanningLoading: false,
-              plannedNavigationLogs: response,
+            response.forEach(async plan => {
+              const act = await API.reloadNavigationLogActions(plan.id)
+              plan.endActionDate = act[0]?.end
+              set({
+                isPlanningLoading: false,
+                plannedNavigationLogs: response,
+              })
             })
           } else {
             set({
@@ -238,8 +267,14 @@ export const usePlanning = create(
             navLogId,
             dates
           )
-          set({isPlanningLoading: false})
-          return response
+          if (response === 'SUCCESS')
+            set({isPlanningLoading: false, updateNavlogDatesSuccess: response})
+          else
+            set({
+              isPlanningLoading: false,
+              updateNavlogDatesFailed: 'FAILED',
+              updateNavlogDatesMessage: response,
+            })
         } catch (error) {
           set({isPlanningLoading: false})
         }
@@ -347,6 +382,94 @@ export const usePlanning = create(
         } catch (error) {
           set({isPlanningLoading: false})
         }
+      },
+      createNavigationLogAction: async (
+        navigationLogId: string,
+        navigationLogActionDetails: NavigationLogAction
+      ) => {
+        const {start, end, estimatedEnd, type, cargoHoldActions} =
+          navigationLogActionDetails
+        let body = {
+          navigationLog: {
+            id: navigationLogId,
+          },
+          type,
+          start: start ? start : null,
+          end: end ? end : null,
+          estimatedEnd: estimatedEnd ? estimatedEnd : null,
+          navigationBulk: {
+            id: cargoHoldActions[0].navigationBulk,
+            amount: cargoHoldActions[0].amount,
+          },
+        }
+        set({isPlanningLoading: true})
+        try {
+          const response = await API.createNavigationLogAction(body)
+          if (typeof response === 'object' && response?.id) {
+            set({isCreateNavLogActionSuccess: true})
+          } else {
+            set({isPlanningLoading: false, isCreateNavLogActionSuccess: false})
+          }
+        } catch (error) {
+          set({isPlanningLoading: false})
+        }
+      },
+      updateNavigationLogAction: async (
+        id: string,
+        navigationLogId: string,
+        navigationLogActionDetails: NavigationLogAction
+      ) => {
+        const {start, end, estimatedEnd, type, cargoHoldActions} =
+          navigationLogActionDetails
+        let body = {
+          navigationLog: {
+            id: navigationLogId,
+          },
+          type,
+          start: start ? start : null,
+          end: end ? end : null,
+          estimatedEnd: estimatedEnd ? estimatedEnd : null,
+          navigationBulk: cargoHoldActions
+            ? {
+                id: cargoHoldActions[0].navigationBulk,
+                amount: cargoHoldActions[0].amount,
+              }
+            : {},
+        }
+        set({isPlanningLoading: true})
+        try {
+          const response = await API.updateNavigationLogAction(id, body)
+          if (typeof response === 'object' && response?.id) {
+            set({isUpdateNavLogActionSuccess: true})
+          } else {
+            set({isPlanningLoading: false, isUpdateNavLogActionSuccess: false})
+          }
+        } catch (error) {
+          set({isPlanningLoading: false})
+        }
+      },
+      deleteNavLogAction: async (id: string) => {
+        set({isPlanningLoading: true})
+        try {
+          const response = await API.deleteNavigationLogAction(id)
+          if (response === 204) {
+            set({isDeleteNavLogActionSuccess: true})
+          } else {
+            set({isPlanningLoading: false, isDeleteNavLogActionSuccess: false})
+          }
+        } catch (error) {
+          set({isPlanningLoading: false})
+        }
+      },
+      reset: () => {
+        set({
+          isCreateNavLogActionSuccess: false,
+          isUpdateNavLogActionSuccess: false,
+          isDeleteNavLogActionSuccess: false,
+          updateNavlogDatesSuccess: '',
+          updateNavlogDatesFailed: '',
+          updateNavlogDatesMessage: '',
+        })
       },
     }),
     {

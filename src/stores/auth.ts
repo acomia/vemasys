@@ -4,6 +4,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as API from '@bluecentury/api/vemasys'
 import {Credentials, Auth} from 'src/models'
 import * as Keychain from 'react-native-keychain'
+import axios from 'axios'
+import {useSettings} from './settings'
 
 type AuthState = {
   hasAuthHydrated: boolean
@@ -14,6 +16,8 @@ type AuthState = {
   hasAuthenticationError: boolean
   isLoggingOut: boolean
   hasErrorLogout: boolean
+  isTokenRefresh: boolean
+  authInterceptedRequests: any[]
 }
 
 type AuthActions = {
@@ -21,6 +25,9 @@ type AuthActions = {
   setUser: (obj: any) => void
   setHasHydrated: (state: boolean) => void
   logout: () => void
+  resetToken: () => void
+  // setIsTokenRefresh: (status: boolean) => void
+  setAuthInterceptedRequests: (interceptedRequests: any[]) => void
 }
 
 type AuthStore = AuthState & AuthActions
@@ -34,11 +41,13 @@ const initialState: AuthState = {
   hasAuthenticationError: false,
   isLoggingOut: false,
   hasErrorLogout: false,
+  isTokenRefresh: false,
+  authInterceptedRequests: [],
 }
 
 export const useAuth = create(
   persist<AuthStore>(
-    set => ({
+    (set, get) => ({
       ...initialState,
       authenticate: async credentials => {
         set({
@@ -50,6 +59,14 @@ export const useAuth = create(
         })
         try {
           const response: Auth = await API.login(credentials)
+          if (response === 'Invalid credentials.') {
+            set({
+              hasAuthenticationError: true,
+              isAuthenticatingUser: false,
+              errorMessage: response,
+            })
+            return
+          }
           set({
             token: response.token,
             refreshToken: response.refreshToken,
@@ -86,6 +103,30 @@ export const useAuth = create(
       setHasHydrated: state => {
         set({
           hasAuthHydrated: state,
+        })
+      },
+      resetToken: async () => {
+        set({
+          isTokenRefresh: true,
+        })
+        const refreshToken = get().refreshToken
+        try {
+          const res = await API.refresh(refreshToken)
+          set({
+            token: res.token,
+            refreshToken: res.refreshToken,
+            isTokenRefresh: false,
+          })
+        } catch (error) {
+          console.log('RESET_TOKEN_ERROR', error)
+          set({
+            isTokenRefresh: false,
+          })
+        }
+      },
+      setAuthInterceptedRequests: interceptedRequests => {
+        set({
+          authInterceptedRequests: interceptedRequests,
         })
       },
     }),

@@ -11,6 +11,7 @@ type EntityState = {
   hasErrorLoadingEntityUsers: boolean
   isLoadingCurrentUserInfo: boolean
   isLoadingEntityUsers: boolean
+  isLoadingPendingRoles: boolean
   user: Array<any>
   userVessels: Array<any>
   entityUsers: Array<EntityUser>
@@ -24,6 +25,8 @@ type EntityState = {
   selectedEntity: {}
   physicalVesselId: string
   fleetVessel: number
+  pendingRoles: Array<any>
+  acceptRoleStatus: string
 }
 
 type EntityActions = {
@@ -33,6 +36,9 @@ type EntityActions = {
   selectFleetVessel: (index: number, entity: any) => void
   setHasHydrated: (state: boolean) => void
   reset: () => void
+  updateVesselDetails: () => void
+  getRoleForAccept: () => void
+  updatePendingRole: (id: string, accept: boolean) => void
 }
 
 type EntityStore = EntityState & EntityActions
@@ -43,6 +49,7 @@ const initialEntityState: EntityState = {
   hasErrorLoadingEntityUsers: false,
   isLoadingCurrentUserInfo: false,
   isLoadingEntityUsers: false,
+  isLoadingPendingRoles: false,
   user: [],
   userVessels: [],
   entityUsers: [],
@@ -56,12 +63,27 @@ const initialEntityState: EntityState = {
   selectedEntity: {},
   physicalVesselId: '',
   fleetVessel: 0,
+  pendingRoles: [],
+  acceptRoleStatus: '',
 }
 
 export const useEntity = create(
   persist<EntityStore>(
     (set, get) => ({
       ...initialEntityState,
+      updateVesselDetails: async () => {
+        try {
+          const response = await API.getVesselNavigationDetails(get().vesselId)
+          console.log('VESSEL_UPDATE_RESPONSE', response)
+          set({
+            vesselDetails: response,
+          })
+        } catch (error) {
+          set({
+            isLoadingEntityUsers: false,
+          })
+        }
+      },
       getUserInfo: async () => {
         set({
           user: [],
@@ -191,6 +213,28 @@ export const useEntity = create(
         set({
           hasEntityHydrated: state,
         })
+      },
+      getRoleForAccept: async () => {
+        set({isLoadingPendingRoles: true, pendingRoles: []})
+        try {
+          const response = await API.getRoleForAccept(get().user?.id)
+          set({pendingRoles: response, isLoadingPendingRoles: false})
+        } catch (error) {
+          set({
+            isLoadingEntityUsers: false,
+          })
+        }
+      },
+      updatePendingRole: async (id: string, accept: boolean) => {
+        set({isLoadingPendingRoles: true})
+        try {
+          let response
+          if (accept) response = await API.acceptPendingRole(id)
+          else response = await API.rejectPendingRole(id)
+          set({acceptRoleStatus: response})
+        } catch (error) {
+          set({isLoadingPendingRoles: false})
+        }
       },
       reset: () => {
         set({

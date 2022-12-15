@@ -64,7 +64,7 @@ const PlanningLogbook = () => {
           {/* End of Header */}
 
           <Box
-            px={ms(16)}
+            px={ms(14)}
             py={ms(10)}
             pt={3}
             borderWidth={3}
@@ -72,32 +72,37 @@ const PlanningLogbook = () => {
             borderStyle="dashed"
             mt={-3}
           >
-            <HStack alignItems="center" my={ms(5)}>
+            <HStack alignItems="center">
               <Box flex="1">
-                {navigationLog?.bulkCargo &&
-                  navigationLog?.bulkCargo.length > 0 && (
-                    <Box>
-                      {navigationLog?.bulkCargo.map((cargo: any, i: number) => {
-                        return (
-                          <Text
-                            key={i}
-                            color={Colors.highlighted_text}
-                            fontWeight="bold"
-                          >
-                            {`${Math.ceil(cargo.tonnage)} MT - ${
-                              cargo.type ? cargo.type.nameEn : 'Unknown'
-                            }  `}
-                            <Image
-                              alt="navlogs-tags"
-                              source={Icons.tags}
-                              mx={ms(5)}
-                              resizeMode="contain"
-                            />
-                          </Text>
-                        )
-                      })}
-                    </Box>
-                  )}
+                {navigationLog?.bulkCargo.length > 0 &&
+                  navigationLog?.bulkCargo.map((cargo: any, i: number) => {
+                    return (
+                      <HStack key={i} alignItems="center" mr={ms(5)}>
+                        <Text color={Colors.disabled} fontWeight="bold">
+                          {`(${Math.ceil(cargo.tonnage)} MT) `}
+                        </Text>
+                        <Text
+                          flex="1"
+                          color={Colors.highlighted_text}
+                          fontWeight="bold"
+                          numberOfLines={1}
+                          ellipsizeMode="tail"
+                        >
+                          {` ${Math.ceil(cargo.actualTonnage)} MT - ${
+                            cargo.type.nameEn !== null
+                              ? cargo.type.nameEn
+                              : 'Unknown'
+                          }  `}
+                        </Text>
+                        <Image
+                          alt="navlogs-tags"
+                          source={Icons.tags}
+                          mx={ms(5)}
+                          resizeMode="contain"
+                        />
+                      </HStack>
+                    )
+                  })}
                 <HStack alignItems="center" mt={ms(5)}>
                   <Text color={Colors.highlighted_text} fontWeight="bold">
                     {calculateTotalOut(navigationLog)} MT
@@ -148,9 +153,9 @@ const PlanningLogbook = () => {
             </Center>
           </Box>
         ) : (
-          plannedNavigationLogs.map((navigationLog: any, i: number) => {
-            return <NavLogCard key={i} navigationLog={navigationLog} />
-          })
+          plannedNavigationLogs.map((navigationLog: any, i: number) => (
+            <NavLogCard key={i} navigationLog={navigationLog} />
+          ))
         )}
       </ScrollView>
     </Box>

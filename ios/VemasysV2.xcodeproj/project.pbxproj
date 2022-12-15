@@ -14,6 +14,7 @@
 		29626B39284F989300F9BC9D /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = 29626B38284F989300F9BC9D /* Fonts */; };
 		7A2CFFDE192A51E6CE819A20 /* libPods-VemasysV2-VemasysV2Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A7988668BF91817C8ACE529 /* libPods-VemasysV2-VemasysV2Tests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		8BE0B8922919440400F66E87 /* RNBackgroundFetch+AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BE0B8912919440400F66E87 /* RNBackgroundFetch+AppDelegate.m */; };
 		9C1AEC1BEC63C4247829EDD4 /* libPods-VemasysV2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D54F195C6143212A99DD9C54 /* libPods-VemasysV2.a */; };
 /* End PBXBuildFile section */
 
@@ -43,6 +44,7 @@
 		2E444E5F704C5DDCBC55BA98 /* Pods-VemasysV2-VemasysV2Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VemasysV2-VemasysV2Tests.debug.xcconfig"; path = "Target Support Files/Pods-VemasysV2-VemasysV2Tests/Pods-VemasysV2-VemasysV2Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = VemasysV2/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8A7988668BF91817C8ACE529 /* libPods-VemasysV2-VemasysV2Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-VemasysV2-VemasysV2Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8BE0B8912919440400F66E87 /* RNBackgroundFetch+AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "RNBackgroundFetch+AppDelegate.m"; path = "../node_modules/react-native-background-fetch/ios/RNBackgroundFetch/RNBackgroundFetch+AppDelegate.m"; sourceTree = "<group>"; };
 		D4F065FCFD9538BDC81DBDD8 /* Pods-VemasysV2-VemasysV2Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VemasysV2-VemasysV2Tests.release.xcconfig"; path = "Target Support Files/Pods-VemasysV2-VemasysV2Tests/Pods-VemasysV2-VemasysV2Tests.release.xcconfig"; sourceTree = "<group>"; };
 		D54F195C6143212A99DD9C54 /* libPods-VemasysV2.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-VemasysV2.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
@@ -88,6 +90,7 @@
 		13B07FAE1A68108700A75B9A /* VemasysV2 */ = {
 			isa = PBXGroup;
 			children = (
+				8BE0B8912919440400F66E87 /* RNBackgroundFetch+AppDelegate.m */,
 				29626B38284F989300F9BC9D /* Fonts */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
@@ -393,6 +396,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8BE0B8922919440400F66E87 /* RNBackgroundFetch+AppDelegate.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);
@@ -468,7 +472,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 27SDM3N78T;
 				ENABLE_BITCODE = NO;
@@ -478,7 +482,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 86.0;
+				MARKETING_VERSION = 96;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -499,7 +503,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 27SDM3N78T;
 				INFOPLIST_FILE = VemasysV2/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
@@ -507,7 +511,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 86.0;
+				MARKETING_VERSION = 96;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

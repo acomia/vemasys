@@ -1,15 +1,14 @@
 import React, {useEffect, useState} from 'react'
+import {RefreshControl, TouchableOpacity} from 'react-native'
 import {Box, Divider, HStack, ScrollView, Text} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import _ from 'lodash'
 import {useNavigation} from '@react-navigation/native'
-
 import {useEntity, useTechnical} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
 import {LoadingAnimated} from '@bluecentury/components'
 import {formatNumber} from '@bluecentury/constants'
-import {RefreshControl, TouchableOpacity} from 'react-native'
 
 const Engines = () => {
   const navigation = useNavigation()
@@ -21,8 +20,6 @@ const Engines = () => {
     getVesselEngines(physicalVesselId)
   }, [physicalVesselId])
 
-  // const vesselZones = _.uniq(_.map(engines, 'vesselZone.title'))
-  // const partTypes = _.uniq(_.map(engines, 'type.title'))
   let vesselZones = Object.values(
     engines.reduce((acc: any, item) => {
       const zones = item.vesselZone.title
@@ -38,6 +35,7 @@ const Engines = () => {
 
   const renderEngineList = (partType: any, index: number) => {
     const pLength = partType.data.length - 1
+    const {type, lastMeasurement} = partType.data[pLength]
 
     return (
       <Box key={index} mb={ms(index === vesselZones.data?.length - 1 ? 10 : 0)}>
@@ -54,15 +52,13 @@ const Engines = () => {
             <HStack alignItems="center" justifyContent="space-around">
               <Box width="40%">
                 <Text color={Colors.text} fontWeight="medium">
-                  {partType.data[pLength].type.title}
+                  {type.title}
                 </Text>
                 <Text color={Colors.disabled}>
-                  {partType.data[pLength].lastMeasurement
-                    ? moment(
-                        partType.data[pLength].lastMeasurement.date
-                      ).format('DD/MM/YYYY')
+                  {lastMeasurement
+                    ? moment(lastMeasurement.date).format('DD/MM/YYYY')
                     : 'Loading...'}
-                </Text>
+		</Text>
               </Box>
               <Text
                 flex="1"
@@ -70,11 +66,8 @@ const Engines = () => {
                 fontSize={ms(15)}
                 fontWeight="bold"
               >
-                {partType.data[pLength].lastMeasurement
-                  ? `${formatNumber(
-                      partType.data[pLength].lastMeasurement.value,
-                      0
-                    )}h`
+                {lastMeasurement
+                  ? `${formatNumber(lastMeasurement.value, 0, ' ')}h`
                   : 'Loading...'}
               </Text>
               <Box
@@ -104,8 +97,6 @@ const Engines = () => {
     setPullRefresh(false)
   }
 
-  // if (isTechnicalLoading) return <LoadingAnimated />
-
   return (
     <Box flex="1" bg={Colors.white}>
       <ScrollView
@@ -115,6 +106,7 @@ const Engines = () => {
         refreshControl={
           <RefreshControl onRefresh={onPullToReload} refreshing={pullRefresh} />
         }
+        showsVerticalScrollIndicator={false}
       >
         <Text
           color={Colors.azure}
@@ -168,17 +160,6 @@ const Engines = () => {
           ) : (
             <LoadingAnimated />
           )
-          // (
-          //   <Text
-          //     color={Colors.text}
-          //     fontWeight="semibold"
-          //     fontSize={ms(15)}
-          //     textAlign="center"
-          //     mt={ms(20)}
-          //   >
-          //     No available data.
-          //   </Text>
-          // )
         }
       </ScrollView>
     </Box>

@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useState} from 'react'
 import {Alert, TouchableOpacity} from 'react-native'
 import {Flex, Box, Text, Modal} from 'native-base'
 import {BarCodeReadEvent, RNCamera} from 'react-native-camera'
@@ -79,6 +79,7 @@ export default function QRScanner({navigation}: Props) {
         autoFocus={'on'}
         onBarCodeRead={onBarCodeRead}
         barCodeTypes={barcodeType}
+        captureAudio={false}
       >
         <BarcodeMask
           backgroundColor="rgba(0, 0, 0, 0.3)"

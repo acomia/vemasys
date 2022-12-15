@@ -76,17 +76,32 @@ const updateNavigationLogDatetimeFields = async (
   navLogId: string,
   dates: object
 ) => {
-  return API.put(`navigation_logs/${navLogId}`, dates)
-    .then(response => {
-      if (response.data) {
-        return response.data
-      } else {
-        throw new Error('Update navlog datetime failed.')
-      }
-    })
-    .catch(error => {
-      console.error('Error: Update navlog datetime data', error)
-    })
+  const token = useAuth.getState().token
+  const entityUserId = useEntity.getState().entityUserId
+  const API_URL = useSettings.getState().apiUrl
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+      'Jwt-Auth': `Bearer ${token}`,
+      'X-active-entity-user-id': `${entityUserId}`,
+    },
+  }
+
+  try {
+    const res = await axios.put(
+      `${API_URL}navigation_logs/${navLogId}`,
+      dates,
+      config
+    )
+    if (!res?.data) {
+      throw new Error('Update navlog datetime failed.')
+    }
+    return res?.data?.id ? 'SUCCESS' : 'Update failed.'
+  } catch (error) {
+    return error?.response?.data
+      ? error?.response?.data?.violations[0]?.message
+      : 'Update failed.'
+  }
 }
 
 const createNavlogComment = async (
@@ -97,11 +112,11 @@ const createNavlogComment = async (
   return API.post(`navigation_log_comments`, {
     description: comment,
     user: {
-      id: userId
+      id: userId,
     },
     log: {
-      id: navlogId
-    }
+      id: navlogId,
+    },
   })
     .then(response => {
       if (response.data) {
@@ -136,17 +151,17 @@ const updateBulkCargoEntry = async (cargo: any) => {
     type: {id: parseInt(cargo.typeId)},
     amount: cargo.amount.toString(),
     actualAmount: cargo.actualAmount.toString(),
-    isLoading: cargo.isLoading === '1'
+    isLoading: cargo.isLoading === '1',
   })
     .then(response => {
       if (response.data) {
         return response.data
       } else {
-        throw new Error('Update bulk cargo entry failed.')
+        throw new Error('Update bulk cargo failed.')
       }
     })
     .catch(error => {
-      console.error('Error: Update bulk cargo entry data', error)
+      console.error('Error: Update bulk cargo data', error)
     })
 }
 
@@ -155,12 +170,12 @@ const createNewBulkCargoEntry = async (cargo: any, navLogId: string) => {
     `navigation_bulks`,
     {
       log: {
-        id: navLogId
+        id: navLogId,
       },
       type: {id: parseInt(cargo.typeId)},
       amount: cargo.amount,
       actualAmount: cargo.actualAmount,
-      isLoading: cargo.isLoading === '1'
+      isLoading: cargo.isLoading === '1',
     },
     {}
   )
@@ -209,7 +224,7 @@ const uploadImgFile = async (file: ImageFile) => {
   let image = {
     uri: file.uri,
     type: file.type,
-    name: file.fileName || `IMG_${Date.now()}`
+    name: file.fileName || `IMG_${Date.now()}`,
   }
 
   formData.append('file', image)
@@ -226,8 +241,6 @@ const uploadImgFile = async (file: ImageFile) => {
         'X-active-entity-user-id': `${entityUserId}`,
       },
     })
-
-    console.log('res.data', res.data)
     return res.data
   } catch (error) {
     console.error('Error: Upload image file data', error)
@@ -262,6 +275,47 @@ const uploadVesselNavigationLogFile = async (navLogId: string, body: any) => {
     })
 }
 
+const createNavigationLogAction = async (body: any) => {
+  return API.post(`navigation_log_actions`, body)
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Create navlog action.')
+      }
+    })
+    .catch(error => {
+      console.error('Error:Create navlog action data', error)
+    })
+}
+const updateNavigationLogAction = async (id: string, body: any) => {
+  return API.put(`navigation_log_actions/${id}`, body)
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Update navlog action.')
+      }
+    })
+    .catch(error => {
+      console.error('Error:Update navlog action data', error)
+    })
+}
+
+const deleteNavigationLogAction = async (id: string) => {
+  return API.delete(`navigation_log_actions/${id}`)
+    .then(response => {
+      if (response.status) {
+        return response.status
+      } else {
+        throw new Error('Delete navlog action.')
+      }
+    })
+    .catch(error => {
+      console.error('Error:Delete navlog action data', error)
+    })
+}
+
 export {
   reloadNavigationLogDetails,
   reloadNavigationLogActions,
@@ -277,5 +331,8 @@ export {
   updateComment,
   uploadImgFile,
   deleteComment,
-  uploadVesselNavigationLogFile
+  uploadVesselNavigationLogFile,
+  createNavigationLogAction,
+  updateNavigationLogAction,
+  deleteNavigationLogAction,
 }

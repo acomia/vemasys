@@ -18,14 +18,13 @@ import moment from 'moment'
 import {CharterStatus, IconButton} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
-import {useAuth, useCharters, useEntity} from '@bluecentury/stores'
+import {useCharters, useEntity} from '@bluecentury/stores'
 import {formatLocationLabel} from '@bluecentury/constants'
-import pdf2html from 'pdf2html'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 export default function CharterDetails({navigation, route}: Props) {
   const {entityType} = useEntity()
-  const {viewPdf, isCharterLoading, signedDocumentsArray} = useCharters()
+  const {viewPdf, signedDocumentsArray} = useCharters()
 
   useEffect(() => {
     // navigation.setOptions({
@@ -39,7 +38,9 @@ export default function CharterDetails({navigation, route}: Props) {
 
   const computeCargo = (cargo: any[]) => {
     return cargo.reduce(
-      (accumulator, cargo) => accumulator + parseInt(cargo.amount),
+      (accumulator, cargo) =>
+        accumulator +
+        parseInt(cargo.actualAmount == null ? 0 : cargo.actualAmount),
       0
     )
   }
@@ -257,10 +258,13 @@ export default function CharterDetails({navigation, route}: Props) {
   }
 
   const handlePDFView = async () => {
-    // const path = await viewPdf(charter.id)
-    const path = signedDocumentsArray.find(item => item.charter_id === charter.id)
+    const path = await viewPdf(charter.id)
+    // const path = signedDocumentsArray.find(
+    //   item => item.charter_id === charter.id
+    // )
+    console.log('PATH', signedDocumentsArray)
     navigation.navigate('PDFView', {
-      path: `${path.path}`,
+      path: `${path}`,
     })
   }
 

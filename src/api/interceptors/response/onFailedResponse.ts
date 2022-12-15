@@ -9,6 +9,12 @@ const UNAUTHENTICATED = 401
 export const onFailedResponse = async (error: any) => {
   const failedRequest = error?.config
   const errorUrl = failedRequest?.url
+  const isTokenRefresh = useAuth.getState().isTokenRefresh
+  // const setIsTokenRefresh = useAuth.getState().setIsTokenRefresh
+  const authInterceptedRequests = useAuth.getState().authInterceptedRequests
+  const setAuthInterceptedRequests =
+    useAuth.getState().setAuthInterceptedRequests
+  console.log('ERROR_URL', errorUrl)
   let failedRequestHeaders = failedRequest.headers || undefined
   // DO anything here
   console.log('Error data: ', error?.response.data)
@@ -21,46 +27,31 @@ export const onFailedResponse = async (error: any) => {
 
   const isLogin = errorUrl === 'login_check'
 
-  if (error?.response?.status === UNAUTHENTICATED && !isLogin) {
+  if (error?.response?.status === UNAUTHENTICATED && !isLogin && !isTokenRefresh) {
     try {
-      const refreshToken = useAuth.getState().refreshToken
-      const res = await axios.post(
-        `${API_URL}token/refresh?refresh_token=${refreshToken}`
-      )
-      if (res) {
-        API.defaults.headers.common = {
-          ...API.defaults.headers.common,
-          'Jwt-Auth': res.data.token,
-        }
-        return API(failedRequest)
+      // reset the token using the refresh_token
+      await useAuth.getState().resetToken()
+      // use the updated token
+      const token = useAuth.getState().token
+      console.log('NEW_TOKEN', token)
+      if (authInterceptedRequests.length) {
+        authInterceptedRequests.forEach(request => {
+          API(request)
+        })
+        setAuthInterceptedRequests([])
       }
+      return API(failedRequest)
     } catch (err) {
       console.log('Error: Failed to Refresh Token ', err)
-      if (useSettings.getState().isRemainLoggedIn) {
-        const credentials = await Keychain.getGenericPassword()
-        if (credentials) {
-          console.log('credentials ')
-          const {username, password} = credentials
-          const res = await axios.post(`${API_URL}login_check`, {
-            username: username,
-            password: password,
-          })
-          console.log('res using stored', res.data.token)
-          if (res) {
-            API.defaults.headers.common = {
-              ...API.defaults.headers.common,
-              'Jwt-Auth': res.data.token,
-            }
-            useAuth.getState().setUser({
-              token: res.data.token,
-              refreshToken: res.data.refreshToken,
-            })
-            return API(failedRequest)
-          }
-        }
-      }
-      useAuth.getState().logout()
-      return Promise.reject(err)
+    }
+
+    //This part should help us to ensure that refresh will called just once
+    if (error?.response?.status === UNAUTHENTICATED && !isLogin && isTokenRefresh) {
+      setAuthInterceptedRequests([...authInterceptedRequests, failedRequest])
+      console.log(
+        'REQUEST_ADDED_TO_authInterceptedRequests',
+        authInterceptedRequests.length
+      )
     }
   }
   return Promise.reject(error)

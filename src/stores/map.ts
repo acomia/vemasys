@@ -2,8 +2,7 @@ import create from 'zustand'
 import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as API from '@bluecentury/api/vemasys'
-import {Location} from '@mauron85/react-native-background-geolocation'
-import {getVesselStatus} from '@bluecentury/api/vemasys'
+import {Coords} from 'react-native-background-geolocation'
 
 type MapState = {
   vesselStatus: any
@@ -12,14 +11,17 @@ type MapState = {
   currentNavLogs: Array<any>
   lastCompleteNavLogs: Array<any>
   activeFormations: Array<any>
+  vesselTracks: Array<any>
   isLoadingMap: boolean
   isLoadingVesselStatus: boolean
   isLoadingPreviousNavLogs: boolean
   isLoadingCurrentNavLogs: boolean
   isLoadingPlannedNavLogs: boolean
+  isLoadingVesselTrack: boolean
   hasErrorLoadingPreviousNavLogs: boolean
   hasErrorLoadingCurrentNavLogs: boolean
   hasErrorLoadingPlannedNavLogs: boolean
+  hasErrorLoadingVesselTrack: boolean
   tokenHasConnectedToShip: boolean
   isMobileTrackingEnable: boolean
   hasErrorLoadingNavigationLogs: boolean
@@ -36,8 +38,9 @@ type MapActions = {
   verifyTrackingDeviceToken: (id: string, token: string, method: string) => void
   endVesselFormations: (formationId: string, vesselId: string) => void
   removeVesselFromFormations: (formationId: string, vesselId: string) => void
-  sendCurrentPosition: (entityId: string, position: Location) => void
+  sendCurrentPosition: (entityId: string, position: Coords) => void
   enableMobileTracking: () => void
+  getVesselTrack: (vesselId: string, page: number) => void
   reset: () => void
 }
 
@@ -50,11 +53,13 @@ const initialMapState: MapState = {
   currentNavLogs: [],
   lastCompleteNavLogs: [],
   activeFormations: [],
+  vesselTracks: [],
   isLoadingMap: false,
   isLoadingVesselStatus: false,
   isLoadingCurrentNavLogs: false,
   isLoadingPlannedNavLogs: false,
   isLoadingPreviousNavLogs: false,
+  isLoadingVesselTrack: false,
   tokenHasConnectedToShip: false,
   isMobileTrackingEnable: false,
   hasErrorLoadingCurrentNavLogs: false,
@@ -62,6 +67,7 @@ const initialMapState: MapState = {
   hasErrorLoadingPreviousNavLogs: false,
   hasErrorLoadingNavigationLogs: false,
   hasErrorLoadingVesselStatus: false,
+  hasErrorLoadingVesselTrack: false,
 }
 
 export const useMap = create(
@@ -235,7 +241,7 @@ export const useMap = create(
             entityId,
             position
           )
-          console.log('response ', response)
+          console.log('response after sending location', response)
           if (response) {
             set({isLoadingMap: false})
           }
@@ -295,6 +301,30 @@ export const useMap = create(
           set({
             isLoadingVesselStatus: false,
             hasErrorLoadingVesselStatus: true,
+          })
+        }
+      },
+      getVesselTrack: async (vesselId: string, page: number) => {
+        set({isLoadingVesselTrack: true, hasErrorLoadingVesselTrack: false})
+        try {
+          const response = await API.getVesselTrack(vesselId, page)
+          if (Array.isArray(response)) {
+            set({
+              vesselTracks:
+                page === 1 ? response : [...get().vesselTracks, ...response],
+            })
+          } else {
+            set({
+              vesselTracks: [],
+            })
+          }
+          set({
+            isLoadingVesselTrack: false,
+          })
+        } catch (error) {
+          set({
+            isLoadingVesselTrack: false,
+            hasErrorLoadingVesselTrack: true,
           })
         }
       },

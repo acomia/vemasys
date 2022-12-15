@@ -35,7 +35,7 @@ const BunkeringList = ({bunkering}: any) => {
             </Text>
           </VStack>
           <Text color={Colors.highlighted_text} fontWeight="bold">
-            {formatNumber(bunk.value, 0)} L
+            {formatNumber(bunk.value, 0, ' ')} L
           </Text>
         </HStack>
       </Pressable>
