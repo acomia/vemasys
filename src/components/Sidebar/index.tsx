@@ -5,7 +5,11 @@ import {DrawerContentComponentProps} from '@react-navigation/drawer'
 import {ms} from 'react-native-size-matters'
 
 import MenuButton from '../MenuButton'
-import {Screens} from '@bluecentury/constants'
+import {
+  hasSelectedEntityUserPermission,
+  ROLE_PERMISSION_CHARTER_MANAGE,
+  Screens,
+} from '@bluecentury/constants'
 import {Icons, Images} from '@bluecentury/assets'
 import {useEntity} from '@bluecentury/stores'
 
@@ -23,8 +27,10 @@ const Sidebar = (props: DrawerContentComponentProps) => {
   const handlePressMenu = (name: string) => {
     navigation.navigate(name)
   }
-
-  console.log('entity', selectedEntity?.role)
+  const hasCharterPermission = hasSelectedEntityUserPermission(
+    selectedEntity,
+    ROLE_PERMISSION_CHARTER_MANAGE
+  )
 
   return (
     <Box flex="1" safeArea p={ms(10)}>
@@ -62,13 +68,15 @@ const Sidebar = (props: DrawerContentComponentProps) => {
           >
             Planning
           </MenuButton>
-          <MenuButton
-            active={currentRoute === Screens.Charters}
-            onPress={() => handlePressMenu(Screens.Charters)}
-            iconSource={Icons.fileContract}
-          >
-            Charters
-          </MenuButton>
+          {hasCharterPermission ? (
+            <MenuButton
+              active={currentRoute === Screens.Charters}
+              onPress={() => handlePressMenu(Screens.Charters)}
+              iconSource={Icons.fileContract}
+            >
+              Charters
+            </MenuButton>
+          ) : null}
           <MenuButton
             active={currentRoute === Screens.Technical}
             onPress={() => handlePressMenu(Screens.Technical)}
@@ -81,7 +89,6 @@ const Sidebar = (props: DrawerContentComponentProps) => {
               active={currentRoute === ''}
               onPress={() => handlePressMenu(Screens.Financial)}
               iconSource={Icons.card}
-              // disabled
             >
               Financial
             </MenuButton>
