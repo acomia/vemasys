@@ -11,7 +11,7 @@ const TickerOilPriceDetails = () => {
   const {tickerOilPrices} = useInformation()
 
   const entityList = tickerOilPrices && [
-    ...new Set(tickerOilPrices.map(x => x.entity.alias))
+    ...new Set(tickerOilPrices.map(x => x.entity.alias)),
   ]
 
   const chartConfig = {
@@ -21,10 +21,10 @@ const TickerOilPriceDetails = () => {
     propsForDots: {
       r: '6',
       strokeWidth: '2',
-      stroke: Colors.primary
+      stroke: Colors.primary,
     },
     barPercentage: 0.5,
-    useShadowColorFromDataset: false
+    useShadowColorFromDataset: false,
   }
   return (
     <Box flex="1">
@@ -36,7 +36,7 @@ const TickerOilPriceDetails = () => {
         {entityList?.map((chart, index) => (
           <Box key={`OilPriceChart-${index}`}>
             <Text
-              fontWeight="bold"
+              bold
               color={Colors.azure}
               textAlign="center"
               mb={ms(20)}
@@ -54,9 +54,9 @@ const TickerOilPriceDetails = () => {
                       .map(x => x.price)
                       .reverse(),
                     color: (opacity = 1) => `rgba(68, 167, 185, ${opacity})`,
-                    strokeWidth: 2
-                  }
-                ]
+                    strokeWidth: 2,
+                  },
+                ],
               }}
               width={Dimensions.get('window').width} // from react-native
               height={400}
@@ -64,7 +64,7 @@ const TickerOilPriceDetails = () => {
               chartConfig={chartConfig}
               bezier
               style={{
-                borderRadius: 10
+                borderRadius: 10,
               }}
               xLabelsOffset={20}
               verticalLabelRotation={-45}

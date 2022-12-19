@@ -27,7 +27,7 @@ const TechnicalTasksList = ({navigation, route}: Props) => {
           }
         >
           <Icon name="add" color={Colors.highlighted_text} size={24} />
-          <Text fontWeight="bold" color={Colors.highlighted_text}>
+          <Text bold color={Colors.highlighted_text}>
             Add a task
           </Text>
         </TouchableOpacity>
@@ -163,11 +163,7 @@ const TechnicalTasksList = ({navigation, route}: Props) => {
                       px={ms(16)}
                       py={ms(10)}
                     >
-                      <Text
-                        color={Colors.azure}
-                        fontWeight="bold"
-                        fontSize={ms(15)}
-                      >
+                      <Text color={Colors.azure} bold fontSize={ms(15)}>
                         {task?.title}
                       </Text>
                     </Box>

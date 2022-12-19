@@ -34,7 +34,7 @@ const BunkeringList = ({bunkering}: any) => {
               {moment(bunk.date).format('DD/MM/YYYY - hh:mm A')}
             </Text>
           </VStack>
-          <Text color={Colors.highlighted_text} fontWeight="bold">
+          <Text color={Colors.highlighted_text} bold>
             {formatNumber(bunk.value, 0, ' ')} L
           </Text>
         </HStack>
@@ -45,10 +45,10 @@ const BunkeringList = ({bunkering}: any) => {
   return (
     <Box>
       <HStack alignItems="center">
-        <Text flex="1" color={Colors.text} fontSize={ms(16)} fontWeight="bold">
+        <Text flex="1" color={Colors.text} fontSize={ms(16)} bold>
           Details
         </Text>
-        <Text color={Colors.text} fontSize={ms(16)} fontWeight="bold">
+        <Text color={Colors.text} fontSize={ms(16)} bold>
           Amount
         </Text>
       </HStack>

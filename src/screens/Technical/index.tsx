@@ -10,13 +10,13 @@ import {
   Inventory,
   Reservoirs,
   Routines,
-  Tasks
+  Tasks,
 } from './Tabs'
 import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
 import {
   ENTITY_TYPE_EXPLOITATION_GROUP,
-  technicalTabs
+  technicalTabs,
 } from '@bluecentury/constants'
 import {FleetHeader} from '@bluecentury/components'
 import {useEntity} from '@bluecentury/stores'
@@ -28,7 +28,7 @@ const renderScene = SceneMap({
   tasks: Tasks,
   routines: Routines,
   certificates: Certificates,
-  inventory: Inventory
+  inventory: Inventory,
 })
 
 export default function Technical() {
@@ -46,12 +46,12 @@ export default function Technical() {
         height: 3,
         borderRadius: 3,
         width: ms(50),
-        marginLeft: 25
+        marginLeft: 25,
       }}
       style={{backgroundColor: Colors.primary}}
       tabStyle={{width: ms(100), height: ms(45)}}
       renderLabel={({route, color}) => (
-        <Text color={color} fontWeight="bold" width="full">
+        <Text color={color} bold width="full">
           {route.title}
         </Text>
       )}

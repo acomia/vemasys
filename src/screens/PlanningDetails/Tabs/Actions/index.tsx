@@ -154,7 +154,7 @@ const Actions = () => {
         py={ms(20)}
       >
         {/* Actions Section */}
-        <Text fontSize={ms(20)} fontWeight="bold" color={Colors.azure}>
+        <Text fontSize={ms(20)} bold color={Colors.azure}>
           Actions
         </Text>
         {navigationLogActions?.length > 0
@@ -191,11 +191,7 @@ const Actions = () => {
                   />
                   <Box flex="1">
                     <HStack alignItems="center">
-                      <Text
-                        fontWeight="bold"
-                        fontSize={ms(15)}
-                        color={Colors.text}
-                      >
+                      <Text bold fontSize={ms(15)} color={Colors.text}>
                         {titleCase(action.type)}
                       </Text>
                     </HStack>

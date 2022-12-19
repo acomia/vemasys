@@ -123,7 +123,7 @@ const Costs = () => {
             alignItems="center"
             bg={statusBgColor(status)}
           >
-            <Text fontSize={ms(12)} fontWeight="bold" color={Colors.white}>
+            <Text fontSize={ms(12)} bold color={Colors.white}>
               {statusLabel(status)}
             </Text>
           </Box>
@@ -168,7 +168,7 @@ const Costs = () => {
               isLoaded={!isFinancialLoading}
             >
               <Text
-                fontWeight="bold"
+                bold
                 fontSize={ms(18)}
                 textAlign="right"
                 color={Colors.white}
@@ -220,12 +220,7 @@ const Costs = () => {
             startColor={Colors.light}
             isLoaded={!isFinancialLoading}
           >
-            <Text
-              fontWeight="bold"
-              fontSize={ms(18)}
-              textAlign="right"
-              color={Colors.white}
-            >
+            <Text bold fontSize={ms(18)} textAlign="right" color={Colors.white}>
               €{' '}
               {Platform.OS === 'ios'
                 ? Number(value).toLocaleString('en-GB', {
@@ -268,12 +263,7 @@ const Costs = () => {
           </Select>
         </Box>
         <Box flex="1" px={ms(15)} py={ms(25)} bg={Colors.white}>
-          <Text
-            fontSize={ms(20)}
-            fontWeight="bold"
-            color={Colors.azure}
-            mb={ms(20)}
-          >
+          <Text fontSize={ms(20)} bold color={Colors.azure} mb={ms(20)}>
             Incoming Invoices
           </Text>
           {isFinancialLoading && !isPageChange ? (

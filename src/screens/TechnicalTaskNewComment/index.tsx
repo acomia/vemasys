@@ -79,7 +79,7 @@ export default function TechnicalTaskNewComment({navigation, route}: Props) {
         py={ms(20)}
         bg={Colors.white}
       >
-        <Text fontSize={ms(20)} fontWeight="bold" color={Colors.azure}>
+        <Text fontSize={ms(20)} bold color={Colors.azure}>
           Add a comment
         </Text>
 

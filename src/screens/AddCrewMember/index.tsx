@@ -207,7 +207,7 @@ const AddCrewMember = ({navigation}: Props) => {
           </Box>
         ) : null}
 
-        <Text fontSize={ms(16)} fontWeight="bold" color={Colors.text}>
+        <Text fontSize={ms(16)} bold color={Colors.text}>
           User Information
         </Text>
         <Divider mt={ms(5)} mb={ms(10)} />

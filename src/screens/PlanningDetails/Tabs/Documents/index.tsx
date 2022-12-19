@@ -53,7 +53,13 @@ const Documents = () => {
   const scanDocument = async () => {
     // start the document scanner
     const {scannedImages} = await DocumentScanner.scanDocument()
-    await convertToPdfAndUpload(scannedImages, showToast, true, navlog, setScannedImage)
+    await convertToPdfAndUpload(
+      scannedImages,
+      showToast,
+      true,
+      navlog,
+      setScannedImage
+    )
   }
 
   const handleError = (err: unknown) => {
@@ -226,12 +232,7 @@ const Documents = () => {
           />
         }
       >
-        <Text
-          fontSize={ms(20)}
-          fontWeight="bold"
-          color={Colors.azure}
-          mb={ms(20)}
-        >
+        <Text fontSize={ms(20)} bold color={Colors.azure} mb={ms(20)}>
           Additional Documents
         </Text>
         {navigationLogDocuments?.map((document: Document, index: number) => {

@@ -125,7 +125,7 @@ const Measurements = ({navigation, route}: Props) => {
             isLoaded={!isTechnicalLoading}
             startColor={Colors.light}
           >
-            <Text color={Colors.azure} fontSize={ms(16)} fontWeight="bold">
+            <Text color={Colors.azure} fontSize={ms(16)} bold>
               {formatNumber(value, 0, ' ')} L (
               {isNaN(fillPct) || fillPct === Infinity ? 0 : Math.floor(fillPct)}
               %)
@@ -198,7 +198,7 @@ const Measurements = ({navigation, route}: Props) => {
             isLoaded={!isTechnicalLoading}
             startColor={Colors.light}
           >
-            <Text color={Colors.azure} fontSize={ms(16)} fontWeight="bold">
+            <Text color={Colors.azure} fontSize={ms(16)} bold>
               {formatNumber(
                 Array.isArray(lastMeasurements) && lastMeasurements
                   ? lastMeasurements[0]?.value
@@ -260,12 +260,7 @@ const Measurements = ({navigation, route}: Props) => {
     >
       <Box flex="1" px={ms(12)} py={ms(20)}>
         {routeFrom === 'reservoir' ? renderReservoirCard() : renderEngineCard()}
-        <Text
-          fontSize={ms(16)}
-          fontWeight="bold"
-          color={Colors.text}
-          mt={ms(25)}
-        >
+        <Text fontSize={ms(16)} bold color={Colors.text} mt={ms(25)}>
           Last Measurements
         </Text>
         <Divider mt={ms(8)} mb={ms(15)} />
@@ -295,7 +290,7 @@ const Measurements = ({navigation, route}: Props) => {
                       {moment(item?.date).format('DD MMM YYYY - hh:mm A')}
                     </Text>
                   </Box>
-                  <Text fontWeight="bold" color={Colors.highlighted_text}>
+                  <Text bold color={Colors.highlighted_text}>
                     {formatNumber(item?.value, 0, ' ')}{' '}
                     {routeFrom === 'reservoir' ? 'L' : 'h'}
                   </Text>
@@ -317,7 +312,7 @@ const Measurements = ({navigation, route}: Props) => {
               keyboardType="number-pad"
               height={ms(40)}
               fontSize={ms(15)}
-              fontWeight="bold"
+              bold
               value={newMeasurement}
               onChangeText={e => setNewMeasurement(e)}
             />

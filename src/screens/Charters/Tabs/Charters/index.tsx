@@ -182,7 +182,7 @@ export default function Charters({navigation, route}: any) {
             justifyContent="space-between"
           >
             <VStack maxWidth="72%">
-              <Text fontWeight="bold">
+              <Text bold>
                 {item.vesselReference || item.clientReference || 'Unknown'}
               </Text>
               {item.navigationLogs &&
@@ -442,7 +442,7 @@ export default function Charters({navigation, route}: any) {
         ListEmptyComponent={() => (
           <Text
             fontSize={ms(20)}
-            fontWeight="bold"
+            bold
             color={Colors.azure}
             mt={ms(20)}
             textAlign="center"
@@ -472,7 +472,7 @@ export default function Charters({navigation, route}: any) {
               textAlign="center"
               color={Colors.white}
               fontSize={ms(12)}
-              fontWeight="bold"
+              bold
             >
               {path?.replace(
                 '/data/user/0/com.vemasysreactnativeapp/files/ReactNativeBlobUtilTmp_',
@@ -496,7 +496,7 @@ export default function Charters({navigation, route}: any) {
               <Text
                 color={Colors.primary}
                 fontSize={ms(12)}
-                fontWeight="bold"
+                bold
                 textAlign="right"
               >
                 Done
@@ -514,7 +514,7 @@ export default function Charters({navigation, route}: any) {
               <Text
                 color={Colors.primary}
                 fontSize={ms(12)}
-                fontWeight="bold"
+                bold
                 textAlign="right"
               >
                 Make single tap to select place for signature

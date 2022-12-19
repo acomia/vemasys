@@ -58,14 +58,9 @@ const Engines = () => {
                   {lastMeasurement
                     ? moment(lastMeasurement.date).format('DD/MM/YYYY')
                     : 'Loading...'}
-		</Text>
+                </Text>
               </Box>
-              <Text
-                flex="1"
-                color={Colors.azure}
-                fontSize={ms(15)}
-                fontWeight="bold"
-              >
+              <Text flex="1" color={Colors.azure} fontSize={ms(15)} bold>
                 {lastMeasurement
                   ? `${formatNumber(lastMeasurement.value, 0, ' ')}h`
                   : 'Loading...'}
@@ -108,59 +103,52 @@ const Engines = () => {
         }
         showsVerticalScrollIndicator={false}
       >
-        <Text
-          color={Colors.azure}
-          fontSize={ms(20)}
-          fontWeight="bold"
-          mb={ms(15)}
-        >
+        <Text color={Colors.azure} fontSize={ms(20)} bold mb={ms(15)}>
           Engines
         </Text>
-        {
-          vesselZones.length > 0 ? (
-            vesselZones.map((engine: any, index: number) => {
-              const groupByPart = Object.values(
-                engine.data.reduce((acc: any, item) => {
-                  const part = item.name
-                  if (!acc[part])
-                    acc[part] = {
-                      part: part,
-                      data: [],
-                    }
-                  acc[part].data.push(item)
-                  return acc
-                }, {})
-              )
-              return (
+        {vesselZones.length > 0 ? (
+          vesselZones.map((engine: any, index: number) => {
+            const groupByPart = Object.values(
+              engine.data.reduce((acc: any, item) => {
+                const part = item.name
+                if (!acc[part])
+                  acc[part] = {
+                    part: part,
+                    data: [],
+                  }
+                acc[part].data.push(item)
+                return acc
+              }, {})
+            )
+            return (
+              <Box
+                key={index}
+                borderRadius={ms(5)}
+                borderWidth={1}
+                borderColor={Colors.border}
+                mb={ms(25)}
+              >
+                {/* Engine Header */}
                 <Box
-                  key={index}
-                  borderRadius={ms(5)}
-                  borderWidth={1}
-                  borderColor={Colors.border}
-                  mb={ms(25)}
+                  backgroundColor={Colors.border}
+                  px={ms(16)}
+                  py={ms(10)}
+                  justifyContent="center"
                 >
-                  {/* Engine Header */}
-                  <Box
-                    backgroundColor={Colors.border}
-                    px={ms(16)}
-                    py={ms(10)}
-                    justifyContent="center"
-                  >
-                    <Text color={Colors.azure} fontWeight="medium">
-                      {_.startCase(_.toLower(engine.zones))}
-                    </Text>
-                  </Box>
-
-                  {groupByPart.map((partType: any, index: number) =>
-                    renderEngineList(partType, index)
-                  )}
+                  <Text color={Colors.azure} fontWeight="medium">
+                    {_.startCase(_.toLower(engine.zones))}
+                  </Text>
                 </Box>
-              )
-            })
-          ) : (
-            <LoadingAnimated />
-          )
-        }
+
+                {groupByPart.map((partType: any, index: number) =>
+                  renderEngineList(partType, index)
+                )}
+              </Box>
+            )
+          })
+        ) : (
+          <LoadingAnimated />
+        )}
       </ScrollView>
     </Box>
   )

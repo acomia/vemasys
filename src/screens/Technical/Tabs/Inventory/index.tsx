@@ -132,10 +132,10 @@ const Inventory = () => {
 
   const renderInventoryListHeaderSection = () => (
     <HStack mt={ms(20)}>
-      <Text flex="1" fontSize={ms(16)} fontWeight="bold" color={Colors.text}>
+      <Text flex="1" fontSize={ms(16)} bold color={Colors.text}>
         Name
       </Text>
-      <Text fontSize={ms(16)} fontWeight="bold" color={Colors.text} mr={ms(30)}>
+      <Text fontSize={ms(16)} bold color={Colors.text} mr={ms(30)}>
         Stock
       </Text>
     </HStack>
@@ -193,7 +193,7 @@ const Inventory = () => {
           <HStack flex="1" justifyContent="space-evenly">
             {renderStatusIcon(item)}
             <Text
-              fontWeight="bold"
+              bold
               color={
                 item.warningThreshold && item.quantity === 0
                   ? Colors.danger
@@ -320,7 +320,7 @@ const Inventory = () => {
             ListEmptyComponent={() => (
               <Text
                 fontSize={ms(16)}
-                fontWeight="bold"
+                bold
                 color={Colors.azure}
                 mt={ms(20)}
                 textAlign="center"
@@ -339,15 +339,10 @@ const Inventory = () => {
           <Modal.Content ml="auto" mr={0} minH="100%" maxH="100%">
             <Modal.Body>
               <Box flex="1">
-                <Text fontSize={ms(26)} fontWeight="bold" color={Colors.azure}>
+                <Text fontSize={ms(26)} bold color={Colors.azure}>
                   Filter
                 </Text>
-                <Text
-                  fontSize={ms(20)}
-                  fontWeight="bold"
-                  color={Colors.azure}
-                  mt={ms(20)}
-                >
+                <Text fontSize={ms(20)} bold color={Colors.azure} mt={ms(20)}>
                   Type
                 </Text>
                 <HStack flexWrap="wrap" mt={ms(10)}>
@@ -399,7 +394,7 @@ const Inventory = () => {
                 keyboardType="number-pad"
                 height={ms(40)}
                 fontSize={ms(15)}
-                fontWeight="bold"
+                bold
                 value={quantity}
                 onChangeText={e => setQuantity(e)}
               />

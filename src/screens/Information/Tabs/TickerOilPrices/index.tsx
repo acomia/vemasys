@@ -53,12 +53,7 @@ const TickerOilPrices = () => {
             py={ms(10)}
             alignItems="center"
           >
-            <Text
-              flex="1"
-              color={Colors.azure}
-              fontWeight="bold"
-              fontSize={ms(16)}
-            >
+            <Text flex="1" color={Colors.azure} bold fontSize={ms(16)}>
               {item?.entity?.alias}
             </Text>
           </HStack>
@@ -72,7 +67,7 @@ const TickerOilPrices = () => {
               <Text color={Colors.disabled} fontWeight="medium">
                 Date
               </Text>
-              <Text color={Colors.text} fontWeight="bold">
+              <Text color={Colors.text} bold>
                 {moment(item?.date).format('DD MMM YYYY')}
               </Text>
             </Box>
@@ -86,7 +81,7 @@ const TickerOilPrices = () => {
                     ? Colors.secondary
                     : Colors.danger
                 }
-                fontWeight="bold"
+                bold
               >
                 {item?.price}
               </Text>
@@ -107,7 +102,7 @@ const TickerOilPrices = () => {
 
   return (
     <Box flex="1" bg={Colors.white} px={ms(12)} py={ms(20)}>
-      <Text fontWeight="bold" fontSize={ms(20)} color={Colors.azure}>
+      <Text bold fontSize={ms(20)} color={Colors.azure}>
         Ticker oil prices
       </Text>
 

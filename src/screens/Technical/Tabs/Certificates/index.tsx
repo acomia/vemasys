@@ -72,12 +72,7 @@ const Certificates = () => {
         py={ms(20)}
         bg={Colors.white}
       >
-        <Text
-          fontSize={ms(20)}
-          fontWeight="bold"
-          color={Colors.azure}
-          mb={ms(15)}
-        >
+        <Text fontSize={ms(20)} bold color={Colors.azure} mb={ms(15)}>
           Overview
         </Text>
         <HStack
@@ -114,11 +109,7 @@ const Certificates = () => {
                       source={certCard.icon}
                       mb={ms(15)}
                     />
-                    <Text
-                      fontSize={ms(22)}
-                      fontWeight="bold"
-                      color={Colors.text}
-                    >
+                    <Text fontSize={ms(22)} bold color={Colors.text}>
                       {certCard.count}
                     </Text>
                     <Text fontWeight="medium" color={Colors.text}>

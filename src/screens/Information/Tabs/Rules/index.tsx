@@ -92,7 +92,7 @@ const Rules = () => {
   const renderEmpty = () => (
     <Text
       fontSize={ms(15)}
-      fontWeight="bold"
+      bold
       textAlign="center"
       color={Colors.text}
       mt={ms(10)}
@@ -138,15 +138,10 @@ const Rules = () => {
           onChangeText={e => onSearchPegel(e)}
         />
         <HStack mt={ms(20)} alignItems="center" px={ms(10)}>
-          <Text
-            flex="1"
-            fontSize={ms(16)}
-            fontWeight="bold"
-            color={Colors.text}
-          >
+          <Text flex="1" fontSize={ms(16)} bold color={Colors.text}>
             Details
           </Text>
-          <Text fontSize={ms(16)} fontWeight="bold" color={Colors.text}>
+          <Text fontSize={ms(16)} bold color={Colors.text}>
             Actions
           </Text>
         </HStack>

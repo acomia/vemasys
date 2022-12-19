@@ -88,7 +88,7 @@ const Pegels = () => {
         />
         {pegel?.lastMeasurement && pegel?.lastMeasurement.measureValue ? (
           <Text
-            fontWeight="bold"
+            bold
             color={
               pegel.lastMeasurement && pegel.secondToLastMeasurement
                 ? pegel?.lastMeasurement?.measureValue -
@@ -102,7 +102,7 @@ const Pegels = () => {
             {Math.trunc(pegel.lastMeasurement.measureValue)} cm
           </Text>
         ) : (
-          <Text fontWeight="bold">N/A</Text>
+          <Text bold>N/A</Text>
         )}
       </HStack>
     </HStack>
@@ -115,12 +115,7 @@ const Pegels = () => {
   const renderPegels = () => {
     return pegelsData?.map((river: any, index: number) => (
       <Box key={`river-${index}`} mt={ms(20)}>
-        <Text
-          fontSize={ms(16)}
-          fontWeight="bold"
-          color={Colors.text}
-          ml={ms(10)}
-        >
+        <Text fontSize={ms(16)} bold color={Colors.text} ml={ms(10)}>
           {river?.riverName}
         </Text>
         <Divider mt={ms(5)} mb={ms(15)} />
@@ -135,7 +130,7 @@ const Pegels = () => {
   const renderEmpty = () => (
     <Text
       fontSize={ms(15)}
-      fontWeight="bold"
+      bold
       textAlign="center"
       color={Colors.text}
       mt={ms(10)}
@@ -195,15 +190,10 @@ const Pegels = () => {
         showsVerticalScrollIndicator={false}
       >
         <HStack mt={ms(10)} alignItems="center" px={ms(10)}>
-          <Text
-            flex="1"
-            fontSize={ms(16)}
-            fontWeight="bold"
-            color={Colors.text}
-          >
+          <Text flex="1" fontSize={ms(16)} bold color={Colors.text}>
             Details
           </Text>
-          <Text fontSize={ms(16)} fontWeight="bold" color={Colors.text}>
+          <Text fontSize={ms(16)} bold color={Colors.text}>
             Level
           </Text>
         </HStack>
