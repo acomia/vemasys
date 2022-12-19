@@ -48,7 +48,7 @@ export default function BunkeringDetails({route, navigation}: Props) {
   return (
     <Box flex="1" bg={Colors.white}>
       <Box px={ms(12)} py={ms(20)}>
-        <Text fontSize={ms(20)} fontWeight="bold" color={Colors.azure}>
+        <Text fontSize={ms(20)} bold color={Colors.azure}>
           Details
         </Text>
         <Divider my={ms(15)} />
@@ -59,19 +59,14 @@ export default function BunkeringDetails({route, navigation}: Props) {
           formatNumber(bunk.value, 0, ' '),
           'L'
         )}
-        <Text
-          fontSize={ms(20)}
-          fontWeight="bold"
-          color={Colors.azure}
-          mt={ms(15)}
-        >
+        <Text fontSize={ms(20)} bold color={Colors.azure} mt={ms(15)}>
           Documents
         </Text>
         <HStack mt={ms(10)} justifyContent="space-between">
-          <Text fontSize={ms(16)} fontWeight="bold" color={Colors.text}>
+          <Text fontSize={ms(16)} bold color={Colors.text}>
             File
           </Text>
-          <Text fontSize={ms(16)} fontWeight="bold" color={Colors.text}>
+          <Text fontSize={ms(16)} bold color={Colors.text}>
             Actions
           </Text>
         </HStack>

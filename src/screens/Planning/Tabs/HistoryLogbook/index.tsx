@@ -140,7 +140,7 @@ const HistoryLogbook = ({routeIndex}: any) => {
             borderBottomStyle={'solid'}
             mb={ms(15)}
           >
-            <Text fontWeight="bold" fontSize={ms(16)} mb={ms(5)}>
+            <Text bold fontSize={ms(16)} mb={ms(5)}>
               {moment(currentDate).format('D MMM YYYY')}
             </Text>
           </Box>
@@ -167,7 +167,7 @@ const HistoryLogbook = ({routeIndex}: any) => {
               <Text
                 color={navigationLog.isActive ? Colors.white : Colors.text}
                 fontSize={ms(15)}
-                fontWeight="bold"
+                bold
               >
                 {formatLocationLabel(navigationLog?.location)}
               </Text>
@@ -200,7 +200,7 @@ const HistoryLogbook = ({routeIndex}: any) => {
                                 <Text
                                   key={i}
                                   color={Colors.highlighted_text}
-                                  fontWeight="bold"
+                                  bold
                                 >
                                   {`${Math.ceil(cargo.tonnage)} MT - ${
                                     cargo.type ? cargo.type.nameEn : 'Unknown'
@@ -218,7 +218,7 @@ const HistoryLogbook = ({routeIndex}: any) => {
                         </Box>
                       )}
                     <HStack alignItems="center" mt={ms(5)}>
-                      <Text color={Colors.highlighted_text} fontWeight="bold">
+                      <Text color={Colors.highlighted_text} bold>
                         {calculateTotalOut(navigationLog)} MT
                       </Text>
                       <Image
@@ -227,7 +227,7 @@ const HistoryLogbook = ({routeIndex}: any) => {
                         mx={ms(5)}
                         resizeMode="contain"
                       />
-                      <Text color={Colors.highlighted_text} fontWeight="bold">
+                      <Text color={Colors.highlighted_text} bold>
                         {calculateTotalIn(navigationLog)} MT
                       </Text>
                     </HStack>

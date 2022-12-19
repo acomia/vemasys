@@ -30,7 +30,7 @@ const Overview = () => {
         overflow="hidden"
       >
         <Box p={ms(15)} bg={Colors.border}>
-          <Text fontSize={ms(16)} fontWeight="bold" color={Colors.azure}>
+          <Text fontSize={ms(16)} bold color={Colors.azure}>
             {title}
           </Text>
         </Box>
@@ -72,7 +72,7 @@ const Overview = () => {
             startColor={Colors.light}
           >
             <Text
-              fontWeight="bold"
+              bold
               textAlign="right"
               color={
                 status?.toLowerCase() == 'paid' ||
@@ -252,7 +252,7 @@ const Overview = () => {
               isLoaded={!isFinancialLoading}
             >
               <Text
-                fontWeight="bold"
+                bold
                 fontSize={ms(18)}
                 textAlign="right"
                 color={Colors.white}

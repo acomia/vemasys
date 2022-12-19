@@ -61,7 +61,7 @@ export default function Formations({navigation}: Props) {
         bg="#fff"
         shadow={1}
       >
-        <Text fontWeight="bold" color="#23272F">
+        <Text bold color="#23272F">
           {name}
         </Text>
         <TouchableOpacity onPress={() => onUnlinkPress(item)}>
@@ -121,7 +121,7 @@ export default function Formations({navigation}: Props) {
         ListEmptyComponent={() => (
           <Text
             fontSize={ms(16)}
-            fontWeight="bold"
+            bold
             textAlign="center"
             color={Colors.azure}
             mt={ms(20)}

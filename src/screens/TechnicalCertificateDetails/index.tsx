@@ -133,9 +133,9 @@ const TechnicalCertificateDetails = ({navigation, route}: Props) => {
             <Text color={Colors.disabled} fontWeight="medium">
               Validity Period
             </Text>
-            <Text color={Colors.secondary} fontWeight="bold">
+            <Text color={Colors.secondary} bold>
               {moment(certificate?.startDate).format('DD MMM YYYY')} -{' '}
-              <Text color={Colors.danger} fontWeight="bold">
+              <Text color={Colors.danger} bold>
                 {certificate?.endDate
                   ? moment(certificate?.endDate).format('DD MMM YYYY')
                   : 'Never'}
@@ -147,13 +147,13 @@ const TechnicalCertificateDetails = ({navigation, route}: Props) => {
             <Text color={Colors.disabled} fontWeight="medium">
               Certificate type
             </Text>
-            <Text color={Colors.text} fontSize={ms(16)} fontWeight="bold">
+            <Text color={Colors.text} fontSize={ms(16)} bold>
               {certificate?.type?.title}
             </Text>
           </Box>
           <Divider my={ms(5)} />
           <Box p={ms(10)}>
-            <Text color={Colors.text} fontSize={ms(16)} fontWeight="bold">
+            <Text color={Colors.text} fontSize={ms(16)} bold>
               Description
             </Text>
             <Text color={Colors.text} fontSize={ms(13)}>
@@ -162,7 +162,7 @@ const TechnicalCertificateDetails = ({navigation, route}: Props) => {
           </Box>
         </Box>
         <HStack alignItems="center" mt={ms(30)}>
-          <Text fontSize={ms(20)} fontWeight="bold" color={Colors.azure}>
+          <Text fontSize={ms(20)} bold color={Colors.azure}>
             Documents
           </Text>
           {certificate?.fileGroup?.files?.length > 0 ? (
@@ -173,7 +173,7 @@ const TechnicalCertificateDetails = ({navigation, route}: Props) => {
               height={ms(22)}
               ml={ms(10)}
               borderRadius={ms(20)}
-              fontWeight="bold"
+              bold
               textAlign="center"
             >
               {certificate?.fileGroup?.files?.length}
@@ -181,10 +181,10 @@ const TechnicalCertificateDetails = ({navigation, route}: Props) => {
           ) : null}
         </HStack>
         <HStack mt={ms(10)} justifyContent="space-between">
-          <Text fontSize={ms(16)} fontWeight="bold" color={Colors.text}>
+          <Text fontSize={ms(16)} bold color={Colors.text}>
             File
           </Text>
-          <Text fontSize={ms(16)} fontWeight="bold" color={Colors.text}>
+          <Text fontSize={ms(16)} bold color={Colors.text}>
             Actions
           </Text>
         </HStack>

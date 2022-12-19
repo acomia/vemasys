@@ -127,7 +127,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
     >
       {/* Title header */}
       <Box backgroundColor={Colors.border} px={ms(16)} py={ms(10)}>
-        <Text color={Colors.azure} fontWeight="bold" fontSize={ms(15)}>
+        <Text color={Colors.azure} bold fontSize={ms(15)}>
           {task?.title}
         </Text>
       </Box>
@@ -138,7 +138,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
           <Text fontWeight="medium" color={Colors.disabled}>
             Task type
           </Text>
-          <Text fontSize={ms(16)} fontWeight="bold" color={Colors.text}>
+          <Text fontSize={ms(16)} bold color={Colors.text}>
             Technical Task
           </Text>
         </Box>
@@ -178,7 +178,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
           <Text fontWeight="medium" color={Colors.disabled}>
             Assigned to
           </Text>
-          <Text fontSize={ms(15)} fontWeight="bold" color={Colors.danger}>
+          <Text fontSize={ms(15)} bold color={Colors.danger}>
             No staff member assigned to this task
           </Text>
         </Box>
@@ -196,7 +196,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
     >
       {/* Vessel Part header */}
       <Box backgroundColor={Colors.border} px={ms(16)} py={ms(10)}>
-        <Text color={Colors.azure} fontWeight="bold" fontSize={ms(15)}>
+        <Text color={Colors.azure} bold fontSize={ms(15)}>
           {task?.vesselPart?.name}
         </Text>
       </Box>
@@ -205,7 +205,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
         <Text flex="1" fontWeight="medium" color={Colors.disabled}>
           Type
         </Text>
-        <Text fontWeight="bold" color={Colors.text}>
+        <Text bold color={Colors.text}>
           {task?.vesselPart?.type}
         </Text>
       </HStack>
@@ -233,7 +233,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
             }}
           />
           <Box ml={ms(10)}>
-            <Text fontWeight="bold">
+            <Text bold>
               {comment?.user ? comment?.user?.firstname : ''}{' '}
               {comment?.user ? comment?.user?.lastname : ''}
             </Text>
@@ -375,19 +375,14 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
         </Select> */}
         {renderTaskSection()}
         {/* Vessel Part Section */}
-        <Text
-          mt={ms(30)}
-          fontSize={ms(16)}
-          fontWeight="bold"
-          color={Colors.text}
-        >
+        <Text mt={ms(30)} fontSize={ms(16)} bold color={Colors.text}>
           Concerned Vessel Part
         </Text>
         {task?.vesselPart ? renderVesselPartSection() : null}
         {/* End of Vessel Part Section */}
         {/* Comment Section */}
         <HStack alignItems="center" mt={ms(30)}>
-          <Text fontSize={ms(16)} fontWeight="bold" color={Colors.text}>
+          <Text fontSize={ms(16)} bold color={Colors.text}>
             Comments
           </Text>
           {task?.comments?.length > 0 ? (
@@ -398,7 +393,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
               height={ms(22)}
               ml={ms(10)}
               borderRadius={ms(20)}
-              fontWeight="bold"
+              bold
               textAlign="center"
             >
               {task?.comments?.length}
@@ -430,7 +425,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
         {/* End of Comment Section */}
         {/* Documents Section */}
         <HStack alignItems="center" mt={ms(30)}>
-          <Text fontSize={ms(16)} fontWeight="bold" color={Colors.text}>
+          <Text fontSize={ms(16)} bold color={Colors.text}>
             Documents
           </Text>
           {task?.fileGroup?.files?.length > 0 ? (
@@ -441,7 +436,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
               height={ms(22)}
               ml={ms(10)}
               borderRadius={ms(20)}
-              fontWeight="bold"
+              bold
               textAlign="center"
             >
               {task?.fileGroup?.files?.length}
@@ -449,10 +444,10 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
           ) : null}
         </HStack>
         <HStack mt={ms(10)} justifyContent="space-between">
-          <Text fontSize={ms(16)} fontWeight="bold" color={Colors.text}>
+          <Text fontSize={ms(16)} bold color={Colors.text}>
             File
           </Text>
-          <Text fontSize={ms(16)} fontWeight="bold" color={Colors.text}>
+          <Text fontSize={ms(16)} bold color={Colors.text}>
             Actions
           </Text>
         </HStack>

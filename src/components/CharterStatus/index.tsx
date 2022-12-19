@@ -7,7 +7,7 @@ import {
   CHARTER_ORDERER_STATUS_COMPLETED,
   CHARTER_CONTRACTOR_STATUS_ARCHIVED,
   ENTITY_TYPE_EXPLOITATION_VESSEL,
-  ENTITY_TYPE_EXPLOITATION_GROUP
+  ENTITY_TYPE_EXPLOITATION_GROUP,
 } from '@bluecentury/constants'
 import {Animated, Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
@@ -112,7 +112,7 @@ export const CharterStatus = ({entityType, charter}: any) => {
       {status === 'new' ? null : (
         <Badge style={[styles.badge, styles[`${status}Status`]]}>
           <Text
-            fontWeight="bold"
+            bold
             fontSize={ms(12)}
             color={status === 'draft' ? Colors.azure : Colors.white}
           >
@@ -126,44 +126,44 @@ export const CharterStatus = ({entityType, charter}: any) => {
 
 const styles = StyleSheet.create({
   draftStatus: {
-    backgroundColor: Colors.border
+    backgroundColor: Colors.border,
   },
   plannedStatus: {
-    backgroundColor: Colors.border
+    backgroundColor: Colors.border,
   },
   inboxStatus: {
-    backgroundColor: Colors.border
+    backgroundColor: Colors.border,
   },
   submittedStatus: {
-    backgroundColor: Colors.border
+    backgroundColor: Colors.border,
   },
   newStatus: {
-    backgroundColor: Colors.highlighted_text
+    backgroundColor: Colors.highlighted_text,
   },
   en_routeStatus: {
-    backgroundColor: Colors.azure
+    backgroundColor: Colors.azure,
   },
   loaded_en_routeStatus: {
-    backgroundColor: Colors.azure
+    backgroundColor: Colors.azure,
   },
   loadingStatus: {
-    backgroundColor: Colors.azure
+    backgroundColor: Colors.azure,
   },
   unloadingStatus: {
-    backgroundColor: Colors.azure
+    backgroundColor: Colors.azure,
   },
   completedStatus: {
-    backgroundColor: Colors.secondary
+    backgroundColor: Colors.secondary,
   },
   acceptedStatus: {
-    backgroundColor: Colors.highlighted_text
+    backgroundColor: Colors.highlighted_text,
   },
   refusedStatus: {
-    backgroundColor: Colors.danger
+    backgroundColor: Colors.danger,
   },
   badge: {
     borderRadius: 5,
     width: 102,
-    justifyContent: 'center'
-  }
+    justifyContent: 'center',
+  },
 })

@@ -80,7 +80,7 @@ const Me = () => {
         // mx={ms(-4)}
         p={ms(10)}
       >
-        <Text fontSize={ms(20)} fontWeight="bold" color={Colors.azure}>
+        <Text fontSize={ms(20)} bold color={Colors.azure}>
           {moment(currentMonth).format('MMM yyyy')}
         </Text>
         <HStack>

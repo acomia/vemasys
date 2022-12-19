@@ -61,7 +61,7 @@ export default function Notification() {
     return (
       <Text>
         {notification[0] ? notification[0] : ''}
-        <Text fontWeight="bold" color="#29B7EF">
+        <Text bold color="#29B7EF">
           {subject}
         </Text>
         {notification[1] ? notification[1] : ''}

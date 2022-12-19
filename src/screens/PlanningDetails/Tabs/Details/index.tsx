@@ -253,8 +253,8 @@ const Details = () => {
           bg={
             _.isNull(
               dates.terminalApprovedDeparture ||
-              dates.captainDatetimeEta ||
-              dates.announcedDatetime
+                dates.captainDatetimeEta ||
+                dates.announcedDatetime
             )
               ? Colors.disabled
               : Colors.primary
@@ -264,8 +264,8 @@ const Details = () => {
           disabled={
             _.isNull(
               dates.terminalApprovedDeparture ||
-              dates.captainDatetimeEta ||
-              dates.announcedDatetime
+                dates.captainDatetimeEta ||
+                dates.announcedDatetime
             )
               ? true
               : false
@@ -320,7 +320,7 @@ const Details = () => {
               }}
             />
             <Box ml={ms(10)}>
-              <Text fontWeight="bold">
+              <Text bold>
                 {comment?.user ? comment?.user?.firstname : ''}{' '}
                 {comment?.user ? comment?.user?.lastname : ''}
               </Text>
@@ -380,7 +380,7 @@ const Details = () => {
         bg={Colors.white}
         shadow={3}
       >
-        <Text fontWeight="bold">{contact.name}</Text>
+        <Text bold>{contact.name}</Text>
         <Image
           alt="charter-contact"
           source={Icons.charter_contact}
@@ -455,7 +455,7 @@ const Details = () => {
         py={ms(20)}
       >
         {/* Details Section */}
-        <Text fontSize={ms(20)} fontWeight="bold" color={Colors.azure}>
+        <Text fontSize={ms(20)} bold color={Colors.azure}>
           Details
         </Text>
         {renderDetails()}
@@ -464,12 +464,7 @@ const Details = () => {
         {/* Actions Section */}
         {activeActions?.length > 0 ? (
           <>
-            <Text
-              fontSize={ms(20)}
-              fontWeight="bold"
-              color={Colors.azure}
-              mt={ms(20)}
-            >
+            <Text fontSize={ms(20)} bold color={Colors.azure} mt={ms(20)}>
               Actions
             </Text>
             {activeActions.map((action, index) => (
@@ -505,11 +500,7 @@ const Details = () => {
                   />
                   <Box flex="1">
                     <HStack alignItems="center">
-                      <Text
-                        fontWeight="bold"
-                        fontSize={ms(15)}
-                        color={Colors.text}
-                      >
+                      <Text bold fontSize={ms(15)} color={Colors.text}>
                         {titleCase(action?.type)}
                       </Text>
                     </HStack>
@@ -543,12 +534,7 @@ const Details = () => {
         {/* Contact Information Section */}
         {isUnknownLocation ? null : (
           <>
-            <Text
-              fontSize={ms(20)}
-              fontWeight="bold"
-              color={Colors.azure}
-              mt={ms(20)}
-            >
+            <Text fontSize={ms(20)} bold color={Colors.azure} mt={ms(20)}>
               Contact Information
             </Text>
             <Box my={ms(15)}>
@@ -576,7 +562,7 @@ const Details = () => {
 
         {/* Comments Section */}
         <HStack alignItems="center" mt={ms(20)}>
-          <Text fontSize={ms(20)} fontWeight="bold" color={Colors.azure}>
+          <Text fontSize={ms(20)} bold color={Colors.azure}>
             Comments
           </Text>
           {navigationLogComments?.length > 0 ? (
@@ -587,7 +573,7 @@ const Details = () => {
               height={ms(22)}
               ml={ms(10)}
             >
-              <Text color={Colors.white} fontWeight="bold" textAlign="center">
+              <Text color={Colors.white} bold textAlign="center">
                 {navigationLogComments?.length}
               </Text>
             </Box>

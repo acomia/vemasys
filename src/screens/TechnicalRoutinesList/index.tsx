@@ -125,7 +125,7 @@ const TechnicalRoutinesList = ({navigation, route}: Props) => {
                       <Text
                         flex="1"
                         color={Colors.azure}
-                        fontWeight="bold"
+                        bold
                         fontSize={ms(15)}
                       >
                         {routine?.title}

@@ -8,7 +8,7 @@ import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
 import {
   ENTITY_TYPE_EXPLOITATION_GROUP,
-  informationTabs
+  informationTabs,
 } from '@bluecentury/constants'
 import {FleetHeader} from '@bluecentury/components'
 import {useEntity} from '@bluecentury/stores'
@@ -22,7 +22,7 @@ export default function Financial() {
   const renderScene = SceneMap({
     pegels: Pegels,
     rules: Rules,
-    tickerOilPrices: TickerOilPrices
+    tickerOilPrices: TickerOilPrices,
   })
 
   const LazyPlaceholder = ({route}) => (
@@ -41,15 +41,15 @@ export default function Financial() {
         height: 3,
         borderRadius: 3,
         width: ms(60),
-        marginLeft: 30
+        marginLeft: 30,
       }}
       style={{backgroundColor: Colors.primary}}
       tabStyle={{
         width: ms(120),
-        height: ms(40)
+        height: ms(40),
       }}
       renderLabel={({route, color}) => (
-        <Text color={color} fontWeight="bold" textAlign="justify">
+        <Text color={color} bold textAlign="justify">
           {route.title}
         </Text>
       )}

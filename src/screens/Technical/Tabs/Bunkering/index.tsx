@@ -45,7 +45,7 @@ const Bunkering = () => {
         }
         showsVerticalScrollIndicator={false}
       >
-        <Text color={Colors.azure} fontSize={ms(20)} fontWeight="bold">
+        <Text color={Colors.azure} fontSize={ms(20)} bold>
           Gasoil
         </Text>
         {/* Gasoil Card */}
@@ -60,7 +60,7 @@ const Bunkering = () => {
         <Text
           color={Colors.azure}
           fontSize={ms(20)}
-          fontWeight="bold"
+          bold
           mt={ms(20)}
           mb={ms(10)}
         >

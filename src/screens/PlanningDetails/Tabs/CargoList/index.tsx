@@ -92,14 +92,14 @@ const CargoList = () => {
         px={ms(12)}
         py={ms(20)}
       >
-        <Text fontSize={ms(20)} fontWeight="bold" color={Colors.azure}>
+        <Text fontSize={ms(20)} bold color={Colors.azure}>
           Cargo
         </Text>
         <HStack mt={ms(10)} justifyContent="flex-end">
-          {/* <Text fontSize={ms(16)} fontWeight="bold" color={Colors.text}>
+          {/* <Text fontSize={ms(16)} bold color={Colors.text}>
             Inventory
           </Text> */}
-          <Text fontSize={ms(16)} fontWeight="bold" color={Colors.text}>
+          <Text fontSize={ms(16)} bold color={Colors.text}>
             Actions
           </Text>
         </HStack>

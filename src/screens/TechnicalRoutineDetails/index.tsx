@@ -52,7 +52,7 @@ const TechnicalRoutineDetails = ({navigation, route}: Props) => {
     >
       {/* Title header */}
       <Box backgroundColor={Colors.border} px={ms(16)} py={ms(10)}>
-        <Text color={Colors.azure} fontWeight="bold" fontSize={ms(15)}>
+        <Text color={Colors.azure} bold fontSize={ms(15)}>
           {routineDetails?.title}
         </Text>
       </Box>
@@ -169,7 +169,7 @@ const TechnicalRoutineDetails = ({navigation, route}: Props) => {
             }}
           />
           <Box ml={ms(10)}>
-            <Text fontWeight="bold">
+            <Text bold>
               {comment?.user ? comment?.user?.firstname : ''}{' '}
               {comment?.user ? comment?.user?.lastname : ''}
             </Text>

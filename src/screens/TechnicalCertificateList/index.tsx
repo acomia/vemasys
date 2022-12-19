@@ -8,7 +8,7 @@ import {
   HStack,
   Icon,
   Input,
-  Text
+  Text,
 } from 'native-base'
 import moment from 'moment'
 import {Shadow} from 'react-native-shadow-2'
@@ -49,7 +49,7 @@ const TechnicalCertificareList = ({navigation, route}: Props) => {
         activeOpacity={0.6}
         onPress={() =>
           navigation.navigate('TechnicalCertificateDetails', {
-            certificate: item
+            certificate: item,
           })
         }
       >
@@ -98,9 +98,9 @@ const TechnicalCertificareList = ({navigation, route}: Props) => {
               <Text color={Colors.disabled} fontWeight="medium">
                 Validity Period
               </Text>
-              <Text color={Colors.secondary} fontWeight="bold">
+              <Text color={Colors.secondary} bold>
                 {moment(item?.startDate).format('DD MMM YYYY')} -{' '}
-                <Text color={Colors.danger} fontWeight="bold">
+                <Text color={Colors.danger} bold>
                   {item?.endDate
                     ? moment(item?.endDate).format('DD MMM YYYY')
                     : 'Never'}
@@ -136,7 +136,7 @@ const TechnicalCertificareList = ({navigation, route}: Props) => {
     <Box>
       <Input
         w={{
-          base: '100%'
+          base: '100%',
         }}
         backgroundColor="#F7F7F7"
         InputLeftElement={
@@ -157,7 +157,7 @@ const TechnicalCertificareList = ({navigation, route}: Props) => {
         onChangeText={e => onSearchCertificate(e)}
       />
 
-      <Text fontSize={ms(20)} fontWeight="bold" color={Colors.azure}>
+      <Text fontSize={ms(20)} bold color={Colors.azure}>
         Certificates
       </Text>
       <Divider my={ms(10)} />
@@ -190,7 +190,7 @@ const TechnicalCertificareList = ({navigation, route}: Props) => {
           ListEmptyComponent={() => (
             <Text
               fontSize={ms(20)}
-              fontWeight="bold"
+              bold
               color={Colors.azure}
               mt={ms(20)}
               textAlign="center"
@@ -203,7 +203,7 @@ const TechnicalCertificareList = ({navigation, route}: Props) => {
       <Box bg={Colors.white}>
         <Shadow
           viewStyle={{
-            width: '100%'
+            width: '100%',
           }}
         >
           <Button

@@ -23,9 +23,9 @@ const Scan = () => {
         PermissionsAndroid.PERMISSIONS.CAMERA
       )
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        console.log("You can use the camera")
+        console.log('You can use the camera')
       } else {
-        console.log("Camera permission denied")
+        console.log('Camera permission denied')
       }
     } catch (err) {
       console.warn(err)
@@ -102,7 +102,7 @@ const Scan = () => {
 
   return (
     <Box flex="1" bg={Colors.white} px={ms(12)} py={ms(20)}>
-      <Text fontSize={ms(20)} fontWeight="bold" color={Colors.azure}>
+      <Text fontSize={ms(20)} bold color={Colors.azure}>
         Scan Invoice
       </Text>
       <Image
@@ -111,7 +111,7 @@ const Scan = () => {
         style={{
           width: 224,
           height: 229,
-          alignSelf: 'center'
+          alignSelf: 'center',
         }}
         my={ms(20)}
         resizeMode="contain"
@@ -125,16 +125,12 @@ const Scan = () => {
           color: '#ADADAD',
           fontWeight: '700',
           marginVertical: 30,
-          textAlign: 'center'
+          textAlign: 'center',
         }}
       >
         or
       </Text>
-      <Button
-        bg={Colors.primary}
-        size="md"
-        onPress={() => scanDocument()}
-      >
+      <Button bg={Colors.primary} size="md" onPress={() => scanDocument()}>
         Open camera
       </Button>
     </Box>
