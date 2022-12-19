@@ -1,5 +1,8 @@
 {
+  "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
   "editor.formatOnSave": true,
-  "editor.tabSize": 2,
-  "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
+  "editor.formatOnPaste": false,
+  "editor.formatOnType": false,
+  "editor.formatOnSaveMode": "file",
+  "editor.tabSize": 2
 }
