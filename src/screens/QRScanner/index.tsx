@@ -107,7 +107,7 @@ export default function QRScanner({navigation}: Props) {
       <Box position="absolute" w="100%" bottom="20" alignItems="center">
         <Button
           bg={Colors.primary}
-          w="40%"
+          w="180"
           mt={ms(20)}
           mb={ms(20)}
           onPress={() => navigation.goBack()}
