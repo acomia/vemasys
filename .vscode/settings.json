@@ -1,3 +1,5 @@
 {
-    "java.configuration.updateBuildConfiguration": "disabled"
+  "editor.formatOnSave": true,
+  "editor.tabSize": 2,
+  "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
 }
