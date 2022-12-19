@@ -15,6 +15,7 @@ export const NavigationLogType = ({navigationLog}: any) => {
       endActionDatetime,
       bulkCargo,
       endActionDate,
+      actionType,
     } = navigationLog
 
     const animatesIcon =
@@ -29,8 +30,8 @@ export const NavigationLogType = ({navigationLog}: any) => {
             alt="navlog-type-img"
             source={animatesIcon ? Animated.waiting : Icons.waiting}
             resizeMode="contain"
-            w={animatesIcon ? ms(50) : null}
-            h={animatesIcon ? ms(50) : null}
+            w={animatesIcon ? ms(48) : null}
+            h={animatesIcon ? ms(48) : null}
           />
         )
       case 'Berth':
@@ -39,8 +40,8 @@ export const NavigationLogType = ({navigationLog}: any) => {
             alt="navlog-type-img"
             source={animatesIcon ? Animated.waiting : Icons.waiting}
             resizeMode="contain"
-            w={animatesIcon ? ms(50) : null}
-            h={animatesIcon ? ms(50) : null}
+            w={animatesIcon ? ms(48) : null}
+            h={animatesIcon ? ms(48) : null}
           />
         )
       case 'Bridge':
@@ -49,8 +50,8 @@ export const NavigationLogType = ({navigationLog}: any) => {
             alt="navlog-type-img"
             source={animatesIcon ? Animated.bridge : Icons.bridge}
             resizeMode="contain"
-            w={animatesIcon ? ms(50) : null}
-            h={animatesIcon ? ms(50) : null}
+            w={animatesIcon ? ms(48) : null}
+            h={animatesIcon ? ms(48) : null}
           />
         )
       case 'Checkpoint':
@@ -59,8 +60,8 @@ export const NavigationLogType = ({navigationLog}: any) => {
             alt="navlog-type-img"
             source={animatesIcon ? Animated.checkpoint : Icons.checkpoint}
             resizeMode="contain"
-            w={animatesIcon ? ms(50) : null}
-            h={animatesIcon ? ms(50) : null}
+            w={animatesIcon ? ms(48) : null}
+            h={animatesIcon ? ms(48) : null}
           />
         )
       case 'Junction':
@@ -69,8 +70,8 @@ export const NavigationLogType = ({navigationLog}: any) => {
             alt="navlog-type-img"
             source={animatesIcon ? Animated.junction : Icons.junction}
             resizeMode="contain"
-            w={animatesIcon ? ms(50) : null}
-            h={animatesIcon ? ms(50) : null}
+            w={animatesIcon ? ms(48) : null}
+            h={animatesIcon ? ms(48) : null}
           />
         )
       case 'Sluice':
@@ -79,8 +80,8 @@ export const NavigationLogType = ({navigationLog}: any) => {
             alt="navlog-type-img"
             source={animatesIcon ? Animated.sluice : Icons.sluice}
             resizeMode="contain"
-            w={animatesIcon ? ms(50) : null}
-            h={animatesIcon ? ms(50) : null}
+            w={animatesIcon ? ms(48) : null}
+            h={animatesIcon ? ms(48) : null}
           />
         )
       case 'Terminal':
@@ -95,8 +96,19 @@ export const NavigationLogType = ({navigationLog}: any) => {
               alt="navlog-type-img"
               source={animatesIcon ? Animated.waiting : Icons.waiting}
               resizeMode="contain"
-              w={animatesIcon ? ms(50) : null}
-              h={animatesIcon ? ms(50) : null}
+              w={animatesIcon ? ms(48) : null}
+              h={animatesIcon ? ms(48) : null}
+            />
+          )
+        } else if (actionType === 'Cleaning') {
+          return (
+            <Image
+              alt="navlog-type-img"
+              source={animatesIcon ? Animated.cleaning : Icons.broom}
+              resizeMode="contain"
+              w={animatesIcon ? ms(48) : null}
+              h={animatesIcon ? ms(48) : null}
+              mb={animatesIcon ? -3 : 0}
             />
           )
         } else if (bulkCargo.some(cargo => cargo.isLoading === false)) {
@@ -105,8 +117,9 @@ export const NavigationLogType = ({navigationLog}: any) => {
               alt="navlog-type-img"
               source={animatesIcon ? Animated.nav_unloading : Icons.unloading}
               resizeMode="contain"
-              w={animatesIcon ? ms(50) : null}
-              h={animatesIcon ? ms(50) : null}
+              w={animatesIcon ? ms(48) : null}
+              h={animatesIcon ? ms(48) : null}
+              mb={animatesIcon ? -3 : 0}
             />
           )
         } else {
@@ -115,8 +128,9 @@ export const NavigationLogType = ({navigationLog}: any) => {
               alt="navlog-type-img"
               source={animatesIcon ? Animated.nav_loading : Icons.loading}
               resizeMode="contain"
-              w={animatesIcon ? ms(50) : null}
-              h={animatesIcon ? ms(50) : null}
+              w={animatesIcon ? ms(48) : null}
+              h={animatesIcon ? ms(48) : null}
+              mb={animatesIcon ? -3 : 0}
             />
           )
         }
