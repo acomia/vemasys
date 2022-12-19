@@ -1,8 +1,12 @@
 module.exports = {
   root: true,
-  extends: '@react-native-community',
+  extends: [
+    '@react-native-community',
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+  ],
   parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint'],
+  plugins: ['@typescript-eslint', 'prettier'],
   overrides: [
     {
       files: ['*.ts', '*.tsx', '*.js', '*.jsx'],
@@ -15,6 +19,19 @@ module.exports = {
         'react-hooks/exhaustive-deps': 'warn',
         curly: ['error', 'multi-line'],
         radix: 'off',
+        'react/jsx-sort-props': [
+          'error',
+          {
+            callbacksLast: true,
+            shorthandFirst: true,
+            shorthandLast: false,
+            multiline: 'first',
+            ignoreCase: false,
+            noSortAlphabetically: false,
+            reservedFirst: true,
+            locale: 'auto',
+          },
+        ],
       },
     },
   ],
