@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {RefreshControl, TouchableOpacity} from 'react-native'
+import {RefreshControl, TouchableOpacity, FlatList} from 'react-native'
 import {
   Avatar,
   Box,
@@ -82,6 +82,8 @@ const Details = () => {
         : null,
   })
 
+  const [viewImg, setViewImg] = useState(false)
+  const [selectedImg, setSelectedImg] = useState<ImageFile>({})
   const [selectedDate, setSelectedDate] = useState('')
   const [openDatePicker, setOpenDatePicker] = useState(false)
   const [activeActions, setActiveActions] = useState([])
@@ -127,6 +129,11 @@ const Details = () => {
     updateNavlogDatesMessage,
     isUpdateNavLogActionSuccess,
   ])
+
+  const onSelectImage = (image: ImageFile) => {
+    setViewImg(true)
+    setSelectedImg(image)
+  }
 
   const showToast = (text: string, res: string) => {
     toast.show({
@@ -246,8 +253,8 @@ const Details = () => {
           bg={
             _.isNull(
               dates.terminalApprovedDeparture ||
-                dates.captainDatetimeEta ||
-                dates.announcedDatetime
+              dates.captainDatetimeEta ||
+              dates.announcedDatetime
             )
               ? Colors.disabled
               : Colors.primary
@@ -257,8 +264,8 @@ const Details = () => {
           disabled={
             _.isNull(
               dates.terminalApprovedDeparture ||
-                dates.captainDatetimeEta ||
-                dates.announcedDatetime
+              dates.captainDatetimeEta ||
+              dates.announcedDatetime
             )
               ? true
               : false
@@ -272,6 +279,17 @@ const Details = () => {
   }
 
   const CommentCard = ({comment, commentDescription}) => {
+    let imgLinks: string[] = []
+    let getAttrFromString = (str: string) => {
+      let regex = /<img.*?src='(.*?)'/gi,
+        result,
+        res = []
+      while ((result = regex.exec(str))) {
+        res.push(result[1])
+      }
+      imgLinks = res
+    }
+    getAttrFromString(comment.description)
     return (
       <TouchableOpacity
         activeOpacity={0.6}
@@ -314,6 +332,35 @@ const Details = () => {
           <Text fontSize={ms(13)} mt={ms(5)}>
             {commentDescription}
           </Text>
+          {imgLinks.length > 0 ? (
+            <FlatList
+              keyExtractor={item => item}
+              scrollEventThrottle={16}
+              // maxH={ms(120)}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              data={imgLinks}
+              removeClippedSubviews={true}
+              renderItem={image => {
+                const file = {
+                  uri: image.item,
+                  fileName: image.item,
+                  type: 'image/jpeg',
+                }
+                return (
+                  <TouchableOpacity onPress={() => onSelectImage(file)}>
+                    <Image
+                      alt="file-upload"
+                      source={{uri: image.item}}
+                      w={ms(136)}
+                      h={ms(114)}
+                      mr={ms(10)}
+                    />
+                  </TouchableOpacity>
+                )
+              }}
+            />
+          ) : null}
         </Box>
       </TouchableOpacity>
     )
@@ -548,8 +595,7 @@ const Details = () => {
         </HStack>
 
         {navigationLogComments?.map((comment, index) => {
-          const filteredDescription = comment.description.replace(/(\\)/g, '')
-          const descriptionText = filteredDescription.match(/([^<br>]+)/)[0]
+          const descriptionText = comment.description.match(/^[^-<]*/)
           return (
             <CommentCard
               key={index}
@@ -624,6 +670,17 @@ const Details = () => {
           </Modal.Content>
         </Modal>
       </ScrollView>
+      <Modal isOpen={viewImg} size="full" onClose={() => setViewImg(false)}>
+        <Modal.Content>
+          <Image
+            alt="file-preview"
+            source={{uri: selectedImg.uri}}
+            resizeMode="contain"
+            w="100%"
+            h="100%"
+          />
+        </Modal.Content>
+      </Modal>
     </Box>
   )
 }
