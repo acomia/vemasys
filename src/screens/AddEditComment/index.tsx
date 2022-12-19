@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {
   Box,
   ScrollView,
@@ -12,21 +12,35 @@ import {
   Image,
   Modal,
   Divider,
+  Icon,
 } from 'native-base'
 import {Shadow} from 'react-native-shadow-2'
 import {ms} from 'react-native-size-matters'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import * as ImagePicker from 'react-native-image-picker'
+import {RNCamera} from 'react-native-camera'
+import {StyleSheet} from 'react-native'
 
 import {Colors} from '@bluecentury/styles'
-import {useEntity, usePlanning} from '@bluecentury/stores'
+import {useEntity, usePlanning, useSettings} from '@bluecentury/stores'
 import {IconButton, LoadingAnimated} from '@bluecentury/components'
 import {Alert, TouchableOpacity} from 'react-native'
 import {Icons} from '@bluecentury/assets'
+import {PROD_URL, UAT_URL} from '@vemasys/env'
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const AddEditComment = ({navigation, route}: Props) => {
   const {comment, method, routeFrom}: any = route.params
+  const currentEnv = useSettings.getState().env
+  const uploadEndpoint = () => {
+    if (currentEnv === 'PROD') {
+      return PROD_URL
+    }
+    if (currentEnv === 'UAT') {
+      return UAT_URL
+    }
+  }
   const toast = useToast()
   const {
     isPlanningLoading,
@@ -49,6 +63,9 @@ const AddEditComment = ({navigation, route}: Props) => {
   const [selectedImg, setSelectedImg] = useState<ImageFile>({})
   const [imgModal, setImgModal] = useState(false)
   const [viewImg, setViewImg] = useState(false)
+  const [isCameraOpen, setIsCameraOpen] = useState(false)
+
+  let cameraRef = useRef<any>()
 
   useEffect(() => {
     navigation.setOptions({
@@ -93,29 +110,33 @@ const AddEditComment = ({navigation, route}: Props) => {
       return
     }
     let res
+    let tempComment: string = ''
     if (method === 'edit') {
       if (routeFrom === 'Planning') {
         if (imgFile.length > 0) {
-          imgFile.map(async (file: any, index: number) => {
-            const upload = await uploadImgFile(file)
-            if (typeof upload === 'object') {
-              let tempComment
-              setDescription((description: string) => {
+          await Promise.all(
+            imgFile.map(async (file: any) => {
+              const upload = await uploadImgFile(file)
+              if (typeof upload === 'object') {
                 tempComment =
-                  description + '-' + '\n' + `<img src='${upload.path}' >`
-                return description + '-' + '\n' + `<img src='${upload.path}' >`
-              })
-              if (index === imgFile.length - 1) {
-                res = await updateComment(comment?.id, description)
-                if (typeof res === 'object') {
-                  showToast('Comment updated.', 'success')
-                  getNavigationLogComments(navigationLogDetails?.id)
-                } else {
-                  showToast('Comment update failed.', 'failed')
-                }
+                  tempComment +
+                  '-' +
+                  '\n' +
+                  `<img src="${uploadEndpoint()}upload/documents/${upload.path}" />`
               }
-            }
-          })
+            })
+          )
+          const response = await createNavlogComment(
+            navigationLogDetails?.id,
+            description + tempComment,
+            user?.id
+          )
+          if (typeof response === 'object') {
+            showToast('New comment added.', 'success')
+            getNavigationLogComments(navigationLogDetails?.id)
+          } else {
+            showToast('New comment failed.', 'failed')
+          }
         } else {
           res = await updateComment(comment?.id, description)
           if (typeof res === 'object') {
@@ -130,31 +151,29 @@ const AddEditComment = ({navigation, route}: Props) => {
     } else {
       if (routeFrom === 'Planning') {
         if (imgFile.length > 0) {
-          imgFile.map(async (file: any, index: number) => {
-            const upload = await uploadImgFile(file)
-            if (typeof upload === 'object') {
-              let tempComment
-              setDescription((description: string) => {
+          await Promise.all(
+            imgFile.map(async (file: any) => {
+              const upload = await uploadImgFile(file)
+              if (typeof upload === 'object') {
                 tempComment =
-                  description + '-' + '\n' + `<img src='${upload.path}' >`
-                return description + '-' + '\n' + `<img src='${upload.path}' >`
-              })
-
-              if (index === imgFile.length - 1) {
-                res = await createNavlogComment(
-                  navigationLogDetails?.id,
-                  tempComment,
-                  user?.id
-                )
-                if (typeof res === 'object') {
-                  showToast('New comment added.', 'success')
-                  getNavigationLogComments(navigationLogDetails?.id)
-                } else {
-                  showToast('New comment failed.', 'failed')
-                }
+                  tempComment +
+                  '-' +
+                  '\n' +
+                  `<img src='${uploadEndpoint()}upload/documents/${upload.path}' />`
               }
-            }
-          })
+            })
+          )
+          const response = await createNavlogComment(
+            navigationLogDetails?.id,
+            description + tempComment,
+            user?.id
+          )
+          if (typeof response === 'object') {
+            showToast('New comment added.', 'success')
+            getNavigationLogComments(navigationLogDetails?.id)
+          } else {
+            showToast('New comment failed.', 'failed')
+          }
         } else {
           res = await createNavlogComment(
             navigationLogDetails?.id,
@@ -225,6 +244,7 @@ const AddEditComment = ({navigation, route}: Props) => {
       })
     })
     setImgModal(false)
+    setIsCameraOpen(false)
   }
 
   const onSelectImage = (image: ImageFile) => {
@@ -247,6 +267,26 @@ const AddEditComment = ({navigation, route}: Props) => {
     setImgModal(false)
     const filtered = imgFile?.filter((img: any) => img.uri !== selectedImg.uri)
     setImgFile(filtered)
+  }
+
+  const takePicture = async () => {
+    if (cameraRef) {
+      const options = {quality: 0.5, base64: true}
+      const data = await cameraRef.current.takePictureAsync(options)
+      setIsCameraOpen(false)
+      const arrFromPath = data.uri.split('/')
+      const fileName = arrFromPath[arrFromPath.length - 1]
+      const fileNameWithoutExtension = fileName.split('.')[0]
+      setImgFile((prev: any) => [
+        ...prev,
+        {
+          id: fileNameWithoutExtension,
+          uri: data.uri,
+          fileName: fileName,
+          type: 'image/jpeg',
+        },
+      ])
+    }
   }
 
   if (isPlanningLoading) return <LoadingAnimated />
@@ -313,7 +353,7 @@ const AddEditComment = ({navigation, route}: Props) => {
           size="md"
           mt={ms(10)}
           bg={Colors.primary}
-          onPress={launchImageLibrary}
+          onPress={() => setIsCameraOpen(true)}
         >
           Upload image
         </Button>
@@ -420,7 +460,81 @@ const AddEditComment = ({navigation, route}: Props) => {
           />
         </Modal.Content>
       </Modal>
+      {isCameraOpen ? (
+        <RNCamera
+          ref={cameraRef}
+          style={styles.camera}
+          type={RNCamera.Constants.Type.back}
+          flashMode={RNCamera.Constants.FlashMode.on}
+          androidCameraPermissionOptions={{
+            title: 'Permission to use camera',
+            message: 'We need your permission to use your camera',
+            buttonPositive: 'Ok',
+            buttonNegative: 'Cancel',
+          }}
+          captureAudio={false}
+        >
+          <Box
+            w="100%"
+            flex="0"
+            flexDirection="row"
+            justifyContent="space-between"
+          >
+            <TouchableOpacity
+              onPress={launchImageLibrary}
+              style={styles.cameraButton}
+            >
+              <Icon
+                as={<FontAwesome5 name="image" />}
+                size={ms(32)}
+                color={Colors.white}
+                ml={ms(0)}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => takePicture()}
+              style={styles.cameraButton}
+            >
+              <Icon
+                as={<FontAwesome5 name="camera" />}
+                size={ms(32)}
+                color={Colors.white}
+                ml={ms(0)}
+              />
+            </TouchableOpacity>
+            <Box
+              w={ms(60)}
+              h={ms(60)}
+              m={ms(20)}
+            ></Box>
+          </Box>
+        </RNCamera>
+      ) : null}
     </Box>
   )
 }
+
 export default AddEditComment
+
+const styles = StyleSheet.create({
+  cameraButton: {
+    width: ms(60),
+    height: ms(60),
+    flex: 0,
+    margin: ms(20),
+    borderRadius: 50,
+    borderColor: '#ffffff',
+    borderWidth: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  camera: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    justifyContent: 'flex-end',
+  },
+})
+
