@@ -1,9 +1,8 @@
 import React, {useState} from 'react'
-import {Alert, TouchableOpacity} from 'react-native'
-import {Flex, Box, Text, Modal} from 'native-base'
+import {Alert} from 'react-native'
+import {Flex, Box, Text, Modal, Button} from 'native-base'
 import {BarCodeReadEvent, RNCamera} from 'react-native-camera'
 import BarcodeMask, {LayoutChangeEvent} from 'react-native-barcode-mask'
-import Icon from 'react-native-vector-icons/FontAwesome5'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {useIsFocused} from '@react-navigation/native'
 import {ms} from 'react-native-size-matters'
@@ -105,13 +104,17 @@ export default function QRScanner({navigation}: Props) {
       >
         Align the QR within the frame to scan
       </Text>
-      <TouchableOpacity
-        testID="qrcode-back-button"
-        onPress={() => navigation.goBack()}
-        style={{position: 'absolute', left: 10, top: 20}}
-      >
-        <Icon name="arrow-left" size={24} color="#fff" />
-      </TouchableOpacity>
+      <Box position="absolute" w="100%" bottom="20" alignItems="center">
+        <Button
+          bg={Colors.primary}
+          w={ms(180)}
+          mt={ms(20)}
+          mb={ms(20)}
+          onPress={() => navigation.goBack()}
+        >
+          Cancel
+        </Button>
+      </Box>
       <Modal isOpen={isLoadingMap} justifyContent="center" px={ms(15)}>
         <Modal.Content width="100%">
           <Box
