@@ -288,6 +288,14 @@ const HistoryLogbook = ({routeIndex}: any) => {
               <Text>Failed to load the requested resource.</Text>
             </Center>
           </Box>
+        ) : historyNavigationLogs.length == 0 ? (
+          <Box flex="1" bgColor={Colors.white} p="2">
+            <Center>
+              <Text bold color={Colors.azure}>
+                No results available
+              </Text>
+            </Center>
+          </Box>
         ) : (
           historyNavigationLogs.map((navigationLog: any, i: number) => {
             const previousNavigationLog =

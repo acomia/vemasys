@@ -100,7 +100,6 @@ export const usePlanning = create(
             })
           }
         } catch (error) {
-          console.log('wooppssiess ', error)
           set({
             isPlanningLoading: false,
             hasErrorLoadingVesselHistoryNavLogs: true,
