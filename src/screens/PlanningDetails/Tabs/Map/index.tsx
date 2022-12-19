@@ -26,7 +26,7 @@ const Map = () => {
 
   return (
     <Box flex="1" bg={Colors.white} p={ms(12)}>
-      <Text fontSize={ms(20)} fontWeight="bold" color={Colors.azure}>
+      <Text fontSize={ms(20)} bold color={Colors.azure}>
         Navigation Log Map
       </Text>
       <MapView style={styles.map} initialRegion={NAVLOG_REGION}>

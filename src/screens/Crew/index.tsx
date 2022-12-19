@@ -14,7 +14,7 @@ import {useEntity, useMap} from '@bluecentury/stores'
 
 const renderScene = SceneMap({
   me: Me,
-  planning: Planning
+  planning: Planning,
 })
 
 type Props = NativeStackScreenProps<RootStackParamList>
@@ -53,7 +53,7 @@ export default function Crew({navigation}: Props) {
             />
           </HStack>
         </Box>
-      )
+      ),
     })
   }, [])
 
@@ -75,11 +75,11 @@ export default function Crew({navigation}: Props) {
         height: 3,
         borderRadius: 3,
         width: ms(50),
-        marginHorizontal: layout.width / 6 + 5
+        marginHorizontal: layout.width / 6 + 5,
       }}
       style={{backgroundColor: Colors.primary}}
       renderLabel={({route, color}) => (
-        <Text color={color} fontWeight="bold" fontSize={ms(15)}>
+        <Text color={color} bold fontSize={ms(15)}>
           {route.title}
         </Text>
       )}

@@ -122,7 +122,9 @@ const AddEditComment = ({navigation, route}: Props) => {
                   tempComment +
                   '-' +
                   '\n' +
-                  `<img src="${uploadEndpoint()}upload/documents/${upload.path}" />`
+                  `<img src="${uploadEndpoint()}upload/documents/${
+                    upload.path
+                  }" />`
               }
             })
           )
@@ -159,7 +161,9 @@ const AddEditComment = ({navigation, route}: Props) => {
                   tempComment +
                   '-' +
                   '\n' +
-                  `<img src='${uploadEndpoint()}upload/documents/${upload.path}' />`
+                  `<img src='${uploadEndpoint()}upload/documents/${
+                    upload.path
+                  }' />`
               }
             })
           )
@@ -299,7 +303,7 @@ const AddEditComment = ({navigation, route}: Props) => {
         py={ms(20)}
         bg={Colors.white}
       >
-        <Text fontSize={ms(20)} fontWeight="bold" color={Colors.azure}>
+        <Text fontSize={ms(20)} bold color={Colors.azure}>
           {method === 'edit' ? 'Edit' : 'Add'} a comment
         </Text>
 
@@ -391,7 +395,7 @@ const AddEditComment = ({navigation, route}: Props) => {
         <Modal.Content width="95%" marginBottom={0} mt="auto" bg="transparent">
           <Box py={ms(14)}>
             <Box bg={Colors.white} py={ms(10)} borderRadius={ms(5)}>
-              <Text textAlign="center" fontSize={ms(12)} fontWeight="bold">
+              <Text textAlign="center" fontSize={ms(12)} bold>
                 Actions
               </Text>
               <Divider my={ms(14)} />
@@ -399,7 +403,7 @@ const AddEditComment = ({navigation, route}: Props) => {
                 <Text
                   textAlign="center"
                   fontSize={ms(16)}
-                  fontWeight="bold"
+                  bold
                   onPress={() => {
                     setViewImg(true)
                     setImgModal(false)
@@ -413,7 +417,7 @@ const AddEditComment = ({navigation, route}: Props) => {
                 activeOpacity={0.6}
                 onPress={onUploadNewVersion}
               >
-                <Text textAlign="center" fontSize={ms(16)} fontWeight="bold">
+                <Text textAlign="center" fontSize={ms(16)} bold>
                   Upload new version
                 </Text>
               </TouchableOpacity>
@@ -423,7 +427,7 @@ const AddEditComment = ({navigation, route}: Props) => {
                   textAlign="center"
                   color={Colors.danger}
                   fontSize={ms(16)}
-                  fontWeight="bold"
+                  bold
                   mb={ms(5)}
                 >
                   Delete
@@ -440,7 +444,7 @@ const AddEditComment = ({navigation, route}: Props) => {
                 textAlign="center"
                 color={Colors.disabled}
                 fontSize={ms(16)}
-                fontWeight="bold"
+                bold
               >
                 Cancel
               </Text>
@@ -502,11 +506,7 @@ const AddEditComment = ({navigation, route}: Props) => {
                 ml={ms(0)}
               />
             </TouchableOpacity>
-            <Box
-              w={ms(60)}
-              h={ms(60)}
-              m={ms(20)}
-            ></Box>
+            <Box w={ms(60)} h={ms(60)} m={ms(20)}></Box>
           </Box>
         </RNCamera>
       ) : null}
@@ -537,4 +537,3 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
 })
-

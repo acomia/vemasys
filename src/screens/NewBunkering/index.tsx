@@ -185,7 +185,7 @@ export default function NewBunkering() {
             keyboardType="number-pad"
             height={ms(40)}
             fontSize={ms(15)}
-            fontWeight="bold"
+            bold
             value={bunkering.amount}
             onChangeText={e => {
               setBunkering({...bunkering, amount: e})

@@ -60,7 +60,7 @@ export default function CharterDetails({navigation, route}: Props) {
         <HStack borderTopWidth={1} borderColor={Colors.light}>
           <HStack flex="1" alignItems="center" my={ms(10)}>
             <Text ml={ms(10)}>Booked:</Text>
-            <Text ml={ms(10)} fontWeight="bold" color={Colors.disabled}>
+            <Text ml={ms(10)} bold color={Colors.disabled}>
               {parseInt(cargo.amount) || 0} MT
             </Text>
           </HStack>
@@ -71,7 +71,7 @@ export default function CharterDetails({navigation, route}: Props) {
             alignItems="center"
           >
             <Text ml={ms(10)}>Actual:</Text>
-            <Text ml={ms(10)} fontWeight="bold" color="#29B7EF">
+            <Text ml={ms(10)} bold color="#29B7EF">
               {parseInt(cargo.actualAmount) || 0} MT
             </Text>
           </HStack>
@@ -247,7 +247,7 @@ export default function CharterDetails({navigation, route}: Props) {
         bg={Colors.white}
         shadow={3}
       >
-        <Text fontWeight="bold">{contact.name}</Text>
+        <Text bold>{contact.name}</Text>
         <Image
           alt="charter-contact"
           source={Icons.charter_contact}
@@ -279,17 +279,12 @@ export default function CharterDetails({navigation, route}: Props) {
       >
         <HStack alignItems="center" justifyContent="space-between">
           <VStack maxWidth="73%">
-            <Text
-              fontSize={ms(22)}
-              fontWeight="bold"
-              color={Colors.azure}
-              textAlign="left"
-            >
+            <Text fontSize={ms(22)} bold color={Colors.azure} textAlign="left">
               {charter.vesselReference || charter.clientReference}
             </Text>
-            <Text fontWeight="bold" color={Colors.secondary}>
+            <Text bold color={Colors.secondary}>
               {moment(charter.startDate).format('DD MMM YYYY')} -
-              <Text fontWeight="bold" color={Colors.danger}>
+              <Text bold color={Colors.danger}>
                 {' '}
                 {moment(charter.endDate).format('DD MMM YYYY')}
               </Text>

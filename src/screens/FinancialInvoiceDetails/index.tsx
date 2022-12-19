@@ -206,7 +206,7 @@ const FinancialInvoiceDetails = ({navigation, route}: Props) => {
           >
             <Text
               fontSize={ms(18)}
-              fontWeight="bold"
+              bold
               textAlign="left"
               color={Colors.white}
               ml={ms(15)}

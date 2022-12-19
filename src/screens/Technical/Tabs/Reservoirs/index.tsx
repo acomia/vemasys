@@ -38,7 +38,7 @@ const Reservoirs = () => {
         px={ms(12)}
         py={ms(20)}
       >
-        <Text fontSize={ms(20)} fontWeight="bold" color={Colors.azure}>
+        <Text fontSize={ms(20)} bold color={Colors.azure}>
           Water Tanks
         </Text>
         {reservoirs?.length > 0 ? (
@@ -86,11 +86,7 @@ const Reservoirs = () => {
                         {moment(reservoir?.lastMeasurement?.date).fromNow()}
                       </Text>
                     </VStack>
-                    <Text
-                      color={Colors.azure}
-                      fontSize={ms(16)}
-                      fontWeight="bold"
-                    >
+                    <Text color={Colors.azure} fontSize={ms(16)} bold>
                       {formatNumber(value, 0, ' ')} L (
                       {isNaN(fillPct) || fillPct === Infinity
                         ? 0

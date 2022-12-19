@@ -14,7 +14,7 @@ const CargoHolds = () => {
         px={ms(12)}
         py={ms(20)}
       >
-        <Text fontSize={ms(20)} fontWeight="bold" color={Colors.azure}>
+        <Text fontSize={ms(20)} bold color={Colors.azure}>
           Cargo Hold
         </Text>
         <Box

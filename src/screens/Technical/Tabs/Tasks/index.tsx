@@ -45,12 +45,7 @@ const Tasks = () => {
         py={ms(20)}
         bg={Colors.white}
       >
-        <Text
-          fontSize={ms(20)}
-          fontWeight="bold"
-          color={Colors.azure}
-          mb={ms(15)}
-        >
+        <Text fontSize={ms(20)} bold color={Colors.azure} mb={ms(15)}>
           Overview
         </Text>
         <HStack
@@ -103,11 +98,7 @@ const Tasks = () => {
                     mt={ms(10)}
                   >
                     <Image alt={`${task.key}-icon`} source={icon} mb={ms(15)} />
-                    <Text
-                      fontSize={ms(22)}
-                      fontWeight="bold"
-                      color={Colors.text}
-                    >
+                    <Text fontSize={ms(22)} bold color={Colors.text}>
                       {task.count}
                     </Text>
                     <Text fontWeight="medium" color={Colors.text}>

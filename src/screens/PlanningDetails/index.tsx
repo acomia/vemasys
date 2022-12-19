@@ -70,7 +70,7 @@ export default function PlanningDetails({route}: Props) {
       style={{backgroundColor: Colors.primary}}
       tabStyle={{width: ms(110), height: ms(40)}}
       renderLabel={({route, color}) => (
-        <Text color={color} fontWeight="bold" textAlign="justify">
+        <Text color={color} bold textAlign="justify">
           {route.title}
         </Text>
       )}

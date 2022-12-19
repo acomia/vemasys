@@ -232,7 +232,7 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
           keyboardType="number-pad"
           height={ms(40)}
           fontSize={ms(15)}
-          fontWeight="bold"
+          bold
           value={cargoData.amount.toString()}
           onChangeText={e => setCargoData({...cargoData, amount: e})}
         />
@@ -249,7 +249,7 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
           keyboardType="number-pad"
           height={ms(40)}
           fontSize={ms(15)}
-          fontWeight="bold"
+          bold
           value={cargoData.actualAmount.toString()}
           onChangeText={e => setCargoData({...cargoData, actualAmount: e})}
         />

@@ -21,7 +21,7 @@ const PlanningLogbook = () => {
     isPlanningLoading,
     plannedNavigationLogs,
     getVesselPlannedNavLogs,
-    hasErrorLoadingVesselHistoryNavLogs,
+    hasErrorLoadingPlannedNavigationLogs,
   }: any = usePlanning()
   const {vesselId} = useEntity()
 
@@ -143,6 +143,7 @@ const PlanningLogbook = () => {
       <ScrollView
         contentContainerStyle={{flexGrow: 1, paddingBottom: 20}}
         scrollEventThrottle={16}
+        showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
             onRefresh={onPullRefresh}
@@ -152,10 +153,20 @@ const PlanningLogbook = () => {
         px={ms(12)}
         py={ms(15)}
       >
-        {hasErrorLoadingVesselHistoryNavLogs ? (
+        {hasErrorLoadingPlannedNavigationLogs ? (
           <Box flex="1" bgColor={Colors.white} p="5">
             <Center>
-              <Text>Failed to load requested resource</Text>
+              <Text bold color={Colors.azure}>
+                Failed to load requested resource
+              </Text>
+            </Center>
+          </Box>
+        ) : plannedNavigationLogs.length == 0 ? (
+          <Box flex="1" bgColor={Colors.white} p="2">
+            <Center>
+              <Text bold color={Colors.azure}>
+                No results available
+              </Text>
             </Center>
           </Box>
         ) : (

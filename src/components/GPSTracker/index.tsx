@@ -71,7 +71,7 @@ export const GPSTracker = ({navigation}: Props) => {
         borderTopRightRadius={15}
         p={ms(15)}
       >
-        <Text fontSize={ms(16)} fontWeight="bold" mt={ms(5)} mb={ms(10)}>
+        <Text fontSize={ms(16)} bold mt={ms(5)} mb={ms(10)}>
           GPS
         </Text>
         <Divider mb={ms(20)} />
