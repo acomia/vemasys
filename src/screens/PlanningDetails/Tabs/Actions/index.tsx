@@ -49,6 +49,9 @@ const Actions = () => {
 
   useEffect(() => {
     getNavigationLogActions(navigationLogDetails?.id)
+  }, [])
+
+  useEffect(() => {
     if (
       navigationLogDetails?.bulkCargo?.some(cargo => cargo.isLoading === false)
     ) {

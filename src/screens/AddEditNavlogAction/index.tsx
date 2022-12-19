@@ -71,7 +71,10 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
         ? [
             {
               navigationBulk: navlogAction?.navigationBulk?.id,
-              amount: navlogAction?.navigationBulk?.actualAmount.toString(),
+              amount:
+                navlogAction?.navigationBulk?.actualAmount !== null
+                  ? navlogAction?.navigationBulk?.actualAmount.toString()
+                  : '0',
             },
           ]
         : [

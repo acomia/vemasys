@@ -115,7 +115,7 @@ export const usePlanning = create(
         })
         try {
           const response = await API.getPlannedNavLog(vesselId)
-          if (Array.isArray(response)) {
+          if (Array.isArray(response) && response.length > 0) {
             response.forEach(async plan => {
               const act = await API.reloadNavigationLogActions(plan.id)
               plan.endActionDate = act[0]?.end
@@ -129,7 +129,6 @@ export const usePlanning = create(
             set({
               isPlanningLoading: false,
               plannedNavigationLogs: [],
-              hasErrorLoadingPlannedNavigationLogs: true,
             })
           }
         } catch (error) {
@@ -165,20 +164,20 @@ export const usePlanning = create(
       },
       getNavigationLogActions: async (navLogId: string) => {
         set({
-          isPlanningLoading: true,
           navigationLogActions: [],
+          isPlanningLoading: true,
         })
         try {
           const response = await API.reloadNavigationLogActions(navLogId)
           if (Array.isArray(response)) {
             set({
-              isPlanningLoading: false,
               navigationLogActions: response,
+              isPlanningLoading: false,
             })
           } else {
             set({
-              isPlanningLoading: false,
               navigationLogActions: [],
+              isPlanningLoading: false,
             })
           }
         } catch (error) {
