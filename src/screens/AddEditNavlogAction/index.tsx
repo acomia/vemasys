@@ -48,6 +48,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
     reset,
     updateBulkCargo,
     navigationLogActions,
+    getNavigationLogActions,
   } = usePlanning()
 
   const cargoChoices =
@@ -160,6 +161,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
 
   const onSuccess = () => {
     reset()
+    getNavigationLogActions(navigationLogDetails?.id)
     navigation.goBack()
   }
 
@@ -193,7 +195,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
           resizeMode="contain"
           mr={ms(10)}
         />
-        <Text fontSize={ms(16)} fontWeight="bold" color={Colors.text}>
+        <Text fontSize={ms(16)} bold color={Colors.text}>
           {actionType}
         </Text>
       </HStack>
@@ -280,7 +282,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
             keyboardType="number-pad"
             height={ms(40)}
             fontSize={ms(15)}
-            fontWeight="bold"
+            bold
           />
         </Box>
       </HStack>
@@ -375,7 +377,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
         py={ms(20)}
         bg={Colors.white}
       >
-        <Text fontSize={ms(20)} fontWeight="bold" color={Colors.azure}>
+        <Text fontSize={ms(20)} bold color={Colors.azure}>
           {actionType} Action
         </Text>
 
