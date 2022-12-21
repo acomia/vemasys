@@ -59,14 +59,11 @@ const Actions = () => {
       getNavigationLogActions(navigationLogDetails?.id)
       showToast('Action ended.', 'success')
     }
-    getNavigationLogActions(navigationLogDetails?.id)
   }, [
     isCreateNavLogActionSuccess,
     isUpdateNavLogActionSuccess,
     isDeleteNavLogActionSuccess,
   ])
-
-  console.log(navigationLogActions)
 
   const showToast = (text: string, res: string) => {
     toast.show({
