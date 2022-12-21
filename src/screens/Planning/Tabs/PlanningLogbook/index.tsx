@@ -22,12 +22,20 @@ const PlanningLogbook = () => {
     plannedNavigationLogs,
     getVesselPlannedNavLogs,
     hasErrorLoadingPlannedNavigationLogs,
-  }: any = usePlanning()
+    isUpdateNavLogActionSuccess,
+    isDeleteNavLogActionSuccess,
+    isCreateNavLogActionSuccess,
+  } = usePlanning()
   const {vesselId} = useEntity()
 
   useEffect(() => {
     getVesselPlannedNavLogs(vesselId)
-  }, [vesselId])
+  }, [
+    vesselId,
+    isCreateNavLogActionSuccess,
+    isUpdateNavLogActionSuccess,
+    isDeleteNavLogActionSuccess,
+  ])
 
   plannedNavigationLogs.sort(
     (a: any, b: any) =>
@@ -121,9 +129,11 @@ const PlanningLogbook = () => {
               </Box>
               <Box alignItems="center">
                 <NavigationLogType navigationLog={navigationLog} />
-                <Text color={Colors.azure} fontSize={ms(15)} mt={ms(5)} bold>
-                  {Math.ceil(navigationLog?.bulkCargo[0]?.actualTonnage)} MT
-                </Text>
+                {navigationLog.actionType === 'Cleaning' ? null : (
+                  <Text color={Colors.azure} fontSize={ms(15)} mt={ms(5)} bold>
+                    {Math.ceil(navigationLog?.bulkCargo[0]?.actualTonnage)} MT
+                  </Text>
+                )}
               </Box>
             </HStack>
           </Box>
