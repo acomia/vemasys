@@ -48,6 +48,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
     reset,
     updateBulkCargo,
     navigationLogActions,
+    getNavigationLogActions,
   } = usePlanning()
 
   const cargoChoices =
@@ -160,6 +161,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
 
   const onSuccess = () => {
     reset()
+    getNavigationLogActions(navigationLogDetails?.id)
     navigation.goBack()
   }
 

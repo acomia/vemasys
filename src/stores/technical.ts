@@ -7,28 +7,28 @@ import moment from 'moment'
 
 type TechnicalState = {
   isTechnicalLoading: boolean
-  bunkering: [] | undefined
-  gasoilReserviors: [] | undefined
-  bunkeringSuppliers?: [] | undefined
-  engines: [] | undefined
-  reservoirs: [] | undefined
-  tasksCategory: [] | undefined
-  tasksByCategory: [] | undefined
-  routinesCategory: [] | undefined
-  routinesByCategory: [] | undefined
-  routineDetails: [] | undefined
-  certificates: [] | undefined
-  lastMeasurements: []
-  inventory: []
-  consumableTypes: []
+  bunkering: any[]
+  gasoilReserviors: any[]
+  bunkeringSuppliers?: any[]
+  engines: any[]
+  reservoirs: any[]
+  tasksCategory: any[]
+  tasksByCategory: any[]
+  routinesCategory: any[]
+  routinesByCategory: any[]
+  routineDetails: any[]
+  certificates: any[]
+  lastMeasurements: any[]
+  inventory: any[]
+  consumableTypes: any[]
 }
 
 type TechnicalActions = {
-  getVesselBunkering: (vesselId: string) => void
-  getVesselGasoilReservoirs: (physicalVesselId: string) => void
-  getVesselBunkeringSuppliers: () => void
+  getVesselBunkering?: (vesselId: string) => void
+  getVesselGasoilReservoirs?: (physicalVesselId: string) => void
+  getVesselBunkeringSuppliers?: () => void
   createVesselBunkering?: (bunkering: any) => void
-  getVesselEngines: (physicalVesselId: string) => void
+  getVesselEngines?: (physicalVesselId: string) => void
   getVesselReservoirs?: (physicalVesselId: string) => void
   getVesselTasksCategory?: (vesselId: string) => void
   getVesselTasksByCategory?: (vesselId: string, categoryKey: string) => void
@@ -61,11 +61,18 @@ export const useTechnical = create(
       isTechnicalLoading: false,
       bunkering: [],
       gasoilReserviors: [],
+      bunkeringSuppliers: [],
       engines: [],
       reservoirs: [],
       tasksCategory: [],
       tasksByCategory: [],
+      routinesCategory: [],
+      routinesByCategory: [],
+      routineDetails: [],
       certificates: [],
+      lastMeasurements: [],
+      inventory: [],
+      consumableTypes: [],
       getVesselBunkering: async (vesselId: string) => {
         set({isTechnicalLoading: true, bunkering: []})
         try {

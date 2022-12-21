@@ -52,20 +52,20 @@ const createVesselBunkering = async (bunkering: any) => {
   return API.post(`consumption_bunkerings`, {
     value: parseInt(bunkering.amount ? bunkering.amount : 0),
     entity: {
-      id: bunkering.bunkeringId
+      id: bunkering.bunkeringId,
     },
     date: moment(bunkering.date).format(),
     user: {
-      id: useEntity.getState().user.id
+      id: useEntity.getState().user.id,
     },
     exploitationVessel: {
-      id: useEntity.getState().vesselId
+      id: useEntity.getState().vesselId,
     },
     description: bunkering.description,
     // Create an empty fileGroup so we can upload files in the future
     fileGroup: {
-      objectType: null
-    }
+      objectType: null,
+    },
   })
     .then(response => {
       if (response.data) {
@@ -155,9 +155,9 @@ const createTaskComment = async (taskId: string, comment: string) => {
     comments: [
       {
         description: comment,
-        creationDate: new Date()
-      }
-    ]
+        creationDate: new Date(),
+      },
+    ],
   })
     .then(response => {
       if (response.data) {
@@ -193,7 +193,7 @@ const uploadFileBySubject = async (
   const image = {
     uri: file.uri,
     type: file.type,
-    name: file.fileName || `IMG_${Date.now()}`
+    name: file.fileName || `IMG_${Date.now()}`,
   }
   formData.append('file', image)
   formData.append('access-level', accessLevel)
@@ -297,15 +297,15 @@ const reloadCertificates = async (vesselId: string) => {
 const createNewConsumptionMeasure = async (resId: string, value: string) => {
   return API.post(`consumption_measures`, {
     vesselPart: {
-      id: resId
+      id: resId,
     },
     user: {
-      id: useEntity.getState().user.id
+      id: useEntity.getState().user.id,
     },
     date: new Date(),
     value: value.toString(),
     total: value.toString(),
-    type: ''
+    type: null,
   })
     .then(response => {
       if (response.data) {
@@ -382,5 +382,5 @@ export {
   createNewConsumptionMeasure,
   reloadVesselInventory,
   reloadConsumableTypes,
-  updateVesselInventoryItem
+  updateVesselInventoryItem,
 }
