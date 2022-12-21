@@ -48,10 +48,6 @@ const Actions = () => {
   const [confirmModal, setConfirmModal] = useState(false)
 
   useEffect(() => {
-    getNavigationLogActions(navigationLogDetails?.id)
-  }, [])
-
-  useEffect(() => {
     if (
       navigationLogDetails?.bulkCargo?.some(cargo => cargo.isLoading === false)
     ) {
@@ -60,6 +56,7 @@ const Actions = () => {
       setButtonActionLabel('Loading')
     }
     if (isUpdateNavLogActionSuccess && focused) {
+      getNavigationLogActions(navigationLogDetails?.id)
       showToast('Action ended.', 'success')
     }
     getNavigationLogActions(navigationLogDetails?.id)
