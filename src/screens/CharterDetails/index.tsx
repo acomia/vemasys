@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React from 'react'
 import {TouchableOpacity} from 'react-native'
 import {
   Box,
@@ -15,7 +15,11 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 
-import {CharterStatus, IconButton} from '@bluecentury/components'
+import {
+  CharterStatus,
+  IconButton,
+  LoadingAnimated,
+} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
 import {useCharters, useEntity} from '@bluecentury/stores'
@@ -24,15 +28,7 @@ import {formatLocationLabel} from '@bluecentury/constants'
 type Props = NativeStackScreenProps<RootStackParamList>
 export default function CharterDetails({navigation, route}: Props) {
   const {entityType} = useEntity()
-  const {viewPdf, signedDocumentsArray} = useCharters()
-
-  useEffect(() => {
-    // navigation.setOptions({
-    //   headerRight: () => (
-    //     <IconButton source={Icons.ellipsis} onPress={() => {}} />
-    //   )
-    // })
-  }, [])
+  const {viewPdf, signedDocumentsArray, isCharterLoading} = useCharters()
 
   const {charter} = route.params
 
@@ -49,29 +45,29 @@ export default function CharterDetails({navigation, route}: Props) {
     return (
       <Box
         key={index}
+        borderColor={Colors.light}
         borderRadius={ms(5)}
         borderWidth={1}
-        borderColor={Colors.light}
         mb={ms(6)}
       >
-        <Text my={ms(10)} mx={ms(10)} color="#29B7EF" fontWeight="semibold">
+        <Text color="#29B7EF" fontWeight="semibold" mx={ms(10)} my={ms(10)}>
           {cargo.type.nameEn || cargo.type.nameNl}
         </Text>
-        <HStack borderTopWidth={1} borderColor={Colors.light}>
-          <HStack flex="1" alignItems="center" my={ms(10)}>
+        <HStack borderColor={Colors.light} borderTopWidth={1}>
+          <HStack alignItems="center" flex="1" my={ms(10)}>
             <Text ml={ms(10)}>Booked:</Text>
-            <Text ml={ms(10)} bold color={Colors.disabled}>
+            <Text bold color={Colors.disabled} ml={ms(10)}>
               {parseInt(cargo.amount) || 0} MT
             </Text>
           </HStack>
           <HStack
-            flex="1"
-            borderLeftWidth={ms(1)}
-            borderColor="#F0F0F0"
             alignItems="center"
+            borderColor="#F0F0F0"
+            borderLeftWidth={ms(1)}
+            flex="1"
           >
             <Text ml={ms(10)}>Actual:</Text>
-            <Text ml={ms(10)} bold color="#29B7EF">
+            <Text bold color="#29B7EF" ml={ms(10)}>
               {parseInt(cargo.actualAmount) || 0} MT
             </Text>
           </HStack>
@@ -86,23 +82,22 @@ export default function CharterDetails({navigation, route}: Props) {
         <VStack alignItems="center">
           <Box flex="1">
             {index > 0 && (
-              <Box width={ms(2)} height="full" backgroundColor={Colors.azure} />
+              <Box backgroundColor={Colors.azure} height="full" width={ms(2)} />
             )}
           </Box>
           <Image
             alt="triple-arrow-navlogs"
-            source={Icons.navlog_pin}
             resizeMode="contain"
+            source={Icons.navlog_pin}
           />
           <Box flex="1">
             {index != charter.navigationLogs.length - 1 && (
-              <Box width={ms(2)} height="full" backgroundColor={Colors.azure} />
+              <Box backgroundColor={Colors.azure} height="full" width={ms(2)} />
             )}
           </Box>
         </VStack>
 
         <TouchableOpacity
-          activeOpacity={0.6}
           style={{
             flex: 1,
             borderRadius: ms(5),
@@ -112,6 +107,7 @@ export default function CharterDetails({navigation, route}: Props) {
             marginLeft: ms(-20),
             zIndex: -1,
           }}
+          activeOpacity={0.6}
           onPress={() =>
             navigation.navigate('PlanningDetails', {
               navlog: navlogs,
@@ -120,13 +116,13 @@ export default function CharterDetails({navigation, route}: Props) {
           }
         >
           <HStack
-            px={ms(25)}
-            py={ms(15)}
             alignItems="center"
             justifyContent="space-between"
+            px={ms(25)}
+            py={ms(15)}
           >
             <VStack maxWidth="88%">
-              <Text fontWeight="medium" color={Colors.text}>
+              <Text color={Colors.text} fontWeight="medium">
                 {navlogs.bulkCargo.some(
                   (cargo: {isLoading: boolean}) => cargo.isLoading === false
                 )
@@ -138,7 +134,6 @@ export default function CharterDetails({navigation, route}: Props) {
                 {navlogs.location && navlogs.location && navlogs.location.name}
               </Text>
               <Text
-                fontWeight="medium"
                 color={
                   navlogs.bulkCargo.some(
                     (cargo: {isLoading: boolean}) => cargo.isLoading === false
@@ -146,6 +141,7 @@ export default function CharterDetails({navigation, route}: Props) {
                     ? '#FA5555'
                     : '#6BBF87'
                 }
+                fontWeight="medium"
               >
                 {moment(navlogs.plannedEta).format('DD MMM YYYY')} -{' '}
                 {moment(navlogs.plannedEta).format('H:SS')}
@@ -156,13 +152,13 @@ export default function CharterDetails({navigation, route}: Props) {
                     (cargo: {isLoading: boolean}) => cargo.isLoading === false
                   )
                     ? `${computeCargo(navlogs.bulkCargo)} MT `
-                    : `0 MT `}
+                    : '0 MT '}
                 </Text>
                 <Image
                   alt="triple-arrow-navlogs"
-                  source={Icons.triple_arrow}
                   mx={ms(5)}
                   resizeMode="contain"
+                  source={Icons.triple_arrow}
                 />
                 <Text
                   style={{fontSize: 16, fontWeight: 'bold', color: '#29B7EF'}}
@@ -170,7 +166,7 @@ export default function CharterDetails({navigation, route}: Props) {
                   {navlogs.bulkCargo.some(
                     (cargo: {isLoading: boolean}) => cargo.isLoading === false
                   )
-                    ? ` 0 MT`
+                    ? ' 0 MT'
                     : ` ${computeCargo(navlogs.bulkCargo)} MT`}
                 </Text>
               </HStack>
@@ -180,14 +176,14 @@ export default function CharterDetails({navigation, route}: Props) {
             ) ? (
               <Image
                 alt="triple-arrow-navlogs"
-                source={Icons.unloading}
                 resizeMode="contain"
+                source={Icons.unloading}
               />
             ) : (
               <Image
                 alt="triple-arrow-navlogs"
-                source={Icons.loading}
                 resizeMode="contain"
+                source={Icons.loading}
               />
             )}
           </HStack>
@@ -199,9 +195,9 @@ export default function CharterDetails({navigation, route}: Props) {
   const renderInvolvedParties = (party: any) => {
     return (
       <Box
+        borderColor={Colors.light}
         borderRadius={ms(5)}
         borderWidth={1}
-        borderColor={Colors.light}
         mb={ms(6)}
       >
         {party.financialInformation && party.financialInformation.name && (
@@ -237,21 +233,21 @@ export default function CharterDetails({navigation, route}: Props) {
     return (
       <HStack
         key={index}
-        p={ms(10)}
-        borderWidth={1}
+        alignItems="center"
+        bg={Colors.white}
         borderColor={Colors.light}
         borderRadius={ms(5)}
-        alignItems="center"
+        borderWidth={1}
         justifyContent="space-between"
         mb={ms(10)}
-        bg={Colors.white}
+        p={ms(10)}
         shadow={3}
       >
         <Text bold>{contact.name}</Text>
         <Image
           alt="charter-contact"
-          source={Icons.charter_contact}
           resizeMode="contain"
+          source={Icons.charter_contact}
         />
       </HStack>
     )
@@ -268,18 +264,20 @@ export default function CharterDetails({navigation, route}: Props) {
     })
   }
 
+  if (isCharterLoading) return <LoadingAnimated />
+
   return (
     <Flex flex="1">
       <Box
-        flex="1"
         backgroundColor={Colors.white}
         borderTopLeftRadius={ms(15)}
         borderTopRightRadius={ms(15)}
+        flex="1"
         p={ms(12)}
       >
         <HStack alignItems="center" justifyContent="space-between">
           <VStack maxWidth="73%">
-            <Text fontSize={ms(22)} bold color={Colors.azure} textAlign="left">
+            <Text bold color={Colors.azure} fontSize={ms(22)} textAlign="left">
               {charter.vesselReference || charter.clientReference}
             </Text>
             <Text bold color={Colors.secondary}>
@@ -290,11 +288,11 @@ export default function CharterDetails({navigation, route}: Props) {
               </Text>
             </Text>
           </VStack>
-          <CharterStatus entityType={entityType} charter={charter} />
+          <CharterStatus charter={charter} entityType={entityType} />
         </HStack>
         <Divider my={ms(15)} />
         <ScrollView flex="1" showsVerticalScrollIndicator={false}>
-          <Text fontSize={ms(16)} fontWeight="semibold" color={Colors.text}>
+          <Text color={Colors.text} fontSize={ms(16)} fontWeight="semibold">
             Location
           </Text>
           <Box my={ms(15)}>
@@ -318,10 +316,10 @@ export default function CharterDetails({navigation, route}: Props) {
               leftIcon={
                 <Image
                   alt="view-map"
-                  source={Icons.map_marked}
-                  maxWidth={ms(15)}
                   maxHeight={ms(13)}
+                  maxWidth={ms(15)}
                   resizeMode="contain"
+                  source={Icons.map_marked}
                 />
               }
               bg={Colors.primary}
@@ -331,7 +329,7 @@ export default function CharterDetails({navigation, route}: Props) {
             </Button>
           </Box>
           {/* Cargo */}
-          <Text fontSize={ms(16)} fontWeight="semibold" color={Colors.text}>
+          <Text color={Colors.text} fontSize={ms(16)} fontWeight="semibold">
             Cargo
           </Text>
           <Box my={ms(15)}>
@@ -344,7 +342,7 @@ export default function CharterDetails({navigation, route}: Props) {
             )}
           </Box>
           {/* Route */}
-          <Text fontSize={ms(16)} fontWeight="semibold" color={Colors.text}>
+          <Text color={Colors.text} fontSize={ms(16)} fontWeight="semibold">
             Route
           </Text>
           <Box my={ms(15)}>
@@ -380,7 +378,7 @@ export default function CharterDetails({navigation, route}: Props) {
           </Text>
           <Box my={ms(15)}></Box> */}
           {/* Contacts */}
-          <Text fontSize={ms(16)} fontWeight="semibold" color={Colors.text}>
+          <Text color={Colors.text} fontSize={ms(16)} fontWeight="semibold">
             Contacts
           </Text>
           <Box my={ms(15)}>
@@ -407,10 +405,10 @@ export default function CharterDetails({navigation, route}: Props) {
             </Button>
           </Box> */}
         </ScrollView>
-        <Box position="absolute" bottom={ms(10)} right={ms(20)}>
+        <Box bottom={ms(10)} position="absolute" right={ms(20)}>
           <IconButton
-            source={Icons.pdf}
             size={ms(50)}
+            source={Icons.pdf}
             onPress={handlePDFView}
           />
         </Box>
