@@ -31,7 +31,7 @@ const BunkeringList = ({bunkering}: any) => {
               {bunk.entity.alias}
             </Text>
             <Text color={Colors.disabled}>
-              {moment(bunk.date).format('DD/MM/YYYY - hh:mm A')}
+              {moment(bunk.date).format('DD/MM/YYYY - HH:mm')}
             </Text>
           </VStack>
           <Text color={Colors.highlighted_text} bold>

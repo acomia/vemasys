@@ -264,7 +264,7 @@ export default function Map({navigation}: Props) {
               <Text fontSize={ms(12)} fontWeight="medium" color="#ADADAD">
                 Arrived:{' '}
                 {moment(previousLocation?.arrivalDatetime).format(
-                  'DD MMM YYYY | hh:mm A'
+                  'DD MMM YYYY | HH:mm'
                 )}
               </Text>
             </Box>
@@ -329,7 +329,7 @@ export default function Map({navigation}: Props) {
               <Text fontSize={ms(12)} fontWeight="medium" color="#ADADAD">
                 Planned:{' '}
                 {moment(nextLocation?.plannedEta).format(
-                  'DD MMM YYYY | hh:mm A'
+                  'DD MMM YYYY | HH:mm'
                 )}
               </Text>
             </Box>
@@ -419,7 +419,7 @@ export default function Map({navigation}: Props) {
               <Text fontSize="xs" px={2}>
                 {moment(
                   log?.arrivalDatetime ? log?.arrivalDatetime : log?.plannedEta
-                ).format('MMM DD, y | hh:mm A')}
+                ).format('MMM DD, y | HH:mm')}
               </Text>
             </Box>
           ) : null}

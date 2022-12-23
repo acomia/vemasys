@@ -194,11 +194,11 @@ const Actions = () => {
                     </HStack>
                     <Text color={Colors.secondary} fontWeight="medium">
                       Start -{' '}
-                      {moment(action.start).format('D MMM YYYY | hh:mm')}
+                      {moment(action.start).format('D MMM YYYY | HH:mm')}
                     </Text>
                     {_.isNull(action.end) ? null : (
                       <Text color={Colors.danger} fontWeight="medium">
-                        End - {moment(action.end).format('D MMM YYYY | hh:mm')}
+                        End - {moment(action.end).format('D MMM YYYY | HH:mm')}
                       </Text>
                     )}
                   </Box>
