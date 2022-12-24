@@ -237,18 +237,18 @@ const Measurements = ({navigation, route}: Props) => {
     const selectedId = routeFrom === 'reservoir' ? data?.id : data?.data[0]?.id
     setOpen(false)
     const res = await createNewConsumptionMeasure(selectedId, newMeasurement)
-    if (typeof res === 'object' && res?.id) {
-      if (routeFrom === 'reservoir') {
-        getVesselGasoilReservoirs(physicalVesselId)
-        getVesselReservoirs(physicalVesselId)
-      } else {
-        getVesselEngines(physicalVesselId)
-      }
-      getVesselPartLastMeasurements(selectedId)
-      showToast('New measurement added.', 'success')
-    } else {
-      showToast('New measurement failed.', 'failed')
+    if (res === null) {
+      showToast('New Measurement failed.', 'failed')
+      return
     }
+    if (routeFrom === 'reservoir') {
+      getVesselGasoilReservoirs(physicalVesselId)
+      getVesselReservoirs(physicalVesselId)
+    } else {
+      getVesselEngines(physicalVesselId)
+    }
+    getVesselPartLastMeasurements(selectedId)
+    showToast('New measurement added.', 'success')
   }
 
   return (
