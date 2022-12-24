@@ -1,5 +1,4 @@
 import {API} from '../../apiService'
-import {AxiosError, AxiosResponse} from 'axios'
 import moment from 'moment-timezone'
 import {useEntity} from '@bluecentury/stores'
 
@@ -7,28 +6,21 @@ export const createNewConsumptionMeasure = async (
   resId: string,
   value: string
 ) => {
+  // Create new time in Brussels timezone & pass it
   const newBrusselsDateTime = moment.tz('Europe/Brussels')
-  const newConsumptionMeasureData = {
-    vesselPart: {
-      id: resId,
-    },
-    user: {
-      id: useEntity.getState().user[0].id,
-    },
+  const newMeasureData = {
+    vesselPart: {id: resId},
+    user: {id: useEntity.getState().user[0].id},
     date: newBrusselsDateTime,
     value: value.toString(),
     total: value.toString(),
     type: null,
   }
-  return API.post('consumption_measures', newConsumptionMeasureData)
-    .then((response: AxiosResponse) => {
-      if (response.data) {
-        return response.data
-      } else {
-        throw new Error('Create consumption measures failed.')
-      }
-    })
-    .catch((error: Error | AxiosError) =>
-      console.error('Error: Create consumption measures data', error)
-    )
+  try {
+    const response = await API.post('consumption_measures', newMeasureData)
+    return response.data
+  } catch (error) {
+    console.error('Error: Create consumption measures data', error)
+    return null
+  }
 }
