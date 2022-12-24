@@ -42,7 +42,7 @@ export const PlannedNavLogInfo = ({logs}: Props) => {
             <Text color="#ADADAD">
               Planned:{' '}
               {moment(navigationLog?.plannedEta).format(
-                'DD MMM YYYY | hh:mm A'
+                'DD MMM YYYY | HH:mm'
               )}
             </Text>
           </>

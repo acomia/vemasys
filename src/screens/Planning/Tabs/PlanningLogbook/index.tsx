@@ -65,7 +65,7 @@ const PlanningLogbook = () => {
             <Text color={'#23475C'} fontWeight="medium">
               Planned:{' '}
               {moment(navigationLog?.plannedEta).format(
-                'DD MMM YYYY | hh:mm A'
+                'DD MMM YYYY | HH:mm'
               )}
             </Text>
           </Box>

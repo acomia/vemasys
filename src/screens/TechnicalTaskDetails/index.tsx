@@ -151,7 +151,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
           </Text>
           <Text fontSize={ms(15)}>
             {task?.deadline
-              ? moment(task?.deadline).format('D MMM YYYY; hh:mm A')
+              ? moment(task?.deadline).format('D MMM YYYY; HH:mm')
               : 'Not set'}
           </Text>
         </Box>
@@ -162,7 +162,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
           </Text>
           <Text fontSize={ms(15)}>
             {task?.deadline
-              ? moment(task?.deadline).format('D MMM YYYY; hh:mm A')
+              ? moment(task?.deadline).format('D MMM YYYY; HH:mm')
               : 'Not set'}
           </Text>
         </Box>
