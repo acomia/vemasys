@@ -43,13 +43,13 @@ export const PreviousNavLogInfo = ({logs}: Props) => {
             <Text color="#ADADAD">
               Arrived:{' '}
               {moment(navigationLog?.arrivalDatetime).format(
-                'DD MMM YYYY | hh:mm A'
+                'DD MMM YYYY | HH:mm'
               )}
             </Text>
             <Text color="#ADADAD" fontSize={ms(11)}>
               Departure date:{' '}
               {moment(navigationLog?.departureDatetime).format(
-                'DD MMM YYYY | hh:mm A'
+                'DD MMM YYYY | HH:mm'
               )}
             </Text>
           </>

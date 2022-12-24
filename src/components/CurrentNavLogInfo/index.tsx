@@ -43,7 +43,7 @@ export const CurrentNavLogInfo = () => {
               Arrival:{' '}
               {moment(
                 currentNavLogs[currentNavLogs?.length - 1]?.arrivalDatetime
-              ).format('DD MMM YYYY | hh:mm A')}
+              ).format('DD MMM YYYY | HH:mm')}
             </Text>
           </>
         ) : vesselStatus?.speed > 0 ? (
@@ -57,7 +57,7 @@ export const CurrentNavLogInfo = () => {
             <Text color="#ADADAD">
               Last seen:{' '}
               {moment(prevNavLogs[0]?.arrivalDatetime).format(
-                'DD MMM YYYY | hh:mm A'
+                'DD MMM YYYY | HH:mm'
               )}
             </Text>
           </>

@@ -48,7 +48,7 @@ const DatetimePickerList = ({
               color={date ? Colors.text : Colors.disabled}
             >
               {date
-                ? moment(date).format('D MMM YYYY | hh:mm A')
+                ? moment(date).format('D MMM YYYY | HH:mm')
                 : 'No Date & Time Set'}
             </Text>
           </HStack>
