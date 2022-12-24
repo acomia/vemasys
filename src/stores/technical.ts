@@ -24,33 +24,33 @@ type TechnicalState = {
 }
 
 type TechnicalActions = {
-  getVesselBunkering?: (vesselId: string) => void
-  getVesselGasoilReservoirs?: (physicalVesselId: string) => void
-  getVesselBunkeringSuppliers?: () => void
-  createVesselBunkering?: (bunkering: any) => void
-  getVesselEngines?: (physicalVesselId: string) => void
-  getVesselReservoirs?: (physicalVesselId: string) => void
-  getVesselTasksCategory?: (vesselId: string) => void
-  getVesselTasksByCategory?: (vesselId: string, categoryKey: string) => void
-  createTaskComment?: (taskId: string, comment: string) => void
-  deleteTask?: (taskId: string) => void
-  createVesselTask?: (task: Task) => void
-  updateVesselTask?: (taskId: string, task: Task) => void
-  uploadFileBySubject?: (
+  getVesselBunkering: (vesselId: string) => void
+  getVesselGasoilReservoirs: (physicalVesselId: string) => void
+  getVesselBunkeringSuppliers: () => void
+  createVesselBunkering: (bunkering: any) => void
+  getVesselEngines: (physicalVesselId: string) => void
+  getVesselReservoirs: (physicalVesselId: string) => void
+  getVesselTasksCategory: (vesselId: string) => void
+  getVesselTasksByCategory: (vesselId: string, categoryKey: string) => void
+  createTaskComment: (taskId: string, comment: string) => void
+  deleteTask: (taskId: string) => void
+  createVesselTask: (task: Task) => void
+  updateVesselTask: (taskId: string, task: Task) => void
+  uploadFileBySubject: (
     subject: string,
     file: ImageFile,
     accessLevel: string,
     id: number
   ) => void
-  getVesselRoutines?: (vesselId: string) => void
-  getVesselRoutinesByCategory?: (vesselId: string, categoryKey: string) => void
-  getVesselRoutineDetails?: (id: string) => void
-  getVesselCertificates?: (vesselId: string) => void
-  getVesselPartLastMeasurements?: (id: string) => void
-  createNewConsumptionMeasure: (resId: string, value: string) => void
-  getVesselInventory?: (vesselId: string) => void
-  getConsumableTypes?: () => void
-  updateVesselInventoryItem?: (quantity: number, consumableId: number) => void
+  getVesselRoutines: (vesselId: string) => void
+  getVesselRoutinesByCategory: (vesselId: string, categoryKey: string) => void
+  getVesselRoutineDetails: (id: string) => void
+  getVesselCertificates: (vesselId: string) => void
+  getVesselPartLastMeasurements: (id: string) => void
+  createNewConsumptionMeasure: (resId: string, value: string) => object | null
+  getVesselInventory: (vesselId: string) => void
+  getConsumableTypes: () => void
+  updateVesselInventoryItem: (quantity: number, consumableId: number) => void
 }
 
 type TechnicalStore = TechnicalState & TechnicalActions
@@ -382,12 +382,11 @@ export const useTechnical = create(
         set({isTechnicalLoading: true})
         try {
           const response = await API.createNewConsumptionMeasure(resId, value)
-          set({
-            isTechnicalLoading: false,
-          })
+          set({isTechnicalLoading: false})
           return response
         } catch (error) {
           set({isTechnicalLoading: false})
+          return null
         }
       },
       getVesselInventory: async (vesselId: string) => {
