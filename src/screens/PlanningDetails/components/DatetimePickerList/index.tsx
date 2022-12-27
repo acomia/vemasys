@@ -1,6 +1,7 @@
 import React from 'react'
-import {HStack, Text, Pressable} from 'native-base'
+import {HStack, Text, Pressable, VStack} from 'native-base'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import ArrowDownIcon from 'react-native-vector-icons/MaterialIcons'
 import {ms} from 'react-native-size-matters'
 
 import {IconButton} from '@bluecentury/components'
@@ -14,19 +15,20 @@ const DatetimePickerList = ({
   locked,
   onChangeDate,
   onClearDate,
+  readOnly = false,
 }: any) => {
   return (
-    <HStack alignItems="center" mt={ms(15)}>
-      <Text fontSize={ms(16)} fontWeight="medium" minW={ms(35)}>
+    <VStack mb={ms(10)}>
+      <Text fontWeight="medium" color={Colors.disabled}>
         {title}
       </Text>
       <HStack
         flex="1"
-        bg="#F7F7F7"
-        borderRadius={ms(5)}
         p="2"
+        my={ms(5)}
+        bg={readOnly ? Colors.white : '#F7F7F7'}
+        borderRadius={ms(5)}
         alignItems="center"
-        ml={ms(15)}
       >
         <Pressable
           flex="1"
@@ -34,13 +36,13 @@ const DatetimePickerList = ({
             opacity: locked ? 0 : 0.7,
           }}
           onPress={onChangeDate}
-          disabled={locked}
+          disabled={locked || readOnly}
         >
           <HStack space="2" alignItems="center">
             <Icon
               name="calendar-month-outline"
               size={ms(22)}
-              color={locked ? Colors.disabled : Colors.highlighted_text}
+              color={locked || readOnly ? Colors.azure : Colors.disabled}
             />
             <Text
               fontSize="md"
@@ -59,9 +61,17 @@ const DatetimePickerList = ({
             onPress={onClearDate}
             size={ms(22)}
           />
-        ) : null}
+        ) : (
+          !readOnly && (
+            <ArrowDownIcon
+              name="keyboard-arrow-down"
+              size={ms(22)}
+              color={Colors.azure}
+            />
+          )
+        )}
       </HStack>
-    </HStack>
+    </VStack>
   )
 }
 
