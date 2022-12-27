@@ -115,14 +115,18 @@ export const usePlanning = create(
         try {
           const response = await API.getPlannedNavLog(vesselId)
           if (Array.isArray(response) && response.length > 0) {
-            response.forEach(async plan => {
+            response.forEach(async (plan, index) => {
               const act = await API.reloadNavigationLogActions(plan.id)
               plan.endActionDate = act[0]?.end
               plan.actionType = act[0]?.type
               set({
-                isPlanningLoading: false,
                 plannedNavigationLogs: response,
               })
+              if (index === response.length - 1) {
+                set({
+                  isPlanningLoading: false,
+                })
+              }
             })
           } else {
             set({

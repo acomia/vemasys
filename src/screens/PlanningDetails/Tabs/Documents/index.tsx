@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import {
   Actionsheet,
   Box,
@@ -49,6 +49,11 @@ const Documents = () => {
   const [selectedImg, setSelectedImg] = useState<ImageFile>({})
   const [viewImg, setViewImg] = useState(false)
   const [scannedImage, setScannedImage] = useState()
+
+  useEffect(() => {
+    getNavigationLogDocuments(navlog?.id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const scanDocument = async () => {
     // start the document scanner
