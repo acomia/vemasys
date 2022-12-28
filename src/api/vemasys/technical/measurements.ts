@@ -1,6 +1,6 @@
 import {API} from '../../apiService'
-import moment from 'moment-timezone'
 import {useEntity} from '@bluecentury/stores'
+import {Vemasys} from '@bluecentury/helpers'
 
 export const createNewConsumptionMeasure = async (
   resId: string,
@@ -8,7 +8,7 @@ export const createNewConsumptionMeasure = async (
 ) => {
   try {
     // Create new time in Brussels timezone & pass it
-    const newBrusselsDateTime = moment.tz('Europe/Brussels').format()
+    const newBrusselsDateTime = Vemasys.defaultDatetime()
     const newMeasureData = {
       vesselPart: {id: resId},
       user: {id: useEntity.getState().user?.id},

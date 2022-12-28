@@ -23,6 +23,7 @@ import {formatNumber} from '@bluecentury/constants'
 import {useEntity, useTechnical} from '@bluecentury/stores'
 import {LoadingAnimated} from '@bluecentury/components'
 import {Colors} from '@bluecentury/styles'
+import {MeasurementCard} from './measurement-card'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const Measurements = ({navigation, route}: Props) => {
@@ -268,33 +269,8 @@ const Measurements = ({navigation, route}: Props) => {
           <LoadingAnimated />
         ) : (
           <FlatList
-            renderItem={({item, index}) => (
-              <Box
-                key={index}
-                bg={Colors.white}
-                borderColor={Colors.light}
-                borderRadius={ms(5)}
-                borderWidth={1}
-                mb={ms(7)}
-                px={ms(14)}
-                py={ms(12)}
-                shadow={2}
-              >
-                <HStack alignItems="center">
-                  <Box flex="1">
-                    <Text color={Colors.text} fontWeight="medium">
-                      {item?.user?.firstname} {item?.user?.lastname}
-                    </Text>
-                    <Text color={Colors.disabled}>
-                      {moment(item?.date).format('DD MMM YYYY - HH:mm')}
-                    </Text>
-                  </Box>
-                  <Text bold color={Colors.highlighted_text}>
-                    {formatNumber(item?.value, 0, ' ')}{' '}
-                    {routeFrom === 'reservoir' ? 'L' : 'h'}
-                  </Text>
-                </HStack>
-              </Box>
+            renderItem={props => (
+              <MeasurementCard routeFrom={routeFrom} {...props} />
             )}
             contentContainerStyle={{paddingBottom: 20}}
             data={lastMeasurements}
