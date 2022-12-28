@@ -8,7 +8,7 @@ export const createNewConsumptionMeasure = async (
 ) => {
   try {
     // Create new time in Brussels timezone & pass it
-    const newBrusselsDateTime = moment.tz('Europe/Brussels')
+    const newBrusselsDateTime = moment.tz('Europe/Brussels').format()
     const newMeasureData = {
       vesselPart: {id: resId},
       user: {id: useEntity.getState().user?.id},
