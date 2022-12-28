@@ -26,9 +26,8 @@ API.interceptors.request.use(async req => {
     'X-active-entity-user-id': `${entityUserId}`,
   }
   if (__DEV__) {
-    // console.log('Request Url: ', req.url)
-    // console.log('X-active-entity-user-id: ', entityUserId)
-    console.log('Request Headers: ', req.baseURL)
+    const requestUrl = req.url?.split('?')[0]
+    console.log(`Request URL: api/${requestUrl}`)
   }
   return req
 })

@@ -3,7 +3,7 @@ import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as API from '@bluecentury/api/vemasys'
 import {ENTITY_TYPE_EXPLOITATION_VESSEL} from '@bluecentury/constants'
-import {EntityUser, Vessel} from '@bluecentury/models'
+import {EntityUser, User, Vessel} from '@bluecentury/models'
 
 type EntityState = {
   hasEntityHydrated: boolean
@@ -12,7 +12,7 @@ type EntityState = {
   isLoadingCurrentUserInfo: boolean
   isLoadingEntityUsers: boolean
   isLoadingPendingRoles: boolean
-  user: Array<any>
+  user: User | null
   userVessels: Array<any>
   entityUsers: Array<EntityUser>
   entityId: string | undefined
@@ -50,7 +50,7 @@ const initialEntityState: EntityState = {
   isLoadingCurrentUserInfo: false,
   isLoadingEntityUsers: false,
   isLoadingPendingRoles: false,
-  user: [],
+  user: null,
   userVessels: [],
   entityUsers: [],
   entityId: undefined,
@@ -86,12 +86,12 @@ export const useEntity = create(
       },
       getUserInfo: async () => {
         set({
-          user: [],
+          user: null,
           isLoadingCurrentUserInfo: true,
           hasErrorLoadingCurrentUser: false,
         })
         try {
-          const response = await API.reloadUser()
+          const response = await API.getUserInfo()
           set({
             user: response,
             isLoadingCurrentUserInfo: false,

@@ -1,19 +1,5 @@
 import {API} from '../../apiService'
 
-const reloadUser = async () => {
-  return API.get<any>('me')
-    .then(response => {
-      if (response.data) {
-        return response.data
-      } else {
-        throw Error('Request Failed')
-      }
-    })
-    .catch(error => {
-      console.error('Error: API User ', error)
-    })
-}
-
 const reloadEntityUsers = async () => {
   return API.get<any>('v2/active_entity_users')
     .then(response => {
@@ -97,7 +83,6 @@ const rejectPendingRole = async (id: string) => {
 }
 
 export {
-  reloadUser,
   reloadEntityUsers,
   getVesselNavigationDetails,
   selectEntityUser,
