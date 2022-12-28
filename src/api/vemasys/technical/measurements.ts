@@ -20,7 +20,7 @@ export const createNewConsumptionMeasure = async (
     const response = await API.post('consumption_measures', newMeasureData)
     return response.data
   } catch (error) {
-    console.error('Error createNewConsumptionMeasure', error)
+    console.log('Error createNewConsumptionMeasure', error)
     return null
   }
 }
