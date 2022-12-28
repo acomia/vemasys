@@ -23,6 +23,7 @@ import {formatNumber} from '@bluecentury/constants'
 import {useEntity, useTechnical} from '@bluecentury/stores'
 import {LoadingAnimated} from '@bluecentury/components'
 import {Colors} from '@bluecentury/styles'
+import {MeasurementCard} from './measurement-card'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const Measurements = ({navigation, route}: Props) => {
@@ -54,11 +55,11 @@ const Measurements = ({navigation, route}: Props) => {
         return (
           <Text
             bg={res === 'success' ? 'emerald.500' : 'red.500'}
+            color={Colors.white}
+            mb={5}
             px="2"
             py="1"
             rounded="sm"
-            mb={5}
-            color={Colors.white}
           >
             {text}
           </Text>
@@ -74,11 +75,11 @@ const Measurements = ({navigation, route}: Props) => {
         return (
           <Text
             bg="warning.500"
+            color={Colors.white}
+            mb={5}
             px="2"
             py="1"
             rounded="sm"
-            mb={5}
-            color={Colors.white}
           >
             {text}
           </Text>
@@ -99,33 +100,33 @@ const Measurements = ({navigation, route}: Props) => {
     fillPct = fillPct < 0 ? fillPct * -1 : fillPct
     return (
       <Box
+        bg={Colors.white}
+        borderRadius={ms(5)}
         px={ms(15)}
         py={ms(20)}
         shadow={5}
-        bg={Colors.white}
-        borderRadius={ms(5)}
       >
         <HStack alignItems="center">
           <Skeleton
             flex="1"
             h={ms(22)}
-            w={ms(100)}
-            rounded="full"
             isLoaded={!isTechnicalLoading}
+            rounded="full"
             startColor={Colors.light}
+            w={ms(100)}
           >
-            <Text flex="1" color={Colors.azure} fontWeight="medium">
+            <Text color={Colors.azure} flex="1" fontWeight="medium">
               {data?.name}
             </Text>
           </Skeleton>
           <Skeleton
             h={ms(22)}
-            w={ms(100)}
-            rounded="full"
             isLoaded={!isTechnicalLoading}
+            rounded="full"
             startColor={Colors.light}
+            w={ms(100)}
           >
-            <Text color={Colors.azure} fontSize={ms(16)} bold>
+            <Text bold color={Colors.azure} fontSize={ms(16)}>
               {formatNumber(value, 0, ' ')} L (
               {isNaN(fillPct) || fillPct === Infinity ? 0 : Math.floor(fillPct)}
               %)
@@ -134,11 +135,11 @@ const Measurements = ({navigation, route}: Props) => {
         </HStack>
         <Skeleton
           h={ms(22)}
-          w={ms(100)}
-          rounded="full"
           isLoaded={!isTechnicalLoading}
-          startColor={Colors.light}
           mt={ms(5)}
+          rounded="full"
+          startColor={Colors.light}
+          w={ms(100)}
         >
           <Text color={Colors.disabled} fontWeight="medium">
             {moment(
@@ -150,18 +151,18 @@ const Measurements = ({navigation, route}: Props) => {
         </Skeleton>
         <Skeleton
           h={ms(20)}
-          rounded="full"
           isLoaded={!isTechnicalLoading}
-          startColor={Colors.light}
           mt={ms(5)}
+          rounded="full"
+          startColor={Colors.light}
         >
           <Progress
-            value={isNaN(fillPct) ? 0 : Math.floor(fillPct)}
-            mt={ms(10)}
-            size="md"
             colorScheme={
               fillPct <= 25 ? 'danger' : fillPct <= 50 ? 'warning' : 'primary'
             }
+            mt={ms(10)}
+            size="md"
+            value={isNaN(fillPct) ? 0 : Math.floor(fillPct)}
           />
         </Skeleton>
       </Box>
@@ -172,33 +173,33 @@ const Measurements = ({navigation, route}: Props) => {
     const pLength = data?.data.length - 1
     return (
       <Box
+        bg={Colors.white}
+        borderRadius={ms(5)}
         px={ms(15)}
         py={ms(20)}
         shadow={5}
-        bg={Colors.white}
-        borderRadius={ms(5)}
       >
         <HStack alignItems="center">
           <Skeleton
             flex="1"
             h={ms(22)}
-            w={ms(100)}
-            rounded="full"
             isLoaded={!isTechnicalLoading}
+            rounded="full"
             startColor={Colors.light}
+            w={ms(100)}
           >
-            <Text flex="1" color={Colors.azure} fontWeight="medium">
+            <Text color={Colors.azure} flex="1" fontWeight="medium">
               {data?.data[pLength]?.type?.title}
             </Text>
           </Skeleton>
           <Skeleton
             h={ms(22)}
-            w={ms(100)}
-            rounded="full"
             isLoaded={!isTechnicalLoading}
+            rounded="full"
             startColor={Colors.light}
+            w={ms(100)}
           >
-            <Text color={Colors.azure} fontSize={ms(16)} bold>
+            <Text bold color={Colors.azure} fontSize={ms(16)}>
               {formatNumber(
                 Array.isArray(lastMeasurements) && lastMeasurements
                   ? lastMeasurements[0]?.value
@@ -212,11 +213,11 @@ const Measurements = ({navigation, route}: Props) => {
         </HStack>
         <Skeleton
           h={ms(22)}
-          w={ms(100)}
-          rounded="full"
           isLoaded={!isTechnicalLoading}
-          startColor={Colors.light}
           mt={ms(5)}
+          rounded="full"
+          startColor={Colors.light}
+          w={ms(100)}
         >
           <Text color={Colors.disabled} fontWeight="medium">
             {moment(
@@ -253,82 +254,57 @@ const Measurements = ({navigation, route}: Props) => {
 
   return (
     <Box
-      flex="1"
       bg={Colors.white}
       borderTopLeftRadius={ms(15)}
       borderTopRightRadius={ms(15)}
+      flex="1"
     >
       <Box flex="1" px={ms(12)} py={ms(20)}>
         {routeFrom === 'reservoir' ? renderReservoirCard() : renderEngineCard()}
-        <Text fontSize={ms(16)} bold color={Colors.text} mt={ms(25)}>
+        <Text bold color={Colors.text} fontSize={ms(16)} mt={ms(25)}>
           Last Measurements
         </Text>
-        <Divider mt={ms(8)} mb={ms(15)} />
+        <Divider mb={ms(15)} mt={ms(8)} />
         {isTechnicalLoading ? (
           <LoadingAnimated />
         ) : (
           <FlatList
-            data={lastMeasurements}
-            renderItem={({item, index}) => (
-              <Box
-                key={index}
-                borderRadius={ms(5)}
-                bg={Colors.white}
-                borderWidth={1}
-                borderColor={Colors.light}
-                shadow={2}
-                py={ms(12)}
-                px={ms(14)}
-                mb={ms(7)}
-              >
-                <HStack alignItems="center">
-                  <Box flex="1">
-                    <Text fontWeight="medium" color={Colors.text}>
-                      {item?.user?.firstname} {item?.user?.lastname}
-                    </Text>
-                    <Text color={Colors.disabled}>
-                      {moment(item?.date).format('DD MMM YYYY - HH:mm')}
-                    </Text>
-                  </Box>
-                  <Text bold color={Colors.highlighted_text}>
-                    {formatNumber(item?.value, 0, ' ')}{' '}
-                    {routeFrom === 'reservoir' ? 'L' : 'h'}
-                  </Text>
-                </HStack>
-              </Box>
+            renderItem={props => (
+              <MeasurementCard routeFrom={routeFrom} {...props} />
             )}
-            keyExtractor={(item: any) => `LastMeasure-${item?.id}`}
             contentContainerStyle={{paddingBottom: 20}}
+            data={lastMeasurements}
+            keyExtractor={(item: any) => `LastMeasure-${item?.id}`}
           />
         )}
       </Box>
-      <Modal isOpen={open} size="full" px={ms(15)} animationPreset="slide">
+      <Modal animationPreset="slide" isOpen={open} px={ms(15)} size="full">
         <Modal.Content>
           <Modal.Header>Enter new measurement (L)</Modal.Header>
           <Modal.Body>
             <Input
-              variant="filled"
-              backgroundColor="#F7F7F7"
-              keyboardType="number-pad"
-              height={ms(40)}
-              fontSize={ms(15)}
               bold
+              backgroundColor="#F7F7F7"
+              fontSize={ms(15)}
+              height={ms(40)}
+              keyboardType="number-pad"
               value={newMeasurement}
+              variant="filled"
               onChangeText={e => setNewMeasurement(e)}
             />
           </Modal.Body>
           <Modal.Footer>
             <Button
-              flex="1"
               bg="#E0E0E0"
+              flex="1"
               m={ms(5)}
               onPress={() => setOpen(false)}
             >
               Cancel
             </Button>
             <Button
-              flex="1"
               bg={Colors.primary}
+              flex="1"
               m={ms(5)}
               onPress={onAddNewConsumptionMeasure}
             >
@@ -344,9 +320,9 @@ const Measurements = ({navigation, route}: Props) => {
           }}
         >
           <Button
-            m={ms(16)}
-            leftIcon={<Icon as={Ionicons} name="add" size="sm" />}
             bg={Colors.primary}
+            leftIcon={<Icon as={Ionicons} name="add" size="sm" />}
+            m={ms(16)}
             onPress={() => setOpen(true)}
           >
             Add a measurement

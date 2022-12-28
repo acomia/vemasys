@@ -86,6 +86,10 @@ export default function MainNavigator({navigation}: Props) {
     }
   }, [token])
 
+  useEffect(() => {
+    useEntity.getState().getUserInfo()
+  }, [])
+
   const initBackgroundFetch = async () => {
     const entityId = useEntity.getState().entityId as string
     // BackgroundFetch event handler.
@@ -111,7 +115,7 @@ export default function MainNavigator({navigation}: Props) {
     }
 
     // Initialize BackgroundFetch only once when component mounts.
-    let status = await BackgroundFetch.configure(
+    const status = await BackgroundFetch.configure(
       {minimumFetchInterval: 15, enableHeadless: true, stopOnTerminate: false},
       onEvent,
       onTimeout
@@ -131,20 +135,20 @@ export default function MainNavigator({navigation}: Props) {
         headerStyle: {backgroundColor: Colors.light},
         headerShadowVisible: false,
         headerRight: () => (
-          <Box flexDirection="row" alignItems="center" mr={2}>
+          <Box alignItems="center" flexDirection="row" mr={2}>
             <HStack space="3">
               {activeFormations.length ? (
                 <IconButton
+                  size={ms(25)}
                   source={Icons.formations}
                   onPress={() => navigation.navigate(Screens.Formations)}
-                  size={ms(25)}
                 />
               ) : null}
               {isQrScanner ? (
                 <IconButton
+                  size={ms(25)}
                   source={Icons.qr}
                   onPress={() => navigation.navigate(Screens.QRScanner)}
-                  size={ms(25)}
                 />
               ) : null}
               <Pressable
@@ -159,32 +163,32 @@ export default function MainNavigator({navigation}: Props) {
         headerLeft: () => (
           <Box ml={ms(20)}>
             <IconButton
+              size={ms(20)}
               source={Icons.menu}
               onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
-              size={ms(20)}
             />
           </Box>
         ),
       }}
-      initialRouteName={Screens.MapView}
       drawerContent={props => <Sidebar {...props} />}
+      initialRouteName={Screens.MapView}
     >
-      <Screen name={Screens.MapView} component={Map} />
-      <Screen name={Screens.Notifications} component={Notification} />
-      <Screen name={Screens.Planning} component={Planning} />
-      <Screen name={Screens.Charters} component={Charters} />
-      <Screen name={Screens.Technical} component={Technical} />
-      <Screen name={Screens.Financial} component={Financial} />
-      <Screen name={Screens.Information} component={Information} />
-      <Screen name={Screens.Crew} component={Crew} />
+      <Screen component={Map} name={Screens.MapView} />
+      <Screen component={Notification} name={Screens.Notifications} />
+      <Screen component={Planning} name={Screens.Planning} />
+      <Screen component={Charters} name={Screens.Charters} />
+      <Screen component={Technical} name={Screens.Technical} />
+      <Screen component={Financial} name={Screens.Financial} />
+      <Screen component={Information} name={Screens.Information} />
+      <Screen component={Crew} name={Screens.Crew} />
       <Screen
-        name={Screens.ChangeRole}
-        component={Entity}
         options={{
           headerTitle: 'Select your role',
         }}
+        component={Entity}
+        name={Screens.ChangeRole}
       />
-      <Screen name={Screens.Settings} component={Settings} />
+      <Screen component={Settings} name={Screens.Settings} />
     </Navigator>
   )
 }

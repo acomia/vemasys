@@ -385,6 +385,10 @@ export const useTechnical = create(
           set({isTechnicalLoading: false})
           return response
         } catch (error) {
+          console.log(
+            'Error>stores>technical>createNewConsumptionMeasure: ',
+            error
+          )
           set({isTechnicalLoading: false})
           return null
         }
