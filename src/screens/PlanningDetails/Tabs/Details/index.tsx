@@ -75,19 +75,12 @@ const Details = () => {
   const {user, selectedEntity, physicalVesselId} = useEntity()
   const {navlog, title}: any = route.params
   const [dates, setDates] = useState<Dates>({
-    plannedEta: navlog !== undefined ? navigationLogDetails?.plannedEta : null,
-    captainDatetimeEta:
-      navlog !== undefined ? navigationLogDetails?.captainDatetimeEta : null,
-    announcedDatetime:
-      navlog !== undefined ? navigationLogDetails?.announcedDatetime : null,
-    arrivalDatetime:
-      navlog !== undefined ? navigationLogDetails?.arrivalDatetime : null,
-    terminalApprovedDeparture:
-      navlog !== undefined
-        ? navigationLogDetails?.terminalApprovedDeparture
-        : null,
-    departureDatetime:
-      navlog !== undefined ? navigationLogDetails?.departureDatetime : null,
+    plannedEta: navigationLogDetails?.plannedEta,
+    captainDatetimeEta: navigationLogDetails?.captainDatetimeEta,
+    announcedDatetime: navigationLogDetails?.announcedDatetime,
+    arrivalDatetime: navigationLogDetails?.arrivalDatetime,
+    terminalApprovedDeparture: navigationLogDetails?.terminalApprovedDeparture,
+    departureDatetime: navigationLogDetails?.departureDatetime,
   })
 
   const [viewImg, setViewImg] = useState(false)
@@ -115,7 +108,17 @@ const Details = () => {
   useEffect(() => {
     const active = navigationLogActions?.filter(action => _.isNull(action?.end))
     setActiveActions(active)
-  }, [navigationLogActions, isCreateNavLogActionSuccess])
+    setDates({
+      ...dates,
+      plannedEta: navigationLogDetails?.plannedEta,
+      captainDatetimeEta: navigationLogDetails?.captainDatetimeEta,
+      announcedDatetime: navigationLogDetails?.announcedDatetime,
+      arrivalDatetime: navigationLogDetails?.arrivalDatetime,
+      terminalApprovedDeparture:
+        navigationLogDetails?.terminalApprovedDeparture,
+      departureDatetime: navigationLogDetails?.departureDatetime,
+    })
+  }, [navigationLogActions, navigationLogDetails, isCreateNavLogActionSuccess])
 
   useEffect(() => {
     if (
@@ -125,7 +128,7 @@ const Details = () => {
     } else {
       setButtonActionLabel('Loading')
     }
-    if (updateNavlogDatesSuccess === 'SUCCESS') {
+    if (updateNavlogDatesSuccess === 'SUCCESS' && focused) {
       showToast('Updates saved.', 'success')
     }
     if (updateNavlogDatesFailed === 'FAILED') {
