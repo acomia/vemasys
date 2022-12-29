@@ -50,6 +50,8 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
     updateBulkCargo,
     navigationLogActions,
     getNavigationLogActions,
+    getNavigationLogDetails,
+    updateNavlogDates,
   } = usePlanning()
 
   const cargoChoices =
@@ -103,6 +105,14 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
       opacity: dateTimeOpacity.value,
     }
   })
+  const earliest =
+    navigationLogActions?.length > 0
+      ? navigationLogActions?.reduce((previous, current) => {
+          return new Date(current.start) < new Date(previous.start)
+            ? current
+            : previous
+        })
+      : null
 
   useEffect(() => {
     navigation.setOptions({
@@ -123,6 +133,21 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
   useEffect(() => {
     if (isCreateNavLogActionSuccess) {
       updateBulkCargo(newBulkCargoData)
+      if (
+        earliest !== null &&
+        new Date(earliest.start) < new Date(navActionDetails.start)
+      ) {
+        updateNavlogDates(navigationLogDetails?.id, {
+          announcedDatetime: earliest.start,
+          startActionDatetime: navActionDetails.start,
+        })
+      } else {
+        updateNavlogDates(navigationLogDetails?.id, {
+          announcedDatetime: navActionDetails.start,
+          startActionDatetime: navActionDetails.start,
+        })
+      }
+
       showToast('Action added.', 'success')
     }
     if (isUpdateNavLogActionSuccess) {
@@ -161,10 +186,11 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
     })
   }
 
-  const onSuccess = () => {
+  const onSuccess = async () => {
     reset()
-    getNavigationLogActions(navigationLogDetails?.id)
-    navigation.goBack()
+    getNavigationLogDetails(navigationLogDetails?.id),
+      getNavigationLogActions(navigationLogDetails?.id),
+      navigation.goBack()
   }
 
   const renderActionTypeIcon = (type: string) => {
@@ -329,6 +355,13 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
   }
 
   const handleSaveAction = () => {
+    if (
+      new Date(navActionDetails.start) <
+      new Date(navigationLogDetails?.announcedDatetime)
+    ) {
+      showToast('Start loading/unloading can’t be before start NOR', 'failed')
+      return
+    }
     const bulkCargo = navigationLogDetails?.bulkCargo?.find(
       cargo => cargo.id === navActionDetails.cargoHoldActions[0].navigationBulk
     )

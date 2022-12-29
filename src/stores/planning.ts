@@ -11,7 +11,7 @@ type PlanningState = {
   plannedNavigationLogs: Array<any> | undefined
   historyNavigationLogs: any[]
   navigationLogDetails?: NavigationLog | undefined
-  navigationLogActions?: any[]
+  navigationLogActions?: any[] | undefined
   navigationLogCargoHolds?: any[]
   navigationLogComments?: any[]
   navigationLogDocuments?: any[]
