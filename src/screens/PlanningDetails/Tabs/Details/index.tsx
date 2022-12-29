@@ -38,6 +38,7 @@ import {
 } from '@bluecentury/constants'
 import {PROD_URL} from '@vemasys/env'
 import {LoadingAnimated} from '@bluecentury/components'
+import {Vemasys} from '@bluecentury/helpers'
 
 type Dates = {
   plannedEta: Date | undefined | StringOrNull
@@ -75,24 +76,17 @@ const Details = () => {
   const {user, selectedEntity, physicalVesselId} = useEntity()
   const {navlog, title}: any = route.params
   const [dates, setDates] = useState<Dates>({
-    plannedEta: navlog !== undefined ? navigationLogDetails?.plannedEta : null,
-    captainDatetimeEta:
-      navlog !== undefined ? navigationLogDetails?.captainDatetimeEta : null,
-    announcedDatetime:
-      navlog !== undefined ? navigationLogDetails?.announcedDatetime : null,
-    arrivalDatetime:
-      navlog !== undefined ? navigationLogDetails?.arrivalDatetime : null,
-    terminalApprovedDeparture:
-      navlog !== undefined
-        ? navigationLogDetails?.terminalApprovedDeparture
-        : null,
-    departureDatetime:
-      navlog !== undefined ? navigationLogDetails?.departureDatetime : null,
+    plannedEta: navigationLogDetails?.plannedEta,
+    captainDatetimeEta: navigationLogDetails?.captainDatetimeEta,
+    announcedDatetime: navigationLogDetails?.announcedDatetime,
+    arrivalDatetime: navigationLogDetails?.arrivalDatetime,
+    terminalApprovedDeparture: navigationLogDetails?.terminalApprovedDeparture,
+    departureDatetime: navigationLogDetails?.departureDatetime,
   })
 
   const [viewImg, setViewImg] = useState(false)
   const [selectedImg, setSelectedImg] = useState<ImageFile>({})
-  const [selectedDate, setSelectedDate] = useState('')
+  const [selectedType, setSelectedType] = useState('')
   const [openDatePicker, setOpenDatePicker] = useState(false)
   const [activeActions, setActiveActions] = useState([])
   const [buttonActionLabel, setButtonActionLabel] = useState('Loading')
@@ -115,7 +109,17 @@ const Details = () => {
   useEffect(() => {
     const active = navigationLogActions?.filter(action => _.isNull(action?.end))
     setActiveActions(active)
-  }, [navigationLogActions, isCreateNavLogActionSuccess])
+    setDates({
+      ...dates,
+      plannedEta: navigationLogDetails?.plannedEta,
+      captainDatetimeEta: navigationLogDetails?.captainDatetimeEta,
+      announcedDatetime: navigationLogDetails?.announcedDatetime,
+      arrivalDatetime: navigationLogDetails?.arrivalDatetime,
+      terminalApprovedDeparture:
+        navigationLogDetails?.terminalApprovedDeparture,
+      departureDatetime: navigationLogDetails?.departureDatetime,
+    })
+  }, [navigationLogActions, navigationLogDetails, isCreateNavLogActionSuccess])
 
   useEffect(() => {
     if (
@@ -125,7 +129,7 @@ const Details = () => {
     } else {
       setButtonActionLabel('Loading')
     }
-    if (updateNavlogDatesSuccess === 'SUCCESS') {
+    if (updateNavlogDatesSuccess === 'SUCCESS' && focused) {
       showToast('Updates saved.', 'success')
     }
     if (updateNavlogDatesFailed === 'FAILED') {
@@ -179,24 +183,25 @@ const Details = () => {
   }
 
   const onDatesChange = (date: Date) => {
-    switch (selectedDate) {
+    const formattedDate = Vemasys.formatDate(date)
+    switch (selectedType) {
       case 'PLN':
-        setDates({...dates, plannedEta: date})
+        setDates({...dates, plannedEta: formattedDate})
         return
       case 'ETA':
-        setDates({...dates, captainDatetimeEta: date})
+        setDates({...dates, captainDatetimeEta: formattedDate})
         return
       case 'NOR':
-        setDates({...dates, announcedDatetime: date})
+        setDates({...dates, announcedDatetime: formattedDate})
         return
       case 'ARR':
-        setDates({...dates, arrivalDatetime: date})
+        setDates({...dates, arrivalDatetime: formattedDate})
         return
       case 'DOC':
-        setDates({...dates, terminalApprovedDeparture: date})
+        setDates({...dates, terminalApprovedDeparture: formattedDate})
         return
       case 'DEP':
-        setDates({...dates, departureDatetime: date})
+        setDates({...dates, departureDatetime: formattedDate})
         return
     }
   }
@@ -220,7 +225,7 @@ const Details = () => {
         date={dates.plannedEta}
         locked={isUnknownLocation ? true : navigationLogDetails?.locked}
         onChangeDate={() => {
-          setSelectedDate('PLN')
+          setSelectedType('PLN')
           setOpenDatePicker(true)
         }}
         onClearDate={() => setDates({...dates, plannedEta: null})}
@@ -230,7 +235,7 @@ const Details = () => {
         date={dates.captainDatetimeEta}
         locked={isUnknownLocation ? true : navigationLogDetails?.locked}
         onChangeDate={() => {
-          setSelectedDate('ETA')
+          setSelectedType('ETA')
           setOpenDatePicker(true)
         }}
         onClearDate={() => setDates({...dates, captainDatetimeEta: null})}
@@ -245,7 +250,7 @@ const Details = () => {
         date={dates.announcedDatetime}
         locked={isUnknownLocation ? true : navigationLogDetails?.locked}
         onChangeDate={() => {
-          setSelectedDate('NOR')
+          setSelectedType('NOR')
           setOpenDatePicker(true)
         }}
         onClearDate={() => setDates({...dates, announcedDatetime: null})}
@@ -266,7 +271,7 @@ const Details = () => {
         date={dates.terminalApprovedDeparture}
         locked={isUnknownLocation ? true : navigationLogDetails?.locked}
         onChangeDate={() => {
-          setSelectedDate('DOC')
+          setSelectedType('DOC')
           setOpenDatePicker(true)
         }}
         onClearDate={() =>

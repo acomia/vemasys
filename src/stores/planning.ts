@@ -11,7 +11,7 @@ type PlanningState = {
   plannedNavigationLogs: Array<any> | undefined
   historyNavigationLogs: any[]
   navigationLogDetails?: NavigationLog | undefined
-  navigationLogActions?: any[]
+  navigationLogActions?: any[] | undefined
   navigationLogCargoHolds?: any[]
   navigationLogComments?: any[]
   navigationLogDocuments?: any[]
@@ -48,7 +48,7 @@ type PlanningActions = {
   uploadImgFile: (file: ImageFile) => void
   deleteComment: (id: string) => void
   uploadVesselNavigationLogFile: (navLogId: string, body: any) => void
-  createNavigationLogAction?: (
+  createNavigationLogAction: (
     navigationLogId: string,
     navigationLogActionDetails: NavigationLogAction
   ) => void
