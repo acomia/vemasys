@@ -31,6 +31,7 @@ import {usePlanning} from '@bluecentury/stores'
 import {formatBulkTypeLabel, titleCase} from '@bluecentury/constants'
 import {IconButton, LoadingAnimated} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
+import {Vemasys} from '@bluecentury/helpers'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const AddEditNavlogAction = ({navigation, route}: Props) => {
@@ -110,7 +111,8 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
           <IconButton
             source={Icons.trash}
             onPress={() => {
-              setConfirmModal(true), setActionMethod('Delete')
+              setConfirmModal(true)
+              setActionMethod('Delete')
             }}
             size={22}
           />
@@ -296,14 +298,15 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
   }
 
   const onDatesChange = (date: Date) => {
+    const formattedDate = Vemasys.formatDate(date)
     if (selectedDate === 'start') {
       dateTimeHeight.value = withTiming(190, {duration: 800})
       dateTimeOpacity.value = withTiming(1)
-      setNavActionDetails({...navActionDetails, start: date})
+      setNavActionDetails({...navActionDetails, start: formattedDate})
     } else if (selectedDate === 'estimated') {
-      setNavActionDetails({...navActionDetails, estimatedEnd: date})
+      setNavActionDetails({...navActionDetails, estimatedEnd: formattedDate})
     } else {
-      setNavActionDetails({...navActionDetails, end: date})
+      setNavActionDetails({...navActionDetails, end: formattedDate})
     }
   }
 
@@ -394,7 +397,8 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
           date={navActionDetails.start}
           color={Colors.secondary}
           onChangeDate={() => {
-            setSelectedDate('start'), setOpenDatePicker(true)
+            setSelectedDate('start')
+            setOpenDatePicker(true)
           }}
         />
         <Animated.View
@@ -407,7 +411,8 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
             date={navActionDetails.estimatedEnd}
             color={Colors.azure}
             onChangeDate={() => {
-              setSelectedDate('estimated'), setOpenDatePicker(true)
+              setSelectedDate('estimated')
+              setOpenDatePicker(true)
             }}
           />
           <Text fontWeight="medium" color={Colors.disabled}>
@@ -417,7 +422,8 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
             date={navActionDetails.end}
             color={Colors.danger}
             onChangeDate={() => {
-              setSelectedDate('end'), setOpenDatePicker(true)
+              setSelectedDate('end')
+              setOpenDatePicker(true)
             }}
           />
         </Animated.View>
@@ -428,7 +434,8 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
           date={new Date()}
           mode="datetime"
           onConfirm={date => {
-            setOpenDatePicker(false), onDatesChange(date)
+            setOpenDatePicker(false)
+            onDatesChange(date)
           }}
           onCancel={() => {
             setOpenDatePicker(false)

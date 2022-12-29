@@ -48,7 +48,7 @@ type PlanningActions = {
   uploadImgFile: (file: ImageFile) => void
   deleteComment: (id: string) => void
   uploadVesselNavigationLogFile: (navLogId: string, body: any) => void
-  createNavigationLogAction?: (
+  createNavigationLogAction: (
     navigationLogId: string,
     navigationLogActionDetails: NavigationLogAction
   ) => void
