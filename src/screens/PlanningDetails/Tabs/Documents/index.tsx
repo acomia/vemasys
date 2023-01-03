@@ -37,7 +37,7 @@ const Documents = () => {
   const toast = useToast()
   const {navlog}: any = route.params
   const {
-    isPlanningLoading,
+    isPlanningDocumentsLoading,
     navigationLogDetails,
     navigationLogDocuments,
     getNavigationLogDocuments,
@@ -221,7 +221,7 @@ const Documents = () => {
     }
   }
 
-  if (isPlanningLoading) return <LoadingAnimated />
+  if (isPlanningDocumentsLoading) return <LoadingAnimated />
 
   return (
     <Box flex="1">
@@ -233,7 +233,7 @@ const Documents = () => {
         refreshControl={
           <RefreshControl
             onRefresh={onPullToReload}
-            refreshing={isPlanningLoading}
+            refreshing={isPlanningDocumentsLoading}
           />
         }
       >

@@ -33,7 +33,6 @@ import {
   formatLocationLabel,
   hasSelectedEntityUserPermission,
   ROLE_PERMISSION_NAVIGATION_LOG_ADD_COMMENT,
-  ROLE_PERMISSION_NAVIGATION_LOG_ADD_FILE,
   titleCase,
 } from '@bluecentury/constants'
 import {PROD_URL} from '@vemasys/env'
@@ -56,6 +55,9 @@ const Details = () => {
   const focused = useIsFocused()
   const {
     isPlanningLoading,
+    isPlanningDetailsLoading,
+    isPlanningActionsLoading,
+    isPlanningCommentsLoading,
     navigationLogDetails,
     navigationLogComments,
     navigationLogActions,
@@ -73,7 +75,7 @@ const Details = () => {
     isCreateNavLogActionSuccess,
     reset,
   } = usePlanning()
-  const {user, selectedEntity, physicalVesselId} = useEntity()
+  const {selectedEntity} = useEntity()
   const {navlog, title}: any = route.params
   const [dates, setDates] = useState<Dates>({
     plannedEta: navigationLogDetails?.plannedEta,
@@ -89,7 +91,7 @@ const Details = () => {
   const [selectedType, setSelectedType] = useState('')
   const [openDatePicker, setOpenDatePicker] = useState(false)
   const [activeActions, setActiveActions] = useState([])
-  const [buttonActionLabel, setButtonActionLabel] = useState('Loading')
+  const [buttonActionLabel, setButtonActionLabel] = useState(' ')
   const [selectedAction, setSelectedAction] = useState<NavigationLogAction>({})
   const [confirmModal, setConfirmModal] = useState(false)
   const hasAddCommentPermission = hasSelectedEntityUserPermission(
@@ -104,6 +106,7 @@ const Details = () => {
     getNavigationLogComments(navlog?.id)
     // getNavigationLogCargoHolds(physicalVesselId)
     // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {}
   }, [])
 
   useEffect(() => {
@@ -119,9 +122,6 @@ const Details = () => {
         navigationLogDetails?.terminalApprovedDeparture,
       departureDatetime: navigationLogDetails?.departureDatetime,
     })
-  }, [navigationLogActions, navigationLogDetails, isCreateNavLogActionSuccess])
-
-  useEffect(() => {
     if (
       navigationLogDetails?.bulkCargo?.some(cargo => cargo.isLoading === false)
     ) {
@@ -129,6 +129,9 @@ const Details = () => {
     } else {
       setButtonActionLabel('Loading')
     }
+  }, [navigationLogActions, navigationLogDetails, isCreateNavLogActionSuccess])
+
+  useEffect(() => {
     if (updateNavlogDatesSuccess === 'SUCCESS' && focused) {
       showToast('Updates saved.', 'success')
     }
@@ -544,7 +547,13 @@ const Details = () => {
     getNavigationLogComments(navlog.id)
   }
 
-  if (isPlanningLoading) return <LoadingAnimated />
+  if (
+    isPlanningLoading ||
+    isPlanningDetailsLoading ||
+    isPlanningActionsLoading ||
+    isPlanningCommentsLoading
+  )
+    return <LoadingAnimated />
   return (
     <Box flex="1">
       <ScrollView
@@ -553,7 +562,12 @@ const Details = () => {
         refreshControl={
           <RefreshControl
             onRefresh={onPullToReload}
-            refreshing={isPlanningLoading}
+            refreshing={
+              isPlanningLoading ||
+              isPlanningDetailsLoading ||
+              isPlanningActionsLoading ||
+              isPlanningCommentsLoading
+            }
           />
         }
         bg={Colors.white}
