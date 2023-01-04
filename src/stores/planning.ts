@@ -8,6 +8,10 @@ import {NavigationLog} from '@bluecentury/models'
 
 type PlanningState = {
   isPlanningLoading: boolean
+  isPlanningDetailsLoading: boolean
+  isPlanningActionsLoading: boolean
+  isPlanningCommentsLoading: boolean
+  isPlanningDocumentsLoading: boolean
   plannedNavigationLogs: Array<any> | undefined
   historyNavigationLogs: any[]
   navigationLogDetails?: NavigationLog | undefined
@@ -67,6 +71,10 @@ export const usePlanning = create(
   persist<PlanningStore>(
     (set, get) => ({
       isPlanningLoading: false,
+      isPlanningDetailsLoading: false,
+      isPlanningActionsLoading: false,
+      isPlanningCommentsLoading: false,
+      isPlanningDocumentsLoading: false,
       plannedNavigationLogs: [],
       historyNavigationLogs: [],
       hasErrorLoadingPlannedNavigationLogs: false,
@@ -143,49 +151,49 @@ export const usePlanning = create(
       },
       getNavigationLogDetails: async (navLogId: string) => {
         set({
-          isPlanningLoading: true,
+          isPlanningDetailsLoading: true,
           navigationLogDetails: {},
         })
         try {
           const response = await API.reloadNavigationLogDetails(navLogId)
           if (typeof response === 'object') {
             set({
-              isPlanningLoading: false,
+              isPlanningDetailsLoading: false,
               navigationLogDetails: response,
             })
           } else {
             set({
-              isPlanningLoading: false,
+              isPlanningDetailsLoading: false,
               navigationLogDetails: {},
             })
           }
         } catch (error) {
           set({
-            isPlanningLoading: false,
+            isPlanningDetailsLoading: false,
           })
         }
       },
       getNavigationLogActions: async (navLogId: string) => {
         set({
           navigationLogActions: [],
-          isPlanningLoading: true,
+          isPlanningActionsLoading: true,
         })
         try {
           const response = await API.reloadNavigationLogActions(navLogId)
           if (Array.isArray(response)) {
             set({
               navigationLogActions: response,
-              isPlanningLoading: false,
+              isPlanningActionsLoading: false,
             })
           } else {
             set({
               navigationLogActions: [],
-              isPlanningLoading: false,
+              isPlanningActionsLoading: false,
             })
           }
         } catch (error) {
           set({
-            isPlanningLoading: false,
+            isPlanningActionsLoading: false,
           })
         }
       },
@@ -217,49 +225,49 @@ export const usePlanning = create(
       },
       getNavigationLogComments: async (navLogId: string) => {
         set({
-          isPlanningLoading: true,
+          isPlanningCommentsLoading: true,
           navigationLogComments: [],
         })
         try {
           const response = await API.reloadNavigationLogComments(navLogId)
           if (Array.isArray(response)) {
             set({
-              isPlanningLoading: false,
+              isPlanningCommentsLoading: false,
               navigationLogComments: response,
             })
           } else {
             set({
-              isPlanningLoading: false,
+              isPlanningCommentsLoading: false,
               navigationLogComments: [],
             })
           }
         } catch (error) {
           set({
-            isPlanningLoading: false,
+            isPlanningCommentsLoading: false,
           })
         }
       },
       getNavigationLogDocuments: async (navLogId: string) => {
         set({
-          isPlanningLoading: true,
+          isPlanningDocumentsLoading: true,
           navigationLogDocuments: [],
         })
         try {
           const response = await API.reloadNavigationLogDocuments(navLogId)
           if (Array.isArray(response)) {
             set({
-              isPlanningLoading: false,
+              isPlanningDocumentsLoading: false,
               navigationLogDocuments: response,
             })
           } else {
             set({
-              isPlanningLoading: false,
+              isPlanningDocumentsLoading: false,
               navigationLogDocuments: [],
             })
           }
         } catch (error) {
           set({
-            isPlanningLoading: false,
+            isPlanningDocumentsLoading: false,
           })
         }
       },
@@ -405,16 +413,19 @@ export const usePlanning = create(
             amount: cargoHoldActions[0].amount,
           },
         }
-        set({isPlanningLoading: true})
+        set({isPlanningActionsLoading: true})
         try {
           const response = await API.createNavigationLogAction(body)
           if (typeof response === 'object' && response?.id) {
             set({isCreateNavLogActionSuccess: true})
           } else {
-            set({isPlanningLoading: false, isCreateNavLogActionSuccess: false})
+            set({
+              isPlanningActionsLoading: false,
+              isCreateNavLogActionSuccess: false,
+            })
           }
         } catch (error) {
-          set({isPlanningLoading: false})
+          set({isPlanningActionsLoading: false})
         }
       },
       updateNavigationLogAction: async (
@@ -439,29 +450,35 @@ export const usePlanning = create(
               }
             : {},
         }
-        set({isPlanningLoading: true})
+        set({isPlanningActionsLoading: true})
         try {
           const response = await API.updateNavigationLogAction(id, body)
           if (typeof response === 'object' && response?.id) {
             set({isUpdateNavLogActionSuccess: true})
           } else {
-            set({isPlanningLoading: false, isUpdateNavLogActionSuccess: false})
+            set({
+              isPlanningActionsLoading: false,
+              isUpdateNavLogActionSuccess: false,
+            })
           }
         } catch (error) {
-          set({isPlanningLoading: false})
+          set({isPlanningActionsLoading: false})
         }
       },
       deleteNavLogAction: async (id: string) => {
-        set({isPlanningLoading: true})
+        set({isPlanningActionsLoading: true})
         try {
           const response = await API.deleteNavigationLogAction(id)
           if (response === 204) {
             set({isDeleteNavLogActionSuccess: true})
           } else {
-            set({isPlanningLoading: false, isDeleteNavLogActionSuccess: false})
+            set({
+              isPlanningActionsLoading: false,
+              isDeleteNavLogActionSuccess: false,
+            })
           }
         } catch (error) {
-          set({isPlanningLoading: false})
+          set({isPlanningActionsLoading: false})
         }
       },
       reset: () => {

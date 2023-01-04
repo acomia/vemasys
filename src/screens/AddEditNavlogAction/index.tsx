@@ -38,7 +38,8 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
   const {method, actionType, navlogAction}: any = route.params
   const toast = useToast()
   const {
-    isPlanningLoading,
+    isPlanningDetailsLoading,
+    isPlanningActionsLoading,
     navigationLogDetails,
     createNavigationLogAction,
     isCreateNavLogActionSuccess,
@@ -406,7 +407,8 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
       : onDeleteNavLogAction()
   }
 
-  if (isPlanningLoading) return <LoadingAnimated />
+  if (isPlanningDetailsLoading || isPlanningActionsLoading)
+    return <LoadingAnimated />
   return (
     <Box flex="1">
       <ScrollView

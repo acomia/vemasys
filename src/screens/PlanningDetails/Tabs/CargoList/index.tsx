@@ -14,7 +14,7 @@ const CargoList = () => {
   const navigation = useNavigation()
   const toast = useToast()
   const {
-    isPlanningLoading,
+    isPlanningDetailsLoading,
     navigationLogDetails,
     getNavigationLogDetails,
     deleteBulkCargo,
@@ -76,7 +76,7 @@ const CargoList = () => {
     getNavigationLogDetails(navigationLogDetails?.id)
   }
 
-  if (isPlanningLoading) return <LoadingAnimated />
+  if (isPlanningDetailsLoading) return <LoadingAnimated />
 
   return (
     <Box flex="1">
@@ -85,7 +85,7 @@ const CargoList = () => {
         refreshControl={
           <RefreshControl
             onRefresh={onPullToReload}
-            refreshing={isPlanningLoading}
+            refreshing={isPlanningDetailsLoading}
           />
         }
         bg={Colors.white}

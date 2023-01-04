@@ -33,7 +33,7 @@ const Actions = () => {
   const focused = useIsFocused()
   const navigation = useNavigation<NavigationProp<RootStackParamList>>()
   const {
-    isPlanningLoading,
+    isPlanningActionsLoading,
     navigationLogDetails,
     navigationLogActions,
     getNavigationLogActions,
@@ -48,13 +48,6 @@ const Actions = () => {
   const [confirmModal, setConfirmModal] = useState(false)
 
   useEffect(() => {
-    if (
-      navigationLogDetails?.bulkCargo?.some(cargo => cargo.isLoading === false)
-    ) {
-      setButtonActionLabel('Unloading')
-    } else {
-      setButtonActionLabel('Loading')
-    }
     if (isUpdateNavLogActionSuccess && focused) {
       getNavigationLogActions(navigationLogDetails?.id)
       showToast('Action ended.', 'success')
@@ -64,6 +57,16 @@ const Actions = () => {
     isUpdateNavLogActionSuccess,
     isDeleteNavLogActionSuccess,
   ])
+
+  useEffect(() => {
+    if (
+      navigationLogDetails?.bulkCargo?.some(cargo => cargo.isLoading === false)
+    ) {
+      setButtonActionLabel('Unloading')
+    } else {
+      setButtonActionLabel('Loading')
+    }
+  }, [navigationLogActions])
 
   const showToast = (text: string, res: string) => {
     toast.show({
@@ -133,7 +136,7 @@ const Actions = () => {
     getNavigationLogActions(navigationLogDetails?.id)
   }
 
-  if (isPlanningLoading) return <LoadingAnimated />
+  if (isPlanningActionsLoading) return <LoadingAnimated />
 
   return (
     <Box flex="1">
@@ -143,7 +146,7 @@ const Actions = () => {
         refreshControl={
           <RefreshControl
             onRefresh={onPullToReload}
-            refreshing={isPlanningLoading}
+            refreshing={isPlanningActionsLoading}
           />
         }
         bg={Colors.white}
@@ -181,8 +184,8 @@ const Actions = () => {
                   <Image
                     alt="navlog-action-animated"
                     source={renderAnimatedIcon(action.type, action.end)}
-                    width={ms(40)}
-                    height={ms(40)}
+                    width={action.type === 'Cleaning' ? ms(30) : ms(40)}
+                    height={action.type === 'Cleaning' ? ms(30) : ms(40)}
                     resizeMode="contain"
                     mr={ms(10)}
                   />

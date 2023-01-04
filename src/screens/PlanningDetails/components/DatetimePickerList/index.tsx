@@ -1,13 +1,15 @@
 import React from 'react'
-import {HStack, Text, Pressable, VStack} from 'native-base'
+import {HStack, Text, Pressable, VStack, Skeleton} from 'native-base'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import ArrowDownIcon from 'react-native-vector-icons/MaterialIcons'
 import {ms} from 'react-native-size-matters'
+import moment from 'moment'
+import _ from 'lodash'
 
 import {IconButton} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
-import moment from 'moment'
+import {usePlanning} from '@bluecentury/stores'
 
 const DatetimePickerList = ({
   title,
@@ -17,6 +19,7 @@ const DatetimePickerList = ({
   onClearDate,
   readOnly = false,
 }: any) => {
+  const {isPlanningDetailsLoading} = usePlanning()
   return (
     <VStack mb={ms(10)}>
       <Text fontWeight="medium" color={Colors.disabled}>
@@ -44,15 +47,23 @@ const DatetimePickerList = ({
               size={ms(22)}
               color={locked || readOnly ? Colors.azure : Colors.disabled}
             />
-            <Text
-              fontSize="md"
-              fontWeight="medium"
-              color={date ? Colors.text : Colors.disabled}
+            <Skeleton
+              h="25"
+              ml={ms(10)}
+              rounded="md"
+              isLoaded={!isPlanningDetailsLoading}
+              startColor={Colors.grey}
             >
-              {date
-                ? moment(date).format('D MMM YYYY | HH:mm')
-                : 'No Date & Time Set'}
-            </Text>
+              <Text
+                fontSize="md"
+                fontWeight="medium"
+                color={date ? Colors.text : Colors.disabled}
+              >
+                {date
+                  ? moment(date).format('D MMM YYYY | HH:mm')
+                  : 'No Date & Time Set'}
+              </Text>
+            </Skeleton>
           </HStack>
         </Pressable>
         {date ? (
