@@ -10,10 +10,12 @@ import {ms} from 'react-native-size-matters'
 import {Colors} from '@bluecentury/styles'
 import {LoadingAnimated} from '@bluecentury/components'
 import {useEntity, useMap} from '@bluecentury/stores'
+import {useTranslation} from 'react-i18next'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 
 export default function QRScanner({navigation}: Props) {
+  const {t} = useTranslation()
   const {vesselId} = useEntity()
   const {
     isLoadingMap,
@@ -102,7 +104,7 @@ export default function QRScanner({navigation}: Props) {
         fontSize={ms(25)}
         color="#fff"
       >
-        Align the QR within the frame to scan
+        {t('alignFrameToScan')}
       </Text>
       <Box position="absolute" w="100%" bottom="20" alignItems="center">
         <Button
@@ -112,7 +114,7 @@ export default function QRScanner({navigation}: Props) {
           mb={ms(20)}
           onPress={() => navigation.goBack()}
         >
-          Cancel
+          {t('cancel')}
         </Button>
       </Box>
       <Modal isOpen={isLoadingMap} justifyContent="center" px={ms(15)}>
@@ -124,7 +126,7 @@ export default function QRScanner({navigation}: Props) {
             alignItems="center"
           >
             <LoadingAnimated />
-            <Text fontWeight="medium">Processing...</Text>
+            <Text fontWeight="medium">{t('processing')}</Text>
           </Box>
         </Modal.Content>
       </Modal>

@@ -27,9 +27,11 @@ import {
 } from '@bluecentury/constants'
 import {useEntity, useTechnical} from '@bluecentury/stores'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
+import {useTranslation} from "react-i18next"
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const TechnicalRoutineDetails = ({navigation, route}: Props) => {
+  const {t} = useTranslation()
   const {id} = route.params
   const {selectedEntity} = useEntity()
   const {isTechnicalLoading, routineDetails, getVesselRoutineDetails} =
@@ -59,7 +61,7 @@ const TechnicalRoutineDetails = ({navigation, route}: Props) => {
       {/* End of title header */}
       <Box p={ms(12)}>
         <Text fontWeight="medium" color={Colors.disabled}>
-          Description
+          {t('description')}
         </Text>
         <Divider my={ms(8)} />
         <Text fontSize={ms(13)} color={Colors.text}>
@@ -140,7 +142,7 @@ const TechnicalRoutineDetails = ({navigation, route}: Props) => {
               color={label === 'Labels' ? Colors.white : Colors.azure}
               textAlign="center"
             >
-              {value}
+              {t(value)}
             </Text>
           </Box>
         </HStack>
@@ -210,20 +212,20 @@ const TechnicalRoutineDetails = ({navigation, route}: Props) => {
               : ''
           )}
           {renderDetailsCard(
-            'Routine Type',
+            t('routineType'),
             routineDetails?.routineType?.title
           )}
           {routineDetails?.vesselPart && routineDetails?.vesselPart?.vesselZone
             ? renderDetailsCard(
-                'Vessel Zone',
+              t('vesselZone'),
                 routineDetails?.vesselPart?.vesselZone?.title
               )
             : null}
-          {renderDetailsCard('Part', routineDetails?.vesselPart?.name)}
-          {renderDetailsCard('Planning', routineDetails?.scheduleLabel, true)}
+          {renderDetailsCard(t('part'), routineDetails?.vesselPart?.name)}
+          {renderDetailsCard(t('planning'), routineDetails?.scheduleLabel, true)}
           {routineDetails?.openTasks && routineDetails?.openTasks?.length > 0
             ? renderDetailsCard(
-                'Next Occurence',
+              t('nextOccurence'),
                 `${
                   routineDetails?.openTasks[
                     routineDetails?.openTasks?.length - 1
@@ -233,7 +235,7 @@ const TechnicalRoutineDetails = ({navigation, route}: Props) => {
             : null}
           {routineDetails?.openTasks && routineDetails?.openTasks?.length > 0
             ? renderDetailsCard(
-                'Due Date',
+              t('dueDate'),
                 moment(
                   routineDetails?.openTasks[
                     routineDetails?.openTasks.length - 1

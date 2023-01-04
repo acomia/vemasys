@@ -30,6 +30,7 @@ import {
   formatLocationLabel,
 } from '@bluecentury/constants'
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5'
+import {useTranslation} from 'react-i18next'
 
 const {width, height} = Dimensions.get('window')
 const ASPECT_RATIO = width / height
@@ -39,6 +40,7 @@ const DEFAULT_PADDING = {top: 80, right: 80, bottom: 80, left: 80}
 
 type Props = NativeStackScreenProps<MainStackParamList>
 export default function Map({navigation}: Props) {
+  const {t} = useTranslation()
   const focused = useIsFocused()
   const {vesselId, selectedVessel, entityType, selectFleetVessel, entityUsers} =
     useEntity()
@@ -212,7 +214,7 @@ export default function Map({navigation}: Props) {
             bg={Colors.azure}
             onPress={() => navigation.navigate('Planning')}
           >
-            View Navlog
+            {t('viewNavlog')}
           </Button>
         )}
       </Box>
@@ -237,7 +239,7 @@ export default function Map({navigation}: Props) {
           latitude: previousLocation?.location?.latitude,
           longitude: previousLocation?.location?.longitude,
         }}
-        title={`From: ${previousLocation?.location?.name}`}
+        title={`${t('from')} ${previousLocation?.location?.name}`}
         zIndex={1}
         tracksViewChanges={false}
         anchor={{x: 0, y: 0.5}}
@@ -262,7 +264,7 @@ export default function Map({navigation}: Props) {
                 {formatLocationLabel(previousLocation?.location)}
               </Text>
               <Text fontSize={ms(12)} fontWeight="medium" color="#ADADAD">
-                Arrived:{' '}
+                {t('arrived')}
                 {moment(previousLocation?.arrivalDatetime).format(
                   'DD MMM YYYY | HH:mm'
                 )}
@@ -291,13 +293,13 @@ export default function Map({navigation}: Props) {
     return (
       <Marker
         ref={markerRef}
-        key={`Planned-${nextLocation?.location?.id}`}
+        key={`${t('planned-')}${nextLocation?.location?.id}`}
         pinColor={'#29B7EF'}
         coordinate={{
           latitude: nextLocation?.location?.latitude,
           longitude: nextLocation?.location?.longitude,
         }}
-        title={`To: ${nextLocation?.location?.name}`}
+        title={`${t('to')} ${nextLocation?.location?.name}`}
         zIndex={1}
         tracksViewChanges={false}
         anchor={{x: 0, y: 0.5}}
@@ -327,7 +329,7 @@ export default function Map({navigation}: Props) {
                 {formatLocationLabel(nextLocation?.location)}
               </Text>
               <Text fontSize={ms(12)} fontWeight="medium" color="#ADADAD">
-                Planned:{' '}
+                {t('planned')}
                 {moment(nextLocation?.plannedEta).format(
                   'DD MMM YYYY | HH:mm'
                 )}

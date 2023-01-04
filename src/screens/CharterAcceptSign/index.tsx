@@ -21,9 +21,11 @@ import {
   UPDATE_CHARTER_SUCCESS,
 } from '@bluecentury/constants'
 import {LoadingAnimated} from '@bluecentury/components'
+import {useTranslation} from 'react-i18next'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'CharterAcceptSign'>
 const CharterAcceptSign = ({navigation, route}: Props) => {
+  const {t} = useTranslation()
   const {charter, setSignature, onCharterSelected} = route.params
   const ref = useRef<SignatureViewRef>(null)
   const toast = useToast()
@@ -149,9 +151,7 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
         />
 
         <Text fontWeight="medium" color={Colors.disabled} mt={ms(20)}>
-          By signing this document with an electronic signature, I agree that
-          such signature will be valid as handwritten signatures to the extent
-          allowed by law.
+          {t('signatureDescription')}
         </Text>
       </ScrollView>
 
@@ -183,7 +183,7 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
                 height={ms(20)}
               />
               <Text flex={1} fontWeight="medium">
-                Activate tracking
+                {t('activateTracking')}
               </Text>
               <Switch
                 size="sm"
@@ -199,7 +199,7 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
                 colorScheme="muted"
                 onPress={handleClear}
               >
-                Clear
+                {t('clear')}
               </Button>
               <Button
                 flex="1"
@@ -207,7 +207,7 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
                 bg={Colors.primary}
                 onPress={handleOnAcceptAndSign}
               >
-                Accept and sign
+                {t('acceptAndSign')}
               </Button>
             </HStack>
           </Box>

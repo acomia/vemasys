@@ -15,6 +15,7 @@ import {ms} from 'react-native-size-matters'
 import {Colors} from '@bluecentury/styles'
 import {ImageSourcePropType} from 'react-native'
 import {Icons} from '@bluecentury/assets'
+import {useTranslation} from 'react-i18next'
 
 interface Props {
   type: string
@@ -26,6 +27,7 @@ interface Props {
 }
 
 const SettingsItem = (props: Props) => {
+  const {t} = useTranslation()
   const {type, value, iconSource, callback, switchState, language} = props
   const [isSelection, setIsSelection] = useState(false)
 
@@ -47,13 +49,13 @@ const SettingsItem = (props: Props) => {
   const languageName = (shortName: string) => {
     switch (shortName) {
       case 'en':
-        return 'English'
+        return t('english')
       case 'nl':
-        return 'Dutch'
+        return t('dutch')
       case 'fr':
-        return 'French'
+        return t('french')
       case 'de':
-        return 'German'
+        return t('german')
       default:
         break
     }
@@ -91,7 +93,7 @@ const SettingsItem = (props: Props) => {
         >
           <HStack>
             <Image source={Icons.english} mr={ms(13)} alt="Company Logo" />
-            <Text>English</Text>
+            <Text>{t('english')}</Text>
           </HStack>
         </Menu.Item>
         <Menu.Item
@@ -101,7 +103,7 @@ const SettingsItem = (props: Props) => {
         >
           <HStack>
             <Image source={Icons.dutch} mr={ms(13)} alt="Company Logo" />
-            <Text>Dutch</Text>
+            <Text>{t('dutch')}</Text>
           </HStack>
         </Menu.Item>
         <Menu.Item
@@ -111,7 +113,7 @@ const SettingsItem = (props: Props) => {
         >
           <HStack>
             <Image source={Icons.french} mr={ms(13)} alt="Company Logo" />
-            <Text>French</Text>
+            <Text>{t('french')}</Text>
           </HStack>
         </Menu.Item>
         <Menu.Item
@@ -121,7 +123,7 @@ const SettingsItem = (props: Props) => {
         >
           <HStack>
             <Image source={Icons.german} mr={ms(13)} alt="Company Logo" />
-            <Text>German</Text>
+            <Text>{t('german')}</Text>
           </HStack>
         </Menu.Item>
       </Menu>

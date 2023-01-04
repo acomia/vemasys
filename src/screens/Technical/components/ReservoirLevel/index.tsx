@@ -9,8 +9,10 @@ import {Colors} from '@bluecentury/styles'
 import {PROD_URL} from '@vemasys/env'
 import {formatNumber} from '@bluecentury/constants'
 import {useTechnical} from '@bluecentury/stores'
+import {useTranslation} from 'react-i18next'
 
 const ReservoirLevel = ({reservoir, physicalVesselId}: any) => {
+  const {t} = useTranslation()
   const navigation = useNavigation()
   const {gasoilReserviors} = useTechnical()
 
@@ -92,7 +94,7 @@ const ReservoirLevel = ({reservoir, physicalVesselId}: any) => {
         alignItems="center"
       >
         <Text flex="1" color={Colors.azure} fontWeight="medium">
-          Total gasoil
+          {t('totalGasoil')}
         </Text>
         <Text color={Colors.azure} fontSize={ms(20)} bold>
           {formatNumber(totalGasoil, 0, ' ')} L
@@ -105,8 +107,7 @@ const ReservoirLevel = ({reservoir, physicalVesselId}: any) => {
       ) : (
         <Box px={ms(16)} py={ms(10)}>
           <Text color={Colors.azure} fontWeight="semibold" textAlign="justify">
-            You can manage your gasoil reservoirs in the technical module of the
-            web app at &nbsp;
+            {t('manageGasoilInWebApp')}
             <Text
               color={Colors.highlighted_text}
               onPress={() => Linking.openURL(PROD_URL)}

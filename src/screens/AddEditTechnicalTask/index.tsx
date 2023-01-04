@@ -29,9 +29,11 @@ import {useEntity, useTechnical} from '@bluecentury/stores'
 import moment from 'moment'
 import {IconButton, LoadingAnimated} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
+import {useTranslation} from 'react-i18next'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const AddEditTechnicalTask = ({navigation, route}: Props) => {
+  const {t} = useTranslation()
   const {method, task} = route.params
   const toast = useToast()
   const {
@@ -170,7 +172,7 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
       >
         <FormControl isRequired>
           <FormControl.Label color={Colors.disabled}>
-            Task Name
+            {t('taskName')}
           </FormControl.Label>
           <Input
             bg={'#F7F7F7'}
@@ -180,12 +182,12 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
             onChangeText={e => setTaskData({...taskData, title: e})}
           />
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-            Required
+            {t('required')}
           </FormControl.ErrorMessage>
         </FormControl>
         <FormControl isRequired mt={ms(20)}>
           <FormControl.Label color={Colors.disabled}>
-            Task Type
+            {t('taskType')}
           </FormControl.Label>
           <Select
             minWidth="300"
@@ -202,12 +204,12 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
             ))}
           </Select>
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-            Required
+            {t('required')}
           </FormControl.ErrorMessage>
         </FormControl>
         <FormControl isRequired mt={ms(20)}>
           <FormControl.Label color={Colors.disabled}>
-            Deadline
+            {t('deadLine')}
           </FormControl.Label>
           <HStack
             mt={ms(3)}
@@ -242,12 +244,12 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
             <MaterialIcons name="keyboard-arrow-down" size={ms(22)} />
           </HStack>
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-            Required
+            {t('required')}
           </FormControl.ErrorMessage>
         </FormControl>
         <FormControl isRequired mt={ms(20)}>
           <FormControl.Label color={Colors.disabled}>
-            Description
+            {t('description')}
           </FormControl.Label>
           <TextArea
             numberOfLines={4}
@@ -259,12 +261,12 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
             onChangeText={e => setTaskData({...taskData, description: e})}
           />
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-            Required
+            {t('required')}
           </FormControl.ErrorMessage>
         </FormControl>
         <FormControl isRequired mt={ms(20)}>
           <FormControl.Label color={Colors.disabled}>
-            Instructions
+            {t('instructions')}
           </FormControl.Label>
           <TextArea
             numberOfLines={4}
@@ -276,7 +278,7 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
             onChangeText={e => setTaskData({...taskData, instructions: e})}
           />
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-            Required
+            {t('required')}
           </FormControl.ErrorMessage>
         </FormControl>
         {imgFile.uri !== '' || imgFile.fileName !== '' ? (
@@ -315,7 +317,7 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
           mb={ms(20)}
           onPress={launchImageLibrary}
         >
-          Upload Image
+          {t('uploadImage')}
         </Button>
         <DatePicker
           modal
@@ -343,7 +345,7 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
               colorScheme="muted"
               onPress={() => navigation.goBack()}
             >
-              Cancel
+              {t('cancel')}
             </Button>
             <Button
               flex="1"
@@ -351,7 +353,7 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
               bg={Colors.primary}
               onPress={handleOnCreateNewTask}
             >
-              Save
+              {t('save')}
             </Button>
           </HStack>
         </Shadow>

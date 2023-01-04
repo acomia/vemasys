@@ -24,9 +24,11 @@ import {useEntity, useTechnical} from '@bluecentury/stores'
 import {LoadingAnimated} from '@bluecentury/components'
 import {Colors} from '@bluecentury/styles'
 import {MeasurementCard} from './measurement-card'
+import {useTranslation} from 'react-i18next'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const Measurements = ({navigation, route}: Props) => {
+  const {t} = useTranslation()
   const {data, routeFrom} = route.params
   const toast = useToast()
   const {
@@ -262,7 +264,7 @@ const Measurements = ({navigation, route}: Props) => {
       <Box flex="1" px={ms(12)} py={ms(20)}>
         {routeFrom === 'reservoir' ? renderReservoirCard() : renderEngineCard()}
         <Text bold color={Colors.text} fontSize={ms(16)} mt={ms(25)}>
-          Last Measurements
+          {t('lastMeasurements')}
         </Text>
         <Divider mb={ms(15)} mt={ms(8)} />
         {isTechnicalLoading ? (
@@ -280,7 +282,7 @@ const Measurements = ({navigation, route}: Props) => {
       </Box>
       <Modal animationPreset="slide" isOpen={open} px={ms(15)} size="full">
         <Modal.Content>
-          <Modal.Header>Enter new measurement (L)</Modal.Header>
+          <Modal.Header>{t('enterNewMeasurements')}</Modal.Header>
           <Modal.Body>
             <Input
               bold
@@ -300,7 +302,7 @@ const Measurements = ({navigation, route}: Props) => {
               m={ms(5)}
               onPress={() => setOpen(false)}
             >
-              Cancel
+              {t('cancel')}
             </Button>
             <Button
               bg={Colors.primary}
@@ -308,7 +310,7 @@ const Measurements = ({navigation, route}: Props) => {
               m={ms(5)}
               onPress={onAddNewConsumptionMeasure}
             >
-              Save
+              {t('save')}
             </Button>
           </Modal.Footer>
         </Modal.Content>
@@ -325,7 +327,7 @@ const Measurements = ({navigation, route}: Props) => {
             m={ms(16)}
             onPress={() => setOpen(true)}
           >
-            Add a measurement
+            {t('addAMeasurement')}
           </Button>
         </Shadow>
       </Box>

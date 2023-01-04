@@ -22,8 +22,10 @@ import {Shadow} from 'react-native-shadow-2'
 import moment from 'moment'
 import {VEMASYS_PRODUCTION_FILE_URL} from '@bluecentury/constants'
 import {useNavigation} from '@react-navigation/native'
+import {useTranslation} from 'react-i18next'
 
 const Rules = () => {
+  const {t} = useTranslation()
   const navigation = useNavigation()
   const {isInformationLoading, rules, getVesselRules} = useInformation()
   const {vesselId} = useEntity()
@@ -97,7 +99,7 @@ const Rules = () => {
       color={Colors.text}
       mt={ms(10)}
     >
-      No Rules.
+      {t('noRules')}
     </Text>
   )
 
@@ -139,10 +141,10 @@ const Rules = () => {
         />
         <HStack mt={ms(20)} alignItems="center" px={ms(10)}>
           <Text flex="1" fontSize={ms(16)} bold color={Colors.text}>
-            Details
+            {t('details')}
           </Text>
           <Text fontSize={ms(16)} bold color={Colors.text}>
-            Actions
+            {t('actions')}
           </Text>
         </HStack>
         <Divider mt={ms(5)} mb={ms(15)} />

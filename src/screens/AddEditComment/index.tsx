@@ -28,9 +28,11 @@ import {Alert, TouchableOpacity} from 'react-native'
 import {Icons} from '@bluecentury/assets'
 import {PROD_URL, UAT_URL} from '@vemasys/env'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
+import {useTranslation} from 'react-i18next'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const AddEditComment = ({navigation, route}: Props) => {
+  const {t} = useTranslation()
   const {comment, method, routeFrom}: any = route.params
   const currentEnv = useSettings.getState().env
   const uploadEndpoint = () => {
@@ -198,15 +200,15 @@ const AddEditComment = ({navigation, route}: Props) => {
 
   const deleteCommentConfirmation = () => {
     Alert.alert(
-      'Confirmation required',
-      'Are you sure you want to delete this item? This action cannot be reversed.',
+      t('confirmationRequired'),
+      t('confirmMessage'),
       [
         {
-          text: 'Cancel',
+          text: t('cancel'),
           style: 'cancel',
         },
         {
-          text: 'Yes, delete it',
+          text: t('confirmDelete'),
           onPress: async () => onDeleteComment(),
           style: 'destructive',
         },
@@ -304,12 +306,12 @@ const AddEditComment = ({navigation, route}: Props) => {
         bg={Colors.white}
       >
         <Text fontSize={ms(20)} bold color={Colors.azure}>
-          {method === 'edit' ? 'Edit' : 'Add'} a comment
+          {method === 'edit' ? t('edit') : t('add')}} a comment
         </Text>
 
         <FormControl isRequired isInvalid={isCommentEmpty} my={ms(25)}>
           <FormControl.Label color={Colors.disabled}>
-            Description
+            {t('description')}
           </FormControl.Label>
           <TextArea
             numberOfLines={6}
@@ -324,7 +326,7 @@ const AddEditComment = ({navigation, route}: Props) => {
             autoCompleteType={undefined}
           />
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-            Please fill in the description
+            {t('fillTheDescription')}
           </FormControl.ErrorMessage>
         </FormControl>
         {imgFile.length > 0 ? (
@@ -359,7 +361,7 @@ const AddEditComment = ({navigation, route}: Props) => {
           bg={Colors.primary}
           onPress={() => setIsCameraOpen(true)}
         >
-          Upload image
+          {t('uploadImage')}
         </Button>
       </ScrollView>
       <Box bg={Colors.white} position="relative">
@@ -377,7 +379,7 @@ const AddEditComment = ({navigation, route}: Props) => {
               colorScheme="muted"
               onPress={() => navigation.goBack()}
             >
-              Cancel
+              {t('cancel')}
             </Button>
             <Button
               flex="1"
@@ -385,7 +387,7 @@ const AddEditComment = ({navigation, route}: Props) => {
               bg={Colors.primary}
               onPress={handleOnSaveComment}
             >
-              Save
+              {t('save')}
             </Button>
           </HStack>
         </Shadow>
@@ -396,7 +398,7 @@ const AddEditComment = ({navigation, route}: Props) => {
           <Box py={ms(14)}>
             <Box bg={Colors.white} py={ms(10)} borderRadius={ms(5)}>
               <Text textAlign="center" fontSize={ms(12)} bold>
-                Actions
+                {t('actions')}
               </Text>
               <Divider my={ms(14)} />
               <TouchableOpacity activeOpacity={0.6}>
@@ -409,7 +411,7 @@ const AddEditComment = ({navigation, route}: Props) => {
                     setImgModal(false)
                   }}
                 >
-                  View image
+                  {t('viewImage')}
                 </Text>
               </TouchableOpacity>
               <Divider my={ms(14)} />
@@ -418,7 +420,7 @@ const AddEditComment = ({navigation, route}: Props) => {
                 onPress={onUploadNewVersion}
               >
                 <Text textAlign="center" fontSize={ms(16)} bold>
-                  Upload new version
+                  {t('uploadNewVersion')}
                 </Text>
               </TouchableOpacity>
               <Divider my={ms(14)} />
@@ -430,7 +432,7 @@ const AddEditComment = ({navigation, route}: Props) => {
                   bold
                   mb={ms(5)}
                 >
-                  Delete
+                  {t('delete')}
                 </Text>
               </TouchableOpacity>
             </Box>
@@ -446,7 +448,7 @@ const AddEditComment = ({navigation, route}: Props) => {
                 fontSize={ms(16)}
                 bold
               >
-                Cancel
+                {t('cancel')}
               </Text>
             </Button>
           </Box>

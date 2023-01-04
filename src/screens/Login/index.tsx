@@ -25,13 +25,10 @@ import {Images} from '@bluecentury/assets'
 import {_t} from '@bluecentury/constants'
 import {useAuth, useSettings} from '@bluecentury/stores'
 import {VersionBuildLabel} from '@bluecentury/components/version-build-label'
-
-const usernameRequired = _t('usernameRequired')
-const passwordRequired = _t('passwordRequired')
-const allFieldsRequired = _t('allFieldsRequired')
-const login = _t('login')
+import {useTranslation} from 'react-i18next'
 
 export default function Login() {
+  const {t} = useTranslation()
   const insets = useSafeAreaInsets()
   const {isAuthenticatingUser, authenticate, hasAuthenticationError} = useAuth()
   const {isRemainLoggedIn, setIsRemainLoggedIn} = useSettings()
@@ -41,6 +38,9 @@ export default function Login() {
   const [isPasswordEmpty, setIsPasswordEmpty] = useState(false)
   const passwordRef = useRef<any>()
   const userNameRef = useRef<any>()
+  const usernameRequired = t('usernameRequired')
+  const passwordRequired = t('passwordRequired')
+  const allFieldsRequired = t('allFieldsRequired')
 
   const handleOnPressLogin = () => {
     userNameRef.current.blur()
@@ -94,7 +94,7 @@ export default function Login() {
           </Center>
           <VStack space="5">
             <Text bold fontSize="2xl" color={Colors.azure}>
-              Login to your Account
+              {t('loginHeader')}
             </Text>
             <FormControl isInvalid={isUsernameEmpty || hasAuthenticationError}>
               <Input
@@ -173,7 +173,7 @@ export default function Login() {
                 leftIcon={<WarningOutlineIcon size="xs" />}
               >
                 {hasAuthenticationError
-                  ? 'Either your username or your password is incorrect'
+                  ? t('wrongCredentials')
                   : user.username === '' && user.password === ''
                   ? allFieldsRequired
                   : passwordRequired}
@@ -185,7 +185,7 @@ export default function Login() {
                 onChange={v => setIsRemainLoggedIn(v)}
                 value="remain-logged-in"
               >
-                Remain logged in?
+                {t('remainLogin')}
               </Checkbox>
             </HStack>
           </VStack>
@@ -201,7 +201,7 @@ export default function Login() {
             }}
             onPress={handleOnPressLogin}
           >
-            {login}
+            {t('login')}
           </Button>
         </VStack>
       </KeyboardAvoidingView>

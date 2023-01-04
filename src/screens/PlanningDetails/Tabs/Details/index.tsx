@@ -38,6 +38,7 @@ import {
 import {PROD_URL} from '@vemasys/env'
 import {LoadingAnimated} from '@bluecentury/components'
 import {Vemasys} from '@bluecentury/helpers'
+import {useTranslation} from 'react-i18next'
 
 type Dates = {
   plannedEta: Date | undefined | StringOrNull
@@ -49,6 +50,7 @@ type Dates = {
 }
 
 const Details = () => {
+  const {t} = useTranslation()
   const toast = useToast()
   const navigation = useNavigation<NavigationProp<RootStackParamList>>()
   const route = useRoute()
@@ -640,7 +642,7 @@ const Details = () => {
         {isUnknownLocation ? null : (
           <>
             <Text fontSize={ms(20)} bold color={Colors.azure} mt={ms(20)}>
-              Contact Information
+              {t('contactInformation')}
             </Text>
             <Box my={ms(15)}>
               {navigationLogDetails?.contacts?.length > 0 ? (
@@ -658,7 +660,7 @@ const Details = () => {
                   bg={Colors.white}
                   shadow={2}
                 >
-                  <Text>No contact information found.</Text>
+                  <Text>{t('noContactInformation')}</Text>
                 </Box>
               )}
             </Box>
@@ -668,7 +670,7 @@ const Details = () => {
         {/* Comments Section */}
         <HStack alignItems="center" mt={ms(20)}>
           <Text fontSize={ms(20)} bold color={Colors.azure}>
-            Comments
+            {t('comments')}
           </Text>
           {navigationLogComments?.length > 0 ? (
             <Box
@@ -708,7 +710,7 @@ const Details = () => {
               })
             }
           >
-            Add comment
+            {t('addComment')}
           </Button>
         )}
 

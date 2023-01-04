@@ -17,10 +17,12 @@ import {Icons, Animated} from '@bluecentury/assets'
 import {useNotif, useEntity} from '@bluecentury/stores'
 import {FleetHeader, LoadingAnimated} from '@bluecentury/components'
 import {ENTITY_TYPE_EXPLOITATION_GROUP} from '@bluecentury/constants'
+import {useTranslation} from 'react-i18next'
 
 const screenWidth = Dimensions.get('screen').width
 
 export default function Notification() {
+  const {t} = useTranslation()
   const {entityType, entityUsers, selectFleetVessel, vesselId} = useEntity()
   const {isLoadingNotification, notifications, getAllNotifications} = useNotif()
 
@@ -101,7 +103,7 @@ export default function Notification() {
           <Text maxWidth={screenWidth - 100}>{sanitizedHTML(item.label)}</Text>
           <Text fontSize={ms(12)} color="#ADADAD">
             {moment(new Date()).isSame(moment(new Date(date)))
-              ? `Today | ${moment(date).format('HH:mm')}`
+              ? `${t('today')} | ${moment(date).format('HH:mm')}`
               : moment(date).format('MMM DD, YYYY HH:mm')}
           </Text>
         </VStack>
@@ -125,7 +127,7 @@ export default function Notification() {
     <VStack backgroundColor="#fff">
       <Text fontSize={ms(15)} fontWeight="600" color="#23475C" my="10px">
         {moment(new Date()).isSame(moment(new Date(title)))
-          ? `Today`
+          ? t('today')
           : moment(title).format('MMM DD, YYYY')}
       </Text>
       <Divider mb={2} />

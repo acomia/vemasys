@@ -11,6 +11,7 @@ import {
 } from '@bluecentury/constants'
 import {FleetHeader} from '@bluecentury/components'
 import {useEntity} from '@bluecentury/stores'
+import {useTranslation} from 'react-i18next'
 
 const renderScene = SceneMap({
   planning: PlanningLogbook,
@@ -19,6 +20,7 @@ const renderScene = SceneMap({
 
 export default function Planning() {
   const layout = useWindowDimensions()
+  const {t} = useTranslation()
 
   const {entityType, selectFleetVessel, entityUsers} = useEntity()
   const [index, setIndex] = useState(0)
@@ -45,7 +47,7 @@ export default function Planning() {
       style={{backgroundColor: Colors.primary}}
       renderLabel={({route, color}) => (
         <Text color={color} bold fontSize={ms(15)}>
-          {route.title}
+          {t(route.title)}
         </Text>
       )}
     />

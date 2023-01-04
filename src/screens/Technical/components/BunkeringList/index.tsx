@@ -6,8 +6,10 @@ import {Colors} from '@bluecentury/styles'
 import moment from 'moment'
 import {ms} from 'react-native-size-matters'
 import {formatNumber} from '@bluecentury/constants'
+import {useTranslation} from 'react-i18next'
 
 const BunkeringList = ({bunkering}: any) => {
+  const {t} = useTranslation()
   const navigation = useNavigation()
 
   const renderBunkeringList = (bunk: any, index: number) => {
@@ -46,10 +48,10 @@ const BunkeringList = ({bunkering}: any) => {
     <Box>
       <HStack alignItems="center">
         <Text flex="1" color={Colors.text} fontSize={ms(16)} bold>
-          Details
+          {t('details')}
         </Text>
         <Text color={Colors.text} fontSize={ms(16)} bold>
-          Amount
+          {t('amount')}
         </Text>
       </HStack>
       {/* Bunkering List */}
@@ -65,7 +67,7 @@ const BunkeringList = ({bunkering}: any) => {
             fontSize={ms(15)}
             textAlign="justify"
           >
-            You have no bunkering items yet!
+            {t('noBunkeringItemsYet')}
           </Text>
         </Box>
       )}

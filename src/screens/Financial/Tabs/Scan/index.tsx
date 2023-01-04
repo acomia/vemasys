@@ -9,8 +9,10 @@ import {useFinancial, usePlanning} from '@bluecentury/stores'
 import {LoadingAnimated} from '@bluecentury/components'
 import {convertToPdfAndUpload} from '@bluecentury/utils'
 import DocumentPicker, {isInProgress, types} from 'react-native-document-picker'
+import {useTranslation} from 'react-i18next'
 
 const Scan = () => {
+  const {t} = useTranslation()
   const {uploadImgFile} = usePlanning()
   const {addFilesInGroup, isFinancialLoading} = useFinancial()
   const {isOpen, onOpen, onClose} = useDisclose()
@@ -103,7 +105,7 @@ const Scan = () => {
   return (
     <Box flex="1" bg={Colors.white} px={ms(12)} py={ms(20)}>
       <Text fontSize={ms(20)} bold color={Colors.azure}>
-        Scan Invoice
+        {t('scanInvoice')}
       </Text>
       <Image
         alt="Financial-invoice-logo"
@@ -117,7 +119,7 @@ const Scan = () => {
         resizeMode="contain"
       />
       <Button bg={Colors.primary} size="md" onPress={() => onSelectDocument()}>
-        Upload image
+        {t('uploadImage')}
       </Button>
       <Text
         style={{
@@ -128,10 +130,10 @@ const Scan = () => {
           textAlign: 'center',
         }}
       >
-        or
+        {t('or')}
       </Text>
       <Button bg={Colors.primary} size="md" onPress={() => scanDocument()}>
-        Open camera
+        {t('openCamera')}
       </Button>
     </Box>
   )

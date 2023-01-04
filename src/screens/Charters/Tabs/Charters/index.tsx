@@ -40,9 +40,11 @@ import {
 } from '@bluecentury/constants'
 import {decode as atob, encode as btoa} from 'base-64'
 import ReactNativeBlobUtil from 'react-native-blob-util'
+import {useTranslation} from 'react-i18next'
 const RNFS = require('react-native-fs')
 
 export default function Charters({navigation, route}: any) {
+  const {t} = useTranslation()
   const toast = useToast()
   const {
     isCharterLoading,
@@ -183,7 +185,7 @@ export default function Charters({navigation, route}: any) {
           >
             <VStack maxWidth="72%">
               <Text bold>
-                {item.vesselReference || item.clientReference || 'Unknown'}
+                {item.vesselReference || item.clientReference || t('unknown')}
               </Text>
               {item.navigationLogs &&
                 item.navigationLogs.map(
@@ -447,7 +449,7 @@ export default function Charters({navigation, route}: any) {
             mt={ms(20)}
             textAlign="center"
           >
-            No Charters.
+            {t('noCharters')}
           </Text>
         )}
         refreshControl={
@@ -499,7 +501,7 @@ export default function Charters({navigation, route}: any) {
                 bold
                 textAlign="right"
               >
-                Done
+                {t('done')}
               </Text>
             </TouchableOpacity>
           ) : (
@@ -517,7 +519,7 @@ export default function Charters({navigation, route}: any) {
                 bold
                 textAlign="right"
               >
-                Make single tap to select place for signature
+                {t('makeSingleTap')}
               </Text>
             </Box>
           )}
@@ -557,10 +559,10 @@ export default function Charters({navigation, route}: any) {
                 mb={ms(8)}
                 onPress={handleOnDecline}
               >
-                Decline
+                {t('decline')}
               </Button>
               <Button bg={Colors.primary} onPress={handleOnAccept}>
-                Accept
+                {t('accept')}
               </Button>
             </Box>
           </Modal.Footer>

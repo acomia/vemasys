@@ -9,8 +9,10 @@ import {useEntity, useTechnical} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
 import {LoadingAnimated} from '@bluecentury/components'
 import {ReservoirLevel, BunkeringList} from '../../components'
+import {useTranslation} from 'react-i18next'
 
 const Bunkering = () => {
+  const {t} = useTranslation()
   const navigation = useNavigation()
   const {physicalVesselId, vesselId} = useEntity()
   const {
@@ -46,7 +48,7 @@ const Bunkering = () => {
         showsVerticalScrollIndicator={false}
       >
         <Text color={Colors.azure} fontSize={ms(20)} bold>
-          Gasoil
+          {t('gasoil')}
         </Text>
         {/* Gasoil Card */}
         {gasoilReserviors?.length > 0 ? (
@@ -64,7 +66,7 @@ const Bunkering = () => {
           mt={ms(20)}
           mb={ms(10)}
         >
-          Bunkering
+          {t('bunkering')}
         </Text>
         {bunkering?.length > 0 ? (
           <BunkeringList bunkering={bunkering} />
@@ -85,7 +87,7 @@ const Bunkering = () => {
             bg={Colors.primary}
             onPress={() => navigation.navigate('NewBunkering')}
           >
-            Add bunkering
+            {t('addBunkering')}
           </Button>
         </Shadow>
       </Box>

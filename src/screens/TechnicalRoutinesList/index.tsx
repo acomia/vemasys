@@ -10,9 +10,11 @@ import {useEntity, useTechnical} from '@bluecentury/stores'
 import {LoadingAnimated} from '@bluecentury/components'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import {Icons} from '@bluecentury/assets'
+import {useTranslation} from 'react-i18next'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const TechnicalRoutinesList = ({navigation, route}: Props) => {
+  const {t} = useTranslation()
   const {category} = route.params
   const {isTechnicalLoading, routinesByCategory, getVesselRoutinesByCategory} =
     useTechnical()
@@ -144,7 +146,7 @@ const TechnicalRoutinesList = ({navigation, route}: Props) => {
                       <Divider my={ms(14)} /> */}
                       <HStack px={ms(14)}>
                         <Text flex="1" fontWeight="medium">
-                          Planning
+                          {t('planning')}
                         </Text>
                         {renderType(routine?.scheduleLabel)}
                         <Text>{routine?.scheduleLabel}</Text>
@@ -152,12 +154,12 @@ const TechnicalRoutinesList = ({navigation, route}: Props) => {
                       <Divider my={ms(14)} />
                       <HStack px={ms(14)}>
                         <Text flex="1" fontWeight="medium">
-                          Next due date
+                          {t('nextDueDate')}
                         </Text>
                         <Text>
                           {routine?.datetime
                             ? moment(routine?.datetime).format('D MMM YYYY')
-                            : 'Not set'}
+                            : t('notSet')}
                         </Text>
                       </HStack>
                     </Box>

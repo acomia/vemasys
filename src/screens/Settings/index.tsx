@@ -7,8 +7,10 @@ import {Screens} from '@bluecentury/constants'
 import {DrawerContentComponentProps} from '@react-navigation/drawer'
 import {useSettings} from '@bluecentury/stores'
 import {VersionBuildLabel} from '@bluecentury/components/version-build-label'
+import {useTranslation} from 'react-i18next'
 
 const Settings = (props: DrawerContentComponentProps) => {
+  const {t} = useTranslation()
   const {navigation} = props
   const isDarkMode = useSettings(state => state.isDarkMode)
   const isMobileTracking = useSettings(state => state.isMobileTracking)
@@ -31,7 +33,7 @@ const Settings = (props: DrawerContentComponentProps) => {
       borderRadius="15"
     >
       {/* <SettingsItem type="navigation"
-        value="User information"
+        value={t('userInfo')}
         iconSource={Icons.user}
         callback={() => {
           navigation.navigate(Screens.Information)
@@ -39,7 +41,7 @@ const Settings = (props: DrawerContentComponentProps) => {
       />
       <SettingsItem
         type="navigation"
-        value="Vessel information"
+        value={t('vesselInfo')}
         iconSource={Icons.ship}
         callback={() => {
           navigation.navigate(Screens.Planning)
@@ -55,14 +57,14 @@ const Settings = (props: DrawerContentComponentProps) => {
         */}
       <SettingsItem
         type="switch"
-        value="Set this device as Vessel GPS"
+        value={t('deviceGps')}
         iconSource={Icons.location}
         switchState={isMobileTracking}
         callback={handleOnValueChange}
       />
       <SettingsItem
         type="switch"
-        value="Show QR scanner on top menu"
+        value={t('showQRScannerOnTop')}
         iconSource={Icons.qr}
         switchState={isQrScanner}
         callback={setIsQrScanner}
@@ -70,7 +72,7 @@ const Settings = (props: DrawerContentComponentProps) => {
       {/*
       <SettingsItem
         type="switch"
-        value="Dark mode"
+        value={t('darkMode')}
         iconSource={Icons.adjust}
         switchState={isDarkMode}
         callback={setDarkMode}

@@ -6,6 +6,7 @@ import {RootNavigator} from '@bluecentury/navigation'
 import {enableLatestRenderer} from 'react-native-maps'
 import {NativeBaseProvider} from 'native-base'
 import {theme} from '@bluecentury/styles'
+import './constants/localization/i18n'
 
 enableLatestRenderer()
 

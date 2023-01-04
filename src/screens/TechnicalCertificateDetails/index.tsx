@@ -10,9 +10,11 @@ import {IconButton} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {VEMASYS_PRODUCTION_FILE_URL} from '@bluecentury/constants'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
+import {useTranslation} from 'react-i18next'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const TechnicalCertificateDetails = ({navigation, route}: Props) => {
+  const {t} = useTranslation()
   const {certificate} = route.params
   const isValid = certificate?.endDate ? certificate?.remainingDays >= 0 : true
   const isExpiring = certificate?.endDate
@@ -103,8 +105,8 @@ const TechnicalCertificateDetails = ({navigation, route}: Props) => {
                 {certificate?.remainingDays === 0
                   ? '---'
                   : certificate?.remainingDays < 0
-                  ? 'Expired'
-                  : `Expires in ${certificate?.remainingDays} days`}
+                  ? t('expired')
+                  : `${t('expiresIn')}${certificate?.remainingDays} ${t('days')}`}
               </Text>
             </Box>
 
@@ -131,21 +133,21 @@ const TechnicalCertificateDetails = ({navigation, route}: Props) => {
           {/* End of Header */}
           <Box p={ms(10)}>
             <Text color={Colors.disabled} fontWeight="medium">
-              Validity Period
+              {t('validityPeriod')}
             </Text>
             <Text color={Colors.secondary} bold>
               {moment(certificate?.startDate).format('DD MMM YYYY')} -{' '}
               <Text color={Colors.danger} bold>
                 {certificate?.endDate
                   ? moment(certificate?.endDate).format('DD MMM YYYY')
-                  : 'Never'}
+                  : t('never')}
               </Text>
             </Text>
           </Box>
           <Divider my={ms(5)} />
           <Box p={ms(10)}>
             <Text color={Colors.disabled} fontWeight="medium">
-              Certificate type
+              {t('certificateType')}
             </Text>
             <Text color={Colors.text} fontSize={ms(16)} bold>
               {certificate?.type?.title}
@@ -154,7 +156,7 @@ const TechnicalCertificateDetails = ({navigation, route}: Props) => {
           <Divider my={ms(5)} />
           <Box p={ms(10)}>
             <Text color={Colors.text} fontSize={ms(16)} bold>
-              Description
+              {t('description')}
             </Text>
             <Text color={Colors.text} fontSize={ms(13)}>
               {certificate?.description}
@@ -182,10 +184,10 @@ const TechnicalCertificateDetails = ({navigation, route}: Props) => {
         </HStack>
         <HStack mt={ms(10)} justifyContent="space-between">
           <Text fontSize={ms(16)} bold color={Colors.text}>
-            File
+            {t('file')}
           </Text>
           <Text fontSize={ms(16)} bold color={Colors.text}>
-            Actions
+            {t('actions')}
           </Text>
         </HStack>
         <Divider mb={ms(10)} mt={ms(5)} />
@@ -195,7 +197,7 @@ const TechnicalCertificateDetails = ({navigation, route}: Props) => {
           )
         ) : (
           <Text mb={ms(20)} color={Colors.text} fontWeight="medium">
-            No uploaded files.
+            {t('noUploadedFiles')}
           </Text>
         )}
         <Button
@@ -205,7 +207,7 @@ const TechnicalCertificateDetails = ({navigation, route}: Props) => {
           mb={ms(20)}
           onPress={() => {}}
         >
-          Upload Document
+          {t('uploadDoc')}
         </Button>
       </ScrollView>
     </Box>

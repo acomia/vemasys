@@ -9,8 +9,10 @@ import {Colors} from '@bluecentury/styles'
 import {formatNumber} from '@bluecentury/constants'
 import {useEntity, useTechnical} from '@bluecentury/stores'
 import {LoadingAnimated} from '@bluecentury/components'
+import {useTranslation} from 'react-i18next'
 
 const Reservoirs = () => {
+  const {t} = useTranslation()
   const navigation = useNavigation()
   const {reservoirs, getVesselReservoirs} = useTechnical()
   const {physicalVesselId} = useEntity()
@@ -39,7 +41,7 @@ const Reservoirs = () => {
         py={ms(20)}
       >
         <Text fontSize={ms(20)} bold color={Colors.azure}>
-          Water Tanks
+          {t('waterTanks')}
         </Text>
         {reservoirs?.length > 0 ? (
           reservoirs?.map((reservoir: any, index) => {

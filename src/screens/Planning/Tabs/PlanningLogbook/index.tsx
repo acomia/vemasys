@@ -14,8 +14,10 @@ import {
   formatLocationLabel,
 } from '@bluecentury/constants'
 import {LoadingAnimated, NavigationLogType} from '@bluecentury/components'
+import {useTranslation} from 'react-i18next'
 
 const PlanningLogbook = () => {
+  const {t} = useTranslation()
   const navigation = useNavigation()
   const {
     isPlanningLoading,
@@ -63,7 +65,7 @@ const PlanningLogbook = () => {
               {formatLocationLabel(navigationLog?.location)}
             </Text>
             <Text color={'#23475C'} fontWeight="medium">
-              Planned:{' '}
+              {t('planned')}
               {moment(navigationLog?.plannedEta).format(
                 'DD MMM YYYY | HH:mm'
               )}

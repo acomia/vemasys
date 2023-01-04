@@ -14,9 +14,11 @@ import {ms} from 'react-native-size-matters'
 import {useInformation} from '@bluecentury/stores'
 import {LoadingAnimated} from '@bluecentury/components'
 import {Colors} from '@bluecentury/styles'
+import {useTranslation} from 'react-i18next'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const InformationPegelDetails = ({navigation, route}: Props) => {
+  const {t} = useTranslation()
   const {pegelId} = route.params
   const {isInformationLoading, pegelDetails, getPegelDetails} = useInformation()
   const [width, setWidth] = useState(0)
@@ -144,12 +146,12 @@ const InformationPegelDetails = ({navigation, route}: Props) => {
             />
             <VictoryAxis
               dependentAxis
-              label="Water level (cm)"
+              label={t('waterLevel')}
               style={{
                 axisLabel: {padding: 40},
               }}
             />
-            <VictoryAxis label="Timestamp" />
+            <VictoryAxis label={t('timestamp')} />
           </VictoryChart>
         ) : !isInformationLoading && pegelDetails?.length === 0 ? (
           <Box flex="1" alignItems="center" mt={ms(20)}>
@@ -159,7 +161,7 @@ const InformationPegelDetails = ({navigation, route}: Props) => {
               textAlign="center"
               color={Colors.azure}
             >
-              Insufficient data to generate pegel information graph
+              {t('insufficientDataToGenerateGraph')}
             </Text>
           </Box>
         ) : null}

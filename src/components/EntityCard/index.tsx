@@ -8,6 +8,7 @@ import {PROD_URL} from '@vemasys/env'
 import {IconButton} from '../IconButton'
 import {Icons} from '@bluecentury/assets'
 import {titleCase} from '@bluecentury/constants'
+import {useTranslation} from 'react-i18next'
 
 type IProps = {
   item: any
@@ -21,6 +22,7 @@ export const EntityCard: FC<IProps> = ({
   onPress,
   onPressAcceptPendingRole,
 }) => {
+  const {t} = useTranslation()
   return (
     <Box
       key={item?.id}
@@ -72,7 +74,7 @@ export const EntityCard: FC<IProps> = ({
               backgroundColor={Colors.secondary}
             >
               <Text fontSize={ms(12)} color="#fff" bold>
-                active
+                {t('active')}
               </Text>
             </Button>
           ) : !item?.hasUserAccepted && item?.hasUserAccepted !== undefined ? (

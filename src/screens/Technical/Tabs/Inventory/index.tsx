@@ -21,8 +21,10 @@ import {useEntity, useTechnical} from '@bluecentury/stores'
 import {formatConsumableLabel} from '@bluecentury/constants'
 import {LoadingAnimated} from '@bluecentury/components'
 import {Colors} from '@bluecentury/styles'
+import {useTranslation} from 'react-i18next'
 
 const Inventory = () => {
+  const {t} = useTranslation()
   const toast = useToast()
   const {
     isTechnicalLoading,
@@ -107,7 +109,7 @@ const Inventory = () => {
         }
         placeholderTextColor={Colors.disabled}
         fontWeight="medium"
-        placeholder="Search stock..."
+        placeholder={t('searchStock')}
         variant="filled"
         size="sm"
         value={searched}
@@ -125,7 +127,7 @@ const Inventory = () => {
         bg={Colors.highlighted_text}
         onPress={() => setOpenFilter(true)}
       >
-        Filter
+        {t('filter')}
       </Button>
     </HStack>
   )
@@ -133,10 +135,10 @@ const Inventory = () => {
   const renderInventoryListHeaderSection = () => (
     <HStack mt={ms(20)}>
       <Text flex="1" fontSize={ms(16)} bold color={Colors.text}>
-        Name
+        {t('name')}
       </Text>
       <Text fontSize={ms(16)} bold color={Colors.text} mr={ms(30)}>
-        Stock
+        {t('stock')}
       </Text>
     </HStack>
   )
@@ -325,7 +327,7 @@ const Inventory = () => {
                 mt={ms(20)}
                 textAlign="center"
               >
-                No Inventory.
+                {t('noInventory')}
               </Text>
             )}
           />
@@ -340,10 +342,10 @@ const Inventory = () => {
             <Modal.Body>
               <Box flex="1">
                 <Text fontSize={ms(26)} bold color={Colors.azure}>
-                  Filter
+                  {t('filter')}
                 </Text>
                 <Text fontSize={ms(20)} bold color={Colors.azure} mt={ms(20)}>
-                  Type
+                  {t('type')}
                 </Text>
                 <HStack flexWrap="wrap" mt={ms(10)}>
                   {consumableTypes?.length > 0
@@ -371,7 +373,7 @@ const Inventory = () => {
                 onPress={onResetFilter}
                 colorScheme="light"
               >
-                Reset
+                {t('reset')}
               </Button>
               <Button
                 flex="1"
@@ -379,7 +381,7 @@ const Inventory = () => {
                 m={ms(5)}
                 onPress={onApplyFilter}
               >
-                Apply
+                {t('apply')}
               </Button>
             </Modal.Footer>
           </Modal.Content>
@@ -406,7 +408,7 @@ const Inventory = () => {
                 m={ms(5)}
                 onPress={() => setOpenNewStock(false)}
               >
-                Cancel
+                {t('cancel')}
               </Button>
               <Button
                 flex="1"
@@ -414,7 +416,7 @@ const Inventory = () => {
                 m={ms(5)}
                 onPress={onSaveNewStock}
               >
-                Save
+                {t('save')}
               </Button>
             </Modal.Footer>
           </Modal.Content>
