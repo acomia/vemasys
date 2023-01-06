@@ -47,6 +47,7 @@ const Settings = (props: DrawerContentComponentProps) => {
           navigation.navigate(Screens.Planning)
         }}
       />
+        */}
       <SettingsItem
         type="select"
         value="Third line text"
@@ -54,7 +55,6 @@ const Settings = (props: DrawerContentComponentProps) => {
         language={language}
         callback={(lang: string) => setLanguage(lang)}
       />
-        */}
       <SettingsItem
         type="switch"
         value={t('deviceGps')}
