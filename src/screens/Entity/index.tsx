@@ -23,10 +23,12 @@ import {resetAllStates} from '@bluecentury/utils'
 import {useSafeAreaInsets} from 'react-native-safe-area-context'
 import {CustomAlert} from '@bluecentury/components/custom-alert'
 import {EntityUser} from '@bluecentury/models'
+import {useTranslation} from 'react-i18next'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 
 export default function Entity({route, navigation}: Props) {
+  const {t} = useTranslation()
   const toast = useToast()
   const insets = useSafeAreaInsets()
   const paddingTop = route.name === 'ChangeRole' ? 2 : insets.top
@@ -181,10 +183,10 @@ export default function Entity({route, navigation}: Props) {
       >
         <HStack justifyContent="space-between" justifyItems="center">
           <Heading fontSize="xl" pb="2">
-            Roles
+            {t('roles')}
           </Heading>
           <Button variant="link" p={0} m={0} onPress={onPressRefresh}>
-            Click to Refresh
+            {t('clickToRefresh')}
           </Button>
         </HStack>
         <Divider mb="5" />
@@ -248,7 +250,7 @@ export default function Entity({route, navigation}: Props) {
               }
               onPress={handleOnPressLogout}
             >
-              Log out
+              {t('logOut')}
             </Button>
           </Box>
         </Shadow>

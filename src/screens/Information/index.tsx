@@ -12,8 +12,10 @@ import {
 } from '@bluecentury/constants'
 import {FleetHeader} from '@bluecentury/components'
 import {useEntity} from '@bluecentury/stores'
+import {useTranslation} from 'react-i18next'
 
 export default function Financial() {
+  const {t} = useTranslation()
   const layout = useWindowDimensions()
   const {entityType, entityUsers, selectFleetVessel} = useEntity()
   const [index, setIndex] = useState(0)
@@ -27,7 +29,7 @@ export default function Financial() {
 
   const LazyPlaceholder = ({route}) => (
     <Box flex="1" alignItems="center" justifyContent="center">
-      <Text>Loading {route.title}…</Text>
+      <Text>{t('loading')} {route.title}…</Text>
     </Box>
   )
 

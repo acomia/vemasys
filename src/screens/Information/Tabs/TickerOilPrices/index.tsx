@@ -8,8 +8,10 @@ import {useEntity, useInformation} from '@bluecentury/stores'
 import moment from 'moment'
 import {LoadingAnimated} from '@bluecentury/components'
 import {useNavigation} from '@react-navigation/native'
+import {useTranslation} from 'react-i18next'
 
 const TickerOilPrices = () => {
+  const {t} = useTranslation()
   const navigation = useNavigation()
   const {isInformationLoading, tickerOilPrices, getVesselTickerOilPrices} =
     useInformation()
@@ -65,7 +67,7 @@ const TickerOilPrices = () => {
           >
             <Box>
               <Text color={Colors.disabled} fontWeight="medium">
-                Date
+                {t('date')}
               </Text>
               <Text color={Colors.text} bold>
                 {moment(item?.date).format('DD MMM YYYY')}
@@ -73,7 +75,7 @@ const TickerOilPrices = () => {
             </Box>
             <Box>
               <Text color={Colors.disabled} fontWeight="medium">
-                Price
+                {t('price')}
               </Text>
               <Text
                 color={
@@ -103,7 +105,7 @@ const TickerOilPrices = () => {
   return (
     <Box flex="1" bg={Colors.white} px={ms(12)} py={ms(20)}>
       <Text bold fontSize={ms(20)} color={Colors.azure}>
-        Ticker oil prices
+        {t('tickerOilPrices')}
       </Text>
 
       {isInformationLoading ? (

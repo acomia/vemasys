@@ -8,9 +8,11 @@ import {Colors} from '@bluecentury/styles'
 import {useEntity, useTechnical} from '@bluecentury/stores'
 import {LoadingAnimated} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
+import {useTranslation} from 'react-i18next'
 
 const {width} = Dimensions.get('window')
 const Routines = () => {
+  const {t} = useTranslation()
   const navigation = useNavigation()
   const {isTechnicalLoading, routinesCategory, getVesselRoutines} =
     useTechnical()
@@ -46,7 +48,7 @@ const Routines = () => {
         bg={Colors.white}
       >
         <Text fontSize={ms(20)} bold color={Colors.azure}>
-          Overview
+          {t('overview')}
         </Text>
         <HStack
           flexWrap="wrap"
@@ -103,7 +105,7 @@ const Routines = () => {
                       {task.count}
                     </Text>
                     <Text fontWeight="medium" color={Colors.text}>
-                      {task.label}
+                      {t(task.label)}
                     </Text>
                   </Box>
                 </TouchableOpacity>

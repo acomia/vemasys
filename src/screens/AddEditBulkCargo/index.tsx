@@ -10,9 +10,11 @@ import {usePlanning} from '@bluecentury/stores'
 import {formatBulkTypeLabel} from '@bluecentury/constants'
 import {IconButton, LoadingAnimated} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
+import {useTranslation} from 'react-i18next'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const AddEditBulkCargo = ({navigation, route}: Props) => {
+  const {t} = useTranslation()
   const {cargo, method} = route.params
   const toast = useToast()
   const {
@@ -153,21 +155,17 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
   }
 
   const deleteBulkCargoConfirmation = () => {
-    Alert.alert(
-      'Confirmation required',
-      'Are you sure you want to delete this item? This action cannot be reversed.',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Yes, delete it',
-          onPress: async () => onDeleteBulkCargoEntry(),
-          style: 'destructive',
-        },
-      ]
-    )
+    Alert.alert(t('confirmationRequired'), t('confirmMessage'), [
+      {
+        text: t('cancel'),
+        style: 'cancel',
+      },
+      {
+        text: t('confirmDelete'),
+        onPress: async () => onDeleteBulkCargoEntry(),
+        style: 'destructive',
+      },
+    ])
   }
 
   const onDeleteBulkCargoEntry = async () => {
@@ -193,7 +191,7 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
     >
       <Box flex="1" px={ms(12)} py={ms(20)}>
         <Text fontWeight="medium" color={Colors.disabled} mb={ms(6)}>
-          Cargo
+          {t('cargo')}
         </Text>
         {method === 'edit' ? (
           <Box bg="#F7F7F7" borderRadius={ms(5)} py="3" px="2">
@@ -225,7 +223,7 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
           mb={ms(6)}
           mt={ms(20)}
         >
-          Booked Amount
+          {t('bookedAmount')}
         </Text>
         <Input
           bg={'#F7F7F7'}
@@ -242,7 +240,7 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
           mb={ms(6)}
           mt={ms(20)}
         >
-          Actual Amount
+          {t('actualAmount')}
         </Text>
         <Input
           bg={'#F7F7F7'}
@@ -269,7 +267,7 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
               colorScheme="muted"
               onPress={() => navigation.goBack()}
             >
-              Cancel
+              {t('cancel')}
             </Button>
             <Button
               flex="1"
@@ -277,7 +275,7 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
               bg={Colors.primary}
               onPress={onSaveCargoEntry}
             >
-              Save
+              {t('Save')}
             </Button>
           </HStack>
         </Shadow>

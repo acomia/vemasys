@@ -32,9 +32,11 @@ import {formatBulkTypeLabel, titleCase} from '@bluecentury/constants'
 import {IconButton, LoadingAnimated} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {Vemasys} from '@bluecentury/helpers'
+import {useTranslation} from "react-i18next"
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const AddEditNavlogAction = ({navigation, route}: Props) => {
+  const {t} = useTranslation()
   const {method, actionType, navlogAction}: any = route.params
   const toast = useToast()
   const {
@@ -263,7 +265,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
           >
             {date
               ? moment(date).format('D MMM YYYY | HH:mm')
-              : 'No Date & Time Set'}
+              : t('noDate&TimeSet')}
           </Text>
         </TouchableOpacity>
         <MaterialIcons name="keyboard-arrow-down" size={ms(22)} />
@@ -277,7 +279,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
       <HStack alignItems="center" mb={ms(10)}>
         <Box flex="2" mr={ms(10)}>
           <Text fontWeight="medium" color={Colors.disabled} mb={ms(6)}>
-            Cargo
+            {t('cargo')}
           </Text>
           {navigationLogDetails?.bulkCargo?.length > 1 ? (
             <Select
@@ -304,7 +306,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
         </Box>
         <Box flex="1">
           <Text fontWeight="medium" color={Colors.disabled} mb={ms(6)}>
-            Amount
+            {t('amount')}
           </Text>
           <Input
             bg="#F7F7F7"
@@ -418,17 +420,17 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
         bg={Colors.white}
       >
         <Text fontSize={ms(20)} bold color={Colors.azure}>
-          {actionType} Action
+          {actionType} {t('action')}
         </Text>
 
         <Divider my={ms(10)} />
         <Text fontWeight="medium" color={Colors.disabled}>
-          Action
+          {t('action')}
         </Text>
         {/* {renderActionsType()} */}
         {renderActionType()}
         <Text fontWeight="medium" color={Colors.disabled}>
-          Start
+          {t('startText')}
         </Text>
         <DatetimePicker
           date={navActionDetails.start}
@@ -442,7 +444,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
           style={[{opacity: dateTimeHeight.value > 0 ? 1 : 0}, reanimatedStyle]}
         >
           <Text fontWeight="medium" color={Colors.disabled}>
-            Estimated end
+            {t('estimatedEnd')}
           </Text>
           <DatetimePicker
             date={navActionDetails.estimatedEnd}
@@ -453,7 +455,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
             }}
           />
           <Text fontWeight="medium" color={Colors.disabled}>
-            End
+            {t('endText')}
           </Text>
           <DatetimePicker
             date={navActionDetails.end}
@@ -493,7 +495,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
               colorScheme="muted"
               onPress={() => navigation.goBack()}
             >
-              Cancel
+              {t('cancel')}
             </Button>
             <Button
               flex="1"
@@ -501,7 +503,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
               bg={Colors.primary}
               onPress={() => confirmSave()}
             >
-              Save
+              {t('save')}
             </Button>
           </HStack>
         </Shadow>
@@ -525,7 +527,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
               onPress={() => setConfirmModal(false)}
             >
               <Text fontWeight="medium" color={Colors.disabled}>
-                Cancel
+                {t('cancel')}
               </Text>
             </Button>
             <Button
@@ -542,8 +544,8 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
               <Text fontWeight="medium" color={Colors.white}>
                 {actionMethod.toLowerCase() === 'add' ||
                 actionMethod.toLowerCase() === 'update'
-                  ? 'Save'
-                  : 'Delete'}
+                  ? t('save')
+                  : t('delete')}
               </Text>
             </Button>
           </HStack>

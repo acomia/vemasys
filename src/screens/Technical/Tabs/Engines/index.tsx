@@ -9,8 +9,10 @@ import {useEntity, useTechnical} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
 import {LoadingAnimated} from '@bluecentury/components'
 import {formatNumber} from '@bluecentury/constants'
+import {useTranslation} from 'react-i18next'
 
 const Engines = () => {
+  const {t} = useTranslation()
   const navigation = useNavigation()
   const {isTechnicalLoading, engines, getVesselEngines} = useTechnical()
   const {physicalVesselId} = useEntity()
@@ -57,13 +59,13 @@ const Engines = () => {
                 <Text color={Colors.disabled}>
                   {lastMeasurement
                     ? moment(lastMeasurement.date).format('DD/MM/YYYY')
-                    : 'Loading...'}
+                    : t('loadingPoints')}
                 </Text>
               </Box>
               <Text flex="1" color={Colors.azure} fontSize={ms(15)} bold>
                 {lastMeasurement
                   ? `${formatNumber(lastMeasurement.value, 0, ' ')}h`
-                  : 'Loading...'}
+                  : t('loadingPoints')}
               </Text>
               <Box
                 flex="1"
@@ -104,7 +106,7 @@ const Engines = () => {
         showsVerticalScrollIndicator={false}
       >
         <Text color={Colors.azure} fontSize={ms(20)} bold mb={ms(15)}>
-          Engines
+          {t('engines')}
         </Text>
         {vesselZones.length > 0 ? (
           vesselZones.map((engine: any, index: number) => {

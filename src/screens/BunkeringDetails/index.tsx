@@ -10,9 +10,11 @@ import {formatNumber, VEMASYS_PRODUCTION_FILE_URL} from '@bluecentury/constants'
 import {IconButton} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {TouchableOpacity} from 'react-native'
+import {useTranslation} from 'react-i18next'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 export default function BunkeringDetails({route, navigation}: Props) {
+  const {t} = useTranslation()
   const {bunk}: any = route.params
 
   const renderCardDetails = (title: string, value: string, suffix?: string) => {
@@ -49,7 +51,7 @@ export default function BunkeringDetails({route, navigation}: Props) {
     <Box flex="1" bg={Colors.white}>
       <Box px={ms(12)} py={ms(20)}>
         <Text fontSize={ms(20)} bold color={Colors.azure}>
-          Details
+          {t('details')}
         </Text>
         <Divider my={ms(15)} />
         {renderCardDetails('Name', bunk.entity.name)}
@@ -60,14 +62,14 @@ export default function BunkeringDetails({route, navigation}: Props) {
           'L'
         )}
         <Text fontSize={ms(20)} bold color={Colors.azure} mt={ms(15)}>
-          Documents
+          {t('documents')}
         </Text>
         <HStack mt={ms(10)} justifyContent="space-between">
           <Text fontSize={ms(16)} bold color={Colors.text}>
-            File
+            {t('file')}
           </Text>
           <Text fontSize={ms(16)} bold color={Colors.text}>
-            Actions
+            {t('actions')}
           </Text>
         </HStack>
         <Divider my={ms(15)} />
@@ -116,14 +118,14 @@ export default function BunkeringDetails({route, navigation}: Props) {
           ))
         ) : (
           <Text mb={ms(20)} color={Colors.text} fontWeight="medium">
-            No uploaded files.
+            {t('noUploadedFiles')}
           </Text>
         )}
         <Button
           bg={Colors.primary}
           leftIcon={<Icon as={MaterialIcons} name="upload-file" size="sm" />}
         >
-          Upload documents
+          {t('uploadDocs')}
         </Button>
       </Box>
     </Box>

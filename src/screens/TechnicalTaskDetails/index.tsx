@@ -28,9 +28,11 @@ import {
   VEMASYS_PRODUCTION_FILE_URL,
 } from '@bluecentury/constants'
 import {useEntity, useTechnical} from '@bluecentury/stores'
+import {useTranslation} from 'react-i18next'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const TechnicalTaskDetails = ({navigation, route}: Props) => {
+  const {t} = useTranslation()
   const {task, category} = route.params
   const {selectedEntity, vesselId} = useEntity()
   const {isTechnicalLoading, deleteTask, getVesselTasksByCategory} =
@@ -85,17 +87,17 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
     let textColor = ''
     switch (label?.toLowerCase()) {
       case 'maintenance':
-        title = 'Maintenance'
+        title = t('maintenance')
         color = Colors.primary
         textColor = Colors.white
         break
       case 'check':
-        title = 'Check'
+        title = t('check')
         color = Colors.secondary
         textColor = Colors.white
         break
       case 'incident':
-        title = 'Incident'
+        title = t('incident')
         color = Colors.warning
         textColor = Colors.white
         break
@@ -136,10 +138,10 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
       <Box py={ms(14)}>
         <Box px={ms(14)}>
           <Text fontWeight="medium" color={Colors.disabled}>
-            Task type
+            {t('taskType')}
           </Text>
           <Text fontSize={ms(16)} bold color={Colors.text}>
-            Technical Task
+            {t('technicalTask')}
           </Text>
         </Box>
         <Divider my={ms(12)} />
@@ -147,23 +149,23 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
         <Divider my={ms(12)} />
         <Box px={ms(14)}>
           <Text fontWeight="medium" color={Colors.disabled}>
-            Date created
+            {t('dateCreated')}
           </Text>
           <Text fontSize={ms(15)}>
             {task?.deadline
               ? moment(task?.deadline).format('D MMM YYYY; HH:mm')
-              : 'Not set'}
+              : t('notSet')}
           </Text>
         </Box>
         <Divider my={ms(12)} />
         <Box px={ms(14)}>
           <Text fontWeight="medium" color={Colors.disabled}>
-            Scheduled date
+            {t('scheduledDate')}
           </Text>
           <Text fontSize={ms(15)}>
             {task?.deadline
               ? moment(task?.deadline).format('D MMM YYYY; HH:mm')
-              : 'Not set'}
+              : t('notSet')}
           </Text>
         </Box>
         <Divider my={ms(12)} />
@@ -176,10 +178,10 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
         <Divider my={ms(12)} /> */}
         <Box px={ms(14)}>
           <Text fontWeight="medium" color={Colors.disabled}>
-            Assigned to
+            {t('assignedTo')}
           </Text>
           <Text fontSize={ms(15)} bold color={Colors.danger}>
-            No staff member assigned to this task
+            {t('noStaffMemberAssignedToThisTask')}
           </Text>
         </Box>
       </Box>
@@ -203,7 +205,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
       {/* End of Header */}
       <HStack p={ms(14)}>
         <Text flex="1" fontWeight="medium" color={Colors.disabled}>
-          Type
+          {t('type')}
         </Text>
         <Text bold color={Colors.text}>
           {task?.vesselPart?.type}
@@ -293,12 +295,12 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
   )
   const onDeleteTask = () => {
     Alert.alert(
-      'Confirm',
-      'Are you sure you want to delete this task?',
+      t('confirm'),
+      t('deleteTaskConfirmationText'),
       [
-        {text: 'No', style: 'cancel'},
+        {text: t('no'), style: 'cancel'},
         {
-          text: 'Yes',
+          text: t('yes'),
           style: 'destructive',
           onPress: () => handleDeleteTask(),
         },
@@ -376,14 +378,14 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
         {renderTaskSection()}
         {/* Vessel Part Section */}
         <Text mt={ms(30)} fontSize={ms(16)} bold color={Colors.text}>
-          Concerned Vessel Part
+          {t('concernedVesselPart')}
         </Text>
         {task?.vesselPart ? renderVesselPartSection() : null}
         {/* End of Vessel Part Section */}
         {/* Comment Section */}
         <HStack alignItems="center" mt={ms(30)}>
           <Text fontSize={ms(16)} bold color={Colors.text}>
-            Comments
+            {t('comments')}
           </Text>
           {task?.comments?.length > 0 ? (
             <Text
@@ -420,13 +422,13 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
             navigation.navigate('TechnicalTaskNewComment', {taskId: task?.id})
           }
         >
-          Add Comment
+          {t('addComment')}
         </Button>
         {/* End of Comment Section */}
         {/* Documents Section */}
         <HStack alignItems="center" mt={ms(30)}>
           <Text fontSize={ms(16)} bold color={Colors.text}>
-            Documents
+            {t('documents')}
           </Text>
           {task?.fileGroup?.files?.length > 0 ? (
             <Text
@@ -445,10 +447,10 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
         </HStack>
         <HStack mt={ms(10)} justifyContent="space-between">
           <Text fontSize={ms(16)} bold color={Colors.text}>
-            File
+            {t('file')}
           </Text>
           <Text fontSize={ms(16)} bold color={Colors.text}>
-            Actions
+            {t('actions')}
           </Text>
         </HStack>
         <Divider mb={ms(10)} mt={ms(5)} />
@@ -458,7 +460,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
           )
         ) : (
           <Text mb={ms(20)} color={Colors.text} fontWeight="medium">
-            No uploaded files.
+            {t('noUploadedFiles')}
           </Text>
         )}
         {/* <Button

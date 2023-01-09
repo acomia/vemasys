@@ -2,6 +2,7 @@ import create from 'zustand'
 import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {Environments} from '@bluecentury/constants'
+import i18next from 'i18next'
 
 type TEnv = keyof typeof Environments
 
@@ -46,6 +47,7 @@ export const useSettings = create(
       },
       setLanguage: lang => {
         set({language: lang})
+        i18next.changeLanguage(lang)
       },
       setIsMobileTracking: val => {
         set({

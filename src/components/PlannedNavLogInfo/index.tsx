@@ -7,12 +7,14 @@ import {useNavigation} from '@react-navigation/native'
 import {Animated} from '@bluecentury/assets'
 import {formatLocationLabel} from '@bluecentury/constants'
 import {NativeStackNavigationProp} from '@react-navigation/native-stack/lib/typescript/src/types'
+import {useTranslation} from 'react-i18next'
 
 interface Props {
   logs: Array<any>
 }
 
 export const PlannedNavLogInfo = ({logs}: Props) => {
+  const {t} = useTranslation()
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>()
   const navigationLog = logs?.find((plan: any) => plan.plannedEta !== null)
@@ -32,15 +34,15 @@ export const PlannedNavLogInfo = ({logs}: Props) => {
       <Box ml={ms(15)}>
         {navigationLog === undefined ? (
           <Text fontWeight="700" color="#ADADAD">
-            No upcoming plan yet
+            {t('noUpcomingPlanYet')}
           </Text>
         ) : (
           <>
             <Text fontWeight="700">
-              To: {formatLocationLabel(navigationLog?.location)}
+              {t('to')}{formatLocationLabel(navigationLog?.location)}
             </Text>
             <Text color="#ADADAD">
-              Planned:{' '}
+              {t('planned')}
               {moment(navigationLog?.plannedEta).format(
                 'DD MMM YYYY | HH:mm'
               )}

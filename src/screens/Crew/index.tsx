@@ -11,6 +11,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {FleetHeader, IconButton} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {useEntity, useMap} from '@bluecentury/stores'
+import {useTranslation} from 'react-i18next'
 
 const renderScene = SceneMap({
   me: Me,
@@ -19,6 +20,7 @@ const renderScene = SceneMap({
 
 type Props = NativeStackScreenProps<RootStackParamList>
 export default function Crew({navigation}: Props) {
+  const {t} = useTranslation()
   const {activeFormations} = useMap()
   const {entityType, entityUsers, selectFleetVessel} = useEntity()
   const layout = useWindowDimensions()
@@ -59,7 +61,7 @@ export default function Crew({navigation}: Props) {
 
   const LazyPlaceholder = ({route}: any) => (
     <Box flex="1" alignItems="center" justifyContent="center">
-      <Text>Loading {route.title}…</Text>
+      <Text>{t('loading')} {route.title}…</Text>
     </Box>
   )
 

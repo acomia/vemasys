@@ -10,6 +10,7 @@ import {IconButton} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
 import {usePlanning} from '@bluecentury/stores'
+import {useTranslation} from 'react-i18next'
 
 const DatetimePickerList = ({
   title,
@@ -19,6 +20,7 @@ const DatetimePickerList = ({
   onClearDate,
   readOnly = false,
 }: any) => {
+  const {t} = useTranslation()
   const {isPlanningDetailsLoading} = usePlanning()
   return (
     <VStack mb={ms(10)}>
@@ -61,7 +63,7 @@ const DatetimePickerList = ({
               >
                 {date
                   ? moment(date).format('D MMM YYYY | HH:mm')
-                  : 'No Date & Time Set'}
+                  : t('noDate&TimeSet')}}
               </Text>
             </Skeleton>
           </HStack>

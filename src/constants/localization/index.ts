@@ -1,5 +1,5 @@
 import {useSettings} from '@bluecentury/stores'
-import EN from './en.json'
+import EN from './old_en.json'
 
 // create key based on JSON lang and use EN as reference
 type Key = keyof typeof EN

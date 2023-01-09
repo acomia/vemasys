@@ -24,6 +24,7 @@ import {RefreshControl} from 'react-native'
 import moment from 'moment'
 import DocumentScanner from 'react-native-document-scanner-plugin'
 import {convertToPdfAndUpload} from '@bluecentury/utils'
+import {useTranslation} from 'react-i18next'
 
 type Document = {
   id: number
@@ -32,6 +33,7 @@ type Document = {
 }
 
 const Documents = () => {
+  const {t} = useTranslation()
   const route = useRoute()
   const navigation = useNavigation<NavigationProp<RootStackParamList>>()
   const toast = useToast()
@@ -238,7 +240,7 @@ const Documents = () => {
         }
       >
         <Text fontSize={ms(20)} bold color={Colors.azure} mb={ms(20)}>
-          Additional Documents
+          {t('additionalDocuments')}
         </Text>
         {navigationLogDocuments?.map((document: Document, index: number) => {
           return (
@@ -280,15 +282,15 @@ const Documents = () => {
         mx={ms(12)}
         onPress={onOpen}
       >
-        Add file
+        {t('addFile')}
       </Button>
       <Actionsheet isOpen={isOpen} onClose={onClose}>
         <Actionsheet.Content>
           <Actionsheet.Item onPress={onScanDocument}>
-            Scan document
+            {t('scanDoc')}
           </Actionsheet.Item>
           <Actionsheet.Item onPress={onSelectDocument}>
-            Select document from files
+            {t('selectDoc')}
           </Actionsheet.Item>
           <Actionsheet.Item onPress={onClose}>Cancel</Actionsheet.Item>
         </Actionsheet.Content>

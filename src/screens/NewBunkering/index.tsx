@@ -23,14 +23,10 @@ import moment from 'moment'
 import {Colors} from '@bluecentury/styles'
 import {useTechnical} from '@bluecentury/stores'
 import {LoadingAnimated} from '@bluecentury/components'
-import {_t} from '@bluecentury/constants'
-
-const allFieldsRequired = _t('allFieldsRequired')
-const newBunkeringSupplierRequired = _t('newBunkeringSupplierRequired')
-const newBunkeringAmountRequired = _t('newBunkeringAmountRequired')
-const newBunkeringGreaterAmount = _t('newBunkeringGreaterAmount')
+import {useTranslation} from 'react-i18next'
 
 export default function NewBunkering() {
+  const {t} = useTranslation()
   const navigation = useNavigation()
   const {
     isTechnicalLoading,
@@ -122,7 +118,7 @@ export default function NewBunkering() {
         bg={Colors.white}
       >
         <Text mb={ms(5)} color={Colors.disabled} fontWeight="medium">
-          Date
+          {t('date')}
         </Text>
         <TouchableOpacity
           activeOpacity={0.7}
@@ -151,7 +147,7 @@ export default function NewBunkering() {
 
         <FormControl isRequired isInvalid={isSupplierEmpty}>
           <FormControl.Label color={Colors.disabled}>
-            Supplier
+            {t('supplier')}
           </FormControl.Label>
           <Select
             minWidth="300"
@@ -175,11 +171,11 @@ export default function NewBunkering() {
             ))}
           </Select>
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-            {newBunkeringSupplierRequired}
+            {t('newBunkeringSupplierRequired')}
           </FormControl.ErrorMessage>
         </FormControl>
         <FormControl isRequired isInvalid={isAmountEmpty} mt={ms(25)}>
-          <FormControl.Label color={Colors.disabled}>Amount</FormControl.Label>
+          <FormControl.Label color={Colors.disabled}>{t('amount')}</FormControl.Label>
           <Input
             bg={'#F7F7F7'}
             keyboardType="number-pad"
@@ -195,15 +191,15 @@ export default function NewBunkering() {
           />
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
             {bunkering.bunkeringId === '' && bunkering.amount === ''
-              ? allFieldsRequired
+              ? t('allFieldsRequired')
               : bunkering.amount === '0'
-              ? newBunkeringGreaterAmount
-              : newBunkeringAmountRequired}
+              ? t('newBunkeringGreaterAmount')
+              : t('newBunkeringAmountRequired')}
           </FormControl.ErrorMessage>
         </FormControl>
         <FormControl isInvalid={false} mt={ms(25)}>
           <FormControl.Label color={Colors.disabled}>
-            Description
+            {t('description')}
           </FormControl.Label>
           <TextArea
             numberOfLines={6}
@@ -246,7 +242,7 @@ export default function NewBunkering() {
               colorScheme="muted"
               onPress={() => navigation.goBack()}
             >
-              Cancel
+              {t('cancel')}
             </Button>
             <Button
               flex="1"
@@ -254,7 +250,7 @@ export default function NewBunkering() {
               bg={Colors.primary}
               onPress={handleOnCreateBunkering}
             >
-              Save
+              {t('save')}
             </Button>
           </HStack>
         </Shadow>

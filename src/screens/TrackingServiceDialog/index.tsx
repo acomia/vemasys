@@ -2,8 +2,10 @@ import React, {useRef} from 'react'
 import {AlertDialog, Button, Text} from 'native-base'
 import {useEntity, useSettings} from '@bluecentury/stores'
 import {useNavigation} from '@react-navigation/native'
+import {useTranslation} from 'react-i18next'
 
 export default function TrackingServiceDialog() {
+  const {t} = useTranslation()
   const navigation = useNavigation()
   const {selectedVessel} = useEntity()
   const {isMobileTracking, setIsMobileTracking} = useSettings()
@@ -13,7 +15,7 @@ export default function TrackingServiceDialog() {
     navigation.goBack()
   }
   const cancelRef = useRef<any>()
-  const status = isMobileTracking ? 'disable' : 'enable'
+  const status = isMobileTracking ? t('disable') : t('enable')
   return (
     <AlertDialog
       leastDestructiveRef={cancelRef}
@@ -22,7 +24,7 @@ export default function TrackingServiceDialog() {
     >
       <AlertDialog.Content>
         <AlertDialog.CloseButton />
-        <AlertDialog.Header>Tracking</AlertDialog.Header>
+        <AlertDialog.Header>{t('tracking')}</AlertDialog.Header>
         <AlertDialog.Body>
           <Text>
             This will {status} tracking service in this device and will{' '}
@@ -38,13 +40,13 @@ export default function TrackingServiceDialog() {
               onPress={onClose}
               ref={cancelRef}
             >
-              Cancel
+              {t('cancel')}
             </Button>
             <Button
               colorScheme={isMobileTracking ? 'danger' : 'info'}
               onPress={handleOnToggleTrackingService}
             >
-              {isMobileTracking ? 'Turn off' : 'Turn on'}
+              {isMobileTracking ? t('turnOff') : t('turnOn')}}
             </Button>
           </Button.Group>
         </AlertDialog.Footer>

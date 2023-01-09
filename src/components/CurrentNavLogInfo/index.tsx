@@ -8,8 +8,10 @@ import {useNavigation} from '@react-navigation/native'
 import {Animated} from '@bluecentury/assets'
 import {useMap} from '@bluecentury/stores'
 import {formatLocationLabel} from '@bluecentury/constants'
+import {useTranslation} from "react-i18next"
 
 export const CurrentNavLogInfo = () => {
+  const {t} = useTranslation()
   const navigation = useNavigation()
   const {currentNavLogs, prevNavLogs, vesselStatus}: any = useMap()
 
@@ -40,7 +42,7 @@ export const CurrentNavLogInfo = () => {
               )}
             </Text>
             <Text color="#ADADAD">
-              Arrival:{' '}
+              {t('arrival')}
               {moment(
                 currentNavLogs[currentNavLogs?.length - 1]?.arrivalDatetime
               ).format('DD MMM YYYY | HH:mm')}
@@ -48,14 +50,14 @@ export const CurrentNavLogInfo = () => {
           </>
         ) : vesselStatus?.speed > 0 ? (
           <Text fontWeight="700">
-            Navigating at{' '}
+            {t('navigatingAt')}
             <Text color="#29B7EF">{vesselStatus?.speed} km/h</Text>
           </Text>
         ) : (
           <>
             <Text fontWeight="700">Unknown Location</Text>
             <Text color="#ADADAD">
-              Last seen:{' '}
+              {t('lastSeen')}
               {moment(prevNavLogs[0]?.arrivalDatetime).format(
                 'DD MMM YYYY | HH:mm'
               )}

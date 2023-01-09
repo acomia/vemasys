@@ -6,8 +6,10 @@ import {ms} from 'react-native-size-matters'
 import {useEntity, useFinancial} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
 import {useSafeAreaInsets} from 'react-native-safe-area-context'
+import {useTranslation} from 'react-i18next'
 
 const Overview = () => {
+  const {t} = useTranslation()
   const insets = useSafeAreaInsets()
   const {isFinancialLoading, invoiceStatistics, getInvoiceStatistics} =
     useFinancial()
@@ -144,9 +146,9 @@ const Overview = () => {
           </Select>
         </Box>
         <Box flex="1" px={ms(12)} py={ms(15)} bg={Colors.white}>
-          <Card title={'Incoming'}>
+          <Card title={t('incoming')}>
             <CardContent
-              status="Paid"
+              status={t('paid')}
               value={
                 invoiceStatistics?.length > 0
                   ? invoiceStatistics[0]?.paidIncoming || 0
@@ -154,7 +156,7 @@ const Overview = () => {
               }
             />
             <CardContent
-              status="Unpaid"
+              status={t('unpaid')}
               value={
                 invoiceStatistics?.length > 0
                   ? invoiceStatistics[0]?.unpaidIncoming || 0
@@ -162,9 +164,9 @@ const Overview = () => {
               }
             />
           </Card>
-          <Card title={'Outgoing'}>
+          <Card title={t('outgoing')}>
             <CardContent
-              status="Paid"
+              status={t('paid')}
               value={
                 invoiceStatistics?.length > 0
                   ? invoiceStatistics[0]?.paidOutgoing || 0
@@ -172,7 +174,7 @@ const Overview = () => {
               }
             />
             <CardContent
-              status="Unpaid"
+              status={t('unpaid')}
               value={
                 invoiceStatistics?.length > 0
                   ? invoiceStatistics[0]?.unpaidOutgoing || 0
@@ -184,9 +186,9 @@ const Overview = () => {
               <CardContent status="Current Daily Avg" value="3500" />
               <CardContent status="Days Navigated" value="200" />
             </Card> */}
-          <Card title={'Total'}>
+          <Card title={t('total')}>
             <CardContent
-              status="Total turnover"
+              status={t('totalTurnover')}
               value={
                 invoiceStatistics?.length > 0
                   ? invoiceStatistics[0]?.totalOutgoing || 0
@@ -194,7 +196,7 @@ const Overview = () => {
               }
             />
             <CardContent
-              status="Total costs"
+              status={t('totalCosts')}
               value={
                 invoiceStatistics?.length > 0
                   ? invoiceStatistics[0]?.totalIncoming || 0
@@ -202,7 +204,7 @@ const Overview = () => {
               }
             />
             <CardContent
-              status="Total balance"
+              status={t('totalBalance')}
               value={
                 invoiceStatistics?.length > 0
                   ? invoiceStatistics[0]?.balance || 0
@@ -234,7 +236,7 @@ const Overview = () => {
           px={ms(16)}
         >
           <Text flex="1" fontWeight="medium" color={Colors.white}>
-            Total balance
+            {t('totalBalance')}
           </Text>
 
           <Box

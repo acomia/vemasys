@@ -10,10 +10,12 @@ import {Colors} from '@bluecentury/styles'
 import {IconButton} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {useEntity, useMap, useSettings} from '@bluecentury/stores'
+import {useTranslation} from 'react-i18next'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 
 export default function Formations({navigation}: Props) {
+  const {t} = useTranslation()
   const {
     activeFormations,
     getActiveFormations,
@@ -126,7 +128,7 @@ export default function Formations({navigation}: Props) {
             color={Colors.azure}
             mt={ms(20)}
           >
-            No Active Formations
+            {t('noActiveFormations')}
           </Text>
         )}
       />
@@ -135,7 +137,7 @@ export default function Formations({navigation}: Props) {
           <Modal.Header>Drop off</Modal.Header>
           <Modal.Body py={ms(20)}>
             <Text>
-              Would you like to drop off{' '}
+              {t('wouldYouLikeToDropOff')}
               <Text fontWeight="medium" color={Colors.primary}>
                 {bargeName}
               </Text>
@@ -152,7 +154,7 @@ export default function Formations({navigation}: Props) {
               mr={ms(5)}
               onPress={() => setDropOffModal(false)}
             >
-              Cancel
+              {t('cancel')}
             </Button>
             <Button
               flex="1"
@@ -160,7 +162,7 @@ export default function Formations({navigation}: Props) {
               ml={ms(5)}
               onPress={onDropOffPress}
             >
-              Drop off
+              {t('dropOff')}
             </Button>
           </Modal.Footer>
         </Modal.Content>

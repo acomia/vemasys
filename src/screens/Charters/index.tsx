@@ -13,9 +13,11 @@ import {
 } from '@bluecentury/constants'
 import {FleetHeader} from '@bluecentury/components'
 import {useEntity} from '@bluecentury/stores'
+import {useTranslation} from 'react-i18next'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 export default function Charters({navigation}: Props) {
+  const {t} = useTranslation()
   const layout = useWindowDimensions()
 
   const {entityType, selectFleetVessel, entityUsers} = useEntity()
@@ -24,7 +26,7 @@ export default function Charters({navigation}: Props) {
 
   const LazyPlaceholder = ({route}) => (
     <Box flex="1" alignItems="center" justifyContent="center">
-      <Text>Loading {route.title}…</Text>
+      <Text>{t('loading')} {route.title}…</Text>
     </Box>
   )
 

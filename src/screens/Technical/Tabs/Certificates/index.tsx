@@ -8,10 +8,12 @@ import {useEntity, useTechnical} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
 import {LoadingAnimated} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
+import {useTranslation} from 'react-i18next'
 
 const {width} = Dimensions.get('window')
 
 const Certificates = () => {
+  const {t} = useTranslation()
   const navigation = useNavigation()
   const {isTechnicalLoading, certificates, getVesselCertificates} =
     useTechnical()
@@ -24,25 +26,25 @@ const Certificates = () => {
 
   const certificareCard = [
     {
-      label: 'All Certificates',
+      label: t('allCertificates'),
       icon: Icons.all_certificate,
       count: certificates?.length,
       data: certificates,
     },
     {
-      label: 'Valid',
+      label: t('valid'),
       icon: Icons.status_check_alt,
       count: certificates?.filter(cert => cert.remainingDays >= 0).length,
       data: certificates?.filter(cert => cert.remainingDays >= 0),
     },
     {
-      label: 'Expiring',
+      label: t('expiring'),
       icon: Icons.status_exclamation_alt,
       count: certificates?.filter(cert => cert.remainingDays == 31).length,
       data: certificates?.filter(cert => cert.remainingDays == 31),
     },
     {
-      label: 'Expired',
+      label: t('expired'),
       icon: Icons.status_x_alt,
       count: certificates?.filter(cert => cert.remainingDays < 0).length,
       data: certificates?.filter(cert => cert.remainingDays < 0),
@@ -73,7 +75,7 @@ const Certificates = () => {
         bg={Colors.white}
       >
         <Text fontSize={ms(20)} bold color={Colors.azure} mb={ms(15)}>
-          Overview
+          {t('overview')}
         </Text>
         <HStack
           flexWrap="wrap"

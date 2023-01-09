@@ -6,8 +6,10 @@ import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
 import {useInformation} from '@bluecentury/stores'
 import moment from 'moment'
+import {useTranslation} from 'react-i18next'
 
 const TickerOilPriceDetails = () => {
+  const {t} = useTranslation()
   const {tickerOilPrices} = useInformation()
 
   const entityList = tickerOilPrices && [
@@ -40,7 +42,7 @@ const TickerOilPriceDetails = () => {
               color={Colors.azure}
               textAlign="center"
               mb={ms(20)}
-            >{`${chart} (Price in EUR)`}</Text>
+            >{`${chart} ${t('priceInEUR')}`}</Text>
             <LineChart
               data={{
                 labels: tickerOilPrices
