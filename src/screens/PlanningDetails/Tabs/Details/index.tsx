@@ -114,9 +114,8 @@ const Details = () => {
     date => date.didUpdate === true
   )
 
-  console.log('leave', focused)
   useEffect(() => {
-    if (!focused) {
+    if (!focused && unsavedChanges.length > 0) {
       setLeaveTabModal(true)
     }
   }, [focused])
@@ -125,7 +124,6 @@ const Details = () => {
     getNavigationLogDetails(navlog?.id)
     getNavigationLogActions(navlog?.id)
     getNavigationLogComments(navlog?.id)
-    // getNavigationLogCargoHolds(physicalVesselId)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -582,6 +580,43 @@ const Details = () => {
     )
   }
 
+  const onCancelUnsavedChanges = () => {
+    setDates({
+      ...dates,
+      plannedEta: navigationLogDetails?.plannedEta,
+      captainDatetimeEta: navigationLogDetails?.captainDatetimeEta,
+      announcedDatetime: navigationLogDetails?.announcedDatetime,
+      terminalApprovedDeparture:
+        navigationLogDetails?.terminalApprovedDeparture,
+    })
+    setDidDateChange({
+      ...didDateChange,
+      Pln: {didUpdate: false},
+      Eta: {didUpdate: false},
+      Nor: {didUpdate: false},
+      Doc: {didUpdate: false},
+    })
+  }
+
+  const onProceedToNextTab = () => {
+    setLeaveTabModal(false)
+    setDates({
+      ...dates,
+      plannedEta: navigationLogDetails?.plannedEta,
+      captainDatetimeEta: navigationLogDetails?.captainDatetimeEta,
+      announcedDatetime: navigationLogDetails?.announcedDatetime,
+      terminalApprovedDeparture:
+        navigationLogDetails?.terminalApprovedDeparture,
+    })
+    setDidDateChange({
+      ...didDateChange,
+      Pln: {didUpdate: false},
+      Eta: {didUpdate: false},
+      Nor: {didUpdate: false},
+      Doc: {didUpdate: false},
+    })
+  }
+
   const onPullToReload = () => {
     getNavigationLogDetails(navlog.id)
     getNavigationLogActions(navlog?.id)
@@ -803,7 +838,7 @@ const Details = () => {
                 flex="1"
                 m={ms(12)}
                 bg={Colors.danger}
-                onPress={() => setLeaveTabModal(false)}
+                onPress={onProceedToNextTab}
               >
                 <Text fontWeight="medium" color={Colors.white}>
                   Yes
@@ -827,7 +862,7 @@ const Details = () => {
                 m={ms(16)}
                 variant="ghost"
                 colorScheme="muted"
-                onPress={() => navigation.goBack()}
+                onPress={onCancelUnsavedChanges}
               >
                 Cancel
               </Button>

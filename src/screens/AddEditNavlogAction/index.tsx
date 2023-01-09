@@ -55,15 +55,23 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
     updateNavlogDates,
   } = usePlanning()
 
-  const cargoChoices =
-    navigationLogDetails?.bulkCargo.length > 0
-      ? navigationLogDetails?.bulkCargo?.map(
-          (c: {type: {nameEn: any}; id: any}) => ({
-            label: formatBulkTypeLabel(c.type),
-            value: c.id,
-          })
-        )
-      : []
+  let cargoChoices: any = []
+  if (navigationLogDetails?.bulkCargo.length > 0) {
+    cargoChoices = navigationLogDetails?.bulkCargo?.map(
+      (c: {type: {nameEn: any}; id: any}) => ({
+        label: formatBulkTypeLabel(c.type),
+        value: c.id,
+      })
+    )
+  }
+  let earliest: {start: string | number | Date} | null = null
+  if (navigationLogActions.length > 0) {
+    earliest = navigationLogActions?.reduce((previous, current) => {
+      return new Date(current.start) < new Date(previous.start)
+        ? current
+        : previous
+    })
+  }
 
   const [navActionDetails, setNavActionDetails] = useState({
     type:
@@ -106,14 +114,6 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
       opacity: dateTimeOpacity.value,
     }
   })
-  const earliest =
-    navigationLogActions?.length > 0
-      ? navigationLogActions?.reduce((previous, current) => {
-          return new Date(current.start) < new Date(previous.start)
-            ? current
-            : previous
-        })
-      : null
 
   useEffect(() => {
     navigation.setOptions({
@@ -138,11 +138,13 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
         earliest !== null &&
         new Date(earliest.start) < new Date(navActionDetails.start)
       ) {
+        if (!navigationLogDetails) return
         updateNavlogDates(navigationLogDetails?.id, {
           announcedDatetime: earliest.start,
           startActionDatetime: navActionDetails.start,
         })
       } else {
+        if (!navigationLogDetails) return
         updateNavlogDates(navigationLogDetails?.id, {
           announcedDatetime: navActionDetails.start,
           startActionDatetime: navActionDetails.start,
@@ -187,11 +189,11 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
     })
   }
 
-  const onSuccess = async () => {
+  const onSuccess = () => {
     reset()
-    getNavigationLogDetails(navigationLogDetails?.id),
-      getNavigationLogActions(navigationLogDetails?.id),
-      navigation.goBack()
+    getNavigationLogDetails(navigationLogDetails?.id)
+    getNavigationLogActions(navigationLogDetails?.id)
+    navigation.goBack()
   }
 
   const renderActionTypeIcon = (type: string) => {
