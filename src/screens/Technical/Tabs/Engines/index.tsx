@@ -14,7 +14,7 @@ import {useTranslation} from 'react-i18next'
 const Engines = () => {
   const {t} = useTranslation()
   const navigation = useNavigation()
-  const {isTechnicalLoading, engines, getVesselEngines} = useTechnical()
+  const {engines, getVesselEngines} = useTechnical()
   const {physicalVesselId} = useEntity()
   const [pullRefresh, setPullRefresh] = useState(false)
 
