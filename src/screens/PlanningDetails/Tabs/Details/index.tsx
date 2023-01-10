@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react'
-import {RefreshControl, TouchableOpacity, FlatList} from 'react-native'
+import React, {useCallback, useEffect, useState} from 'react'
+import {RefreshControl, TouchableOpacity, FlatList, Alert} from 'react-native'
 import {
   Avatar,
   Box,
@@ -17,6 +17,7 @@ import {ms} from 'react-native-size-matters'
 import DatePicker from 'react-native-date-picker'
 import {
   NavigationProp,
+  useFocusEffect,
   useIsFocused,
   useNavigation,
   useRoute,
@@ -39,6 +40,7 @@ import {PROD_URL} from '@vemasys/env'
 import {LoadingAnimated} from '@bluecentury/components'
 import {Vemasys} from '@bluecentury/helpers'
 import {useTranslation} from 'react-i18next'
+import {Shadow} from 'react-native-shadow-2'
 
 type Dates = {
   plannedEta: Date | undefined | StringOrNull
@@ -48,7 +50,6 @@ type Dates = {
   terminalApprovedDeparture: Date | undefined | StringOrNull
   departureDatetime: Date | undefined | StringOrNull
 }
-
 const Details = () => {
   const {t} = useTranslation()
   const toast = useToast()
@@ -65,9 +66,7 @@ const Details = () => {
     navigationLogActions,
     getNavigationLogDetails,
     getNavigationLogActions,
-    getNavigationLogCargoHolds,
     getNavigationLogComments,
-    getNavigationLogDocuments,
     updateNavlogDates,
     updateNavlogDatesSuccess,
     updateNavlogDatesFailed,
@@ -87,6 +86,12 @@ const Details = () => {
     terminalApprovedDeparture: navigationLogDetails?.terminalApprovedDeparture,
     departureDatetime: navigationLogDetails?.departureDatetime,
   })
+  const [didDateChange, setDidDateChange] = useState({
+    Pln: {didUpdate: false},
+    Eta: {didUpdate: false},
+    Nor: {didUpdate: false},
+    Doc: {didUpdate: false},
+  })
 
   const [viewImg, setViewImg] = useState(false)
   const [selectedImg, setSelectedImg] = useState<ImageFile>({})
@@ -96,19 +101,27 @@ const Details = () => {
   const [buttonActionLabel, setButtonActionLabel] = useState(' ')
   const [selectedAction, setSelectedAction] = useState<NavigationLogAction>({})
   const [confirmModal, setConfirmModal] = useState(false)
+  const [leaveTabModal, setLeaveTabModal] = useState(false)
   const hasAddCommentPermission = hasSelectedEntityUserPermission(
     selectedEntity,
     ROLE_PERMISSION_NAVIGATION_LOG_ADD_COMMENT
   )
   const isUnknownLocation = title === 'Unknown Location' ? true : false
+  const unsavedChanges = Object.values(didDateChange).filter(
+    date => date.didUpdate === true
+  )
+
+  useEffect(() => {
+    if (!focused && unsavedChanges.length > 0) {
+      setLeaveTabModal(true)
+    }
+  }, [focused])
 
   useEffect(() => {
     getNavigationLogDetails(navlog?.id)
     getNavigationLogActions(navlog?.id)
     getNavigationLogComments(navlog?.id)
-    // getNavigationLogCargoHolds(physicalVesselId)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    return () => {}
   }, [])
 
   useEffect(() => {
@@ -183,7 +196,7 @@ const Details = () => {
     reset()
   }
 
-  const handleOnSaveDateUpdates = async () => {
+  const handleOnSaveDateUpdates = () => {
     updateNavlogDates(navlog?.id, dates)
   }
 
@@ -192,18 +205,22 @@ const Details = () => {
     switch (selectedType) {
       case 'PLN':
         setDates({...dates, plannedEta: formattedDate})
+        setDidDateChange({...didDateChange, Pln: {didUpdate: true}})
         return
       case 'ETA':
         setDates({...dates, captainDatetimeEta: formattedDate})
+        setDidDateChange({...didDateChange, Eta: {didUpdate: true}})
         return
       case 'NOR':
         setDates({...dates, announcedDatetime: formattedDate})
+        setDidDateChange({...didDateChange, Nor: {didUpdate: true}})
         return
       case 'ARR':
         setDates({...dates, arrivalDatetime: formattedDate})
         return
       case 'DOC':
         setDates({...dates, terminalApprovedDeparture: formattedDate})
+        setDidDateChange({...didDateChange, Doc: {didUpdate: true}})
         return
       case 'DEP':
         setDates({...dates, departureDatetime: formattedDate})
@@ -243,7 +260,12 @@ const Details = () => {
           setSelectedType('ETA')
           setOpenDatePicker(true)
         }}
-        onClearDate={() => setDates({...dates, captainDatetimeEta: null})}
+        onClearDate={() =>
+          setDates({
+            ...dates,
+            captainDatetimeEta: null,
+          })
+        }
       />
     </Box>
   )
@@ -258,7 +280,16 @@ const Details = () => {
           setSelectedType('NOR')
           setOpenDatePicker(true)
         }}
-        onClearDate={() => setDates({...dates, announcedDatetime: null})}
+        onClearDate={() => {
+          setDidDateChange({
+            ...didDateChange,
+            Nor: {didUpdate: _.isNull(dates.announcedDatetime) ? false : true},
+          })
+          setDates({
+            ...dates,
+            announcedDatetime: null,
+          })
+        }}
       />
 
       <DatetimePickerList
@@ -280,7 +311,10 @@ const Details = () => {
           setOpenDatePicker(true)
         }}
         onClearDate={() =>
-          setDates({...dates, terminalApprovedDeparture: null})
+          setDates({
+            ...dates,
+            terminalApprovedDeparture: null,
+          })
         }
       />
 
@@ -543,6 +577,43 @@ const Details = () => {
     )
   }
 
+  const onCancelUnsavedChanges = () => {
+    setDates({
+      ...dates,
+      plannedEta: navigationLogDetails?.plannedEta,
+      captainDatetimeEta: navigationLogDetails?.captainDatetimeEta,
+      announcedDatetime: navigationLogDetails?.announcedDatetime,
+      terminalApprovedDeparture:
+        navigationLogDetails?.terminalApprovedDeparture,
+    })
+    setDidDateChange({
+      ...didDateChange,
+      Pln: {didUpdate: false},
+      Eta: {didUpdate: false},
+      Nor: {didUpdate: false},
+      Doc: {didUpdate: false},
+    })
+  }
+
+  const onProceedToNextTab = () => {
+    setLeaveTabModal(false)
+    setDates({
+      ...dates,
+      plannedEta: navigationLogDetails?.plannedEta,
+      captainDatetimeEta: navigationLogDetails?.captainDatetimeEta,
+      announcedDatetime: navigationLogDetails?.announcedDatetime,
+      terminalApprovedDeparture:
+        navigationLogDetails?.terminalApprovedDeparture,
+    })
+    setDidDateChange({
+      ...didDateChange,
+      Pln: {didUpdate: false},
+      Eta: {didUpdate: false},
+      Nor: {didUpdate: false},
+      Doc: {didUpdate: false},
+    })
+  }
+
   const onPullToReload = () => {
     getNavigationLogDetails(navlog.id)
     getNavigationLogActions(navlog?.id)
@@ -611,33 +682,6 @@ const Details = () => {
         <Divider bg={Colors.light} my={ms(8)} h={ms(2)} />
         {renderDepartureDates()}
         {/* End of Announcing&Arrival dates Section */}
-        <Button
-          bg={
-            _.isNull(
-              dates.terminalApprovedDeparture ||
-                dates.captainDatetimeEta ||
-                dates.announcedDatetime ||
-                dates.plannedEta
-            )
-              ? Colors.disabled
-              : Colors.primary
-          }
-          leftIcon={<Icon as={Ionicons} name="save-outline" size="sm" />}
-          mt={ms(15)}
-          disabled={
-            _.isNull(
-              dates.terminalApprovedDeparture ||
-                dates.captainDatetimeEta ||
-                dates.announcedDatetime ||
-                dates.plannedEta
-            )
-              ? true
-              : false
-          }
-          onPress={handleOnSaveDateUpdates}
-        >
-          Save Changes
-        </Button>
         {/* Contact Information Section */}
         {isUnknownLocation ? null : (
           <>
@@ -762,7 +806,76 @@ const Details = () => {
             </HStack>
           </Modal.Content>
         </Modal>
+        <Modal
+          isOpen={leaveTabModal}
+          size="full"
+          px={ms(12)}
+          animationPreset="slide"
+        >
+          <Modal.Content>
+            <Modal.Header>Confirmation</Modal.Header>
+            <Text my={ms(20)} mx={ms(12)} fontWeight="medium">
+              There are unsaved changes in this page. Are you sure you want to
+              proceed?
+            </Text>
+            <HStack>
+              <Button
+                flex="1"
+                m={ms(12)}
+                bg={Colors.grey}
+                onPress={() => {
+                  setLeaveTabModal(false), navigation.goBack()
+                }}
+              >
+                <Text fontWeight="medium" color={Colors.disabled}>
+                  No
+                </Text>
+              </Button>
+              <Button
+                flex="1"
+                m={ms(12)}
+                bg={Colors.danger}
+                onPress={onProceedToNextTab}
+              >
+                <Text fontWeight="medium" color={Colors.white}>
+                  Yes
+                </Text>
+              </Button>
+            </HStack>
+          </Modal.Content>
+        </Modal>
       </ScrollView>
+      {unsavedChanges.length > 0 ? (
+        <Box bg={Colors.white} position="relative">
+          <Shadow
+            distance={25}
+            viewStyle={{
+              width: '100%',
+            }}
+          >
+            <HStack>
+              <Button
+                flex="1"
+                m={ms(16)}
+                variant="ghost"
+                colorScheme="muted"
+                onPress={onCancelUnsavedChanges}
+              >
+                Cancel
+              </Button>
+              <Button
+                flex="1"
+                m={ms(16)}
+                bg={Colors.primary}
+                onPress={handleOnSaveDateUpdates}
+              >
+                Save
+              </Button>
+            </HStack>
+          </Shadow>
+        </Box>
+      ) : null}
+
       <Modal isOpen={viewImg} size="full" onClose={() => setViewImg(false)}>
         <Modal.Content>
           <Image
