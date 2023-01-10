@@ -28,6 +28,7 @@ import {usePlanning} from '@bluecentury/stores'
 import {titleCase} from '@bluecentury/constants'
 import {LoadingAnimated} from '@bluecentury/components'
 import {useTranslation} from 'react-i18next'
+import {Vemasys} from '@bluecentury/helpers'
 
 const Actions = () => {
   const {t} = useTranslation()
@@ -114,7 +115,7 @@ const Actions = () => {
       type: titleCase(action.type),
       start: action.start,
       estimatedEnd: action.estimatedEnd,
-      end: new Date(),
+      end: Vemasys.defaultDatetime(),
       cargoHoldActions: [
         {
           navigationBulk: action?.navigationBulk?.id,
@@ -203,7 +204,8 @@ const Actions = () => {
                     </Text>
                     {_.isNull(action.end) ? null : (
                       <Text color={Colors.danger} fontWeight="medium">
-                        {t('end')}{moment(action.end).format('D MMM YYYY | HH:mm')}
+                        {t('end')}
+                        {moment(action.end).format('D MMM YYYY | HH:mm')}
                       </Text>
                     )}
                   </Box>
