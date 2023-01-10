@@ -9,12 +9,14 @@ import {usePlanning} from '@bluecentury/stores'
 import {IconButton, LoadingAnimated} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {formatBulkTypeLabel, formatNumber} from '@bluecentury/constants'
+import {useTranslation} from 'react-i18next'
 
 const CargoList = () => {
+  const {t} = useTranslation()
   const navigation = useNavigation()
   const toast = useToast()
   const {
-    isPlanningLoading,
+    isPlanningDetailsLoading,
     navigationLogDetails,
     getNavigationLogDetails,
     deleteBulkCargo,
@@ -76,7 +78,7 @@ const CargoList = () => {
     getNavigationLogDetails(navigationLogDetails?.id)
   }
 
-  if (isPlanningLoading) return <LoadingAnimated />
+  if (isPlanningDetailsLoading) return <LoadingAnimated />
 
   return (
     <Box flex="1">
@@ -85,7 +87,7 @@ const CargoList = () => {
         refreshControl={
           <RefreshControl
             onRefresh={onPullToReload}
-            refreshing={isPlanningLoading}
+            refreshing={isPlanningDetailsLoading}
           />
         }
         bg={Colors.white}
@@ -93,14 +95,14 @@ const CargoList = () => {
         py={ms(20)}
       >
         <Text fontSize={ms(20)} bold color={Colors.azure}>
-          Cargo
+          {t('cargo')}
         </Text>
         <HStack mt={ms(10)} justifyContent="flex-end">
           {/* <Text fontSize={ms(16)} bold color={Colors.text}>
             Inventory
           </Text> */}
           <Text fontSize={ms(16)} bold color={Colors.text}>
-            Actions
+            {t('actions')}
           </Text>
         </HStack>
         <Divider mt={ms(5)} mb={ms(15)} />
@@ -140,7 +142,7 @@ const CargoList = () => {
                   size={ms(22)}
                 />
                 {/* <HStack alignItems="center">
-                  
+
                   <Box w={ms(10)} />
                   <IconButton
                     source={Icons.trash}
@@ -158,7 +160,7 @@ const CargoList = () => {
               color={Colors.disabled}
               fontWeight="medium"
             >
-              This navigation log has no cargo listed.
+              {t('navLogHasNoCargo')}
             </Text>
           </Box>
         )}

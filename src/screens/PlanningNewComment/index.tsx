@@ -17,8 +17,10 @@ import {ms} from 'react-native-size-matters'
 import {Colors} from '@bluecentury/styles'
 import {useEntity, usePlanning, useTechnical} from '@bluecentury/stores'
 import {LoadingAnimated} from '@bluecentury/components'
+import {useTranslation} from 'react-i18next'
 
 export default function PlanningNewComment() {
+  const {t} = useTranslation()
   const navigation = useNavigation()
   const toast = useToast()
   const {
@@ -90,12 +92,12 @@ export default function PlanningNewComment() {
         bg={Colors.white}
       >
         <Text fontSize={ms(20)} bold color={Colors.azure}>
-          Add a comment
+          {t('addComment')}
         </Text>
 
         <FormControl isRequired isInvalid={isCommentEmpty} mt={ms(25)}>
           <FormControl.Label color={Colors.disabled}>
-            Description
+            {t('description')}
           </FormControl.Label>
           <TextArea
             numberOfLines={6}
@@ -107,7 +109,7 @@ export default function PlanningNewComment() {
             autoCompleteType={undefined}
           />
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-            Please fill in the description
+            {t('fillInTheDescription')}
           </FormControl.ErrorMessage>
         </FormControl>
       </ScrollView>
@@ -126,7 +128,7 @@ export default function PlanningNewComment() {
               colorScheme="muted"
               onPress={() => navigation.goBack()}
             >
-              Cancel
+              {t('cancel')}
             </Button>
             <Button
               flex="1"
@@ -134,7 +136,7 @@ export default function PlanningNewComment() {
               bg={Colors.primary}
               onPress={handleOnCreateNewComment}
             >
-              Save
+              {t('save')}
             </Button>
           </HStack>
         </Shadow>

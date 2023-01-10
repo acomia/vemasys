@@ -9,9 +9,11 @@ import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
 import {planningDetailsTabs} from '@bluecentury/constants'
 import {usePlanning} from '@bluecentury/stores'
+import {useTranslation} from 'react-i18next'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 export default function PlanningDetails({route}: Props) {
+  const {t} = useTranslation()
   const {title} = route.params
   const layout = useWindowDimensions()
   const {navigationLogDetails} = usePlanning()
@@ -51,7 +53,7 @@ export default function PlanningDetails({route}: Props) {
 
   const LazyPlaceholder = ({route}) => (
     <Box flex="1" alignItems="center" justifyContent="center">
-      <Text>Loading {route.title}…</Text>
+      <Text>{t('loading')} {route.title}…</Text>
     </Box>
   )
 

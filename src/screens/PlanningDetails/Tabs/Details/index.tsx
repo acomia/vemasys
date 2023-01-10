@@ -33,12 +33,12 @@ import {
   formatLocationLabel,
   hasSelectedEntityUserPermission,
   ROLE_PERMISSION_NAVIGATION_LOG_ADD_COMMENT,
-  ROLE_PERMISSION_NAVIGATION_LOG_ADD_FILE,
   titleCase,
 } from '@bluecentury/constants'
 import {PROD_URL} from '@vemasys/env'
 import {LoadingAnimated} from '@bluecentury/components'
 import {Vemasys} from '@bluecentury/helpers'
+import {useTranslation} from 'react-i18next'
 
 type Dates = {
   plannedEta: Date | undefined | StringOrNull
@@ -50,12 +50,16 @@ type Dates = {
 }
 
 const Details = () => {
+  const {t} = useTranslation()
   const toast = useToast()
   const navigation = useNavigation<NavigationProp<RootStackParamList>>()
   const route = useRoute()
   const focused = useIsFocused()
   const {
     isPlanningLoading,
+    isPlanningDetailsLoading,
+    isPlanningActionsLoading,
+    isPlanningCommentsLoading,
     navigationLogDetails,
     navigationLogComments,
     navigationLogActions,
@@ -73,7 +77,7 @@ const Details = () => {
     isCreateNavLogActionSuccess,
     reset,
   } = usePlanning()
-  const {user, selectedEntity, physicalVesselId} = useEntity()
+  const {selectedEntity} = useEntity()
   const {navlog, title}: any = route.params
   const [dates, setDates] = useState<Dates>({
     plannedEta: navigationLogDetails?.plannedEta,
@@ -89,7 +93,7 @@ const Details = () => {
   const [selectedType, setSelectedType] = useState('')
   const [openDatePicker, setOpenDatePicker] = useState(false)
   const [activeActions, setActiveActions] = useState([])
-  const [buttonActionLabel, setButtonActionLabel] = useState('Loading')
+  const [buttonActionLabel, setButtonActionLabel] = useState(' ')
   const [selectedAction, setSelectedAction] = useState<NavigationLogAction>({})
   const [confirmModal, setConfirmModal] = useState(false)
   const hasAddCommentPermission = hasSelectedEntityUserPermission(
@@ -104,6 +108,7 @@ const Details = () => {
     getNavigationLogComments(navlog?.id)
     // getNavigationLogCargoHolds(physicalVesselId)
     // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {}
   }, [])
 
   useEffect(() => {
@@ -119,9 +124,6 @@ const Details = () => {
         navigationLogDetails?.terminalApprovedDeparture,
       departureDatetime: navigationLogDetails?.departureDatetime,
     })
-  }, [navigationLogActions, navigationLogDetails, isCreateNavLogActionSuccess])
-
-  useEffect(() => {
     if (
       navigationLogDetails?.bulkCargo?.some(cargo => cargo.isLoading === false)
     ) {
@@ -129,6 +131,9 @@ const Details = () => {
     } else {
       setButtonActionLabel('Loading')
     }
+  }, [navigationLogActions, navigationLogDetails, isCreateNavLogActionSuccess])
+
+  useEffect(() => {
     if (updateNavlogDatesSuccess === 'SUCCESS' && focused) {
       showToast('Updates saved.', 'success')
     }
@@ -519,7 +524,7 @@ const Details = () => {
       type: titleCase(action.type),
       start: action.start,
       estimatedEnd: action.estimatedEnd,
-      end: new Date(),
+      end: Vemasys.defaultDatetime(),
       cargoHoldActions: [
         {
           navigationBulk: action?.navigationBulk?.id,
@@ -544,7 +549,13 @@ const Details = () => {
     getNavigationLogComments(navlog.id)
   }
 
-  if (isPlanningLoading) return <LoadingAnimated />
+  if (
+    isPlanningLoading ||
+    isPlanningDetailsLoading ||
+    isPlanningActionsLoading ||
+    isPlanningCommentsLoading
+  )
+    return <LoadingAnimated />
   return (
     <Box flex="1">
       <ScrollView
@@ -553,7 +564,12 @@ const Details = () => {
         refreshControl={
           <RefreshControl
             onRefresh={onPullToReload}
-            refreshing={isPlanningLoading}
+            refreshing={
+              isPlanningLoading ||
+              isPlanningDetailsLoading ||
+              isPlanningActionsLoading ||
+              isPlanningCommentsLoading
+            }
           />
         }
         bg={Colors.white}
@@ -626,7 +642,7 @@ const Details = () => {
         {isUnknownLocation ? null : (
           <>
             <Text fontSize={ms(20)} bold color={Colors.azure} mt={ms(20)}>
-              Contact Information
+              {t('contactInformation')}
             </Text>
             <Box my={ms(15)}>
               {navigationLogDetails?.contacts?.length > 0 ? (
@@ -644,7 +660,7 @@ const Details = () => {
                   bg={Colors.white}
                   shadow={2}
                 >
-                  <Text>No contact information found.</Text>
+                  <Text>{t('noContactInformation')}</Text>
                 </Box>
               )}
             </Box>
@@ -654,7 +670,7 @@ const Details = () => {
         {/* Comments Section */}
         <HStack alignItems="center" mt={ms(20)}>
           <Text fontSize={ms(20)} bold color={Colors.azure}>
-            Comments
+            {t('comments')}
           </Text>
           {navigationLogComments?.length > 0 ? (
             <Box
@@ -694,7 +710,7 @@ const Details = () => {
               })
             }
           >
-            Add comment
+            {t('addComment')}
           </Button>
         )}
 

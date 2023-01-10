@@ -17,9 +17,11 @@ import {Colors} from '@bluecentury/styles'
 import {useEntity, usePlanning, useTechnical} from '@bluecentury/stores'
 import {LoadingAnimated} from '@bluecentury/components'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
+import {useTranslation} from 'react-i18next'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 export default function TechnicalTaskNewComment({navigation, route}: Props) {
+  const {t} = useTranslation()
   const {taskId} = route.params
   const toast = useToast()
   const {isTechnicalLoading, createTaskComment} = useTechnical()
@@ -80,12 +82,12 @@ export default function TechnicalTaskNewComment({navigation, route}: Props) {
         bg={Colors.white}
       >
         <Text fontSize={ms(20)} bold color={Colors.azure}>
-          Add a comment
+          {t('addComment')}
         </Text>
 
         <FormControl isRequired isInvalid={isCommentEmpty} mt={ms(25)}>
           <FormControl.Label color={Colors.disabled}>
-            Description
+            {t('description')}
           </FormControl.Label>
           <TextArea
             numberOfLines={6}
@@ -97,7 +99,7 @@ export default function TechnicalTaskNewComment({navigation, route}: Props) {
             autoCompleteType={undefined}
           />
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-            Please fill in the description
+            {t('fillInTheDescription')}
           </FormControl.ErrorMessage>
         </FormControl>
       </ScrollView>
@@ -116,7 +118,7 @@ export default function TechnicalTaskNewComment({navigation, route}: Props) {
               colorScheme="muted"
               onPress={() => navigation.goBack()}
             >
-              Cancel
+              {t('cancel')}
             </Button>
             <Button
               flex="1"
@@ -124,7 +126,7 @@ export default function TechnicalTaskNewComment({navigation, route}: Props) {
               bg={Colors.primary}
               onPress={handleOnCreateNewComment}
             >
-              Save
+              {t('save')}
             </Button>
           </HStack>
         </Shadow>

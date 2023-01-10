@@ -2,6 +2,7 @@ import React, {useState} from 'react'
 import {useWindowDimensions} from 'react-native'
 import {Box, Text} from 'native-base'
 import {TabView, TabBar, SceneMap} from 'react-native-tab-view'
+import {useTranslation} from 'react-i18next'
 
 import {Overview, Costs, Revenue, Scan} from './Tabs'
 import {Colors} from '@bluecentury/styles'
@@ -14,6 +15,7 @@ import {useEntity} from '@bluecentury/stores'
 import {FleetHeader} from '@bluecentury/components'
 
 export default function Financial() {
+  const {t} = useTranslation()
   const layout = useWindowDimensions()
   const {entityType, entityUsers, selectFleetVessel} = useEntity()
   const [index, setIndex] = useState(0)
@@ -28,7 +30,7 @@ export default function Financial() {
 
   const LazyPlaceholder = ({route}) => (
     <Box flex="1" alignItems="center" justifyContent="center">
-      <Text>Loading {route.title}…</Text>
+      <Text>{t('loading')} {route.title}…</Text>
     </Box>
   )
 

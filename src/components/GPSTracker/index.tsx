@@ -17,9 +17,11 @@ import moment from 'moment'
 import {Colors} from '@bluecentury/styles'
 import {Icons} from '@bluecentury/assets'
 import {useEntity, useSettings} from '@bluecentury/stores'
+import {useTranslation} from 'react-i18next'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 export const GPSTracker = ({navigation}: Props) => {
+  const {t} = useTranslation()
   const isMobileTracking = useSettings(state => state.isMobileTracking)
   const vesselDetails = useEntity(state => state.vesselDetails)
   const netInfo = useNetInfo()
@@ -72,7 +74,7 @@ export const GPSTracker = ({navigation}: Props) => {
         p={ms(15)}
       >
         <Text fontSize={ms(16)} bold mt={ms(5)} mb={ms(10)}>
-          GPS
+          {t('gps')}
         </Text>
         <Divider mb={ms(20)} />
         <HStack
@@ -87,7 +89,7 @@ export const GPSTracker = ({navigation}: Props) => {
           shadow={2}
         >
           <Text flex="1" fontWeight="medium">
-            Last ping
+            {t('lastPing')}
           </Text>
           <Box
             flex="1"
@@ -115,7 +117,7 @@ export const GPSTracker = ({navigation}: Props) => {
           shadow={2}
         >
           <Text flex="1" fontWeight="medium">
-            Data source
+            {t('dataSource')}
           </Text>
           <HStack
             flex="1"
@@ -152,7 +154,7 @@ export const GPSTracker = ({navigation}: Props) => {
             height={ms(20)}
           />
           <Text flex="1" fontWeight="medium">
-            Set this device as Vessel GPS
+            {t('deviceGps')}
           </Text>
           <Switch
             size="md"
@@ -173,7 +175,7 @@ export const GPSTracker = ({navigation}: Props) => {
           shadow={2}
         >
           <Text flex="1" fontWeight="medium">
-            GPS satelites
+            {t('gpsSatellites')}
           </Text>
           <HStack
             flex="1"
@@ -206,7 +208,7 @@ export const GPSTracker = ({navigation}: Props) => {
           shadow={2}
         >
           <Text flex="1" fontWeight="medium">
-            Position
+            {t('position')}
           </Text>
           <Box
             flex="1"
@@ -228,7 +230,7 @@ export const GPSTracker = ({navigation}: Props) => {
             bgColor: Colors.primary,
           }}
         >
-          Dismiss
+          {t('dismiss')}
         </Button>
       </Box>
     </Box>

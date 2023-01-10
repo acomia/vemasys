@@ -4,8 +4,10 @@ import {ms} from 'react-native-size-matters'
 import {Colors} from '@bluecentury/styles'
 import {Linking} from 'react-native'
 import {PROD_URL} from '@vemasys/env'
+import {useTranslation} from 'react-i18next'
 
 const CargoHolds = () => {
+  const {t} = useTranslation()
   return (
     <Box flex="1">
       <ScrollView
@@ -15,7 +17,7 @@ const CargoHolds = () => {
         py={ms(20)}
       >
         <Text fontSize={ms(20)} bold color={Colors.azure}>
-          Cargo Hold
+          {t('cargoHold')}
         </Text>
         <Box
           borderRadius={ms(5)}
@@ -26,11 +28,10 @@ const CargoHolds = () => {
           mt={ms(15)}
         >
           <Text fontWeight="medium" color={Colors.azure}>
-            No cargo hold configured for this vessel
+            {t('noCargoHold')}
           </Text>
           <Text fontSize={ms(13)} color={Colors.azure} mt={ms(10)}>
-            You can manage your cargo hold in the technical module of the web
-            app at &nbsp;
+            {t('manageCargoInWeb')}
             <Text
               color={Colors.highlighted_text}
               onPress={() => Linking.openURL(PROD_URL)}

@@ -22,9 +22,11 @@ import moment from 'moment'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {useFinancial} from '@bluecentury/stores'
 import {ms} from 'react-native-size-matters'
+import {useTranslation} from 'react-i18next'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const FinancialInvoiceDetails = ({navigation, route}: Props) => {
+  const {t} = useTranslation()
   const toast = useToast()
   const {id, routeFrom}: any = route.params
   const {
@@ -79,30 +81,31 @@ const FinancialInvoiceDetails = ({navigation, route}: Props) => {
   }
 
   const statusLabel = (status: string) => {
-    switch (status) {
-      case 'paid':
-        return 'Paid'
-      case 'draft':
-        return 'Draft'
-      case 'read':
-        return 'Read'
-      case 'accepted':
-        return 'Accepted'
-      case 'stored':
-        return 'Stored'
-      case 'pending':
-        return 'Pending'
-      case 'sent':
-        return 'Sent'
-      case 'unpaid':
-        return 'Unpaid'
-      case 'new':
-        return 'New'
-      case 'payment_confirmed':
-        return 'Payment confirmed'
-      default:
-        return ' '
-    }
+    // switch (status) {
+    //   case 'paid':
+    //     return 'Paid'
+    //   case 'draft':
+    //     return 'Draft'
+    //   case 'read':
+    //     return 'Read'
+    //   case 'accepted':
+    //     return 'Accepted'
+    //   case 'stored':
+    //     return 'Stored'
+    //   case 'pending':
+    //     return 'Pending'
+    //   case 'sent':
+    //     return 'Sent'
+    //   case 'unpaid':
+    //     return 'Unpaid'
+    //   case 'new':
+    //     return 'New'
+    //   case 'payment_confirmed':
+    //     return 'Payment confirmed'
+    //   default:
+    //     return ' '
+    // }
+    return t(status)
   }
 
   const CardContent = ({label, value}: any) => {
@@ -282,7 +285,7 @@ const FinancialInvoiceDetails = ({navigation, route}: Props) => {
       <ScrollView contentContainerStyle={{flexGrow: 1}}>
         <Box px={ms(14)} py={ms(20)}>
           <CardContent
-            label="Invoice number"
+            label={t('invoiceNumber')}
             value={
               routeFrom === 'costs'
                 ? invoiceDetails?.receiverReference
@@ -290,15 +293,15 @@ const FinancialInvoiceDetails = ({navigation, route}: Props) => {
             }
           />
           <CardContent
-            label="Receiver"
+            label={t('receiver')}
             value={invoiceDetails?.receiver?.alias}
           />
           <CardContent
-            label="Reference"
+            label={t('reference')}
             value={invoiceDetails?.senderReference}
           />
           <CardContent
-            label="Status"
+            label={t('status')}
             value={
               routeFrom === 'costs'
                 ? invoiceDetails?.status
@@ -308,7 +311,7 @@ const FinancialInvoiceDetails = ({navigation, route}: Props) => {
           <TouchableOpacity onPress={() => setdateToggled(!dateToggled)}>
             {dateToggled && (
               <CardContent
-                label="Sent on"
+                label={t('sentOn')}
                 value={
                   invoiceDetails?.sentAt === null
                     ? ''
@@ -317,7 +320,7 @@ const FinancialInvoiceDetails = ({navigation, route}: Props) => {
               />
             )}
             <CardContent
-              label="Due date"
+              label={t('dueDate')}
               value={
                 invoiceDetails?.dueDate === null
                   ? ''
@@ -326,7 +329,7 @@ const FinancialInvoiceDetails = ({navigation, route}: Props) => {
             />
           </TouchableOpacity>
           <CardTotal
-            label="Total excl VAT"
+            label={t('totalExclVAT')}
             value={invoiceDetails?.totalAmount}
           />
         </Box>
@@ -347,7 +350,7 @@ const FinancialInvoiceDetails = ({navigation, route}: Props) => {
             <Text
               style={{fontSize: 16, fontWeight: '700', color: Colors.azure}}
             >
-              No Available File.
+              {t('noAvailableFile')}
             </Text>
           </Box>
         )}
@@ -361,7 +364,7 @@ const FinancialInvoiceDetails = ({navigation, route}: Props) => {
       >
         <Modal.Content px={ms(10)} mb={0} mt="auto">
           <Modal.CloseButton />
-          <Modal.Header>Update Status</Modal.Header>
+          <Modal.Header>{t('updateStatus')}</Modal.Header>
           <Modal.Body>
             {statuses.map((status, index) => (
               <TouchableOpacity

@@ -6,10 +6,12 @@ import {ms} from 'react-native-size-matters'
 
 import {usePlanning} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
+import {useTranslation} from 'react-i18next'
 
 const {width, height} = Dimensions.get('window')
 
 const Map = () => {
+  const {t} = useTranslation()
   const {navigationLogDetails} = usePlanning()
   const ASPECT_RATIO = width / height
   const LATITUDE = navigationLogDetails?.location?.latitude || 0
@@ -27,7 +29,7 @@ const Map = () => {
   return (
     <Box flex="1" bg={Colors.white} p={ms(12)}>
       <Text fontSize={ms(20)} bold color={Colors.azure}>
-        Navigation Log Map
+        {t('navLogMap')}
       </Text>
       <MapView style={styles.map} initialRegion={NAVLOG_REGION}>
         <Marker coordinate={NAVLOG_REGION} />

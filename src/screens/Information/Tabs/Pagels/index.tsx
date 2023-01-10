@@ -19,8 +19,10 @@ import {Icons} from '@bluecentury/assets'
 import {LoadingAnimated} from '@bluecentury/components'
 import {Colors} from '@bluecentury/styles'
 import {EXTERNAL_PEGEL_IMAGE_URL} from '@bluecentury/constants'
+import {useTranslation} from 'react-i18next'
 
 const Pegels = () => {
+  const {t} = useTranslation()
   const navigation = useNavigation()
   const {isInformationLoading, pegels, streamGauges, getVesselPegels} =
     useInformation()
@@ -102,7 +104,7 @@ const Pegels = () => {
             {Math.trunc(pegel.lastMeasurement.measureValue)} cm
           </Text>
         ) : (
-          <Text bold>N/A</Text>
+          <Text bold>{t('n/a')}</Text>
         )}
       </HStack>
     </HStack>
@@ -135,7 +137,7 @@ const Pegels = () => {
       color={Colors.text}
       mt={ms(10)}
     >
-      No Pegels.
+      {t('noPegels')}
     </Text>
   )
 
@@ -191,10 +193,10 @@ const Pegels = () => {
       >
         <HStack mt={ms(10)} alignItems="center" px={ms(10)}>
           <Text flex="1" fontSize={ms(16)} bold color={Colors.text}>
-            Details
+            {t('details')}
           </Text>
           <Text fontSize={ms(16)} bold color={Colors.text}>
-            Level
+            {t('level')}
           </Text>
         </HStack>
         <Divider mt={ms(5)} mb={ms(15)} />

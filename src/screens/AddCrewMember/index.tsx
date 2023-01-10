@@ -24,6 +24,7 @@ import {Colors} from '@bluecentury/styles'
 import {useCrew, useEntity} from '@bluecentury/stores'
 import {titleCase, _t} from '@bluecentury/constants'
 import {LoadingAnimated} from '@bluecentury/components'
+import {useTranslation} from 'react-i18next'
 
 const allFieldsRequired = _t('allFieldsRequired')
 const userFirstname = _t('newUserFirstname')
@@ -34,6 +35,7 @@ const userRole = _t('newUserRole')
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const AddCrewMember = ({navigation}: Props) => {
+  const {t} = useTranslation()
   const {isCrewLoading, crew, roles, getUserRoles, createNewUser, getCrew} =
     useCrew()
   const {entityId, vesselId} = useEntity()
@@ -208,12 +210,12 @@ const AddCrewMember = ({navigation}: Props) => {
         ) : null}
 
         <Text fontSize={ms(16)} bold color={Colors.text}>
-          User Information
+          {t('userInfo')}
         </Text>
         <Divider mt={ms(5)} mb={ms(10)} />
         <FormControl isInvalid={isFirstnameEmpty} mt={ms(10)}>
           <FormControl.Label color={Colors.disabled}>
-            First name
+            {t('firstName')}
           </FormControl.Label>
           <Input
             placeholder=" "
@@ -233,7 +235,7 @@ const AddCrewMember = ({navigation}: Props) => {
         </FormControl>
         <FormControl isInvalid={isLastnameEmpty} mt={ms(10)}>
           <FormControl.Label color={Colors.disabled}>
-            Last name
+            {t('lastName')}
           </FormControl.Label>
           <Input
             placeholder=" "
@@ -253,7 +255,7 @@ const AddCrewMember = ({navigation}: Props) => {
         </FormControl>
         <FormControl isInvalid={isBdayEmpty} mt={ms(10)}>
           <FormControl.Label color={Colors.disabled}>
-            Birthdate
+            {t('birthdate')}
           </FormControl.Label>
           <HStack
             mt={ms(3)}
@@ -359,7 +361,7 @@ const AddCrewMember = ({navigation}: Props) => {
           bg={Colors.primary}
           onPress={onCreateNewUser}
         >
-          Add user
+          {t('addUser')}
         </Button>
       </ScrollView>
       <DatePicker

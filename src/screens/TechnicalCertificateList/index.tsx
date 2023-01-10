@@ -19,9 +19,11 @@ import {Colors} from '@bluecentury/styles'
 import {IconButton} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
+import {useTranslation} from 'react-i18next'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const TechnicalCertificareList = ({navigation, route}: Props) => {
+  const {t} = useTranslation()
   const {certificates, title} = route.params
   const [searchedValue, setSearchValue] = useState('')
   const [certData, setCertData] = useState(certificates)
@@ -80,8 +82,8 @@ const TechnicalCertificareList = ({navigation, route}: Props) => {
                 {item?.remainingDays === 0
                   ? '---'
                   : item?.remainingDays < 0
-                  ? 'Expired'
-                  : `Expires in ${item?.remainingDays} days`}
+                  ? t('expired')
+                  : `${t('expiresIn')} ${item?.remainingDays} ${t('days')}`}
               </Text>
             </Box>
 
@@ -96,14 +98,14 @@ const TechnicalCertificareList = ({navigation, route}: Props) => {
           <HStack p={ms(15)}>
             <Box flex="1">
               <Text color={Colors.disabled} fontWeight="medium">
-                Validity Period
+                {t('validityPeriod')}
               </Text>
               <Text color={Colors.secondary} bold>
                 {moment(item?.startDate).format('DD MMM YYYY')} -{' '}
                 <Text color={Colors.danger} bold>
                   {item?.endDate
                     ? moment(item?.endDate).format('DD MMM YYYY')
-                    : 'Never'}
+                    : t('never')}
                 </Text>
               </Text>
             </Box>
@@ -149,7 +151,7 @@ const TechnicalCertificareList = ({navigation, route}: Props) => {
         }
         placeholderTextColor={Colors.disabled}
         fontWeight="medium"
-        placeholder="Search certificate"
+        placeholder={t('searchCertificate')}
         variant="filled"
         size="sm"
         mb={ms(10)}
@@ -158,7 +160,7 @@ const TechnicalCertificareList = ({navigation, route}: Props) => {
       />
 
       <Text fontSize={ms(20)} bold color={Colors.azure}>
-        Certificates
+        {t('certificates')}
       </Text>
       <Divider my={ms(10)} />
     </Box>
@@ -195,7 +197,7 @@ const TechnicalCertificareList = ({navigation, route}: Props) => {
               mt={ms(20)}
               textAlign="center"
             >
-              No Certificates.
+              {t('noCertificates')}
             </Text>
           )}
         />
@@ -214,7 +216,7 @@ const TechnicalCertificareList = ({navigation, route}: Props) => {
             my={ms(15)}
             mx={ms(12)}
           >
-            Download all
+            {t('downloadAll')}
           </Button>
         </Shadow>
       </Box>

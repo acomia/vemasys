@@ -24,9 +24,11 @@ import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
 import {useCharters, useEntity} from '@bluecentury/stores'
 import {formatLocationLabel} from '@bluecentury/constants'
+import {useTranslation} from 'react-i18next'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 export default function CharterDetails({navigation, route}: Props) {
+  const {t} = useTranslation()
   const {entityType} = useEntity()
   const {viewPdf, signedDocumentsArray, isCharterLoading} = useCharters()
 
@@ -55,7 +57,7 @@ export default function CharterDetails({navigation, route}: Props) {
         </Text>
         <HStack borderColor={Colors.light} borderTopWidth={1}>
           <HStack alignItems="center" flex="1" my={ms(10)}>
-            <Text ml={ms(10)}>Booked:</Text>
+            <Text ml={ms(10)}>{t('booked')}</Text>
             <Text bold color={Colors.disabled} ml={ms(10)}>
               {parseInt(cargo.amount) || 0} MT
             </Text>
@@ -66,7 +68,7 @@ export default function CharterDetails({navigation, route}: Props) {
             borderLeftWidth={ms(1)}
             flex="1"
           >
-            <Text ml={ms(10)}>Actual:</Text>
+            <Text ml={ms(10)}>{t('actual')}</Text>
             <Text bold color="#29B7EF" ml={ms(10)}>
               {parseInt(cargo.actualAmount) || 0} MT
             </Text>
@@ -126,8 +128,8 @@ export default function CharterDetails({navigation, route}: Props) {
                 {navlogs.bulkCargo.some(
                   (cargo: {isLoading: boolean}) => cargo.isLoading === false
                 )
-                  ? 'To: '
-                  : 'From: '}
+                  ? t('to')
+                  : t('from')}
                 {navlogs.location &&
                   navlogs.location.locationName &&
                   `[${navlogs.location.locationName}] `}
@@ -293,7 +295,7 @@ export default function CharterDetails({navigation, route}: Props) {
         <Divider my={ms(15)} />
         <ScrollView flex="1" showsVerticalScrollIndicator={false}>
           <Text color={Colors.text} fontSize={ms(16)} fontWeight="semibold">
-            Location
+            {t('location')}
           </Text>
           <Box my={ms(15)}>
             {/* <Button
@@ -325,12 +327,12 @@ export default function CharterDetails({navigation, route}: Props) {
               bg={Colors.primary}
               onPress={() => navigation.navigate('MapView')}
             >
-              View Map
+              {t('viewMap')}
             </Button>
           </Box>
           {/* Cargo */}
           <Text color={Colors.text} fontSize={ms(16)} fontWeight="semibold">
-            Cargo
+            {t('cargo')}
           </Text>
           <Box my={ms(15)}>
             {charter.navigationLogs.map((navlog: {bulkCargo: any[]}) =>
@@ -343,7 +345,7 @@ export default function CharterDetails({navigation, route}: Props) {
           </Box>
           {/* Route */}
           <Text color={Colors.text} fontSize={ms(16)} fontWeight="semibold">
-            Route
+            {t('route')}
           </Text>
           <Box my={ms(15)}>
             {charter.navigationLogs.map(
@@ -379,7 +381,7 @@ export default function CharterDetails({navigation, route}: Props) {
           <Box my={ms(15)}></Box> */}
           {/* Contacts */}
           <Text color={Colors.text} fontSize={ms(16)} fontWeight="semibold">
-            Contacts
+            {t('contacts')}
           </Text>
           <Box my={ms(15)}>
             {charter.additionalContacts.map((contact: any, index: number) =>

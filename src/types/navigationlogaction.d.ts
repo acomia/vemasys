@@ -1,12 +1,12 @@
 type NavigationLogAction = {
   '@id'?: string
   cargoHoldTransactions?: CargoHoldTransaction[]
-  end?: Date
-  estimatedEnd?: Date
+  end?: Date | string
+  estimatedEnd?: Date | string
   id?: string
   navigationBulk?: NavigationBulk
   navigationLog?: any
-  start?: Date
+  start?: Date | string
   storageUnitTransactions?: any
   type?: string
   value?: string

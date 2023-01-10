@@ -9,9 +9,11 @@ import moment from 'moment'
 import {Colors} from '@bluecentury/styles'
 import {useEntity, useTechnical} from '@bluecentury/stores'
 import {LoadingAnimated} from '@bluecentury/components'
+import {useTranslation} from 'react-i18next'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const TechnicalTasksList = ({navigation, route}: Props) => {
+  const {t} = useTranslation()
   const {category} = route.params
   const {isTechnicalLoading, tasksByCategory, getVesselTasksByCategory} =
     useTechnical()
@@ -28,7 +30,7 @@ const TechnicalTasksList = ({navigation, route}: Props) => {
         >
           <Icon name="add" color={Colors.highlighted_text} size={24} />
           <Text bold color={Colors.highlighted_text}>
-            Add a task
+            {t('addATask')}
           </Text>
         </TouchableOpacity>
       ),
@@ -42,23 +44,23 @@ const TechnicalTasksList = ({navigation, route}: Props) => {
     let textColor = ''
     switch (status) {
       case 'todo':
-        title = 'To do'
+        title = t('toDo')
         color = '#E0E0E0'
         textColor = Colors.text
         break
 
       case 'done':
-        title = 'Done'
+        title = t('done')
         color = Colors.secondary
         textColor = Colors.white
         break
       case 'in_progress':
-        title = 'In Progress'
+        title = t('inProgress')
         color = Colors.secondary
         textColor = Colors.white
         break
       case 'overdue':
-        title = 'Overdue'
+        title = t('Overdue')
         color = Colors.danger
         textColor = Colors.white
         break
@@ -84,17 +86,17 @@ const TechnicalTasksList = ({navigation, route}: Props) => {
     let textColor = ''
     switch (label?.toLowerCase()) {
       case 'maintenance':
-        title = 'Maintenance'
+        title = t('maintenance')
         color = Colors.primary
         textColor = Colors.white
         break
       case 'check':
-        title = 'Check'
+        title = t('check')
         color = Colors.secondary
         textColor = Colors.white
         break
       case 'incident':
-        title = 'Incident'
+        title = t('incident')
         color = Colors.warning
         textColor = Colors.white
         break
@@ -172,33 +174,33 @@ const TechnicalTasksList = ({navigation, route}: Props) => {
                     <Box py={ms(14)}>
                       <HStack px={ms(14)}>
                         <Text flex="1" fontWeight="medium">
-                          Part
+                          {t('part')}
                         </Text>
                         <Text>{task?.vesselPart?.name}</Text>
                       </HStack>
                       <Divider my={ms(14)} />
                       <HStack px={ms(14)}>
                         <Text flex="1" fontWeight="medium">
-                          Status
+                          {t('status')}
                         </Text>
                         {renderStatuses(task?.statusCode)}
                       </HStack>
                       <Divider my={ms(14)} />
                       <HStack px={ms(14)}>
                         <Text flex="1" fontWeight="medium">
-                          Labels
+                          {t('labels')}
                         </Text>
                         {renderLabels(task?.labels[0]?.title)}
                       </HStack>
                       <Divider my={ms(14)} />
                       <HStack px={ms(14)}>
                         <Text flex="1" fontWeight="medium">
-                          Scheduled date
+                          {t('scheduledDate')}
                         </Text>
                         <Text>
                           {task?.deadline
                             ? moment(task?.deadline).format('D MMM YYYY')
-                            : 'Not set'}
+                            : t('notSet')}
                         </Text>
                       </HStack>
                     </Box>

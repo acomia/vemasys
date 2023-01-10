@@ -8,12 +8,14 @@ import {Colors} from '@bluecentury/styles'
 import {formatLocationLabel} from '@bluecentury/constants'
 import {NativeStackNavigationProp} from '@react-navigation/native-stack'
 import {useNavigation} from '@react-navigation/native'
+import {useTranslation} from 'react-i18next'
 
 interface Props {
   logs: Array<any>
 }
 
 export const PreviousNavLogInfo = ({logs}: Props) => {
+  const {t} = useTranslation()
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>()
   const navigationLog = logs?.find((prev: any) => prev.plannedEta !== null)
@@ -33,21 +35,22 @@ export const PreviousNavLogInfo = ({logs}: Props) => {
       <Box ml={ms(15)}>
         {navigationLog === undefined ? (
           <Text fontWeight="700" color="#ADADAD">
-            No Previous Terminal
+            {t('noPreviousTerminal')}
           </Text>
         ) : (
           <>
             <Text fontWeight="700">
-              From: {formatLocationLabel(navigationLog?.location)}
+              {t('from')}
+              {formatLocationLabel(navigationLog?.location)}
             </Text>
             <Text color="#ADADAD">
-              Arrived:{' '}
+              {t('arrived')}
               {moment(navigationLog?.arrivalDatetime).format(
                 'DD MMM YYYY | HH:mm'
               )}
             </Text>
             <Text color="#ADADAD" fontSize={ms(11)}>
-              Departure date:{' '}
+              {t('departureDate')}
               {moment(navigationLog?.departureDatetime).format(
                 'DD MMM YYYY | HH:mm'
               )}

@@ -27,13 +27,16 @@ import {Animated, Icons} from '@bluecentury/assets'
 import {usePlanning} from '@bluecentury/stores'
 import {titleCase} from '@bluecentury/constants'
 import {LoadingAnimated} from '@bluecentury/components'
+import {useTranslation} from 'react-i18next'
+import {Vemasys} from '@bluecentury/helpers'
 
 const Actions = () => {
+  const {t} = useTranslation()
   const toast = useToast()
   const focused = useIsFocused()
   const navigation = useNavigation<NavigationProp<RootStackParamList>>()
   const {
-    isPlanningLoading,
+    isPlanningActionsLoading,
     navigationLogDetails,
     navigationLogActions,
     getNavigationLogActions,
@@ -43,18 +46,11 @@ const Actions = () => {
     updateNavigationLogAction,
     reset,
   } = usePlanning()
-  const [buttonActionLabel, setButtonActionLabel] = useState('Loading')
+  const [buttonActionLabel, setButtonActionLabel] = useState(t('loading'))
   const [selectedAction, setSelectedAction] = useState<NavigationLogAction>({})
   const [confirmModal, setConfirmModal] = useState(false)
 
   useEffect(() => {
-    if (
-      navigationLogDetails?.bulkCargo?.some(cargo => cargo.isLoading === false)
-    ) {
-      setButtonActionLabel('Unloading')
-    } else {
-      setButtonActionLabel('Loading')
-    }
     if (isUpdateNavLogActionSuccess && focused) {
       getNavigationLogActions(navigationLogDetails?.id)
       showToast('Action ended.', 'success')
@@ -64,6 +60,16 @@ const Actions = () => {
     isUpdateNavLogActionSuccess,
     isDeleteNavLogActionSuccess,
   ])
+
+  useEffect(() => {
+    if (
+      navigationLogDetails?.bulkCargo?.some(cargo => cargo.isLoading === false)
+    ) {
+      setButtonActionLabel(t('unloading'))
+    } else {
+      setButtonActionLabel(t('loading'))
+    }
+  }, [navigationLogActions])
 
   const showToast = (text: string, res: string) => {
     toast.show({
@@ -109,7 +115,7 @@ const Actions = () => {
       type: titleCase(action.type),
       start: action.start,
       estimatedEnd: action.estimatedEnd,
-      end: new Date(),
+      end: Vemasys.defaultDatetime(),
       cargoHoldActions: [
         {
           navigationBulk: action?.navigationBulk?.id,
@@ -133,7 +139,7 @@ const Actions = () => {
     getNavigationLogActions(navigationLogDetails?.id)
   }
 
-  if (isPlanningLoading) return <LoadingAnimated />
+  if (isPlanningActionsLoading) return <LoadingAnimated />
 
   return (
     <Box flex="1">
@@ -143,7 +149,7 @@ const Actions = () => {
         refreshControl={
           <RefreshControl
             onRefresh={onPullToReload}
-            refreshing={isPlanningLoading}
+            refreshing={isPlanningActionsLoading}
           />
         }
         bg={Colors.white}
@@ -152,7 +158,7 @@ const Actions = () => {
       >
         {/* Actions Section */}
         <Text fontSize={ms(20)} bold color={Colors.azure}>
-          Actions
+          {t('actions')}
         </Text>
         {navigationLogActions?.length > 0
           ? navigationLogActions?.map((action, index) => (
@@ -181,8 +187,8 @@ const Actions = () => {
                   <Image
                     alt="navlog-action-animated"
                     source={renderAnimatedIcon(action.type, action.end)}
-                    width={ms(40)}
-                    height={ms(40)}
+                    width={action.type === 'Cleaning' ? ms(30) : ms(40)}
+                    height={action.type === 'Cleaning' ? ms(30) : ms(40)}
                     resizeMode="contain"
                     mr={ms(10)}
                   />
@@ -193,12 +199,13 @@ const Actions = () => {
                       </Text>
                     </HStack>
                     <Text color={Colors.secondary} fontWeight="medium">
-                      Start -{' '}
+                      {t('start')}
                       {moment(action.start).format('D MMM YYYY | HH:mm')}
                     </Text>
                     {_.isNull(action.end) ? null : (
                       <Text color={Colors.danger} fontWeight="medium">
-                        End - {moment(action.end).format('D MMM YYYY | HH:mm')}
+                        {t('end')}
+                        {moment(action.end).format('D MMM YYYY | HH:mm')}
                       </Text>
                     )}
                   </Box>
@@ -238,7 +245,7 @@ const Actions = () => {
             }
           >
             <Text fontWeight="medium" color={Colors.white}>
-              New {buttonActionLabel}
+              {t('new')} {buttonActionLabel}
             </Text>
           </Button>
           <Box w={ms(10)} />
@@ -255,7 +262,7 @@ const Actions = () => {
             }
           >
             <Text fontWeight="medium" color={Colors.white}>
-              Cleaning
+              {t('cleaning')}
             </Text>
           </Button>
         </HStack>
@@ -267,9 +274,9 @@ const Actions = () => {
         animationPreset="slide"
       >
         <Modal.Content>
-          <Modal.Header>Confirmation</Modal.Header>
+          <Modal.Header>{t('confirmation')}</Modal.Header>
           <Text my={ms(20)} mx={ms(12)} fontWeight="medium">
-            Are you sure you want to stop this action?
+            {t('areYouSure')}
           </Text>
           <HStack>
             <Button
@@ -279,7 +286,7 @@ const Actions = () => {
               onPress={() => setConfirmModal(false)}
             >
               <Text fontWeight="medium" color={Colors.disabled}>
-                Cancel
+                {t('cancel')}
               </Text>
             </Button>
             <Button
@@ -289,7 +296,7 @@ const Actions = () => {
               onPress={onStopAction}
             >
               <Text fontWeight="medium" color={Colors.white}>
-                Stop
+                {t('stop')}
               </Text>
             </Button>
           </HStack>

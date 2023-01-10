@@ -10,8 +10,10 @@ import {useNavigation} from '@react-navigation/native'
 import {LoadingAnimated} from '@bluecentury/components'
 import {Colors} from '@bluecentury/styles'
 import {useSafeAreaInsets} from 'react-native-safe-area-context'
+import {useTranslation} from 'react-i18next'
 
 const Costs = () => {
+  const {t} = useTranslation()
   const insets = useSafeAreaInsets()
   const navigation = useNavigation()
   const {isFinancialLoading, invoiceStatistics, incomingInvoices, getInvoices} =
@@ -63,22 +65,23 @@ const Costs = () => {
   }
 
   const statusLabel = (status: string) => {
-    switch (status) {
-      case 'paid':
-        return 'Paid'
-      case 'read':
-        return 'Read'
-      case 'accepted':
-        return 'Accepted'
-      case 'pending':
-        return 'Pending'
-      case 'unpaid':
-        return 'Unpaid'
-      case 'new':
-        return 'New'
-      default:
-        return ' '
-    }
+    // switch (status) {
+    //   case 'paid':
+    //     return 'Paid'
+    //   case 'read':
+    //     return 'Read'
+    //   case 'accepted':
+    //     return 'Accepted'
+    //   case 'pending':
+    //     return 'Pending'
+    //   case 'unpaid':
+    //     return 'Unpaid'
+    //   case 'new':
+    //     return 'New'
+    //   default:
+    //     return ' '
+    // }
+    return t(status)
   }
 
   const Card = ({invoice, invoice_date, amount, status}: any) => {
@@ -264,7 +267,7 @@ const Costs = () => {
         </Box>
         <Box flex="1" px={ms(15)} py={ms(25)} bg={Colors.white}>
           <Text fontSize={ms(20)} bold color={Colors.azure} mb={ms(20)}>
-            Incoming Invoices
+            {t('incomingInvoices')}
           </Text>
           {isFinancialLoading && !isPageChange ? (
             <LoadingAnimated />
@@ -325,7 +328,7 @@ const Costs = () => {
               onPress={() => setTotalEnabled(!totalEnabled)}
             >
               <CardTotalDetails
-                label="Unpaid"
+                label={t('unpaid')}
                 value={
                   invoiceStatistics?.length > 0
                     ? invoiceStatistics[0]?.unpaidIncoming || 0
@@ -333,7 +336,7 @@ const Costs = () => {
                 }
               />
               <CardTotalDetails
-                label="Paid"
+                label={t('paid')}
                 value={
                   invoiceStatistics?.length > 0
                     ? invoiceStatistics[0]?.paidIncoming || 0
@@ -347,7 +350,7 @@ const Costs = () => {
         <Shadow viewStyle={{width: '100%'}}>
           <Box bg={Colors.white} pb={ms(insets.bottom && insets.bottom - 12)}>
             <CardTotal
-              label="Total costs"
+              label={t('totalCosts')}
               value={
                 invoiceStatistics?.length > 0
                   ? invoiceStatistics[0]?.totalIncoming || 0
