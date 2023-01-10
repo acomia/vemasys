@@ -524,7 +524,7 @@ const Details = () => {
       type: titleCase(action.type),
       start: action.start,
       estimatedEnd: action.estimatedEnd,
-      end: new Date(),
+      end: Vemasys.defaultDatetime(),
       cargoHoldActions: [
         {
           navigationBulk: action?.navigationBulk?.id,
