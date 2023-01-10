@@ -11,7 +11,7 @@ export const createNewConsumptionMeasure = async (
     const newBrusselsDateTime = Vemasys.defaultDatetime()
     const newMeasureData = {
       vesselPart: {id: resId},
-      user: {id: useEntity.getState().user?.id},
+      user: useEntity.getState().user?.id,
       date: newBrusselsDateTime,
       value: value.toString(),
       total: value.toString(),
