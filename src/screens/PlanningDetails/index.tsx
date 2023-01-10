@@ -1,24 +1,32 @@
-import React, {useEffect, useState} from 'react'
-import {useWindowDimensions} from 'react-native'
-import {Box, Text} from 'native-base'
-import {TabView, TabBar, SceneMap} from 'react-native-tab-view'
-import {NativeStackScreenProps} from '@react-navigation/native-stack'
+import React, {useEffect, useRef, useState} from 'react'
+import {Text} from 'native-base'
 
 import {Details, CargoList, CargoHolds, Documents, Map, Actions} from './Tabs'
 import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
-import {planningDetailsTabs} from '@bluecentury/constants'
 import {usePlanning} from '@bluecentury/stores'
 import {useTranslation} from 'react-i18next'
+import {
+  createMaterialTopTabNavigator,
+  MaterialTopTabScreenProps,
+} from '@react-navigation/material-top-tabs'
 
-type Props = NativeStackScreenProps<RootStackParamList>
+const Tab = createMaterialTopTabNavigator()
+
+type Props = MaterialTopTabScreenProps<RootStackParamList>
 export default function PlanningDetails({route}: Props) {
   const {t} = useTranslation()
-  const {title} = route.params
-  const layout = useWindowDimensions()
+  const tabs = [
+    {title: 'Details', screen: Details},
+    {title: 'Actions', screen: Actions},
+    {title: 'Cargo List', screen: CargoList},
+    {title: 'Cargo Holds', screen: CargoHolds},
+    {title: 'Documents', screen: Documents},
+    {title: 'Map', screen: Map},
+  ]
+  const {navlog, title} = route.params
   const {navigationLogDetails} = usePlanning()
-  const [index, setIndex] = useState(0)
-  const [routes, setRoutes] = useState(planningDetailsTabs)
+  const [routes, setRoutes] = useState(tabs)
   const isUnknownLocation = title === 'Unknown Location' ? true : false
 
   useEffect(() => {
@@ -26,69 +34,64 @@ export default function PlanningDetails({route}: Props) {
       navigationLogDetails?.cargoType !== 'liquid_bulk' &&
       navigationLogDetails?.cargoType !== undefined
     ) {
-      const newRoutes = planningDetailsTabs
-        .filter(route => route.key !== 'cargoHolds')
+      const newRoutes = tabs
+        .filter(route => route.title !== 'Cargo Holds')
         .filter(route =>
-          isUnknownLocation ? route.key !== 'cargoList' : route
+          isUnknownLocation ? route.title !== 'Cargo List' : route
         )
       setRoutes(newRoutes)
     } else {
       const newRoutes = isUnknownLocation
-        ? planningDetailsTabs.filter(
-            route => route.key !== 'cargoHolds' && route.key !== 'cargoList'
+        ? tabs.filter(
+            route =>
+              route.title !== 'Cargo Holds' && route.title !== 'Cargo List'
           )
-        : planningDetailsTabs
+        : tabs
       setRoutes(newRoutes)
     }
   }, [navigationLogDetails])
 
-  const renderScene = SceneMap({
-    details: Details,
-    actions: Actions,
-    cargoList: CargoList,
-    cargoHolds: CargoHolds,
-    documents: Documents,
-    map: Map,
-  })
-
-  const LazyPlaceholder = ({route}) => (
-    <Box flex="1" alignItems="center" justifyContent="center">
-      <Text>{t('loading')} {route.title}…</Text>
-    </Box>
-  )
-
-  const renderLazyPlaceholder = ({route}) => <LazyPlaceholder route={route} />
-
-  const renderTabBar = props => (
-    <TabBar
-      {...props}
-      indicatorStyle={{
-        backgroundColor: Colors.azure,
-        height: 3,
-        borderRadius: 3,
-        width: ms(50),
-        marginLeft: 30,
-      }}
-      style={{backgroundColor: Colors.primary}}
-      tabStyle={{width: ms(110), height: ms(40)}}
-      renderLabel={({route, color}) => (
-        <Text color={color} bold textAlign="justify">
-          {route.title}
-        </Text>
-      )}
-      scrollEnabled={true}
-    />
-  )
-
   return (
-    <TabView
-      lazy
-      navigationState={{index, routes}}
-      renderScene={renderScene}
-      renderTabBar={renderTabBar}
-      renderLazyPlaceholder={renderLazyPlaceholder}
-      onIndexChange={setIndex}
-      initialLayout={{width: layout.width}}
-    />
+    <Tab.Navigator
+      screenOptions={({route}) => ({
+        tabBarStyle: {backgroundColor: Colors.primary},
+        tabBarIndicatorStyle: {
+          backgroundColor: Colors.azure,
+          height: 3,
+          borderRadius: 3,
+          width: ms(45),
+          marginLeft: 25,
+        },
+        tabBarItemStyle: {width: 100, height: 45},
+        tabBarScrollEnabled: true,
+        lazy: true,
+        lazyPlaceholder: () => (
+          <Text bold color={Colors.azure}>
+            {t('loading')} {route.name}...
+          </Text>
+        ),
+      })}
+      backBehavior="firstRoute"
+    >
+      {routes.map((route, index) => (
+        <Tab.Screen
+          key={index}
+          name={route.title}
+          component={route.screen}
+          initialParams={{navlog, title}}
+          options={({route}) => ({
+            tabBarLabel: ({focused}) => (
+              <Text
+                bold
+                color={focused ? Colors.white : Colors.light}
+                fontSize={ms(14)}
+              >
+                {route.name}
+              </Text>
+            ),
+          })}
+        />
+      ))}
+    </Tab.Navigator>
   )
 }
