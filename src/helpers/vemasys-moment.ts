@@ -12,7 +12,7 @@ const DEFAULT_TIMEZONE = 'Europe/Brussels' // TO DO: add to app config
  * @param timezone (Optional) timezone
  * @returns string
  */
-const defaultDatetime = (timezone?: string) =>
+const defaultDatetime = (timezone?: string): string =>
   moment.tz(timezone ? timezone : DEFAULT_TIMEZONE).format()
 
 /**
@@ -21,7 +21,7 @@ const defaultDatetime = (timezone?: string) =>
  * @param timezone timezone to format to otherwise use default timezone set
  * @returns string
  */
-const formatDate = (date: Date, timezone?: string) =>
+const formatDate = (date: Date, timezone?: string): string =>
   moment.tz(date.toUTCString(), timezone ? timezone : DEFAULT_TIMEZONE).format()
 
 export default {
