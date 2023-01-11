@@ -67,17 +67,17 @@ const AddEditComment = ({navigation, route}: Props) => {
   const [viewImg, setViewImg] = useState(false)
   const [isCameraOpen, setIsCameraOpen] = useState(false)
 
-  let cameraRef = useRef<any>()
+  const cameraRef = useRef<any>()
 
   useEffect(() => {
     navigation.setOptions({
       headerRight: () =>
         method === 'edit' ? (
           <IconButton
-            source={Icons.trash}
-            onPress={deleteCommentConfirmation}
             size={ms(20)}
+            source={Icons.trash}
             styles={{marginLeft: 20}}
+            onPress={deleteCommentConfirmation}
           />
         ) : null,
     })
@@ -90,11 +90,11 @@ const AddEditComment = ({navigation, route}: Props) => {
         return (
           <Text
             bg={res === 'success' ? 'emerald.500' : 'red.500'}
+            color={Colors.white}
+            mb={5}
             px="2"
             py="1"
             rounded="sm"
-            mb={5}
-            color={Colors.white}
           >
             {text}
           </Text>
@@ -112,7 +112,7 @@ const AddEditComment = ({navigation, route}: Props) => {
       return
     }
     let res
-    let tempComment: string = ''
+    let tempComment = ''
     if (method === 'edit') {
       if (routeFrom === 'Planning') {
         if (imgFile.length > 0) {
@@ -199,21 +199,17 @@ const AddEditComment = ({navigation, route}: Props) => {
   }
 
   const deleteCommentConfirmation = () => {
-    Alert.alert(
-      t('confirmationRequired'),
-      t('confirmMessage'),
-      [
-        {
-          text: t('cancel'),
-          style: 'cancel',
-        },
-        {
-          text: t('confirmDelete'),
-          onPress: async () => onDeleteComment(),
-          style: 'destructive',
-        },
-      ]
-    )
+    Alert.alert(t('confirmationRequired'), t('confirmMessage'), [
+      {
+        text: t('cancel'),
+        style: 'cancel',
+      },
+      {
+        text: t('confirmDelete'),
+        onPress: async () => onDeleteComment(),
+        style: 'destructive',
+      },
+    ])
   }
 
   const onDeleteComment = async () => {
@@ -231,7 +227,7 @@ const AddEditComment = ({navigation, route}: Props) => {
   }
 
   const launchImageLibrary = () => {
-    let options: ImagePicker.ImageLibraryOptions = {
+    const options: ImagePicker.ImageLibraryOptions = {
       mediaType: 'photo',
       selectionLimit: 0,
     }
@@ -277,7 +273,7 @@ const AddEditComment = ({navigation, route}: Props) => {
 
   const takePicture = async () => {
     if (cameraRef) {
-      const options = {quality: 0.5, base64: true}
+      const options = {quality: 0.5, base64: true, width: 1024}
       const data = await cameraRef.current.takePictureAsync(options)
       setIsCameraOpen(false)
       const arrFromPath = data.uri.split('/')
@@ -300,13 +296,13 @@ const AddEditComment = ({navigation, route}: Props) => {
   return (
     <Box flex="1">
       <ScrollView
+        bg={Colors.white}
         contentContainerStyle={{flexGrow: 1}}
         px={ms(12)}
         py={ms(20)}
-        bg={Colors.white}
       >
-        <Text fontSize={ms(20)} bold color={Colors.azure}>
-          {method === 'edit' ? t('edit') : t('add')}} a comment
+        <Text bold color={Colors.azure} fontSize={ms(20)}>
+          {method === 'edit' ? t('editAComment') : t('addAComment')}
         </Text>
 
         <FormControl isRequired isInvalid={isCommentEmpty} my={ms(25)}>
@@ -314,8 +310,9 @@ const AddEditComment = ({navigation, route}: Props) => {
             {t('description')}
           </FormControl.Label>
           <TextArea
-            numberOfLines={6}
+            autoCompleteType={undefined}
             h="200"
+            numberOfLines={6}
             placeholder=""
             style={{backgroundColor: '#F7F7F7'}}
             value={description}
@@ -323,7 +320,6 @@ const AddEditComment = ({navigation, route}: Props) => {
               setDescription(e)
               setIsCommentEmpty(false)
             }}
-            autoCompleteType={undefined}
           />
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
             {t('fillTheDescription')}
@@ -331,9 +327,9 @@ const AddEditComment = ({navigation, route}: Props) => {
         </FormControl>
         {imgFile.length > 0 ? (
           <ScrollView
-            scrollEventThrottle={16}
-            maxH={ms(120)}
             horizontal
+            maxH={ms(120)}
+            scrollEventThrottle={16}
             showsHorizontalScrollIndicator={false}
           >
             {imgFile.map((file: ImageFile, index: number) => (
@@ -344,10 +340,10 @@ const AddEditComment = ({navigation, route}: Props) => {
                 >
                   <Image
                     alt="file-upload"
-                    source={{uri: file.uri}}
-                    w={ms(136)}
                     h={ms(114)}
                     mr={ms(10)}
+                    source={{uri: file.uri}}
+                    w={ms(136)}
                   />
                 </TouchableOpacity>
               </HStack>
@@ -356,9 +352,9 @@ const AddEditComment = ({navigation, route}: Props) => {
         ) : null}
 
         <Button
-          size="md"
-          mt={ms(10)}
           bg={Colors.primary}
+          mt={ms(10)}
+          size="md"
           onPress={() => setIsCameraOpen(true)}
         >
           {t('uploadImage')}
@@ -366,25 +362,25 @@ const AddEditComment = ({navigation, route}: Props) => {
       </ScrollView>
       <Box bg={Colors.white} position="relative">
         <Shadow
-          distance={25}
           viewStyle={{
             width: '100%',
           }}
+          distance={25}
         >
           <HStack>
             <Button
+              colorScheme="muted"
               flex="1"
               m={ms(16)}
               variant="ghost"
-              colorScheme="muted"
               onPress={() => navigation.goBack()}
             >
               {t('cancel')}
             </Button>
             <Button
+              bg={Colors.primary}
               flex="1"
               m={ms(16)}
-              bg={Colors.primary}
               onPress={handleOnSaveComment}
             >
               {t('save')}
@@ -393,19 +389,19 @@ const AddEditComment = ({navigation, route}: Props) => {
         </Shadow>
       </Box>
       {/* Image Actions Modal */}
-      <Modal isOpen={imgModal} size="full" animationPreset="slide">
-        <Modal.Content width="95%" marginBottom={0} mt="auto" bg="transparent">
+      <Modal animationPreset="slide" isOpen={imgModal} size="full">
+        <Modal.Content bg="transparent" marginBottom={0} mt="auto" width="95%">
           <Box py={ms(14)}>
-            <Box bg={Colors.white} py={ms(10)} borderRadius={ms(5)}>
-              <Text textAlign="center" fontSize={ms(12)} bold>
+            <Box bg={Colors.white} borderRadius={ms(5)} py={ms(10)}>
+              <Text bold fontSize={ms(12)} textAlign="center">
                 {t('actions')}
               </Text>
               <Divider my={ms(14)} />
               <TouchableOpacity activeOpacity={0.6}>
                 <Text
-                  textAlign="center"
-                  fontSize={ms(16)}
                   bold
+                  fontSize={ms(16)}
+                  textAlign="center"
                   onPress={() => {
                     setViewImg(true)
                     setImgModal(false)
@@ -419,34 +415,34 @@ const AddEditComment = ({navigation, route}: Props) => {
                 activeOpacity={0.6}
                 onPress={onUploadNewVersion}
               >
-                <Text textAlign="center" fontSize={ms(16)} bold>
+                <Text bold fontSize={ms(16)} textAlign="center">
                   {t('uploadNewVersion')}
                 </Text>
               </TouchableOpacity>
               <Divider my={ms(14)} />
               <TouchableOpacity activeOpacity={0.6} onPress={onDeleteImage}>
                 <Text
-                  textAlign="center"
+                  bold
                   color={Colors.danger}
                   fontSize={ms(16)}
-                  bold
                   mb={ms(5)}
+                  textAlign="center"
                 >
                   {t('delete')}
                 </Text>
               </TouchableOpacity>
             </Box>
             <Button
-              size="lg"
-              mt={ms(10)}
               bg={Colors.white}
+              mt={ms(10)}
+              size="lg"
               onPress={() => setImgModal(false)}
             >
               <Text
-                textAlign="center"
+                bold
                 color={Colors.disabled}
                 fontSize={ms(16)}
-                bold
+                textAlign="center"
               >
                 {t('cancel')}
               </Text>
@@ -459,19 +455,16 @@ const AddEditComment = ({navigation, route}: Props) => {
         <Modal.Content>
           <Image
             alt="file-preview"
-            source={{uri: selectedImg.uri}}
-            resizeMode="contain"
-            w="100%"
             h="100%"
+            resizeMode="contain"
+            source={{uri: selectedImg.uri}}
+            w="100%"
           />
         </Modal.Content>
       </Modal>
       {isCameraOpen ? (
         <RNCamera
           ref={cameraRef}
-          style={styles.camera}
-          type={RNCamera.Constants.Type.back}
-          flashMode={RNCamera.Constants.FlashMode.on}
           androidCameraPermissionOptions={{
             title: 'Permission to use camera',
             message: 'We need your permission to use your camera',
@@ -479,36 +472,39 @@ const AddEditComment = ({navigation, route}: Props) => {
             buttonNegative: 'Cancel',
           }}
           captureAudio={false}
+          flashMode={RNCamera.Constants.FlashMode.on}
+          style={styles.camera}
+          type={RNCamera.Constants.Type.back}
         >
           <Box
-            w="100%"
             flex="0"
             flexDirection="row"
             justifyContent="space-between"
+            w="100%"
           >
             <TouchableOpacity
-              onPress={launchImageLibrary}
               style={styles.cameraButton}
+              onPress={launchImageLibrary}
             >
               <Icon
                 as={<FontAwesome5 name="image" />}
-                size={ms(32)}
                 color={Colors.white}
                 ml={ms(0)}
+                size={ms(32)}
               />
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => takePicture()}
               style={styles.cameraButton}
+              onPress={() => takePicture()}
             >
               <Icon
                 as={<FontAwesome5 name="camera" />}
-                size={ms(32)}
                 color={Colors.white}
                 ml={ms(0)}
+                size={ms(32)}
               />
             </TouchableOpacity>
-            <Box w={ms(60)} h={ms(60)} m={ms(20)}></Box>
+            <Box h={ms(60)} m={ms(20)} w={ms(60)} />
           </Box>
         </RNCamera>
       ) : null}
