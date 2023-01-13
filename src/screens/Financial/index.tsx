@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState} from "react";
 import {useWindowDimensions} from 'react-native'
 import {Box, Text} from 'native-base'
 import {TabView, TabBar, SceneMap} from 'react-native-tab-view'
@@ -50,7 +50,7 @@ export default function Financial() {
       tabStyle={{width: ms(95), height: ms(40)}}
       renderLabel={({route, color}) => (
         <Text color={color} bold textAlign="justify">
-          {route.title}
+          {t(route.title)}
         </Text>
       )}
       scrollEnabled={true}

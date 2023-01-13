@@ -17,12 +17,12 @@ type Props = MaterialTopTabScreenProps<RootStackParamList>
 export default function PlanningDetails({route}: Props) {
   const {t} = useTranslation()
   const tabs = [
-    {title: 'Details', screen: Details},
-    {title: 'Actions', screen: Actions},
-    {title: 'Cargo List', screen: CargoList},
-    {title: 'Cargo Holds', screen: CargoHolds},
-    {title: 'Documents', screen: Documents},
-    {title: 'Map', screen: Map},
+    {title: t('Details'), screen: Details},
+    {title: t('Actions'), screen: Actions},
+    {title: t('Cargo List'), screen: CargoList},
+    {title: t('Cargo Holds'), screen: CargoHolds},
+    {title: t('Documents'), screen: Documents},
+    {title: t('Map'), screen: Map},
   ]
   const {navlog, title} = route.params
   const {navigationLogDetails} = usePlanning()
