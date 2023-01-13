@@ -63,7 +63,7 @@ const DatetimePickerList = ({
               >
                 {date
                   ? moment(date).format('D MMM YYYY | HH:mm')
-                  : t('noDate&TimeSet')}}
+                  : t('noDate&TimeSet')}
               </Text>
             </Skeleton>
           </HStack>
