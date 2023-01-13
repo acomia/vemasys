@@ -54,7 +54,7 @@ export default function Charters({navigation}: Props) {
       style={{backgroundColor: Colors.primary}}
       renderLabel={({route, color}) => (
         <Text color={color} bold fontSize={ms(15)}>
-          {route.title}
+          {t(route.title)}
         </Text>
       )}
     />
