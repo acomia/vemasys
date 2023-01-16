@@ -46,7 +46,7 @@ export default function TrackingServiceDialog() {
               colorScheme={isMobileTracking ? 'danger' : 'info'}
               onPress={handleOnToggleTrackingService}
             >
-              {isMobileTracking ? t('turnOff') : t('turnOn')}}
+              {isMobileTracking ? t('turnOff') : t('turnOn')}
             </Button>
           </Button.Group>
         </AlertDialog.Footer>
