@@ -7,6 +7,9 @@ import {enableLatestRenderer} from 'react-native-maps'
 import {NativeBaseProvider} from 'native-base'
 import {theme} from '@bluecentury/styles'
 import './constants/localization/i18n'
+import {useEntity, useAuth, useSettings} from '@bluecentury/stores'
+import i18next from 'i18next'
+import * as RNLocalize from 'react-native-localize'
 
 enableLatestRenderer()
 
@@ -16,6 +19,26 @@ Sentry.init({
 })
 
 const App = () => {
+  const token = useAuth().token
+  const languageFromStore = useSettings().language
+
+  const preferredLanguage = () => {
+    const devicePreferredLanguage = RNLocalize.getLocales()[0].languageCode
+    if (devicePreferredLanguage === 'fr') {
+      return devicePreferredLanguage
+    } else {
+      return 'en'
+    }
+  }
+
+  if (!token) {
+    if (languageFromStore) {
+      i18next.changeLanguage(languageFromStore)
+    } else {
+      i18next.changeLanguage(preferredLanguage())
+    }
+  }
+
   return (
     <NativeBaseProvider theme={theme}>
       <AppContainer>
