@@ -16,6 +16,7 @@ const Bunkering = () => {
   const navigation = useNavigation()
   const {physicalVesselId, vesselId} = useEntity()
   const {
+    isTechnicalLoading,
     bunkering,
     gasoilReserviors,
     getVesselBunkering,
@@ -68,7 +69,7 @@ const Bunkering = () => {
         >
           {t('bunkering')}
         </Text>
-        {bunkering?.length > 0 ? (
+        {bunkering?.length > 0 && !isTechnicalLoading ? (
           <BunkeringList bunkering={bunkering} />
         ) : (
           <LoadingAnimated />

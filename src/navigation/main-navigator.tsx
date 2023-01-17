@@ -33,12 +33,14 @@ import {useAuth, useEntity, useMap, useSettings} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
 import {navigationRef} from './navigationRef'
 import {InitializeTrackingService} from '@bluecentury/helpers'
+import {useTranslation} from 'react-i18next'
 
 const {Navigator, Screen} = createDrawerNavigator<MainStackParamList>()
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Main'>
 
 export default function MainNavigator({navigation}: Props) {
+  const {t} = useTranslation()
   const isMobileTracking = useSettings(state => state.isMobileTracking)
   const isQrScanner = useSettings(state => state.isQrScanner)
   const token = useAuth(state => state.token)
@@ -173,14 +175,46 @@ export default function MainNavigator({navigation}: Props) {
       drawerContent={props => <Sidebar {...props} />}
       initialRouteName={Screens.MapView}
     >
-      <Screen component={Map} name={Screens.MapView} />
-      <Screen component={Notification} name={Screens.Notifications} />
-      <Screen component={Planning} name={Screens.Planning} />
-      <Screen component={Charters} name={Screens.Charters} />
-      <Screen component={Technical} name={Screens.Technical} />
-      <Screen component={Financial} name={Screens.Financial} />
-      <Screen component={Information} name={Screens.Information} />
-      <Screen component={Crew} name={Screens.Crew} />
+      <Screen
+        component={Map}
+        name={Screens.MapView}
+        options={{title: t(Screens.MapView)}}
+      />
+      <Screen
+        component={Notification}
+        name={Screens.Notifications}
+        options={{title: t(Screens.Notifications)}}
+      />
+      <Screen
+        component={Planning}
+        name={Screens.Planning}
+        options={{title: t(Screens.Planning)}}
+      />
+      <Screen
+        component={Charters}
+        name={Screens.Charters}
+        options={{title: t(Screens.Charters)}}
+      />
+      <Screen
+        component={Technical}
+        name={Screens.Technical}
+        options={{title: t(Screens.Technical)}}
+      />
+      <Screen
+        component={Financial}
+        name={Screens.Financial}
+        options={{title: t(Screens.Financial)}}
+      />
+      <Screen
+        component={Information}
+        name={Screens.Information}
+        options={{title: t(Screens.Information)}}
+      />
+      <Screen
+        component={Crew}
+        name={Screens.Crew}
+        options={{title: t(Screens.Crew)}}
+      />
       <Screen
         options={{
           headerTitle: 'Select your role',

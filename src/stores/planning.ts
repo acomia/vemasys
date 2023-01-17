@@ -125,8 +125,13 @@ export const usePlanning = create(
           if (Array.isArray(response) && response.length > 0) {
             response.forEach(async (plan, index) => {
               const act = await API.reloadNavigationLogActions(plan.id)
-              plan.endActionDate = act[0]?.end
-              plan.actionType = act[0]?.type
+              if (act?.length > 0) {
+                plan.endActionDate = act[0]?.end
+                plan.actionType = act[0]?.type
+              } else {
+                plan.endActionDate = undefined
+                plan.actionType = ''
+              }
               set({
                 plannedNavigationLogs: response,
               })

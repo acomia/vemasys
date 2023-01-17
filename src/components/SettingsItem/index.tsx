@@ -35,12 +35,12 @@ const SettingsItem = (props: Props) => {
     switch (lang) {
       case 'en':
         return Icons.english
-      case 'nl':
-        return Icons.dutch
+      // case 'nl':
+      // return Icons.dutch
       case 'fr':
         return Icons.french
-      case 'de':
-        return Icons.german
+      // case 'de':
+      // return Icons.german
       default:
         break
     }
@@ -50,12 +50,12 @@ const SettingsItem = (props: Props) => {
     switch (shortName) {
       case 'en':
         return t('english')
-      case 'nl':
-        return t('dutch')
+      // case 'nl':
+      // return t('dutch')
       case 'fr':
         return t('french')
-      case 'de':
-        return t('german')
+      // case 'de':
+      // return t('german')
       default:
         break
     }
@@ -96,7 +96,7 @@ const SettingsItem = (props: Props) => {
             <Text>{t('english')}</Text>
           </HStack>
         </Menu.Item>
-        <Menu.Item
+        {/* <Menu.Item
           onPress={() => {
             callback('nl')
           }}
@@ -105,7 +105,7 @@ const SettingsItem = (props: Props) => {
             <Image source={Icons.dutch} mr={ms(13)} alt="Company Logo" />
             <Text>{t('dutch')}</Text>
           </HStack>
-        </Menu.Item>
+        </Menu.Item> */}
         <Menu.Item
           onPress={() => {
             callback('fr')
@@ -116,7 +116,7 @@ const SettingsItem = (props: Props) => {
             <Text>{t('french')}</Text>
           </HStack>
         </Menu.Item>
-        <Menu.Item
+        {/* <Menu.Item
           onPress={() => {
             callback('de')
           }}
@@ -125,7 +125,7 @@ const SettingsItem = (props: Props) => {
             <Image source={Icons.german} mr={ms(13)} alt="Company Logo" />
             <Text>{t('german')}</Text>
           </HStack>
-        </Menu.Item>
+        </Menu.Item> */}
       </Menu>
     )
   }

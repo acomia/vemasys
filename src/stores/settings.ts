@@ -3,6 +3,8 @@ import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {Environments} from '@bluecentury/constants'
 import i18next from 'i18next'
+import * as API from '@bluecentury/api/vemasys'
+import {useEntity} from '@bluecentury/stores/entity'
 
 type TEnv = keyof typeof Environments
 
@@ -11,7 +13,7 @@ type SettingsState = {
   env: string | undefined
   apiUrl: string | undefined
   isDarkMode: boolean
-  language: string
+  language: string | undefined
   isMobileTracking: boolean
   hasSettingsRehydrated: boolean
   isQrScanner: boolean
@@ -36,7 +38,7 @@ export const useSettings = create(
       env: undefined,
       apiUrl: undefined,
       isDarkMode: false,
-      language: 'en',
+      language: undefined,
       isMobileTracking: false,
       hasSettingsRehydrated: false,
       isQrScanner: true,
@@ -45,9 +47,11 @@ export const useSettings = create(
           isDarkMode: darkMode,
         })
       },
-      setLanguage: lang => {
+      setLanguage: async lang => {
         set({language: lang})
         i18next.changeLanguage(lang)
+        const user = useEntity.getState().user
+        await API.changeUserLanguage(user.id, lang, user)
       },
       setIsMobileTracking: val => {
         set({

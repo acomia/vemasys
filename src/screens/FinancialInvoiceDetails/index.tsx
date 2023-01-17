@@ -372,7 +372,7 @@ const FinancialInvoiceDetails = ({navigation, route}: Props) => {
                 onPress={() => onUpdateInvoiceStatus(status.value)}
               >
                 <Text fontSize={ms(15)} fontWeight="medium" color={Colors.text}>
-                  {status.label}
+                  {t(status.label)}
                 </Text>
                 <Divider my={ms(10)} />
               </TouchableOpacity>

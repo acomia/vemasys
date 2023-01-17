@@ -39,16 +39,16 @@ import {PROD_URL} from '@vemasys/env'
 import {LoadingAnimated} from '@bluecentury/components'
 import {Vemasys} from '@bluecentury/helpers'
 import {useTranslation} from 'react-i18next'
+import {Shadow} from 'react-native-shadow-2'
 
 type Dates = {
-  plannedEta: Date | undefined | StringOrNull
-  captainDatetimeEta: Date | undefined | StringOrNull
+  plannedETA: Date | undefined | StringOrNull
+  captainDatetimeETA: Date | undefined | StringOrNull
   announcedDatetime: Date | undefined | StringOrNull
   arrivalDatetime: Date | undefined | StringOrNull
   terminalApprovedDeparture: Date | undefined | StringOrNull
   departureDatetime: Date | undefined | StringOrNull
 }
-
 const Details = () => {
   const {t} = useTranslation()
   const toast = useToast()
@@ -65,9 +65,7 @@ const Details = () => {
     navigationLogActions,
     getNavigationLogDetails,
     getNavigationLogActions,
-    getNavigationLogCargoHolds,
     getNavigationLogComments,
-    getNavigationLogDocuments,
     updateNavlogDates,
     updateNavlogDatesSuccess,
     updateNavlogDatesFailed,
@@ -80,12 +78,18 @@ const Details = () => {
   const {selectedEntity} = useEntity()
   const {navlog, title}: any = route.params
   const [dates, setDates] = useState<Dates>({
-    plannedEta: navigationLogDetails?.plannedEta,
-    captainDatetimeEta: navigationLogDetails?.captainDatetimeEta,
+    plannedETA: navigationLogDetails?.plannedEta,
+    captainDatetimeETA: navigationLogDetails?.captainDatetimeEta,
     announcedDatetime: navigationLogDetails?.announcedDatetime,
     arrivalDatetime: navigationLogDetails?.arrivalDatetime,
     terminalApprovedDeparture: navigationLogDetails?.terminalApprovedDeparture,
     departureDatetime: navigationLogDetails?.departureDatetime,
+  })
+  const [didDateChange, setDidDateChange] = useState({
+    Pln: {didUpdate: false},
+    Eta: {didUpdate: false},
+    Nor: {didUpdate: false},
+    Doc: {didUpdate: false},
   })
 
   const [viewImg, setViewImg] = useState(false)
@@ -96,19 +100,27 @@ const Details = () => {
   const [buttonActionLabel, setButtonActionLabel] = useState(' ')
   const [selectedAction, setSelectedAction] = useState<NavigationLogAction>({})
   const [confirmModal, setConfirmModal] = useState(false)
+  const [leaveTabModal, setLeaveTabModal] = useState(false)
   const hasAddCommentPermission = hasSelectedEntityUserPermission(
     selectedEntity,
     ROLE_PERMISSION_NAVIGATION_LOG_ADD_COMMENT
   )
   const isUnknownLocation = title === 'Unknown Location' ? true : false
+  const unsavedChanges = Object.values(didDateChange).filter(
+    date => date.didUpdate === true
+  )
+
+  useEffect(() => {
+    if (!focused && unsavedChanges.length > 0) {
+      setLeaveTabModal(true)
+    }
+  }, [focused])
 
   useEffect(() => {
     getNavigationLogDetails(navlog?.id)
     getNavigationLogActions(navlog?.id)
     getNavigationLogComments(navlog?.id)
-    // getNavigationLogCargoHolds(physicalVesselId)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    return () => {}
   }, [])
 
   useEffect(() => {
@@ -116,8 +128,8 @@ const Details = () => {
     setActiveActions(active)
     setDates({
       ...dates,
-      plannedEta: navigationLogDetails?.plannedEta,
-      captainDatetimeEta: navigationLogDetails?.captainDatetimeEta,
+      plannedETA: navigationLogDetails?.plannedEta,
+      captainDatetimeETA: navigationLogDetails?.captainDatetimeEta,
       announcedDatetime: navigationLogDetails?.announcedDatetime,
       arrivalDatetime: navigationLogDetails?.arrivalDatetime,
       terminalApprovedDeparture:
@@ -162,11 +174,11 @@ const Details = () => {
         return (
           <Text
             bg={res === 'success' ? 'emerald.500' : 'red.500'}
+            color={Colors.white}
+            mb={5}
             px="2"
             py="1"
             rounded="sm"
-            mb={5}
-            color={Colors.white}
           >
             {text}
           </Text>
@@ -179,11 +191,18 @@ const Details = () => {
   }
 
   const onSuccess = () => {
+    setDidDateChange({
+      ...didDateChange,
+      Pln: {didUpdate: false},
+      Eta: {didUpdate: false},
+      Nor: {didUpdate: false},
+      Doc: {didUpdate: false},
+    })
     onPullToReload()
     reset()
   }
 
-  const handleOnSaveDateUpdates = async () => {
+  const handleOnSaveDateUpdates = () => {
     updateNavlogDates(navlog?.id, dates)
   }
 
@@ -191,19 +210,23 @@ const Details = () => {
     const formattedDate = Vemasys.formatDate(date)
     switch (selectedType) {
       case 'PLN':
-        setDates({...dates, plannedEta: formattedDate})
+        setDates({...dates, plannedETA: formattedDate})
+        setDidDateChange({...didDateChange, Pln: {didUpdate: true}})
         return
       case 'ETA':
-        setDates({...dates, captainDatetimeEta: formattedDate})
+        setDates({...dates, captainDatetimeETA: formattedDate})
+        setDidDateChange({...didDateChange, Eta: {didUpdate: true}})
         return
       case 'NOR':
         setDates({...dates, announcedDatetime: formattedDate})
+        setDidDateChange({...didDateChange, Nor: {didUpdate: true}})
         return
       case 'ARR':
         setDates({...dates, arrivalDatetime: formattedDate})
         return
       case 'DOC':
         setDates({...dates, terminalApprovedDeparture: formattedDate})
+        setDidDateChange({...didDateChange, Doc: {didUpdate: true}})
         return
       case 'DEP':
         setDates({...dates, departureDatetime: formattedDate})
@@ -226,24 +249,39 @@ const Details = () => {
   const renderPlanningDates = () => (
     <Box>
       <DatetimePickerList
-        title="Planned"
-        date={dates.plannedEta}
+        date={dates.plannedETA}
         locked={isUnknownLocation ? true : navigationLogDetails?.locked}
+        title="Planned"
         onChangeDate={() => {
           setSelectedType('PLN')
           setOpenDatePicker(true)
         }}
-        onClearDate={() => setDates({...dates, plannedEta: null})}
+        onClearDate={() => {
+          setDidDateChange({
+            ...didDateChange,
+            Pln: {didUpdate: _.isNull(dates.plannedETA) ? false : true},
+          })
+          setDates({...dates, plannedETA: null})
+        }}
       />
       <DatetimePickerList
-        title="ETA"
-        date={dates.captainDatetimeEta}
+        date={dates.captainDatetimeETA}
         locked={isUnknownLocation ? true : navigationLogDetails?.locked}
+        title="ETA"
         onChangeDate={() => {
           setSelectedType('ETA')
           setOpenDatePicker(true)
         }}
-        onClearDate={() => setDates({...dates, captainDatetimeEta: null})}
+        onClearDate={() => {
+          setDidDateChange({
+            ...didDateChange,
+            Eta: {didUpdate: _.isNull(dates.captainDatetimeETA) ? false : true},
+          })
+          setDates({
+            ...dates,
+            captainDatetimeETA: null,
+          })
+        }}
       />
     </Box>
   )
@@ -251,20 +289,29 @@ const Details = () => {
   const renderAnnouncingAndArrivalDates = () => (
     <Box>
       <DatetimePickerList
-        title="Notice of Readiness"
         date={dates.announcedDatetime}
         locked={isUnknownLocation ? true : navigationLogDetails?.locked}
+        title="Notice of Readiness"
         onChangeDate={() => {
           setSelectedType('NOR')
           setOpenDatePicker(true)
         }}
-        onClearDate={() => setDates({...dates, announcedDatetime: null})}
+        onClearDate={() => {
+          setDidDateChange({
+            ...didDateChange,
+            Nor: {didUpdate: _.isNull(dates.announcedDatetime) ? false : true},
+          })
+          setDates({
+            ...dates,
+            announcedDatetime: null,
+          })
+        }}
       />
 
       <DatetimePickerList
-        title="Arrival"
         date={dates.arrivalDatetime}
         readOnly={true}
+        title="Arrival"
       />
     </Box>
   )
@@ -272,22 +319,33 @@ const Details = () => {
   const renderDepartureDates = () => (
     <Box>
       <DatetimePickerList
-        title="Docs on Board"
         date={dates.terminalApprovedDeparture}
         locked={isUnknownLocation ? true : navigationLogDetails?.locked}
+        title="Docs on Board"
         onChangeDate={() => {
           setSelectedType('DOC')
           setOpenDatePicker(true)
         }}
-        onClearDate={() =>
-          setDates({...dates, terminalApprovedDeparture: null})
-        }
+        onClearDate={() => {
+          setDidDateChange({
+            ...didDateChange,
+            Doc: {
+              didUpdate: _.isNull(dates.terminalApprovedDeparture)
+                ? false
+                : true,
+            },
+          })
+          setDates({
+            ...dates,
+            terminalApprovedDeparture: null,
+          })
+        }}
       />
 
       <DatetimePickerList
-        title="Departure"
         date={dates.departureDatetime}
         readOnly={true}
+        title="Departure"
       />
     </Box>
   )
@@ -307,42 +365,42 @@ const Details = () => {
           }
         >
           <HStack
-            borderWidth={1}
+            alignItems="center"
+            bg={Colors.white}
             borderColor={Colors.light}
             borderRadius={5}
+            borderWidth={1}
+            mt={ms(10)}
             px={ms(12)}
             py={ms(8)}
-            mt={ms(10)}
-            bg={Colors.white}
             shadow={1}
-            alignItems="center"
           >
             <Image
               alt="navlog-action-animated"
+              height={ms(40)}
+              mr={ms(10)}
+              resizeMode="contain"
               source={renderAnimatedIcon(action?.type, action?.end)}
               width={ms(40)}
-              height={ms(40)}
-              resizeMode="contain"
-              mr={ms(10)}
             />
             <Box flex="1">
               <HStack alignItems="center">
-                <Text bold fontSize={ms(15)} color={Colors.text}>
+                <Text bold color={Colors.text} fontSize={ms(15)}>
                   {titleCase(action?.type)}
                 </Text>
               </HStack>
               <Text color={Colors.secondary} fontWeight="medium">
-                Start - {moment(action?.start).format('D MMM YYYY | hh:mm')}
+                Start - {moment(action?.start).format('D MMM YYYY | HH:mm')}
               </Text>
               {_.isNull(action?.end) ? null : (
                 <Text color={Colors.danger} fontWeight="medium">
-                  End - {moment(action?.end).format('D MMM YYYY | hh:mm')}
+                  End - {moment(action?.end).format('D MMM YYYY | HH:mm')}
                 </Text>
               )}
             </Box>
             <TouchableOpacity
-              disabled={_.isNull(action?.end) ? false : true}
               activeOpacity={0.7}
+              disabled={_.isNull(action?.end) ? false : true}
               onPress={() => confirmStopAction(action)}
             >
               <Image
@@ -355,10 +413,10 @@ const Details = () => {
       ))}
       <HStack mt={ms(15)}>
         <Button
-          flex="1"
-          maxH={ms(40)}
           bg={Colors.primary}
+          flex="1"
           leftIcon={<Icon as={Ionicons} name="add" size="sm" />}
+          maxH={ms(40)}
           onPress={() =>
             navigation.navigate('AddEditNavlogAction', {
               method: 'add',
@@ -366,16 +424,16 @@ const Details = () => {
             })
           }
         >
-          <Text fontWeight="medium" color={Colors.white}>
+          <Text color={Colors.white} fontWeight="medium">
             New {buttonActionLabel}
           </Text>
         </Button>
         <Box w={ms(10)} />
         <Button
-          flex="1"
-          maxH={ms(40)}
           bg={Colors.primary}
+          flex="1"
           leftIcon={<Icon as={Ionicons} name="add" size="sm" />}
+          maxH={ms(40)}
           onPress={() =>
             navigation.navigate('AddEditNavlogAction', {
               method: 'add',
@@ -383,7 +441,7 @@ const Details = () => {
             })
           }
         >
-          <Text fontWeight="medium" color={Colors.white}>
+          <Text color={Colors.white} fontWeight="medium">
             Cleaning
           </Text>
         </Button>
@@ -393,7 +451,7 @@ const Details = () => {
 
   const CommentCard = ({comment, commentDescription}) => {
     let imgLinks: string[] = []
-    let getAttrFromString = (str: string) => {
+    const getAttrFromString = (str: string) => {
       let regex = /<img.*?src='(.*?)'/gi,
         result,
         res = []
@@ -415,29 +473,29 @@ const Details = () => {
         }
       >
         <Box
-          borderWidth={1}
+          bg={Colors.white}
           borderColor={Colors.light}
           borderRadius={5}
-          p={ms(16)}
+          borderWidth={1}
           mt={ms(10)}
-          bg={Colors.white}
+          p={ms(16)}
           shadow={2}
         >
           <HStack alignItems="center">
             <Avatar
-              size="48px"
               source={{
                 uri: comment?.user?.icon?.path
                   ? `${PROD_URL}/upload/documents/${comment?.user?.icon?.path}`
                   : '',
               }}
+              size="48px"
             />
             <Box ml={ms(10)}>
               <Text bold>
                 {comment?.user ? comment?.user?.firstname : ''}{' '}
                 {comment?.user ? comment?.user?.lastname : ''}
               </Text>
-              <Text fontWeight="medium" color={Colors.disabled}>
+              <Text color={Colors.disabled} fontWeight="medium">
                 {moment(comment?.creationDate).format('DD MMM YYYY')}
               </Text>
             </Box>
@@ -447,13 +505,7 @@ const Details = () => {
           </Text>
           {imgLinks.length > 0 ? (
             <FlatList
-              keyExtractor={item => item}
-              scrollEventThrottle={16}
-              // maxH={ms(120)}
               horizontal
-              showsHorizontalScrollIndicator={false}
-              data={imgLinks}
-              removeClippedSubviews={true}
               renderItem={image => {
                 const file = {
                   uri: image.item,
@@ -464,14 +516,20 @@ const Details = () => {
                   <TouchableOpacity onPress={() => onSelectImage(file)}>
                     <Image
                       alt="file-upload"
-                      source={{uri: image.item}}
-                      w={ms(136)}
                       h={ms(114)}
                       mr={ms(10)}
+                      source={{uri: image.item}}
+                      w={ms(136)}
                     />
                   </TouchableOpacity>
                 )
               }}
+              // maxH={ms(120)}
+              data={imgLinks}
+              keyExtractor={item => item}
+              removeClippedSubviews={true}
+              scrollEventThrottle={16}
+              showsHorizontalScrollIndicator={false}
             />
           ) : null}
         </Box>
@@ -483,21 +541,21 @@ const Details = () => {
     return (
       <HStack
         key={index}
-        p={ms(10)}
-        borderWidth={1}
+        alignItems="center"
+        bg={Colors.white}
         borderColor={Colors.light}
         borderRadius={ms(5)}
-        alignItems="center"
+        borderWidth={1}
         justifyContent="space-between"
         mb={ms(10)}
-        bg={Colors.white}
+        p={ms(10)}
         shadow={3}
       >
         <Text bold>{contact.name}</Text>
         <Image
           alt="charter-contact"
-          source={Icons.charter_contact}
           resizeMode="contain"
+          source={Icons.charter_contact}
         />
       </HStack>
     )
@@ -543,6 +601,43 @@ const Details = () => {
     )
   }
 
+  const onCancelUnsavedChanges = () => {
+    setDates({
+      ...dates,
+      plannedETA: navigationLogDetails?.plannedEta,
+      captainDatetimeETA: navigationLogDetails?.captainDatetimeEta,
+      announcedDatetime: navigationLogDetails?.announcedDatetime,
+      terminalApprovedDeparture:
+        navigationLogDetails?.terminalApprovedDeparture,
+    })
+    setDidDateChange({
+      ...didDateChange,
+      Pln: {didUpdate: false},
+      Eta: {didUpdate: false},
+      Nor: {didUpdate: false},
+      Doc: {didUpdate: false},
+    })
+  }
+
+  const onProceedToNextTab = () => {
+    setLeaveTabModal(false)
+    setDates({
+      ...dates,
+      plannedETA: navigationLogDetails?.plannedEta,
+      captainDatetimeETA: navigationLogDetails?.captainDatetimeEta,
+      announcedDatetime: navigationLogDetails?.announcedDatetime,
+      terminalApprovedDeparture:
+        navigationLogDetails?.terminalApprovedDeparture,
+    })
+    setDidDateChange({
+      ...didDateChange,
+      Pln: {didUpdate: false},
+      Eta: {didUpdate: false},
+      Nor: {didUpdate: false},
+      Doc: {didUpdate: false},
+    })
+  }
+
   const onPullToReload = () => {
     getNavigationLogDetails(navlog.id)
     getNavigationLogActions(navlog?.id)
@@ -554,94 +649,68 @@ const Details = () => {
     isPlanningDetailsLoading ||
     isPlanningActionsLoading ||
     isPlanningCommentsLoading
-  )
+  ) {
     return <LoadingAnimated />
+  }
   return (
     <Box flex="1">
       <ScrollView
-        contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
-        scrollEventThrottle={16}
         refreshControl={
           <RefreshControl
-            onRefresh={onPullToReload}
             refreshing={
               isPlanningLoading ||
               isPlanningDetailsLoading ||
               isPlanningActionsLoading ||
               isPlanningCommentsLoading
             }
+            onRefresh={onPullToReload}
           />
         }
         bg={Colors.white}
+        contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
         px={ms(12)}
         py={ms(20)}
+        scrollEventThrottle={16}
       >
         {/* Location Section */}
-        <Text fontSize={ms(20)} bold color={Colors.azure}>
+        <Text bold color={Colors.azure} fontSize={ms(20)}>
           Location
         </Text>
-        <Divider bg={Colors.light} my={ms(8)} h={ms(2)} />
+        <Divider bg={Colors.light} h={ms(2)} my={ms(8)} />
         {renderLocation()}
         {/* End of Location Section */}
         {/* Planning dates Section */}
-        <Text fontSize={ms(20)} bold color={Colors.azure} mt={ms(20)}>
+        <Text bold color={Colors.azure} fontSize={ms(20)} mt={ms(20)}>
           Planning
         </Text>
-        <Divider bg={Colors.light} my={ms(8)} h={ms(2)} />
+        <Divider bg={Colors.light} h={ms(2)} my={ms(8)} />
         {renderPlanningDates()}
         {/* End of Planning dates Section */}
         {/* Announcing&Arrival dates Section */}
-        <Text fontSize={ms(20)} bold color={Colors.azure} mt={ms(10)}>
+        <Text bold color={Colors.azure} fontSize={ms(20)} mt={ms(10)}>
           Announcing and Arrival
         </Text>
-        <Divider bg={Colors.light} my={ms(8)} h={ms(2)} />
+        <Divider bg={Colors.light} h={ms(2)} my={ms(8)} />
         {renderAnnouncingAndArrivalDates()}
         {/* End of Announcing&Arrival dates Section */}
         {/* Actions Section */}
-        <Text fontSize={ms(20)} bold color={Colors.azure} mt={ms(10)}>
+        <Text bold color={Colors.azure} fontSize={ms(20)} mt={ms(10)}>
           Actions
         </Text>
-        <Divider bg={Colors.light} my={ms(8)} h={ms(2)} />
+        <Divider bg={Colors.light} h={ms(2)} my={ms(8)} />
         {renderNavlogActions()}
         {/* End of Actions Section */}
         {/* Announcing&Arrival dates Section */}
-        <Text fontSize={ms(20)} bold color={Colors.azure} mt={ms(20)}>
+        <Text bold color={Colors.azure} fontSize={ms(20)} mt={ms(20)}>
           Departure
         </Text>
-        <Divider bg={Colors.light} my={ms(8)} h={ms(2)} />
+        <Divider bg={Colors.light} h={ms(2)} my={ms(8)} />
         {renderDepartureDates()}
         {/* End of Announcing&Arrival dates Section */}
-        <Button
-          bg={
-            _.isNull(
-              dates.terminalApprovedDeparture ||
-                dates.captainDatetimeEta ||
-                dates.announcedDatetime ||
-                dates.plannedEta
-            )
-              ? Colors.disabled
-              : Colors.primary
-          }
-          leftIcon={<Icon as={Ionicons} name="save-outline" size="sm" />}
-          mt={ms(15)}
-          disabled={
-            _.isNull(
-              dates.terminalApprovedDeparture ||
-                dates.captainDatetimeEta ||
-                dates.announcedDatetime ||
-                dates.plannedEta
-            )
-              ? true
-              : false
-          }
-          onPress={handleOnSaveDateUpdates}
-        >
-          Save Changes
-        </Button>
         {/* Contact Information Section */}
         {isUnknownLocation ? null : (
           <>
-            <Text fontSize={ms(20)} bold color={Colors.azure} mt={ms(20)}>
+            <Text bold color={Colors.azure} fontSize={ms(20)} mt={ms(20)}>
               {t('contactInformation')}
             </Text>
             <Box my={ms(15)}>
@@ -652,12 +721,12 @@ const Details = () => {
                 )
               ) : (
                 <Box
-                  borderWidth={1}
+                  bg={Colors.white}
                   borderColor={Colors.light}
                   borderRadius={5}
-                  p={ms(16)}
+                  borderWidth={1}
                   mt={ms(10)}
-                  bg={Colors.white}
+                  p={ms(16)}
                   shadow={2}
                 >
                   <Text>{t('noContactInformation')}</Text>
@@ -669,18 +738,18 @@ const Details = () => {
 
         {/* Comments Section */}
         <HStack alignItems="center" mt={ms(20)}>
-          <Text fontSize={ms(20)} bold color={Colors.azure}>
+          <Text bold color={Colors.azure} fontSize={ms(20)}>
             {t('comments')}
           </Text>
           {navigationLogComments?.length > 0 ? (
             <Box
               bg={Colors.azure}
               borderRadius={ms(20)}
-              width={ms(22)}
               height={ms(22)}
               ml={ms(10)}
+              width={ms(22)}
             >
-              <Text color={Colors.white} bold textAlign="center">
+              <Text bold color={Colors.white} textAlign="center">
                 {navigationLogComments?.length}
               </Text>
             </Box>
@@ -701,8 +770,8 @@ const Details = () => {
           <Button
             bg={Colors.primary}
             leftIcon={<Icon as={Ionicons} name="add" size="sm" />}
-            mt={ms(20)}
             mb={ms(20)}
+            mt={ms(20)}
             onPress={() =>
               navigation.navigate('AddEditComment', {
                 method: 'add',
@@ -716,61 +785,130 @@ const Details = () => {
 
         <DatePicker
           modal
-          open={openDatePicker}
           date={new Date()}
           mode="datetime"
+          open={openDatePicker}
+          onCancel={() => {
+            setOpenDatePicker(false)
+          }}
           onConfirm={date => {
             setOpenDatePicker(false)
             onDatesChange(date)
           }}
-          onCancel={() => {
-            setOpenDatePicker(false)
-          }}
         />
         <Modal
-          isOpen={confirmModal}
-          size="full"
-          px={ms(12)}
           animationPreset="slide"
+          isOpen={confirmModal}
+          px={ms(12)}
+          size="full"
         >
           <Modal.Content>
             <Modal.Header>Confirmation</Modal.Header>
-            <Text my={ms(20)} mx={ms(12)} fontWeight="medium">
+            <Text fontWeight="medium" mx={ms(12)} my={ms(20)}>
               Are you sure you want to stop this action?
             </Text>
             <HStack>
               <Button
+                bg={Colors.grey}
                 flex="1"
                 m={ms(12)}
-                bg={Colors.grey}
                 onPress={() => setConfirmModal(false)}
               >
-                <Text fontWeight="medium" color={Colors.disabled}>
+                <Text color={Colors.disabled} fontWeight="medium">
                   Cancel
                 </Text>
               </Button>
               <Button
+                bg={Colors.danger}
                 flex="1"
                 m={ms(12)}
-                bg={Colors.danger}
                 onPress={onStopAction}
               >
-                <Text fontWeight="medium" color={Colors.white}>
+                <Text color={Colors.white} fontWeight="medium">
                   Stop
                 </Text>
               </Button>
             </HStack>
           </Modal.Content>
         </Modal>
+        <Modal
+          animationPreset="slide"
+          isOpen={leaveTabModal}
+          px={ms(12)}
+          size="full"
+        >
+          <Modal.Content>
+            <Modal.Header>Confirmation</Modal.Header>
+            <Text fontWeight="medium" mx={ms(12)} my={ms(20)}>
+              There are unsaved changes in this page. Are you sure you want to
+              proceed?
+            </Text>
+            <HStack>
+              <Button
+                bg={Colors.grey}
+                flex="1"
+                m={ms(12)}
+                onPress={() => {
+                  setLeaveTabModal(false), navigation.goBack()
+                }}
+              >
+                <Text color={Colors.disabled} fontWeight="medium">
+                  No
+                </Text>
+              </Button>
+              <Button
+                bg={Colors.danger}
+                flex="1"
+                m={ms(12)}
+                onPress={onProceedToNextTab}
+              >
+                <Text color={Colors.white} fontWeight="medium">
+                  Yes
+                </Text>
+              </Button>
+            </HStack>
+          </Modal.Content>
+        </Modal>
       </ScrollView>
+      {unsavedChanges.length > 0 ? (
+        <Box bg={Colors.white} position="relative">
+          <Shadow
+            viewStyle={{
+              width: '100%',
+            }}
+            distance={25}
+          >
+            <HStack>
+              <Button
+                colorScheme="muted"
+                flex="1"
+                m={ms(16)}
+                variant="ghost"
+                onPress={onCancelUnsavedChanges}
+              >
+                Cancel
+              </Button>
+              <Button
+                bg={Colors.primary}
+                flex="1"
+                m={ms(16)}
+                onPress={handleOnSaveDateUpdates}
+              >
+                Save
+              </Button>
+            </HStack>
+          </Shadow>
+        </Box>
+      ) : null}
+
       <Modal isOpen={viewImg} size="full" onClose={() => setViewImg(false)}>
         <Modal.Content>
           <Image
             alt="file-preview"
-            source={{uri: selectedImg.uri}}
-            resizeMode="contain"
-            w="100%"
             h="100%"
+            resizeMode="contain"
+            source={{uri: selectedImg.uri}}
+            w="100%"
           />
         </Modal.Content>
       </Modal>

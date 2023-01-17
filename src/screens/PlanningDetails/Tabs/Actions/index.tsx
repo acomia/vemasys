@@ -69,7 +69,7 @@ const Actions = () => {
     } else {
       setButtonActionLabel(t('loading'))
     }
-  }, [navigationLogActions])
+  }, [navigationLogActions, navigationLogDetails])
 
   const showToast = (text: string, res: string) => {
     toast.show({

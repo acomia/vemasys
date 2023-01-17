@@ -1,12 +1,28 @@
 import React, {useEffect, useState} from 'react'
 import {Platform, RefreshControl} from 'react-native'
-import {Box, HStack, ScrollView, Select, Skeleton, Text} from 'native-base'
+import {
+  Box,
+  HStack,
+  ScrollView,
+  Select,
+  Skeleton,
+  Text,
+  Modal,
+  Button,
+} from 'native-base'
 import {ms} from 'react-native-size-matters'
 
 import {useEntity, useFinancial} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
 import {useSafeAreaInsets} from 'react-native-safe-area-context'
 import {useTranslation} from 'react-i18next'
+import {LoadingAnimated} from '@bluecentury/components'
+
+type CardContentArgument = {
+  status: string
+  value: string
+  callback?: () => void
+}
 
 const Overview = () => {
   const {t} = useTranslation()
@@ -17,6 +33,8 @@ const Overview = () => {
   const [selectedYear, setSelectedYear] = useState(
     new Date().getFullYear().toString()
   )
+  const [isIncomingVisible, setIsIncomingVisible] = useState(false)
+  const [isOutgoingVisible, setIsOutgoingVisible] = useState(false)
 
   useEffect(() => {
     getInvoiceStatistics(selectedYear)
@@ -25,57 +43,61 @@ const Overview = () => {
   const Card = ({title, children}: any) => {
     return (
       <Box
-        borderWidth={1}
         borderColor={Colors.border}
         borderRadius={5}
+        borderWidth={1}
         mb={ms(10)}
         overflow="hidden"
       >
-        <Box p={ms(15)} bg={Colors.border}>
-          <Text fontSize={ms(16)} bold color={Colors.azure}>
+        <Box bg={Colors.border} p={ms(15)}>
+          <Text bold color={Colors.azure} fontSize={ms(16)}>
             {title}
           </Text>
         </Box>
-        <Box p={ms(15)} bg={Colors.white}>
+        <Box bg={Colors.white} p={ms(15)}>
           {children}
         </Box>
       </Box>
     )
   }
 
-  const CardContent = ({status, value}: any) => {
+  const CardContent = ({status, value, callback}: CardContentArgument) => {
     return (
       <HStack
-        justifyContent="space-between"
         alignItems="center"
-        height={ms(50)}
-        width="100%"
-        borderWidth={1}
         borderColor={Colors.light}
         borderRadius={5}
-        px={ms(16)}
+        borderWidth={1}
+        height={ms(50)}
+        justifyContent="space-between"
         mb={ms(7)}
+        px={ms(16)}
+        width="100%"
       >
-        <Text flex="1" fontWeight="medium" color={Colors.text}>
+        <Text
+          color={Colors.text}
+          flex="1"
+          fontWeight="medium"
+          onPress={callback ? callback : null}
+        >
           {status}
         </Text>
         <Box
-          flex="1"
-          borderLeftWidth={ms(1)}
           borderColor="#E6E6E6"
+          borderLeftWidth={ms(1)}
+          flex="1"
           height="100%"
           justifyContent="center"
         >
           <Skeleton
             h="25"
+            isLoaded={!isFinancialLoading}
             ml={ms(10)}
             rounded="md"
-            isLoaded={!isFinancialLoading}
             startColor={Colors.light}
           >
             <Text
               bold
-              textAlign="right"
               color={
                 status?.toLowerCase() == 'paid' ||
                 status?.toLowerCase() == 'total balance'
@@ -85,6 +107,7 @@ const Overview = () => {
                   ? Colors.danger
                   : Colors.highlighted_text
               }
+              textAlign="right"
             >
               {status?.toLowerCase().includes('days')
                 ? `${value} days`
@@ -105,7 +128,7 @@ const Overview = () => {
     )
   }
 
-  const handleFilterByYear = e => {
+  const handleFilterByYear = (e: string) => {
     setSelectedYear(e)
     getInvoiceStatistics(e)
   }
@@ -117,147 +140,113 @@ const Overview = () => {
   return (
     <Box flex="1">
       <ScrollView
-        contentContainerStyle={{flexGrow: 1, paddingBottom: 60}}
-        scrollEventThrottle={16}
         refreshControl={
           <RefreshControl
-            onRefresh={onPullToReload}
             refreshing={isFinancialLoading}
+            onRefresh={onPullToReload}
           />
         }
         bg="#F7F7F7"
+        contentContainerStyle={{flexGrow: 1, paddingBottom: 60}}
+        scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
       >
         <Box px={ms(15)} py={ms(25)}>
           <Select
-            minWidth="300"
             accessibilityLabel=""
-            color={Colors.white}
             bg={Colors.azure}
-            fontWeight="medium"
+            color={Colors.white}
             fontSize={ms(16)}
+            fontWeight="medium"
+            minWidth="300"
             selectedValue={selectedYear}
             onValueChange={val => handleFilterByYear(val)}
           >
             {Array.apply(null, {length: 5}).map((e, i) => {
-              let year = new Date().getFullYear() - i
+              const year = new Date().getFullYear() - i
               return <Select.Item key={i} label={`${year}`} value={`${year}`} />
             })}
           </Select>
         </Box>
-        <Box flex="1" px={ms(12)} py={ms(15)} bg={Colors.white}>
-          <Card title={t('incoming')}>
-            <CardContent
-              status={t('paid')}
-              value={
-                invoiceStatistics?.length > 0
-                  ? invoiceStatistics[0]?.paidIncoming || 0
-                  : 0
-              }
-            />
-            <CardContent
-              status={t('unpaid')}
-              value={
-                invoiceStatistics?.length > 0
-                  ? invoiceStatistics[0]?.unpaidIncoming || 0
-                  : 0
-              }
-            />
-          </Card>
-          <Card title={t('outgoing')}>
-            <CardContent
-              status={t('paid')}
-              value={
-                invoiceStatistics?.length > 0
-                  ? invoiceStatistics[0]?.paidOutgoing || 0
-                  : 0
-              }
-            />
-            <CardContent
-              status={t('unpaid')}
-              value={
-                invoiceStatistics?.length > 0
-                  ? invoiceStatistics[0]?.unpaidOutgoing || 0
-                  : 0
-              }
-            />
-          </Card>
+        <Box bg={Colors.white} flex="1" px={ms(12)} py={ms(15)}>
           {/* <Card title={'Daily Average'}>
               <CardContent status="Current Daily Avg" value="3500" />
               <CardContent status="Days Navigated" value="200" />
             </Card> */}
           <Card title={t('total')}>
             <CardContent
-              status={t('totalTurnover')}
               value={
                 invoiceStatistics?.length > 0
                   ? invoiceStatistics[0]?.totalOutgoing || 0
                   : 0
               }
+              callback={() => setIsIncomingVisible(true)}
+              status={t('totalTurnover')}
             />
             <CardContent
-              status={t('totalCosts')}
               value={
                 invoiceStatistics?.length > 0
                   ? invoiceStatistics[0]?.totalIncoming || 0
                   : 0
               }
+              callback={() => setIsOutgoingVisible(true)}
+              status={t('totalCosts')}
             />
             <CardContent
-              status={t('totalBalance')}
               value={
                 invoiceStatistics?.length > 0
                   ? invoiceStatistics[0]?.balance || 0
                   : 0
               }
+              status={t('totalBalance')}
             />
           </Card>
         </Box>
       </ScrollView>
       <HStack
+        bg={Colors.white}
+        bottom={0}
         flex="1"
+        left={0}
         p={ms(12)}
         pb={ms(insets.bottom ? insets.bottom : 12)}
-        bg={Colors.white}
         position="absolute"
-        bottom={0}
-        left={0}
         right={0}
       >
         <HStack
-          justifyContent="space-between"
           alignItems="center"
-          height={ms(48)}
-          width="100%"
-          borderWidth={1}
-          borderColor={Colors.light}
           bg={Colors.highlighted_text}
+          borderColor={Colors.light}
           borderRadius={5}
+          borderWidth={1}
+          height={ms(48)}
+          justifyContent="space-between"
           px={ms(16)}
+          width="100%"
         >
-          <Text flex="1" fontWeight="medium" color={Colors.white}>
+          <Text color={Colors.white} flex="1" fontWeight="medium">
             {t('totalBalance')}
           </Text>
 
           <Box
-            flex="1"
-            borderLeftWidth={ms(1)}
             borderColor="#E6E6E6"
+            borderLeftWidth={ms(1)}
+            flex="1"
             height="100%"
             justifyContent="center"
           >
             <Skeleton
               h="25"
+              isLoaded={!isFinancialLoading}
               ml={ms(10)}
               rounded="md"
               startColor={Colors.light}
-              isLoaded={!isFinancialLoading}
             >
               <Text
                 bold
+                color={Colors.white}
                 fontSize={ms(18)}
                 textAlign="right"
-                color={Colors.white}
               >
                 {`€ ${
                   Platform.OS === 'ios'
@@ -282,6 +271,82 @@ const Overview = () => {
           </Box>
         </HStack>
       </HStack>
+      <Modal
+        closeOnOverlayClick={true}
+        isOpen={isIncomingVisible}
+        justifyContent="center"
+        px={ms(15)}
+        onClose={() => setIsIncomingVisible(false)}
+      >
+        <Modal.Content width="100%">
+          <Card title={t('incoming')}>
+            <CardContent
+              value={
+                invoiceStatistics?.length > 0
+                  ? invoiceStatistics[0]?.paidIncoming || 0
+                  : 0
+              }
+              status={t('paid')}
+            />
+            <CardContent
+              value={
+                invoiceStatistics?.length > 0
+                  ? invoiceStatistics[0]?.unpaidIncoming || 0
+                  : 0
+              }
+              status={t('unpaid')}
+            />
+          </Card>
+          <Button
+            alignSelf="center"
+            bg={Colors.primary}
+            mb={ms(12)}
+            size="md"
+            w="50%"
+            onPress={() => setIsIncomingVisible(false)}
+          >
+            {t('close')}
+          </Button>
+        </Modal.Content>
+      </Modal>
+      <Modal
+        closeOnOverlayClick={true}
+        isOpen={isOutgoingVisible}
+        justifyContent="center"
+        px={ms(15)}
+        onClose={() => setIsOutgoingVisible(false)}
+      >
+        <Modal.Content width="100%">
+          <Card title={t('outgoing')}>
+            <CardContent
+              value={
+                invoiceStatistics?.length > 0
+                  ? invoiceStatistics[0]?.paidOutgoing || 0
+                  : 0
+              }
+              status={t('paid')}
+            />
+            <CardContent
+              value={
+                invoiceStatistics?.length > 0
+                  ? invoiceStatistics[0]?.unpaidOutgoing || 0
+                  : 0
+              }
+              status={t('unpaid')}
+            />
+          </Card>
+          <Button
+            alignSelf="center"
+            bg={Colors.primary}
+            mb={ms(12)}
+            size="md"
+            w="50%"
+            onPress={() => setIsOutgoingVisible(false)}
+          >
+            {t('close')}
+          </Button>
+        </Modal.Content>
+      </Modal>
     </Box>
   )
 }

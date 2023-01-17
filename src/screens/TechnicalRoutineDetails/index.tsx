@@ -27,7 +27,7 @@ import {
 } from '@bluecentury/constants'
 import {useEntity, useTechnical} from '@bluecentury/stores'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
-import {useTranslation} from "react-i18next"
+import {useTranslation} from 'react-i18next'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const TechnicalRoutineDetails = ({navigation, route}: Props) => {
@@ -207,7 +207,7 @@ const TechnicalRoutineDetails = ({navigation, route}: Props) => {
         <Box mt={ms(10)}>
           {renderDetailsCard(
             'Labels',
-            routineDetails?.labels.length > 0
+            !isTechnicalLoading && routineDetails?.labels?.length > 0
               ? routineDetails?.labels[0]?.title
               : ''
           )}
@@ -217,15 +217,19 @@ const TechnicalRoutineDetails = ({navigation, route}: Props) => {
           )}
           {routineDetails?.vesselPart && routineDetails?.vesselPart?.vesselZone
             ? renderDetailsCard(
-              t('vesselZone'),
+                t('vesselZone'),
                 routineDetails?.vesselPart?.vesselZone?.title
               )
             : null}
           {renderDetailsCard(t('part'), routineDetails?.vesselPart?.name)}
-          {renderDetailsCard(t('planning'), routineDetails?.scheduleLabel, true)}
+          {renderDetailsCard(
+            t('planning'),
+            routineDetails?.scheduleLabel,
+            true
+          )}
           {routineDetails?.openTasks && routineDetails?.openTasks?.length > 0
             ? renderDetailsCard(
-              t('nextOccurence'),
+                t('nextOccurence'),
                 `${
                   routineDetails?.openTasks[
                     routineDetails?.openTasks?.length - 1
@@ -235,7 +239,7 @@ const TechnicalRoutineDetails = ({navigation, route}: Props) => {
             : null}
           {routineDetails?.openTasks && routineDetails?.openTasks?.length > 0
             ? renderDetailsCard(
-              t('dueDate'),
+                t('dueDate'),
                 moment(
                   routineDetails?.openTasks[
                     routineDetails?.openTasks.length - 1

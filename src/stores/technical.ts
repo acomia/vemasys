@@ -111,16 +111,13 @@ export const useTechnical = create(
                 (reservoir: {vesselZone: {physicalVessel: {id: any}}}) =>
                   reservoir?.vesselZone?.physicalVessel?.id === physicalVesselId
               )
-            gasoilR.forEach(async reservoir => {
-              set({isTechnicalLoading: true})
+            gasoilR.forEach(async (reservoir, index) => {
               const lastM = await API.reloadVesselPartLastMeasurements(
                 reservoir.id
               )
               reservoir.lastMeasurement = lastM[0]
-              set({
-                isTechnicalLoading: false,
-                gasoilReserviors: gasoilR,
-              })
+              set({gasoilReserviors: gasoilR})
+              if (index == gasoilR.length - 1) set({isTechnicalLoading: false})
             })
           } else {
             set({
@@ -171,10 +168,8 @@ export const useTechnical = create(
                 engine.id
               )
               engine.lastMeasurement = lastM[0]
-              set({
-                isTechnicalLoading: false,
-                engines: response,
-              })
+              set({engines: response})
+              if (index == response.length - 1) set({isTechnicalLoading: false})
             })
           } else {
             set({
@@ -192,14 +187,12 @@ export const useTechnical = create(
           const response = await API.reloadVesselReservoirs(physicalVesselId)
           if (Array.isArray(response)) {
             const waterTank = response.filter(res => res.type.title !== 'Fuel')
-            waterTank.forEach(async tank => {
-              set({isTechnicalLoading: true})
+            waterTank.forEach(async (tank, index) => {
               const lastM = await API.reloadVesselPartLastMeasurements(tank.id)
               tank.lastMeasurement = lastM[0]
-              set({
-                isTechnicalLoading: false,
-                reservoirs: waterTank,
-              })
+              set({reservoirs: waterTank})
+              if (index == waterTank.length - 1)
+                set({isTechnicalLoading: false})
             })
           } else {
             set({

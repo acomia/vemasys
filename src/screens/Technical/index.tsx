@@ -20,6 +20,7 @@ import {
 } from '@bluecentury/constants'
 import {FleetHeader} from '@bluecentury/components'
 import {useEntity} from '@bluecentury/stores'
+import {useTranslation} from 'react-i18next'
 
 const renderScene = SceneMap({
   bunkering: Bunkering,
@@ -32,6 +33,7 @@ const renderScene = SceneMap({
 })
 
 export default function Technical() {
+  const {t} = useTranslation()
   const layout = useWindowDimensions()
 
   const {entityType, entityUsers, selectFleetVessel} = useEntity()
@@ -51,8 +53,8 @@ export default function Technical() {
       style={{backgroundColor: Colors.primary}}
       tabStyle={{width: ms(100), height: ms(45)}}
       renderLabel={({route, color}) => (
-        <Text color={color} bold width="full">
-          {route.title}
+        <Text color={color} bold>
+          {t(route.title)}
         </Text>
       )}
       scrollEnabled={true}

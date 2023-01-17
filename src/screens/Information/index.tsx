@@ -52,7 +52,7 @@ export default function Financial() {
       }}
       renderLabel={({route, color}) => (
         <Text color={color} bold textAlign="justify">
-          {route.title}
+          {t(route.title)}
         </Text>
       )}
       scrollEnabled={true}

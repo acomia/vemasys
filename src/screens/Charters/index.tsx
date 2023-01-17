@@ -26,7 +26,9 @@ export default function Charters({navigation}: Props) {
 
   const LazyPlaceholder = ({route}) => (
     <Box flex="1" alignItems="center" justifyContent="center">
-      <Text>{t('loading')} {route.title}…</Text>
+      <Text>
+        {t('loading')} {route.title}…
+      </Text>
     </Box>
   )
 
@@ -53,8 +55,8 @@ export default function Charters({navigation}: Props) {
       }}
       style={{backgroundColor: Colors.primary}}
       renderLabel={({route, color}) => (
-        <Text color={color} bold fontSize={ms(15)}>
-          {route.title}
+        <Text color={color} bold fontSize={ms(14)}>
+          {t(route.title)}
         </Text>
       )}
     />

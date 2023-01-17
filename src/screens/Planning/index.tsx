@@ -46,7 +46,7 @@ export default function Planning() {
       }}
       style={{backgroundColor: Colors.primary}}
       renderLabel={({route, color}) => (
-        <Text color={color} bold fontSize={ms(15)}>
+        <Text color={color} bold fontSize={ms(14)}>
           {t(route.title)}
         </Text>
       )}
