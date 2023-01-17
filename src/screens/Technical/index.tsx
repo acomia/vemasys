@@ -53,7 +53,7 @@ export default function Technical() {
       style={{backgroundColor: Colors.primary}}
       tabStyle={{width: ms(100), height: ms(45)}}
       renderLabel={({route, color}) => (
-        <Text color={color} bold width="full">
+        <Text color={color} bold>
           {t(route.title)}
         </Text>
       )}

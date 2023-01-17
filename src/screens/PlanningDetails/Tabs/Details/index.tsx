@@ -43,8 +43,8 @@ import {useTranslation} from 'react-i18next'
 import {Shadow} from 'react-native-shadow-2'
 
 type Dates = {
-  plannedEta: Date | undefined | StringOrNull
-  captainDatetimeEta: Date | undefined | StringOrNull
+  plannedETA: Date | undefined | StringOrNull
+  captainDatetimeETA: Date | undefined | StringOrNull
   announcedDatetime: Date | undefined | StringOrNull
   arrivalDatetime: Date | undefined | StringOrNull
   terminalApprovedDeparture: Date | undefined | StringOrNull
@@ -79,8 +79,8 @@ const Details = () => {
   const {selectedEntity} = useEntity()
   const {navlog, title}: any = route.params
   const [dates, setDates] = useState<Dates>({
-    plannedEta: navigationLogDetails?.plannedEta,
-    captainDatetimeEta: navigationLogDetails?.captainDatetimeEta,
+    plannedETA: navigationLogDetails?.plannedEta,
+    captainDatetimeETA: navigationLogDetails?.captainDatetimeEta,
     announcedDatetime: navigationLogDetails?.announcedDatetime,
     arrivalDatetime: navigationLogDetails?.arrivalDatetime,
     terminalApprovedDeparture: navigationLogDetails?.terminalApprovedDeparture,
@@ -129,8 +129,8 @@ const Details = () => {
     setActiveActions(active)
     setDates({
       ...dates,
-      plannedEta: navigationLogDetails?.plannedEta,
-      captainDatetimeEta: navigationLogDetails?.captainDatetimeEta,
+      plannedETA: navigationLogDetails?.plannedEta,
+      captainDatetimeETA: navigationLogDetails?.captainDatetimeEta,
       announcedDatetime: navigationLogDetails?.announcedDatetime,
       arrivalDatetime: navigationLogDetails?.arrivalDatetime,
       terminalApprovedDeparture:
@@ -192,6 +192,13 @@ const Details = () => {
   }
 
   const onSuccess = () => {
+    setDidDateChange({
+      ...didDateChange,
+      Pln: {didUpdate: false},
+      Eta: {didUpdate: false},
+      Nor: {didUpdate: false},
+      Doc: {didUpdate: false},
+    })
     onPullToReload()
     reset()
   }
@@ -204,11 +211,11 @@ const Details = () => {
     const formattedDate = Vemasys.formatDate(date)
     switch (selectedType) {
       case 'PLN':
-        setDates({...dates, plannedEta: formattedDate})
+        setDates({...dates, plannedETA: formattedDate})
         setDidDateChange({...didDateChange, Pln: {didUpdate: true}})
         return
       case 'ETA':
-        setDates({...dates, captainDatetimeEta: formattedDate})
+        setDates({...dates, captainDatetimeETA: formattedDate})
         setDidDateChange({...didDateChange, Eta: {didUpdate: true}})
         return
       case 'NOR':
@@ -244,28 +251,38 @@ const Details = () => {
     <Box>
       <DatetimePickerList
         title="Planned"
-        date={dates.plannedEta}
+        date={dates.plannedETA}
         locked={isUnknownLocation ? true : navigationLogDetails?.locked}
         onChangeDate={() => {
           setSelectedType('PLN')
           setOpenDatePicker(true)
         }}
-        onClearDate={() => setDates({...dates, plannedEta: null})}
+        onClearDate={() => {
+          setDidDateChange({
+            ...didDateChange,
+            Pln: {didUpdate: _.isNull(dates.plannedETA) ? false : true},
+          })
+          setDates({...dates, plannedETA: null})
+        }}
       />
       <DatetimePickerList
         title="ETA"
-        date={dates.captainDatetimeEta}
+        date={dates.captainDatetimeETA}
         locked={isUnknownLocation ? true : navigationLogDetails?.locked}
         onChangeDate={() => {
           setSelectedType('ETA')
           setOpenDatePicker(true)
         }}
-        onClearDate={() =>
+        onClearDate={() => {
+          setDidDateChange({
+            ...didDateChange,
+            Eta: {didUpdate: _.isNull(dates.captainDatetimeETA) ? false : true},
+          })
           setDates({
             ...dates,
-            captainDatetimeEta: null,
+            captainDatetimeETA: null,
           })
-        }
+        }}
       />
     </Box>
   )
@@ -310,12 +327,20 @@ const Details = () => {
           setSelectedType('DOC')
           setOpenDatePicker(true)
         }}
-        onClearDate={() =>
+        onClearDate={() => {
+          setDidDateChange({
+            ...didDateChange,
+            Doc: {
+              didUpdate: _.isNull(dates.terminalApprovedDeparture)
+                ? false
+                : true,
+            },
+          })
           setDates({
             ...dates,
             terminalApprovedDeparture: null,
           })
-        }
+        }}
       />
 
       <DatetimePickerList
@@ -580,8 +605,8 @@ const Details = () => {
   const onCancelUnsavedChanges = () => {
     setDates({
       ...dates,
-      plannedEta: navigationLogDetails?.plannedEta,
-      captainDatetimeEta: navigationLogDetails?.captainDatetimeEta,
+      plannedETA: navigationLogDetails?.plannedEta,
+      captainDatetimeETA: navigationLogDetails?.captainDatetimeEta,
       announcedDatetime: navigationLogDetails?.announcedDatetime,
       terminalApprovedDeparture:
         navigationLogDetails?.terminalApprovedDeparture,
@@ -599,8 +624,8 @@ const Details = () => {
     setLeaveTabModal(false)
     setDates({
       ...dates,
-      plannedEta: navigationLogDetails?.plannedEta,
-      captainDatetimeEta: navigationLogDetails?.captainDatetimeEta,
+      plannedETA: navigationLogDetails?.plannedEta,
+      captainDatetimeETA: navigationLogDetails?.captainDatetimeEta,
       announcedDatetime: navigationLogDetails?.announcedDatetime,
       terminalApprovedDeparture:
         navigationLogDetails?.terminalApprovedDeparture,
