@@ -24,6 +24,7 @@ type CardContentArgument = {
   status: string
   value: string
   callback?: () => void
+  withArrow?: boolean
 }
 
 const Overview = () => {
