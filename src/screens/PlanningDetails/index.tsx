@@ -1,4 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react'
+import {useWindowDimensions} from 'react-native'
 import {Text} from 'native-base'
 
 import {Details, CargoList, CargoHolds, Documents, Map, Actions} from './Tabs'
@@ -28,6 +29,7 @@ export default function PlanningDetails({route}: Props) {
   const {navigationLogDetails} = usePlanning()
   const [routes, setRoutes] = useState(tabs)
   const isUnknownLocation = title === 'Unknown Location' ? true : false
+  const screenWidth = useWindowDimensions().width
 
   useEffect(() => {
     if (
@@ -60,9 +62,12 @@ export default function PlanningDetails({route}: Props) {
           height: 3,
           borderRadius: 3,
           width: ms(45),
-          marginLeft: 25,
+          marginLeft: screenWidth > 500 ? 40 : 25,
         },
-        tabBarItemStyle: {width: 100, height: 45},
+        tabBarItemStyle: {
+          width: screenWidth > 500 ? 160 : 100,
+          height: screenWidth > 500 ? 55 : 45,
+        },
         tabBarScrollEnabled: true,
         lazy: true,
         lazyPlaceholder: () => (
@@ -81,11 +86,7 @@ export default function PlanningDetails({route}: Props) {
           initialParams={{navlog, title}}
           options={({route}) => ({
             tabBarLabel: ({focused}) => (
-              <Text
-                bold
-                color={focused ? Colors.white : Colors.light}
-                fontSize={ms(14)}
-              >
+              <Text bold color={focused ? Colors.white : Colors.light}>
                 {route.name}
               </Text>
             ),
