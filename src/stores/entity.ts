@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as API from '@bluecentury/api/vemasys'
 import {ENTITY_TYPE_EXPLOITATION_VESSEL} from '@bluecentury/constants'
 import {EntityUser, User, Vessel} from '@bluecentury/models'
+import {useSettings} from '@bluecentury/stores/settings'
 
 type EntityState = {
   hasEntityHydrated: boolean
@@ -92,6 +93,8 @@ export const useEntity = create(
         })
         try {
           const response = await API.getUserInfo()
+          const setLanguage = useSettings.getState().setLanguage
+          setLanguage(response.language)
           set({
             user: response,
             isLoadingCurrentUserInfo: false,
