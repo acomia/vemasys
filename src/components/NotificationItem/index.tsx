@@ -87,7 +87,9 @@ export const NotificationItem = ({item}: Props) => {
         <Text maxWidth={screenWidth - 100}>{sanitizedHTML(item.label)}</Text>
         <Text color="#ADADAD" fontSize={ms(12)}>
           {moment(item.createdAt).isSame(moment(), 'day')
-            ? `${t('today')} | ${moment(item.createdAt).format('HH:mm')}`
+            ? `${t('today')} | ${moment
+                .parseZone(item.createdAt)
+                .format('HH:mm')}`
             : moment.parseZone(item.createdAt).format('MMM DD, YYYY HH:mm')}
         </Text>
       </VStack>
