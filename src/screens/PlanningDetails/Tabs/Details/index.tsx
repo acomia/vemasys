@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react'
-import {RefreshControl, TouchableOpacity, FlatList} from 'react-native'
+import {RefreshControl} from 'react-native'
 import {
-  Avatar,
   Box,
   Button,
   Divider,
@@ -22,12 +21,13 @@ import {
   useRoute,
 } from '@react-navigation/native'
 import Ionicons from 'react-native-vector-icons/Ionicons'
-import moment from 'moment'
 import _ from 'lodash'
+import {useTranslation} from 'react-i18next'
+import {Shadow} from 'react-native-shadow-2'
 
-import {DatetimePickerList} from '../../components'
+import {ActionCard, CommentCard, DatetimePickerList} from '../../components'
 import {Colors} from '@bluecentury/styles'
-import {Animated, Icons} from '@bluecentury/assets'
+import {Icons} from '@bluecentury/assets'
 import {useEntity, usePlanning} from '@bluecentury/stores'
 import {
   formatLocationLabel,
@@ -35,11 +35,8 @@ import {
   ROLE_PERMISSION_NAVIGATION_LOG_ADD_COMMENT,
   titleCase,
 } from '@bluecentury/constants'
-import {PROD_URL} from '@vemasys/env'
 import {LoadingAnimated} from '@bluecentury/components'
 import {Vemasys} from '@bluecentury/helpers'
-import {useTranslation} from 'react-i18next'
-import {Shadow} from 'react-native-shadow-2'
 
 type Dates = {
   plannedETA: Date | undefined | StringOrNull
@@ -353,63 +350,18 @@ const Details = () => {
   const renderNavlogActions = () => (
     <Box>
       {activeActions?.map((action: any, index) => (
-        <TouchableOpacity
-          key={`action-${index}`}
-          activeOpacity={0.7}
-          onPress={() =>
+        <ActionCard
+          key={index}
+          action={action}
+          onActionPress={() =>
             navigation.navigate('AddEditNavlogAction', {
               method: 'edit',
               navlogAction: action,
-              actionType: action?.type,
+              actionType: action.type,
             })
           }
-        >
-          <HStack
-            alignItems="center"
-            bg={Colors.white}
-            borderColor={Colors.light}
-            borderRadius={5}
-            borderWidth={1}
-            mt={ms(10)}
-            px={ms(12)}
-            py={ms(8)}
-            shadow={1}
-          >
-            <Image
-              alt="navlog-action-animated"
-              height={ms(40)}
-              mr={ms(10)}
-              resizeMode="contain"
-              source={renderAnimatedIcon(action?.type, action?.end)}
-              width={ms(40)}
-            />
-            <Box flex="1">
-              <HStack alignItems="center">
-                <Text bold color={Colors.text} fontSize={ms(15)}>
-                  {titleCase(action?.type)}
-                </Text>
-              </HStack>
-              <Text color={Colors.secondary} fontWeight="medium">
-                Start - {moment(action?.start).format('D MMM YYYY | HH:mm')}
-              </Text>
-              {_.isNull(action?.end) ? null : (
-                <Text color={Colors.danger} fontWeight="medium">
-                  End - {moment(action?.end).format('D MMM YYYY | HH:mm')}
-                </Text>
-              )}
-            </Box>
-            <TouchableOpacity
-              activeOpacity={0.7}
-              disabled={_.isNull(action?.end) ? false : true}
-              onPress={() => confirmStopAction(action)}
-            >
-              <Image
-                alt="navlog-action-icon"
-                source={_.isNull(action?.end) ? Icons.stop : null}
-              />
-            </TouchableOpacity>
-          </HStack>
-        </TouchableOpacity>
+          onActionStopPress={() => confirmStopAction(action)}
+        />
       ))}
       <HStack mt={ms(15)}>
         <Button
@@ -425,7 +377,7 @@ const Details = () => {
           }
         >
           <Text color={Colors.white} fontWeight="medium">
-            New {buttonActionLabel}
+            {t('new')} {buttonActionLabel}
           </Text>
         </Button>
         <Box w={ms(10)} />
@@ -442,100 +394,12 @@ const Details = () => {
           }
         >
           <Text color={Colors.white} fontWeight="medium">
-            Cleaning
+            {t('cleaning')}
           </Text>
         </Button>
       </HStack>
     </Box>
   )
-
-  const CommentCard = ({comment, commentDescription}) => {
-    let imgLinks: string[] = []
-    const getAttrFromString = (str: string) => {
-      let regex = /<img.*?src='(.*?)'/gi,
-        result,
-        res = []
-      while ((result = regex.exec(str))) {
-        res.push(result[1])
-      }
-      imgLinks = res
-    }
-    getAttrFromString(comment.description)
-    return (
-      <TouchableOpacity
-        activeOpacity={0.6}
-        onPress={() =>
-          navigation.navigate('AddEditComment', {
-            comment: comment,
-            method: 'edit',
-            routeFrom: 'Planning',
-          })
-        }
-      >
-        <Box
-          bg={Colors.white}
-          borderColor={Colors.light}
-          borderRadius={5}
-          borderWidth={1}
-          mt={ms(10)}
-          p={ms(16)}
-          shadow={2}
-        >
-          <HStack alignItems="center">
-            <Avatar
-              source={{
-                uri: comment?.user?.icon?.path
-                  ? `${PROD_URL}/upload/documents/${comment?.user?.icon?.path}`
-                  : '',
-              }}
-              size="48px"
-            />
-            <Box ml={ms(10)}>
-              <Text bold>
-                {comment?.user ? comment?.user?.firstname : ''}{' '}
-                {comment?.user ? comment?.user?.lastname : ''}
-              </Text>
-              <Text color={Colors.disabled} fontWeight="medium">
-                {moment(comment?.creationDate).format('DD MMM YYYY')}
-              </Text>
-            </Box>
-          </HStack>
-          <Text fontSize={ms(13)} mt={ms(5)}>
-            {commentDescription}
-          </Text>
-          {imgLinks.length > 0 ? (
-            <FlatList
-              horizontal
-              renderItem={image => {
-                const file = {
-                  uri: image.item,
-                  fileName: image.item,
-                  type: 'image/jpeg',
-                }
-                return (
-                  <TouchableOpacity onPress={() => onSelectImage(file)}>
-                    <Image
-                      alt="file-upload"
-                      h={ms(114)}
-                      mr={ms(10)}
-                      source={{uri: image.item}}
-                      w={ms(136)}
-                    />
-                  </TouchableOpacity>
-                )
-              }}
-              // maxH={ms(120)}
-              data={imgLinks}
-              keyExtractor={item => item}
-              removeClippedSubviews={true}
-              scrollEventThrottle={16}
-              showsHorizontalScrollIndicator={false}
-            />
-          ) : null}
-        </Box>
-      </TouchableOpacity>
-    )
-  }
 
   const renderContactInformation = (contact: any, index: number) => {
     return (
@@ -559,19 +423,6 @@ const Details = () => {
         />
       </HStack>
     )
-  }
-
-  const renderAnimatedIcon = (type: string, end: Date) => {
-    switch (type?.toLowerCase()) {
-      case 'unloading':
-        return _.isNull(end) ? Animated.nav_unloading : Icons.unloading
-      case 'loading':
-        return _.isNull(end) ? Animated.nav_loading : Icons.loading
-      case 'cleaning':
-        return _.isNull(end) ? Animated.cleaning : Icons.broom
-      default:
-        break
-    }
   }
 
   const confirmStopAction = (action: any) => {
@@ -763,6 +614,14 @@ const Details = () => {
               key={index}
               comment={comment}
               commentDescription={descriptionText}
+              onCommentPress={() =>
+                navigation.navigate('AddEditComment', {
+                  comment: comment,
+                  method: 'edit',
+                  routeFrom: 'Planning',
+                })
+              }
+              onCommentImagePress={(file: ImageFile) => onSelectImage(file)}
             />
           )
         })}
