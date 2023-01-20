@@ -9,6 +9,8 @@ import {
   Text,
   Modal,
   Button,
+  ChevronRightIcon,
+  Pressable,
 } from 'native-base'
 import {ms} from 'react-native-size-matters'
 
@@ -22,6 +24,7 @@ type CardContentArgument = {
   status: string
   value: string
   callback?: () => void
+  withArrow?: boolean
 }
 
 const Overview = () => {
@@ -61,70 +64,74 @@ const Overview = () => {
     )
   }
 
-  const CardContent = ({status, value, callback}: CardContentArgument) => {
+  const CardContent = ({status, value, callback, withArrow}: CardContentArgument) => {
     return (
-      <HStack
-        alignItems="center"
-        borderColor={Colors.light}
-        borderRadius={5}
-        borderWidth={1}
-        height={ms(50)}
-        justifyContent="space-between"
-        mb={ms(7)}
-        px={ms(16)}
-        width="100%"
-      >
-        <Text
-          color={Colors.text}
-          flex="1"
-          fontWeight="medium"
-          onPress={callback ? callback : null}
+      <Pressable onPress={callback ? callback : null}>
+        <HStack
+          alignItems="center"
+          borderColor={Colors.light}
+          borderRadius={5}
+          borderWidth={1}
+          height={ms(50)}
+          justifyContent="space-between"
+          mb={ms(7)}
+          px={ms(16)}
+          width="100%"
         >
-          {status}
-        </Text>
-        <Box
-          borderColor="#E6E6E6"
-          borderLeftWidth={ms(1)}
-          flex="1"
-          height="100%"
-          justifyContent="center"
-        >
-          <Skeleton
-            h="25"
-            isLoaded={!isFinancialLoading}
-            ml={ms(10)}
-            rounded="md"
-            startColor={Colors.light}
+          <Text
+            color={Colors.text}
+            flex="1"
+            fontWeight="medium"
           >
-            <Text
-              bold
-              color={
-                status?.toLowerCase() == 'paid' ||
-                status?.toLowerCase() == 'total balance'
-                  ? Colors.secondary
-                  : status?.toLowerCase() == 'unpaid' ||
-                    status?.toLowerCase() == 'total costs'
-                  ? Colors.danger
-                  : Colors.highlighted_text
-              }
-              textAlign="right"
+            {status}
+          </Text>
+          <HStack
+            alignItems="center"
+            borderColor="#E6E6E6"
+            borderLeftWidth={ms(1)}
+            flex="1"
+            height="100%"
+            justifyContent="flex-end"
+          >
+            <Skeleton
+              h="25"
+              isLoaded={!isFinancialLoading}
+              ml={ms(10)}
+              rounded="md"
+              startColor={Colors.light}
             >
-              {status?.toLowerCase().includes('days')
-                ? `${value} days`
-                : `€ ${
-                    Platform.OS === 'ios'
-                      ? Number(value).toLocaleString('en-GB', {
-                          maximumFractionDigits: 2,
-                          minimumFractionDigits: 2,
-                        })
-                      : Number(value)
-                          .toFixed(2)
-                          .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
-                  }`}
-            </Text>
-          </Skeleton>
-        </Box>
-      </HStack>
+              <Text
+                bold
+                color={
+                  status?.toLowerCase() == 'paid' ||
+                  status?.toLowerCase() == 'total balance'
+                    ? Colors.secondary
+                    : status?.toLowerCase() == 'unpaid' ||
+                      status?.toLowerCase() == 'total costs'
+                    ? Colors.danger
+                    : Colors.highlighted_text
+                }
+                mr={ms(16)}
+                textAlign="right"
+              >
+                {status?.toLowerCase().includes('days')
+                  ? `${value} days`
+                  : `€ ${
+                      Platform.OS === 'ios'
+                        ? Number(value).toLocaleString('en-GB', {
+                            maximumFractionDigits: 2,
+                            minimumFractionDigits: 2,
+                          })
+                        : Number(value)
+                            .toFixed(2)
+                            .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+                    }`}
+              </Text>
+              {withArrow ? <ChevronRightIcon color={Colors.text} size="4" /> : null}
+            </Skeleton>
+          </HStack>
+        </HStack>
+      </Pressable>
     )
   }
 
@@ -180,8 +187,9 @@ const Overview = () => {
                   ? invoiceStatistics[0]?.totalOutgoing || 0
                   : 0
               }
-              callback={() => setIsIncomingVisible(true)}
+              callback={() => setIsOutgoingVisible(true)}
               status={t('totalTurnover')}
+              withArrow
             />
             <CardContent
               value={
@@ -189,8 +197,9 @@ const Overview = () => {
                   ? invoiceStatistics[0]?.totalIncoming || 0
                   : 0
               }
-              callback={() => setIsOutgoingVisible(true)}
+              callback={() => setIsIncomingVisible(true)}
               status={t('totalCosts')}
+              withArrow
             />
             <CardContent
               value={
