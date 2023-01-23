@@ -62,7 +62,8 @@ const AddEditComment = ({navigation, route}: Props) => {
   )
   const [isCommentEmpty, setIsCommentEmpty] = useState(false)
   const [imgFile, setImgFile] = useState<any>([])
-  const [selectedImg, setSelectedImg] = useState<ImageFile>({})
+  const [attachedImages, setAttachedImages] = useState<string[]>([])
+  const [selectedImg, setSelectedImg] = useState<ImageFile | string>({})
   const [imgModal, setImgModal] = useState(false)
   const [viewImg, setViewImg] = useState(false)
   const [isCameraOpen, setIsCameraOpen] = useState(false)
@@ -70,13 +71,26 @@ const AddEditComment = ({navigation, route}: Props) => {
   const cameraRef = useRef<any>()
 
   useEffect(() => {
+    const getAttrFromString = (str: string) => {
+      let regex = /<img.*?src='(.*?)'/gi,
+        result,
+        res = []
+      while ((result = regex.exec(str))) {
+        res.push(result[1])
+      }
+      setAttachedImages(res)
+    }
+    if (method === 'edit') {
+      getAttrFromString(comment.description)
+    }
+
     navigation.setOptions({
       headerRight: () =>
         method === 'edit' ? (
           <IconButton
             size={ms(20)}
             source={Icons.trash}
-            styles={{marginLeft: 20}}
+            styles={styles.screenHader}
             onPress={deleteCommentConfirmation}
           />
         ) : null,
@@ -115,6 +129,11 @@ const AddEditComment = ({navigation, route}: Props) => {
     let tempComment = ''
     if (method === 'edit') {
       if (routeFrom === 'Planning') {
+        if (attachedImages.length > 0) {
+          attachedImages.forEach(item => {
+            tempComment = tempComment + '-' + '\n' + `<img src='${item}' />`
+          })
+        }
         if (imgFile.length > 0) {
           await Promise.all(
             imgFile.map(async (file: any) => {
@@ -124,31 +143,22 @@ const AddEditComment = ({navigation, route}: Props) => {
                   tempComment +
                   '-' +
                   '\n' +
-                  `<img src="${uploadEndpoint()}upload/documents/${
+                  `<img src='${uploadEndpoint()}upload/documents/${
                     upload.path
-                  }" />`
+                  }' />`
               }
             })
           )
-          const response = await createNavlogComment(
-            navigationLogDetails?.id,
-            description + tempComment,
-            user?.id
-          )
-          if (typeof response === 'object') {
-            showToast('New comment added.', 'success')
-            getNavigationLogComments(navigationLogDetails?.id)
-          } else {
-            showToast('New comment failed.', 'failed')
-          }
+        }
+        res = await updateComment(
+          comment?.id,
+          comment.description.match(/^[^-<]*/) + tempComment
+        )
+        if (typeof res === 'object') {
+          showToast('Comment updated.', 'success')
+          getNavigationLogComments(navigationLogDetails?.id)
         } else {
-          res = await updateComment(comment?.id, description)
-          if (typeof res === 'object') {
-            showToast('Comment updated.', 'success')
-            getNavigationLogComments(navigationLogDetails?.id)
-          } else {
-            showToast('Comment update failed.', 'failed')
-          }
+          showToast('Comment update failed.', 'failed')
         }
       } else if (routeFrom === 'Technical') {
       }
@@ -249,26 +259,46 @@ const AddEditComment = ({navigation, route}: Props) => {
     setIsCameraOpen(false)
   }
 
-  const onSelectImage = (image: ImageFile) => {
+  const onSelectImage = (image: ImageFile | string) => {
     setImgModal(true)
-    setSelectedImg({
-      uri: image.uri,
-      fileName: image.fileName,
-      type: image.type,
-    })
+    typeof image !== 'string'
+      ? setSelectedImg({
+          uri: image.uri,
+          fileName: image.fileName,
+          type: image.type,
+        })
+      : setSelectedImg(image)
   }
 
   const onUploadNewVersion = () => {
     setImgModal(false)
-    const filtered = imgFile?.filter((img: any) => img.uri !== selectedImg.uri)
-    setImgFile(filtered)
+    if (typeof selectedImg !== 'string') {
+      const filtered = imgFile?.filter(
+        (img: ImageFile) => img.uri !== selectedImg.uri
+      )
+      setImgFile(filtered)
+    } else {
+      const filtered = attachedImages?.filter(
+        (img: string) => img !== selectedImg
+      )
+      setAttachedImages(filtered)
+    }
     launchImageLibrary()
   }
 
   const onDeleteImage = () => {
     setImgModal(false)
-    const filtered = imgFile?.filter((img: any) => img.uri !== selectedImg.uri)
-    setImgFile(filtered)
+    if (typeof selectedImg !== 'string') {
+      const filtered = imgFile?.filter(
+        (img: ImageFile) => img.uri !== selectedImg.uri
+      )
+      setImgFile(filtered)
+    } else {
+      const filtered = attachedImages?.filter(
+        (img: string) => img !== selectedImg
+      )
+      setAttachedImages(filtered)
+    }
   }
 
   const takePicture = async () => {
@@ -325,31 +355,47 @@ const AddEditComment = ({navigation, route}: Props) => {
             {t('fillTheDescription')}
           </FormControl.ErrorMessage>
         </FormControl>
-        {imgFile.length > 0 ? (
-          <ScrollView
-            horizontal
-            maxH={ms(120)}
-            scrollEventThrottle={16}
-            showsHorizontalScrollIndicator={false}
-          >
-            {imgFile.map((file: ImageFile, index: number) => (
-              <HStack key={`File-${index}`}>
-                <TouchableOpacity
-                  activeOpacity={0.6}
-                  onPress={() => onSelectImage(file)}
-                >
-                  <Image
-                    alt="file-upload"
-                    h={ms(114)}
-                    mr={ms(10)}
-                    source={{uri: file.uri}}
-                    w={ms(136)}
-                  />
-                </TouchableOpacity>
-              </HStack>
-            ))}
-          </ScrollView>
-        ) : null}
+        <ScrollView
+          horizontal
+          maxH={ms(120)}
+          scrollEventThrottle={16}
+          showsHorizontalScrollIndicator={false}
+        >
+          <HStack>
+            {attachedImages.length > 0
+              ? attachedImages.map((file: string, index: number) => (
+                  <TouchableOpacity
+                    activeOpacity={0.6}
+                    onPress={() => onSelectImage(file)}
+                  >
+                    <Image
+                      alt="file-upload"
+                      h={ms(114)}
+                      mr={ms(10)}
+                      source={{uri: file}}
+                      w={ms(136)}
+                    />
+                  </TouchableOpacity>
+                ))
+              : null}
+            {imgFile.length > 0
+              ? imgFile.map((file: ImageFile, index: number) => (
+                  <TouchableOpacity
+                    activeOpacity={0.6}
+                    onPress={() => onSelectImage(file)}
+                  >
+                    <Image
+                      alt="file-upload"
+                      h={ms(114)}
+                      mr={ms(10)}
+                      source={{uri: file.uri}}
+                      w={ms(136)}
+                    />
+                  </TouchableOpacity>
+                ))
+              : null}
+          </HStack>
+        </ScrollView>
 
         <Button
           bg={Colors.primary}
@@ -454,10 +500,14 @@ const AddEditComment = ({navigation, route}: Props) => {
       <Modal isOpen={viewImg} size="full" onClose={() => setViewImg(false)}>
         <Modal.Content>
           <Image
+            source={
+              typeof selectedImg !== 'string'
+                ? {uri: selectedImg.uri}
+                : {uri: selectedImg}
+            }
             alt="file-preview"
             h="100%"
             resizeMode="contain"
-            source={{uri: selectedImg.uri}}
             w="100%"
           />
         </Modal.Content>
@@ -533,5 +583,8 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     justifyContent: 'flex-end',
+  },
+  screenHeader: {
+    marginLeft: 20,
   },
 })
