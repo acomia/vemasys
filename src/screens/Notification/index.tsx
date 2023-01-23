@@ -4,10 +4,13 @@ import {Box, Divider, Text, VStack} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import {useNotif, useEntity} from '@bluecentury/stores'
-import {FleetHeader, LoadingAnimated} from '@bluecentury/components'
+import {
+  FleetHeader,
+  LoadingAnimated,
+  NotificationItem,
+} from '@bluecentury/components'
 import {ENTITY_TYPE_EXPLOITATION_GROUP} from '@bluecentury/constants'
 import {useTranslation} from 'react-i18next'
-import {NotificationItem} from '@bluecentury/components'
 
 export default function Notification() {
   const {t} = useTranslation()
