@@ -568,7 +568,7 @@ const Details = () => {
               {navigationLogDetails?.contacts?.length > 0 ? (
                 navigationLogDetails?.contacts.map(
                   (contact: any, index: number) =>
-                    renderContactInformation(contact.contact, index)
+                    renderContactInformation(contact, index)
                 )
               ) : (
                 <Box
