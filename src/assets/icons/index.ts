@@ -95,4 +95,5 @@ export const Icons = {
   navigating_route: require('./navigating-route.png'),
   map_marker_question: require('./map-marker-question.png'),
   ellipsis_marker: require('./elipsis_h_marker.png'),
+  books: require('./books.png'),
 }

@@ -5,6 +5,8 @@ import {ms} from 'react-native-size-matters'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import {useTranslation} from 'react-i18next'
 import {Dimensions} from 'react-native'
+import {Icons} from '@bluecentury/assets'
+import {IconButton} from '@bluecentury/components'
 
 interface Item {
   createdAt: string
@@ -70,19 +72,22 @@ export const NotificationItem = ({item}: Props) => {
       py={ms(10)}
       shadow={'1'}
     >
-      {/* <Image
-        alt="notif-img"
-        source={Icons.completed}
-        width={ms(32)}
-        height={ms(32)}
-        resizeMode="contain"
-      /> */}
-      <Icon
-        color="#23475C"
-        name={sanitizedIcon(item.icon)}
-        size={24}
-        style={{marginHorizontal: 5}}
-      />
+      {item.icon !== 'books' ? (
+        <Icon
+          color="#23475C"
+          name={sanitizedIcon(item.icon)}
+          size={24}
+          style={{marginHorizontal: 5}}
+        />
+      ) : (
+        <IconButton
+          size={ms(30)}
+          source={Icons.books}
+          onPress={() => {
+            return null
+          }}
+        />
+      )}
       <VStack pl="10px">
         <Text maxWidth={screenWidth - 100}>{sanitizedHTML(item.label)}</Text>
         <Text color="#ADADAD" fontSize={ms(12)}>
