@@ -29,11 +29,11 @@ const CargoList = () => {
         return (
           <Text
             bg={res === 'success' ? 'emerald.500' : 'red.500'}
+            color={Colors.white}
+            mb={5}
             px="2"
             py="1"
             rounded="sm"
-            mb={5}
-            color={Colors.white}
           >
             {text}
           </Text>
@@ -74,6 +74,10 @@ const CargoList = () => {
     }
   }
 
+  const convertPeriodToComma = (value: string) => {
+    return value.replace('.', ',')
+  }
+
   const onPullToReload = () => {
     getNavigationLogDetails(navigationLogDetails?.id)
   }
@@ -83,44 +87,44 @@ const CargoList = () => {
   return (
     <Box flex="1">
       <ScrollView
-        contentContainerStyle={{flexGrow: 1, paddingBottom: 20}}
         refreshControl={
           <RefreshControl
-            onRefresh={onPullToReload}
             refreshing={isPlanningDetailsLoading}
+            onRefresh={onPullToReload}
           />
         }
         bg={Colors.white}
+        contentContainerStyle={{flexGrow: 1, paddingBottom: 20}}
         px={ms(12)}
         py={ms(20)}
       >
-        <Text fontSize={ms(20)} bold color={Colors.azure}>
+        <Text bold color={Colors.azure} fontSize={ms(20)}>
           {t('cargo')}
         </Text>
-        <HStack mt={ms(10)} justifyContent="flex-end">
+        <HStack justifyContent="flex-end" mt={ms(10)}>
           {/* <Text fontSize={ms(16)} bold color={Colors.text}>
             Inventory
           </Text> */}
-          <Text fontSize={ms(16)} bold color={Colors.text}>
+          <Text bold color={Colors.text} fontSize={ms(16)}>
             {t('actions')}
           </Text>
         </HStack>
-        <Divider mt={ms(5)} mb={ms(15)} />
+        <Divider mb={ms(15)} mt={ms(5)} />
         {navigationLogDetails?.bulkCargo?.length > 0 ? (
           navigationLogDetails?.bulkCargo?.map((cargo, index) => {
             const fValue = cargo ? cargo.actualTonnage || cargo.tonnage : 0
             return (
               <HStack
                 key={index}
+                alignItems="center"
                 bg={Colors.white}
                 borderRadius={5}
                 justifyContent="space-between"
-                alignItems="center"
-                py={ms(5)}
-                px={ms(16)}
-                width="100%"
                 mb={ms(10)}
+                px={ms(16)}
+                py={ms(5)}
                 shadow={1}
+                width="100%"
               >
                 <Box flex="1" mr={ms(5)}>
                   <Text fontWeight="medium">
@@ -128,10 +132,12 @@ const CargoList = () => {
                   </Text>
                   <Text color={Colors.disabled}>
                     {cargo.isLoading ? 'In: ' : 'Out: '}
-                    {formatNumber(fValue, 0, ',')}
+                    {/* {formatNumber(fValue, 0, ',')} */}
+                    {convertPeriodToComma(fValue?.toString())}
                   </Text>
                 </Box>
                 <IconButton
+                  size={ms(22)}
                   source={Icons.edit}
                   onPress={() =>
                     navigation.navigate('AddEditBulkCargo', {
@@ -139,7 +145,6 @@ const CargoList = () => {
                       method: 'edit',
                     })
                   }
-                  size={ms(22)}
                 />
                 {/* <HStack alignItems="center">
 
@@ -156,9 +161,9 @@ const CargoList = () => {
         ) : (
           <Box flex="1">
             <Text
-              textAlign="center"
               color={Colors.disabled}
               fontWeight="medium"
+              textAlign="center"
             >
               {t('navLogHasNoCargo')}
             </Text>
