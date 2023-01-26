@@ -27,7 +27,7 @@ export const onFailedResponse = async (error: any) => {
 
   const isLogin = errorUrl === 'login_check'
 
-  if (error?.response?.status === UNAUTHENTICATED && !isLogin && !isTokenRefresh) {
+  if (error?.response?.status === UNAUTHENTICATED && !isLogin && !isTokenRefresh && useAuth.getState().refreshToken) {
     try {
       // reset the token using the refresh_token
       await useAuth.getState().resetToken()

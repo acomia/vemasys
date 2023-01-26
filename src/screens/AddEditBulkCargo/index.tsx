@@ -41,9 +41,9 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
       headerRight: () =>
         method === 'edit' && (
           <IconButton
+            size={22}
             source={Icons.trash}
             onPress={deleteBulkCargoConfirmation}
-            size={22}
           />
         ),
     })
@@ -69,11 +69,11 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
         return (
           <Text
             bg={res === 'success' ? 'emerald.500' : 'red.500'}
+            color={Colors.white}
+            mb={5}
             px="2"
             py="1"
             rounded="sm"
-            mb={5}
-            color={Colors.white}
           >
             {text}
           </Text>
@@ -92,11 +92,11 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
         return (
           <Text
             bg="warning.500"
+            color={Colors.white}
+            mb={5}
             px="2"
             py="1"
             rounded="sm"
-            mb={5}
-            color={Colors.white}
           >
             {text}
           </Text>
@@ -127,6 +127,7 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
     if (cargoData.typeId === '') {
       return showWarningToast('Type is required.')
     }
+
     try {
       let res
       if (method === 'edit') {
@@ -184,31 +185,31 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
   if (isPlanningLoading) return <LoadingAnimated />
   return (
     <Box
-      flex="1"
       bg={Colors.white}
       borderTopLeftRadius={ms(15)}
       borderTopRightRadius={ms(15)}
+      flex="1"
     >
       <Box flex="1" px={ms(12)} py={ms(20)}>
-        <Text fontWeight="medium" color={Colors.disabled} mb={ms(6)}>
+        <Text color={Colors.disabled} fontWeight="medium" mb={ms(6)}>
           {t('cargo')}
         </Text>
         {method === 'edit' ? (
-          <Box bg="#F7F7F7" borderRadius={ms(5)} py="3" px="2">
+          <Box bg="#F7F7F7" borderRadius={ms(5)} px="2" py="3">
             <Text
-              numberOfLines={1}
-              ellipsizeMode="tail"
               color={Colors.text}
+              ellipsizeMode="tail"
               fontWeight="medium"
+              numberOfLines={1}
             >
               {defaultType}
             </Text>
           </Box>
         ) : (
           <Select
-            selectedValue={defaultType}
-            minWidth="280"
             bg="#F7F7F7"
+            minWidth="280"
+            selectedValue={defaultType}
             onValueChange={val => setCargoData({...cargoData, typeId: val})}
           >
             {bulkTypesData?.map((type: any, index: number) => (
@@ -218,61 +219,65 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
         )}
 
         <Text
-          fontWeight="medium"
           color={Colors.disabled}
+          fontWeight="medium"
           mb={ms(6)}
           mt={ms(20)}
         >
           {t('bookedAmount')}
         </Text>
         <Input
-          bg={'#F7F7F7'}
-          keyboardType="number-pad"
-          height={ms(40)}
-          fontSize={ms(15)}
           bold
-          value={cargoData.amount.toString()}
-          onChangeText={e => setCargoData({...cargoData, amount: e})}
+          bg={'#F7F7F7'}
+          fontSize={ms(15)}
+          height={ms(40)}
+          keyboardType="number-pad"
+          value={cargoData.amount.toString().replace('.', ',')}
+          onChangeText={e =>
+            setCargoData({...cargoData, amount: e.replace(',', '.')})
+          }
         />
         <Text
-          fontWeight="medium"
           color={Colors.disabled}
+          fontWeight="medium"
           mb={ms(6)}
           mt={ms(20)}
         >
           {t('actualAmount')}
         </Text>
         <Input
-          bg={'#F7F7F7'}
-          keyboardType="number-pad"
-          height={ms(40)}
-          fontSize={ms(15)}
           bold
-          value={cargoData.actualAmount.toString()}
-          onChangeText={e => setCargoData({...cargoData, actualAmount: e})}
+          bg={'#F7F7F7'}
+          fontSize={ms(15)}
+          height={ms(40)}
+          keyboardType="number-pad"
+          value={cargoData.actualAmount.toString().replace('.', ',')}
+          onChangeText={e =>
+            setCargoData({...cargoData, actualAmount: e.replace(',', '.')})
+          }
         />
       </Box>
       <Box bg={Colors.white} position="relative">
         <Shadow
-          distance={25}
           viewStyle={{
             width: '100%',
           }}
+          distance={25}
         >
           <HStack>
             <Button
+              colorScheme="muted"
               flex="1"
               m={ms(16)}
               variant="ghost"
-              colorScheme="muted"
               onPress={() => navigation.goBack()}
             >
               {t('cancel')}
             </Button>
             <Button
+              bg={Colors.primary}
               flex="1"
               m={ms(16)}
-              bg={Colors.primary}
               onPress={onSaveCargoEntry}
             >
               {t('Save')}

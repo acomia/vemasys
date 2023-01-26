@@ -84,7 +84,7 @@ export default function Map({navigation}: Props) {
     latitudeDelta: LATITUDE_DELTA,
     longitudeDelta: LONGITUDE_DELTA,
   })
-  const [zoomLevel, setZoomLevel] = useState(null)
+  const [zoomLevel, setZoomLevel] = useState<number | null>(null)
   const [trackViewMode, setTrackViewMode] = useState(false)
   const [page, setPage] = useState(1)
   const [vesselUpdated, setVesselUpdated] = useState(false)
@@ -106,7 +106,7 @@ export default function Map({navigation}: Props) {
       longitude: track.longitude,
     })
   })
-  let refreshId = useRef<any>()
+  const refreshId = useRef<any>()
 
   useEffect(() => {
     if (vesselId) {
@@ -146,7 +146,7 @@ export default function Map({navigation}: Props) {
   useEffect(() => {
     if (vesselStatus && !vesselUpdated) {
       const {latitude, longitude}: VesselGeolocation = vesselStatus
-      let camera = {
+      const camera = {
         center: {
           latitude: Number(latitude),
           longitude: Number(longitude),
@@ -156,14 +156,14 @@ export default function Map({navigation}: Props) {
         pitch: 0,
         altitude: 5,
       }
-      let duration = 1000 * 3
+      const duration = 1000 * 3
       mapRef.current?.animateCamera(camera, {duration: duration})
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vesselStatus])
 
   useEffect(() => {
-    if (trackViewMode) {
+    if (trackViewMode && vesselId) {
       getVesselTrack(vesselId, page)
     }
     centerMapToCurrentLocation()
@@ -194,15 +194,15 @@ export default function Map({navigation}: Props) {
     return (
       <Box backgroundColor="#fff" height="full" px={ms(30)} py={ms(20)}>
         <MapBottomSheetToggle
-          onPress={handleOnPressBottomSheetArrow}
           snapRef={snapRef}
+          onPress={handleOnPressBottomSheetArrow}
         />
         <Text
-          fontSize={ms(18)}
-          my={ms(10)}
-          fontWeight="700"
-          textAlign="center"
           color={Colors.azure}
+          fontSize={ms(18)}
+          fontWeight="700"
+          my={ms(10)}
+          textAlign="center"
         >
           {selectedVessel?.alias || null}
         </Text>
@@ -232,17 +232,17 @@ export default function Map({navigation}: Props) {
     }
     return (
       <Marker
-        ref={markerRef}
         key={`Previous-${previousLocation?.location?.id}`}
-        pinColor={'#6BBF87'}
+        ref={markerRef}
         coordinate={{
           latitude: previousLocation?.location?.latitude,
           longitude: previousLocation?.location?.longitude,
         }}
-        title={`${t('from')} ${previousLocation?.location?.name}`}
-        zIndex={1}
-        tracksViewChanges={false}
         anchor={{x: 0, y: 0.5}}
+        pinColor={'#6BBF87'}
+        title={`${t('from')} ${previousLocation?.location?.name}`}
+        tracksViewChanges={false}
+        zIndex={1}
       >
         <Callout
           onPress={() =>
@@ -252,7 +252,7 @@ export default function Map({navigation}: Props) {
             })
           }
         >
-          <HStack borderRadius={ms(5)} alignItems="center" px={ms(5)}>
+          <HStack alignItems="center" borderRadius={ms(5)} px={ms(5)}>
             <Icon
               as={<FontAwesome5Icon name="check-circle" />}
               color="#6BBF87"
@@ -263,7 +263,7 @@ export default function Map({navigation}: Props) {
               <Text fontSize={ms(13)} fontWeight="semibold">
                 {formatLocationLabel(previousLocation?.location)}
               </Text>
-              <Text fontSize={ms(12)} fontWeight="medium" color="#ADADAD">
+              <Text color="#ADADAD" fontSize={ms(12)} fontWeight="medium">
                 {t('arrived')}
                 {moment(previousLocation?.arrivalDatetime).format(
                   'DD MMM YYYY | HH:mm'
@@ -292,17 +292,17 @@ export default function Map({navigation}: Props) {
     }
     return (
       <Marker
-        ref={markerRef}
         key={`${t('planned-')}${nextLocation?.location?.id}`}
-        pinColor={'#29B7EF'}
+        ref={markerRef}
         coordinate={{
           latitude: nextLocation?.location?.latitude,
           longitude: nextLocation?.location?.longitude,
         }}
-        title={`${t('to')} ${nextLocation?.location?.name}`}
-        zIndex={1}
-        tracksViewChanges={false}
         anchor={{x: 0, y: 0.5}}
+        pinColor={'#29B7EF'}
+        title={`${t('to')} ${nextLocation?.location?.name}`}
+        tracksViewChanges={false}
+        zIndex={1}
       >
         <Callout
           onPress={() =>
@@ -314,25 +314,23 @@ export default function Map({navigation}: Props) {
             )
           }
         >
-          <HStack borderRadius={ms(5)} alignItems="center" px={ms(5)}>
+          <HStack alignItems="center" borderRadius={ms(5)} px={ms(5)}>
             <Text pb={ms(20)}>
               <Image
                 alt="next-navlog-img"
-                source={Icons.unloading}
-                width={ms(30)}
                 height={ms(30)}
                 resizeMode="contain"
+                source={Icons.unloading}
+                width={ms(30)}
               />
             </Text>
             <Box mx={ms(5)}>
               <Text fontSize={ms(13)} fontWeight="semibold">
                 {formatLocationLabel(nextLocation?.location)}
               </Text>
-              <Text fontSize={ms(12)} fontWeight="medium" color="#ADADAD">
+              <Text color="#ADADAD" fontSize={ms(12)} fontWeight="medium">
                 {t('planned')}
-                {moment(nextLocation?.plannedEta).format(
-                  'DD MMM YYYY | HH:mm'
-                )}
+                {moment(nextLocation?.plannedEta).format('DD MMM YYYY | HH:mm')}
               </Text>
             </Box>
             <Icon
@@ -355,9 +353,9 @@ export default function Map({navigation}: Props) {
           latitude: Number(latitude),
           longitude: Number(longitude),
         }}
+        anchor={{x: 0, y: 0.5}}
         image={Number(speed) > 0 ? Icons.navigating : Icons.anchor}
         zIndex={1}
-        anchor={{x: 0, y: 0.5}}
       />
     )
   }
@@ -371,8 +369,8 @@ export default function Map({navigation}: Props) {
           latitude: Number(latitude),
           longitude: Number(longitude),
         }}
-        image={Icons.ellipsis_marker}
         anchor={{x: 0, y: 0.5}}
+        image={Icons.ellipsis_marker}
         zIndex={1}
       >
         <Callout
@@ -391,24 +389,24 @@ export default function Map({navigation}: Props) {
     return (
       <Marker
         key={`CompletedLogs-${index}-${log.location?.id}`}
-        pinColor={'#F0f0f0'}
         coordinate={{
           latitude: log.location?.latitude,
           longitude: log.location?.longitude,
         }}
-        zIndex={0}
-        tracksViewChanges={false}
         anchor={{x: 0, y: 0.5}}
+        pinColor={'#F0f0f0'}
+        tracksViewChanges={false}
+        zIndex={0}
       >
         <HStack zIndex={0}>
           <Box
             backgroundColor={log?.arrivalDatetime ? '#44A7B9' : '#F0F0F0'}
-            width={ms(20)}
-            height={ms(20)}
-            borderRadius={ms(20)}
             borderColor={'#fff'}
+            borderRadius={ms(20)}
             borderWidth={ms(2)}
+            height={ms(20)}
             mr={ms(5)}
+            width={ms(20)}
             zIndex={0}
           />
           {zoomLevel && zoomLevel >= 12 ? (
@@ -440,7 +438,7 @@ export default function Map({navigation}: Props) {
   const centerMapToCurrentLocation = () => {
     if (vesselStatus) {
       const {latitude, longitude}: VesselGeolocation = vesselStatus
-      let camera: Camera = {
+      const camera: Camera = {
         center: {
           latitude: Number(latitude),
           longitude: Number(longitude),
@@ -450,7 +448,7 @@ export default function Map({navigation}: Props) {
         pitch: 0,
         altitude: 5,
       }
-      let duration = 1000 * 3
+      const duration = 1000 * 3
       mapRef.current?.animateCamera(camera, {duration: duration})
     }
   }
@@ -459,7 +457,7 @@ export default function Map({navigation}: Props) {
     if (uniqueVesselTracks) {
       const {latitude, longitude}: VesselGeolocation =
         uniqueVesselTracks[uniqueVesselTracks?.length - 1]
-      let camera: Camera = {
+      const camera: Camera = {
         center: {
           latitude: Number(latitude),
           longitude: Number(longitude),
@@ -469,7 +467,7 @@ export default function Map({navigation}: Props) {
         pitch: 0,
         altitude: 5,
       }
-      let duration = 1000 * 3
+      const duration = 1000 * 3
       mapRef.current?.animateCamera(camera, {duration: duration})
     }
   }
@@ -480,7 +478,7 @@ export default function Map({navigation}: Props) {
     latitudeDelta: number
     longitudeDelta: number
   }) => {
-    let zoom = Math.round(Math.log(360 / reg.longitudeDelta) / Math.LN2)
+    const zoom = Math.round(Math.log(360 / reg.longitudeDelta) / Math.LN2)
     setZoomLevel(zoom)
   }
 
@@ -503,7 +501,7 @@ export default function Map({navigation}: Props) {
   }
 
   return (
-    <Box flex="1" bg={Colors.light}>
+    <Box bg={Colors.light} flex="1">
       {entityType === ENTITY_TYPE_EXPLOITATION_GROUP && (
         <FleetHeader
           onPress={(index: number, vessel: any) =>
@@ -514,11 +512,11 @@ export default function Map({navigation}: Props) {
       <Box flex="1">
         <MapView
           ref={mapRef}
-          provider={PROVIDER_GOOGLE} // remove if not using Google Maps
-          style={{...StyleSheet.absoluteFillObject}}
+          initialRegion={region} // remove if not using Google Maps
+          provider={PROVIDER_GOOGLE}
           // customMapStyle={MapTheme}
-          initialRegion={region}
-          onRegionChange={region => handleRegionChange(region)}
+          style={{...StyleSheet.absoluteFillObject}}
+          onRegionChange={regionItem => handleRegionChange(regionItem)}
         >
           {prevNavLogs?.length > 0 &&
             prevNavLogs.find((plan: any) => plan.plannedEta !== null) !==
@@ -545,59 +543,59 @@ export default function Map({navigation}: Props) {
             renderTrackLineBeginningMarker()}
         </MapView>
         <Box position="absolute" right="0">
-          <VStack space="5" justifyContent="flex-start" m="4">
+          <VStack justifyContent="flex-start" m="4" space="5">
+            {/*<Box bg={Colors.white} borderRadius="full" p="2" shadow={2}>*/}
+            {/*  <IconButton*/}
+            {/*    source={Icons.compass}*/}
+            {/*    size={ms(30)}*/}
+            {/*    onPress={centerMapToCurrentLocation}*/}
+            {/*  />*/}
+            {/*</Box>*/}
             <Box bg={Colors.white} borderRadius="full" p="2" shadow={2}>
               <IconButton
-                source={Icons.compass}
                 size={ms(30)}
-                onPress={centerMapToCurrentLocation}
-              />
-            </Box>
-            <Box bg={Colors.white} borderRadius="full" p="2" shadow={2}>
-              <IconButton
                 source={Icons.location}
-                size={ms(30)}
                 onPress={centerMapToCurrentLocation}
               />
             </Box>
             <Box bg={Colors.white} borderRadius="full" p="2" shadow={2}>
               <IconButton
-                source={Icons.navigating_route}
                 size={ms(30)}
+                source={Icons.navigating_route}
                 onPress={() => setTrackViewMode(!trackViewMode)}
               />
             </Box>
           </VStack>
         </Box>
         <Box
+          bgColor={Colors.light}
+          h={ms(1)}
+          left={0}
           position="absolute"
+          right={0}
           shadow={2}
           top={0}
-          left={0}
-          right={0}
-          h={ms(1)}
-          bgColor={Colors.light}
         />
         <BottomSheet
           ref={sheetRef}
-          initialSnap={1}
-          snapPoints={['60%', '30%']}
           borderRadius={20}
-          renderContent={renderBottomContent}
-          onOpenEnd={() => setSnapStatus(1)}
-          onCloseEnd={() => setSnapStatus(0)}
           enabledGestureInteraction={false}
+          initialSnap={1}
+          renderContent={renderBottomContent}
+          snapPoints={['60%', '30%']}
+          onCloseEnd={() => setSnapStatus(0)}
+          onOpenEnd={() => setSnapStatus(1)}
         />
 
         {isLoadingMap && (
           <Box
-            position="absolute"
-            top="0"
-            bottom="0"
-            left="0"
-            right="0"
-            justifyContent="center"
             backgroundColor="rgba(0,0,0,0.5)"
+            bottom="0"
+            justifyContent="center"
+            left="0"
+            position="absolute"
+            right="0"
+            top="0"
             zIndex={999}
           >
             <LoadingAnimated />
