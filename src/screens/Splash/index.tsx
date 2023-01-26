@@ -13,9 +13,9 @@ import {resetAllStates} from '@bluecentury/utils'
 
 export default function Splash() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>()
-  const {hasAuthHydrated, token} = useAuth(state => state)
+  const {hasAuthHydrated, token, setUser} = useAuth(state => state)
   const {hasEntityHydrated, entityId} = useEntity(state => state)
-  const {hasSettingsRehydrated, apiUrl, setEnv} = useSettings(state => state)
+  const {hasSettingsRehydrated, apiUrl, setEnv, isRemainLoggedIn} = useSettings(state => state)
   useEffect(() => {
     if (hasSettingsRehydrated) {
       console.log('apiUrl ', apiUrl)
@@ -23,20 +23,25 @@ export default function Splash() {
         console.log('setting default env to PROD')
         setEnv('PROD')
       }
+      if (!isRemainLoggedIn) {
+        setUser({
+          token: undefined,
+          refreshToken: undefined,
+        })
+      }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasSettingsRehydrated])
   useEffect(() => {
-    if (hasAuthHydrated && hasEntityHydrated) {
+    if (hasAuthHydrated && hasEntityHydrated && hasSettingsRehydrated) {
       // non-authenticated
-      if (typeof token === 'undefined') {
+      if (!token) {
         resetAllStates()
         navigation.navigate('Login')
         return
       }
 
       // no entity selected
-      if (typeof entityId === 'undefined') {
+      if (!entityId) {
         navigation.navigate('SelectEntity')
         return
       }
@@ -50,7 +55,7 @@ export default function Splash() {
       )
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasAuthHydrated, hasEntityHydrated, token, entityId])
+  }, [hasAuthHydrated, hasEntityHydrated, hasSettingsRehydrated, token, entityId])
 
   return (
     <Box flex="1" justifyContent="center" safeArea>
