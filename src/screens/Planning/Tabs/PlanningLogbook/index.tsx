@@ -1,10 +1,11 @@
-import React, {useEffect, useState} from 'react'
-import {RefreshControl, TouchableOpacity, View} from 'react-native'
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-native/no-inline-styles */
+import React, {useEffect} from 'react'
+import {RefreshControl, TouchableOpacity} from 'react-native'
 import {Box, Center, HStack, Image, ScrollView, Text} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import {useNavigation} from '@react-navigation/native'
-import styled from 'styled-components'
 import {Colors} from '@bluecentury/styles'
 import {Icons} from '@bluecentury/assets'
 import {useEntity, usePlanning} from '@bluecentury/stores'
@@ -61,26 +62,24 @@ const PlanningLogbook = () => {
         <Box borderRadius={ms(5)} overflow="hidden">
           {/* Navlog Header */}
           <Box backgroundColor={Colors.border} px={ms(16)} py={ms(10)}>
-            <Text color={Colors.text} fontSize={ms(15)} bold>
+            <Text bold color={Colors.text} fontSize={ms(15)}>
               {formatLocationLabel(navigationLog?.location)}
             </Text>
             <Text color={'#23475C'} fontWeight="medium">
               {t('planned')}
-              {moment(navigationLog?.plannedEta).format(
-                'DD MMM YYYY | HH:mm'
-              )}
+              {moment(navigationLog?.plannedEta).format('DD MMM YYYY | HH:mm')}
             </Text>
           </Box>
           {/* End of Header */}
 
           <Box
-            px={ms(14)}
-            py={ms(10)}
-            pt={3}
-            borderWidth={3}
             borderColor={Colors.border}
             borderStyle="dashed"
+            borderWidth={3}
             mt={-3}
+            pt={3}
+            px={ms(14)}
+            py={ms(10)}
           >
             <HStack alignItems="center" mt={ms(5)}>
               <Box flex="1">
@@ -88,43 +87,44 @@ const PlanningLogbook = () => {
                   navigationLog?.bulkCargo.map((cargo: any, i: number) => {
                     return (
                       <HStack key={i} alignItems="center" mr={ms(5)}>
-                        <Text color={Colors.disabled} bold>
+                        <Text bold color={Colors.disabled}>
                           {`(${Math.ceil(cargo.tonnage)} MT) `}
                         </Text>
                         <Text
-                          flex="1"
-                          color={Colors.highlighted_text}
                           bold
-                          numberOfLines={1}
+                          color={Colors.highlighted_text}
                           ellipsizeMode="tail"
+                          flex="1"
+                          numberOfLines={1}
                         >
                           {/* ${Math.ceil(cargo.actualTonnage)} MT -  */}
                           {` ${
-                            cargo.type.nameEn !== null
-                              ? cargo.type.nameEn
+                            cargo.type.nameEn !== null ||
+                            cargo.type.nameNl !== null
+                              ? cargo.type.nameEn || cargo.type.nameNl
                               : 'Unknown'
                           }`}
                         </Text>
                         <Image
                           alt="navlogs-tags"
-                          source={Icons.tags}
                           mx={ms(5)}
                           resizeMode="contain"
+                          source={Icons.tags}
                         />
                       </HStack>
                     )
                   })}
                 <HStack alignItems="center" mt={ms(5)}>
-                  <Text color={Colors.highlighted_text} bold>
+                  <Text bold color={Colors.highlighted_text}>
                     {calculateTotalOut(navigationLog)} MT
                   </Text>
                   <Image
                     alt="triple-arrow-navlogs"
-                    source={Icons.triple_arrow}
                     mx={ms(5)}
                     resizeMode="contain"
+                    source={Icons.triple_arrow}
                   />
-                  <Text color={Colors.highlighted_text} bold>
+                  <Text bold color={Colors.highlighted_text}>
                     {calculateTotalIn(navigationLog)} MT
                   </Text>
                 </HStack>
@@ -132,7 +132,7 @@ const PlanningLogbook = () => {
               <Box alignItems="center">
                 <NavigationLogType navigationLog={navigationLog} />
                 {navigationLog.actionType === 'Cleaning' ? null : (
-                  <Text color={Colors.azure} fontSize={ms(15)} mt={ms(5)} bold>
+                  <Text bold color={Colors.azure} fontSize={ms(15)} mt={ms(5)}>
                     {Math.ceil(navigationLog?.bulkCargo[0]?.actualTonnage)} MT
                   </Text>
                 )}
@@ -151,22 +151,22 @@ const PlanningLogbook = () => {
   if (isPlanningLoading) return <LoadingAnimated />
 
   return (
-    <Box flex="1" bgColor={Colors.white}>
+    <Box bgColor={Colors.white} flex="1">
       <ScrollView
-        contentContainerStyle={{flexGrow: 1, paddingBottom: 20}}
-        scrollEventThrottle={16}
-        showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
-            onRefresh={onPullRefresh}
             refreshing={isPlanningLoading}
+            onRefresh={onPullRefresh}
           />
         }
+        contentContainerStyle={{flexGrow: 1, paddingBottom: 20}}
         px={ms(12)}
         py={ms(15)}
+        scrollEventThrottle={16}
+        showsVerticalScrollIndicator={false}
       >
         {hasErrorLoadingPlannedNavigationLogs ? (
-          <Box flex="1" bgColor={Colors.white} p="5">
+          <Box bgColor={Colors.white} flex="1" p="5">
             <Center>
               <Text bold color={Colors.azure}>
                 Failed to load requested resource
@@ -174,7 +174,7 @@ const PlanningLogbook = () => {
             </Center>
           </Box>
         ) : plannedNavigationLogs.length == 0 ? (
-          <Box flex="1" bgColor={Colors.white} p="2">
+          <Box bgColor={Colors.white} flex="1" p="2">
             <Center>
               <Text bold color={Colors.azure}>
                 No results available
