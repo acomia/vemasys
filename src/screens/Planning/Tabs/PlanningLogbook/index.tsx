@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable react-native/no-inline-styles */
 import React, {useEffect} from 'react'
 import {RefreshControl, TouchableOpacity} from 'react-native'
 import {Box, Center, HStack, Image, ScrollView, Text} from 'native-base'
@@ -33,6 +31,8 @@ const PlanningLogbook = () => {
 
   useEffect(() => {
     getVesselPlannedNavLogs(vesselId)
+    /* eslint-disable react-hooks/exhaustive-deps */
+    /* eslint-disable react-native/no-inline-styles */
   }, [
     vesselId,
     isCreateNavLogActionSuccess,
