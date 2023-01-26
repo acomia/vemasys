@@ -102,7 +102,7 @@ const PlanningLogbook = () => {
                             cargo.type.nameEn !== null ||
                             cargo.type.nameNl !== null
                               ? cargo.type.nameEn || cargo.type.nameNl
-                              : 'Unknown'
+                              : t('unknown')
                           }`}
                         </Text>
                         <Image
