@@ -62,56 +62,58 @@ export default function QRScanner({navigation}: Props) {
           navigation.navigate('Formations')
         } catch {}
       } else {
-        Alert.alert('Info', 'The QR code was not recognized.')
-        setTimeout(() => {
-          setBarcodeType([RNCamera.Constants.BarCodeType.qr])
-        }, 1000)
+        Alert.alert('Info', 'The QR code was not recognized.', [
+          {
+            text: 'OK',
+            onPress: () => setBarcodeType([RNCamera.Constants.BarCodeType.qr]),
+          },
+        ])
       }
     }
   }
   const onLayoutMeasuredHandler = (e: LayoutChangeEvent) => {}
 
   return (
-    <Flex flex="1" backgroundColor={Colors.black}>
+    <Flex backgroundColor={Colors.black} flex="1">
       <RNCamera
-        style={{flex: 1, justifyContent: 'flex-end', alignItems: 'center'}}
-        type={RNCamera.Constants.Type.back}
-        flashMode={RNCamera.Constants.FlashMode.auto}
         autoFocus={'on'}
-        onBarCodeRead={onBarCodeRead}
         barCodeTypes={barcodeType}
         captureAudio={false}
+        flashMode={RNCamera.Constants.FlashMode.auto}
+        style={{flex: 1, justifyContent: 'flex-end', alignItems: 'center'}}
+        type={RNCamera.Constants.Type.back}
+        onBarCodeRead={onBarCodeRead}
       >
         <BarcodeMask
           backgroundColor="rgba(0, 0, 0, 0.3)"
           edgeBorderWidth={5}
-          showAnimatedLine={false}
-          edgeRadius={10}
           edgeColor="#fff"
-          edgeWidth={40}
           edgeHeight={40}
+          edgeRadius={10}
+          edgeWidth={40}
           outerMaskOpacity={0.1}
+          showAnimatedLine={false}
           onLayoutMeasured={onLayoutMeasuredHandler}
         />
       </RNCamera>
 
       <Text
-        position="absolute"
-        top="15%"
+        color="#fff"
+        fontSize={ms(25)}
         left={ms(0)}
+        position="absolute"
         right={ms(0)}
         textAlign="center"
-        fontSize={ms(25)}
-        color="#fff"
+        top="15%"
       >
         {t('alignFrameToScan')}
       </Text>
-      <Box position="absolute" w="100%" bottom="20" alignItems="center">
+      <Box alignItems="center" bottom="20" position="absolute" w="100%">
         <Button
           bg={Colors.primary}
-          w={ms(180)}
-          mt={ms(20)}
           mb={ms(20)}
+          mt={ms(20)}
+          w={ms(180)}
           onPress={() => navigation.goBack()}
         >
           {t('cancel')}
@@ -120,10 +122,10 @@ export default function QRScanner({navigation}: Props) {
       <Modal isOpen={isLoadingMap} justifyContent="center" px={ms(15)}>
         <Modal.Content width="100%">
           <Box
+            alignItems="center"
             backgroundColor="#fff"
             borderRadius={ms(15)}
             flexDirection="row"
-            alignItems="center"
           >
             <LoadingAnimated />
             <Text fontWeight="medium">{t('processing')}</Text>
