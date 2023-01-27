@@ -32,7 +32,7 @@ import {formatBulkTypeLabel, titleCase} from '@bluecentury/constants'
 import {IconButton, LoadingAnimated} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {Vemasys} from '@bluecentury/helpers'
-import {useTranslation} from "react-i18next"
+import {useTranslation} from 'react-i18next'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const AddEditNavlogAction = ({navigation, route}: Props) => {
@@ -58,22 +58,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
   } = usePlanning()
 
   let cargoChoices: any = []
-  if (navigationLogDetails?.bulkCargo.length > 0) {
-    cargoChoices = navigationLogDetails?.bulkCargo?.map(
-      (c: {type: {nameEn: any}; id: any}) => ({
-        label: formatBulkTypeLabel(c.type),
-        value: c.id,
-      })
-    )
-  }
   let earliest: {start: string | number | Date} | null = null
-  if (navigationLogActions.length > 0) {
-    earliest = navigationLogActions?.reduce((previous, current) => {
-      return new Date(current.start) < new Date(previous.start)
-        ? current
-        : previous
-    })
-  }
 
   const [navActionDetails, setNavActionDetails] = useState({
     type:
@@ -122,16 +107,36 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
       headerRight: () =>
         method === 'edit' && (
           <IconButton
+            size={22}
             source={Icons.trash}
             onPress={() => {
               setConfirmModal(true)
               setActionMethod('Delete')
             }}
-            size={22}
           />
         ),
     })
+    /* eslint-disable react-native/no-inline-styles */
+    /* eslint-disable react-hooks/exhaustive-deps */
   }, [])
+
+  useEffect(() => {
+    if (navigationLogDetails?.bulkCargo.length > 0) {
+      cargoChoices = navigationLogDetails?.bulkCargo?.map(
+        (c: {type: BulkType; id: number}) => ({
+          label: formatBulkTypeLabel(c.type),
+          value: c.id,
+        })
+      )
+    }
+    if (navigationLogActions.length > 0) {
+      earliest = navigationLogActions?.reduce((previous, current) => {
+        return new Date(current.start) < new Date(previous.start)
+          ? current
+          : previous
+      })
+    }
+  }, [navigationLogActions, navigationLogDetails])
 
   useEffect(() => {
     if (isCreateNavLogActionSuccess) {
@@ -175,11 +180,11 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
         return (
           <Text
             bg={res === 'success' ? 'emerald.500' : 'red.500'}
+            color={Colors.white}
+            mb={5}
             px="2"
             py="1"
             rounded="sm"
-            mb={5}
-            color={Colors.white}
           >
             {text}
           </Text>
@@ -214,21 +219,21 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
   const renderActionType = () => {
     return (
       <HStack
-        mt={ms(3)}
-        mb={ms(30)}
+        alignItems="center"
         bg="#F7F7F7"
         borderRadius={ms(5)}
+        mb={ms(30)}
+        mt={ms(3)}
         p="2"
-        alignItems="center"
       >
         <Image
           alt="navlog-action-animated"
+          mr={ms(10)}
+          resizeMode="contain"
           source={renderActionTypeIcon(actionType)}
           width={ms(40)}
-          resizeMode="contain"
-          mr={ms(10)}
         />
-        <Text fontSize={ms(16)} bold color={Colors.text}>
+        <Text bold color={Colors.text} fontSize={ms(16)}>
           {actionType}
         </Text>
       </HStack>
@@ -238,30 +243,30 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
   const DatetimePicker = ({date, onChangeDate, color}: any) => {
     return (
       <HStack
-        mt={ms(3)}
-        mb={ms(30)}
+        alignItems="center"
         bg="#F7F7F7"
         borderRadius={ms(5)}
+        mb={ms(30)}
+        mt={ms(3)}
         p="2"
-        alignItems="center"
       >
         <MaterialCommunityIcons
+          color={color}
           name="calendar-month-outline"
           size={ms(22)}
-          color={color}
         />
         <TouchableOpacity
-          activeOpacity={0.7}
           style={{
             flex: 1,
             marginLeft: 10,
           }}
+          activeOpacity={0.7}
           onPress={onChangeDate}
         >
           <Text
+            color={date ? Colors.text : Colors.disabled}
             fontSize={ms(16)}
             fontWeight="medium"
-            color={date ? Colors.text : Colors.disabled}
           >
             {date
               ? moment(date).format('D MMM YYYY | HH:mm')
@@ -278,15 +283,15 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
     return (
       <HStack alignItems="center" mb={ms(10)}>
         <Box flex="2" mr={ms(10)}>
-          <Text fontWeight="medium" color={Colors.disabled} mb={ms(6)}>
+          <Text color={Colors.disabled} fontWeight="medium" mb={ms(6)}>
             {t('cargo')}
           </Text>
           {navigationLogDetails?.bulkCargo?.length > 1 ? (
             <Select
-              flex="1"
               bg="#F7F7F7"
-              onValueChange={val => onSelectCargo(val)}
+              flex="1"
               selectedValue={selectedCargo}
+              onValueChange={val => onSelectCargo(val)}
             >
               {cargoChoices.map((type: any, index: number) => (
                 <Select.Item
@@ -297,25 +302,27 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
               ))}
             </Select>
           ) : (
-            <Box bg="#F7F7F7" borderRadius={ms(5)} py="3" px="1">
-              <Text numberOfLines={1} ellipsizeMode="tail" color={Colors.text}>
+            <Box bg="#F7F7F7" borderRadius={ms(5)} px="1" py="3">
+              <Text color={Colors.text} ellipsizeMode="tail" numberOfLines={1}>
                 {nameEn || nameNl}
               </Text>
             </Box>
           )}
         </Box>
         <Box flex="1">
-          <Text fontWeight="medium" color={Colors.disabled} mb={ms(6)}>
+          <Text color={Colors.disabled} fontWeight="medium" mb={ms(6)}>
             {t('amount')}
           </Text>
           <Input
-            bg="#F7F7F7"
-            onChangeText={val => onChangeAmount(val)}
-            value={navActionDetails.cargoHoldActions[0].amount}
-            keyboardType="number-pad"
-            height={ms(40)}
-            fontSize={ms(15)}
             bold
+            value={navActionDetails.cargoHoldActions[0].amount
+              .toString()
+              .replace('.', ',')}
+            bg="#F7F7F7"
+            fontSize={ms(15)}
+            height={ms(40)}
+            keyboardType="number-pad"
+            onChangeText={val => onChangeAmount(val)}
           />
         </Box>
       </HStack>
@@ -324,7 +331,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
 
   const onChangeAmount = (val: string) => {
     const newArr = navActionDetails.cargoHoldActions
-    newArr[0].amount = val
+    newArr[0].amount = val.replace(',', '.')
     setNavActionDetails({...navActionDetails, cargoHoldActions: newArr})
   }
 
@@ -370,9 +377,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
     const bulkCargo = navigationLogDetails?.bulkCargo?.find(
       cargo => cargo.id === navActionDetails.cargoHoldActions[0].navigationBulk
     )
-    let newBulkCargoAmount: number = Number(
-      navActionDetails.cargoHoldActions[0].amount
-    )
+    let newBulkCargoAmount = Number(navActionDetails.cargoHoldActions[0].amount)
     if (
       navigationLogActions &&
       navigationLogActions.length > 0 &&
@@ -409,32 +414,33 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
       : onDeleteNavLogAction()
   }
 
-  if (isPlanningDetailsLoading || isPlanningActionsLoading)
+  if (isPlanningDetailsLoading || isPlanningActionsLoading) {
     return <LoadingAnimated />
+  }
   return (
     <Box flex="1">
       <ScrollView
+        bg={Colors.white}
         contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
         px={ms(12)}
         py={ms(20)}
-        bg={Colors.white}
       >
-        <Text fontSize={ms(20)} bold color={Colors.azure}>
+        <Text bold color={Colors.azure} fontSize={ms(20)}>
           {actionType} {t('action')}
         </Text>
 
         <Divider my={ms(10)} />
-        <Text fontWeight="medium" color={Colors.disabled}>
+        <Text color={Colors.disabled} fontWeight="medium">
           {t('action')}
         </Text>
         {/* {renderActionsType()} */}
         {renderActionType()}
-        <Text fontWeight="medium" color={Colors.disabled}>
+        <Text color={Colors.disabled} fontWeight="medium">
           {t('startText')}
         </Text>
         <DatetimePicker
-          date={navActionDetails.start}
           color={Colors.secondary}
+          date={navActionDetails.start}
           onChangeDate={() => {
             setSelectedDate('start')
             setOpenDatePicker(true)
@@ -443,23 +449,23 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
         <Animated.View
           style={[{opacity: dateTimeHeight.value > 0 ? 1 : 0}, reanimatedStyle]}
         >
-          <Text fontWeight="medium" color={Colors.disabled}>
+          <Text color={Colors.disabled} fontWeight="medium">
             {t('estimatedEnd')}
           </Text>
           <DatetimePicker
-            date={navActionDetails.estimatedEnd}
             color={Colors.azure}
+            date={navActionDetails.estimatedEnd}
             onChangeDate={() => {
               setSelectedDate('estimated')
               setOpenDatePicker(true)
             }}
           />
-          <Text fontWeight="medium" color={Colors.disabled}>
+          <Text color={Colors.disabled} fontWeight="medium">
             {t('endText')}
           </Text>
           <DatetimePicker
-            date={navActionDetails.end}
             color={Colors.danger}
+            date={navActionDetails.end}
             onChangeDate={() => {
               setSelectedDate('end')
               setOpenDatePicker(true)
@@ -469,15 +475,15 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
         {actionType === 'Cleaning' ? null : renderCargoHoldActions()}
         <DatePicker
           modal
-          open={openDatePicker}
           date={new Date()}
           mode="datetime"
+          open={openDatePicker}
+          onCancel={() => {
+            setOpenDatePicker(false)
+          }}
           onConfirm={date => {
             setOpenDatePicker(false)
             onDatesChange(date)
-          }}
-          onCancel={() => {
-            setOpenDatePicker(false)
           }}
         />
       </ScrollView>
@@ -489,18 +495,18 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
         >
           <HStack>
             <Button
+              colorScheme="muted"
               flex="1"
               m={ms(16)}
               variant="ghost"
-              colorScheme="muted"
               onPress={() => navigation.goBack()}
             >
               {t('cancel')}
             </Button>
             <Button
+              bg={Colors.primary}
               flex="1"
               m={ms(16)}
-              bg={Colors.primary}
               onPress={() => confirmSave()}
             >
               {t('save')}
@@ -509,39 +515,39 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
         </Shadow>
       </Box>
       <Modal
-        isOpen={confirmModal}
-        size="full"
-        px={ms(12)}
         animationPreset="slide"
+        isOpen={confirmModal}
+        px={ms(12)}
+        size="full"
       >
         <Modal.Content>
           <Modal.Header>Confirmation</Modal.Header>
-          <Text my={ms(20)} mx={ms(12)} fontWeight="medium">
+          <Text fontWeight="medium" mx={ms(12)} my={ms(20)}>
             Are you sure you want to {actionMethod.toLowerCase()} this action?
           </Text>
           <HStack>
             <Button
+              bg={Colors.grey}
               flex="1"
               m={ms(12)}
-              bg={Colors.grey}
               onPress={() => setConfirmModal(false)}
             >
-              <Text fontWeight="medium" color={Colors.disabled}>
+              <Text color={Colors.disabled} fontWeight="medium">
                 {t('cancel')}
               </Text>
             </Button>
             <Button
-              flex="1"
-              m={ms(12)}
               bg={
                 actionMethod.toLowerCase() === 'add' ||
                 actionMethod.toLowerCase() === 'update'
                   ? Colors.primary
                   : Colors.danger
               }
+              flex="1"
+              m={ms(12)}
               onPress={onActionConfirmed}
             >
-              <Text fontWeight="medium" color={Colors.white}>
+              <Text color={Colors.white} fontWeight="medium">
                 {actionMethod.toLowerCase() === 'add' ||
                 actionMethod.toLowerCase() === 'update'
                   ? t('save')
