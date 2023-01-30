@@ -1,11 +1,10 @@
 import React, {useEffect, useState} from 'react'
-import {RefreshControl, TouchableOpacity} from 'react-native'
+import {RefreshControl} from 'react-native'
 import {
   Box,
   Button,
   HStack,
   Icon,
-  Image,
   Modal,
   ScrollView,
   Text,
@@ -54,6 +53,8 @@ const Actions = () => {
       getNavigationLogActions(navigationLogDetails?.id)
       showToast('Action ended.', 'success')
     }
+    /* eslint-disable react-hooks/exhaustive-deps */
+    /* eslint-disable react-native/no-inline-styles */
   }, [
     isCreateNavLogActionSuccess,
     isUpdateNavLogActionSuccess,
@@ -77,11 +78,11 @@ const Actions = () => {
         return (
           <Text
             bg={res === 'success' ? 'emerald.500' : 'red.500'}
+            color={Colors.white}
+            mb={5}
             px="2"
             py="1"
             rounded="sm"
-            mb={5}
-            color={Colors.white}
           >
             {text}
           </Text>
@@ -129,20 +130,20 @@ const Actions = () => {
   return (
     <Box flex="1">
       <ScrollView
-        contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
-        scrollEventThrottle={16}
         refreshControl={
           <RefreshControl
-            onRefresh={onPullToReload}
             refreshing={isPlanningActionsLoading}
+            onRefresh={onPullToReload}
           />
         }
         bg={Colors.white}
+        contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
         px={ms(12)}
         py={ms(20)}
+        scrollEventThrottle={16}
       >
         {/* Actions Section */}
-        <Text fontSize={ms(20)} bold color={Colors.azure}>
+        <Text bold color={Colors.azure} fontSize={ms(20)}>
           {t('actions')}
         </Text>
         {navigationLogActions?.length > 0
@@ -171,10 +172,10 @@ const Actions = () => {
       >
         <HStack>
           <Button
-            flex="1"
-            maxH={ms(40)}
             bg={Colors.primary}
+            flex="1"
             leftIcon={<Icon as={Ionicons} name="add" size="sm" />}
+            maxH={ms(40)}
             onPress={() =>
               navigation.navigate('AddEditNavlogAction', {
                 method: 'add',
@@ -182,16 +183,16 @@ const Actions = () => {
               })
             }
           >
-            <Text fontWeight="medium" color={Colors.white}>
+            <Text color={Colors.white} fontWeight="medium">
               {t('new')} {buttonActionLabel}
             </Text>
           </Button>
           <Box w={ms(10)} />
           <Button
-            flex="1"
-            maxH={ms(40)}
             bg={Colors.primary}
+            flex="1"
             leftIcon={<Icon as={Ionicons} name="add" size="sm" />}
+            maxH={ms(40)}
             onPress={() =>
               navigation.navigate('AddEditNavlogAction', {
                 method: 'add',
@@ -199,41 +200,41 @@ const Actions = () => {
               })
             }
           >
-            <Text fontWeight="medium" color={Colors.white}>
+            <Text color={Colors.white} fontWeight="medium">
               {t('cleaning')}
             </Text>
           </Button>
         </HStack>
       </Shadow>
       <Modal
-        isOpen={confirmModal}
-        size="full"
-        px={ms(12)}
         animationPreset="slide"
+        isOpen={confirmModal}
+        px={ms(12)}
+        size="full"
       >
         <Modal.Content>
           <Modal.Header>{t('confirmation')}</Modal.Header>
-          <Text my={ms(20)} mx={ms(12)} fontWeight="medium">
+          <Text fontWeight="medium" mx={ms(12)} my={ms(20)}>
             {t('areYouSure')}
           </Text>
           <HStack>
             <Button
+              bg={Colors.grey}
               flex="1"
               m={ms(12)}
-              bg={Colors.grey}
               onPress={() => setConfirmModal(false)}
             >
-              <Text fontWeight="medium" color={Colors.disabled}>
+              <Text color={Colors.disabled} fontWeight="medium">
                 {t('cancel')}
               </Text>
             </Button>
             <Button
+              bg={Colors.danger}
               flex="1"
               m={ms(12)}
-              bg={Colors.danger}
               onPress={onStopAction}
             >
-              <Text fontWeight="medium" color={Colors.white}>
+              <Text color={Colors.white} fontWeight="medium">
                 {t('stop')}
               </Text>
             </Button>
