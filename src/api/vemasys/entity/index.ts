@@ -1,3 +1,4 @@
+import {R} from 'react-native-shadow-2'
 import {API} from '../../apiService'
 
 const reloadEntityUsers = async () => {
@@ -57,28 +58,22 @@ const getRoleForAccept = async (userId: string) => {
 const acceptPendingRole = async (id: string) => {
   return API.put(`entity_users/${id}/accept_by_user`, {})
     .then(response => {
-      if (response.data) {
-        return response?.data?.id ? 'SUCCESS' : 'FAILED'
-      } else {
-        throw Error('Request Failed')
-      }
+      return Promise.resolve(response.data.id ? 'SUCCESS' : 'FAILED')
     })
     .catch(error => {
       console.error('Error: API Role for accept', error)
+      return Promise.reject('')
     })
 }
 
 const rejectPendingRole = async (id: string) => {
   return API.put(`entity_users/${id}/reject_by_user`, {})
     .then(response => {
-      if (response.data) {
-        return response?.data?.id ? 'REJECTED' : 'FAILED'
-      } else {
-        throw Error('Request Failed')
-      }
+      return Promise.resolve(response.data.id ? 'REJECTED' : 'FAILED')
     })
     .catch(error => {
       console.error('Error: API Role for accept', error)
+      return Promise.reject('')
     })
 }
 
