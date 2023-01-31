@@ -177,7 +177,7 @@ const PlanningLogbook = () => {
           <Box bgColor={Colors.white} flex="1" p="2">
             <Center>
               <Text bold color={Colors.azure}>
-                No results available
+                {t('noResultsAvailable')}
               </Text>
             </Center>
           </Box>
