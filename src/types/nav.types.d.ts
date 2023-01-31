@@ -1,3 +1,4 @@
+import {Comments} from '@bluecentury/models'
 type RootStackParamList = {
   Splash: undefined
   SelectEnvironment: undefined
@@ -14,7 +15,7 @@ type RootStackParamList = {
   PlanningDetails: {navlog: any; title?: string}
   AddEditBulkCargo: {cargo?: any; method?: string}
   PlanningNewComment: undefined
-  AddEditComment: {comment?: any; method: string; routeFrom?: string}
+  AddEditComment: {comment?: Comments; method: string; routeFrom?: string}
   AddEditNavlogAction: {
     method: string
     actionType: string

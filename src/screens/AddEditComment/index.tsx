@@ -29,11 +29,13 @@ import {Icons} from '@bluecentury/assets'
 import {PROD_URL, UAT_URL} from '@vemasys/env'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import {useTranslation} from 'react-i18next'
+import {RootStackParamList} from '@bluecentury/types/nav.types'
 
-type Props = NativeStackScreenProps<RootStackParamList>
+type Props = NativeStackScreenProps<RootStackParamList, 'AddEditComment'>
+
 const AddEditComment = ({navigation, route}: Props) => {
   const {t} = useTranslation()
-  const {comment, method, routeFrom}: any = route.params
+  const {comment, method, routeFrom} = route.params
   const currentEnv = useSettings.getState().env
   const uploadEndpoint = () => {
     if (currentEnv === 'PROD') {
@@ -53,12 +55,10 @@ const AddEditComment = ({navigation, route}: Props) => {
     deleteComment,
     uploadImgFile,
   }: any = usePlanning()
-  const {user}: any = useEntity()
-  const descriptionText = comment?.description
-    ?.replace(/(\\)/g, '')
-    .match(/([^<br>]+)/)[0]
+  const {user} = useEntity()
+  const descriptionText = comment?.description.match(/^[^-<]*/)
   const [description, setDescription] = useState<string>(
-    comment !== undefined ? descriptionText : ''
+    descriptionText ? descriptionText[0] : ''
   )
   const [isCommentEmpty, setIsCommentEmpty] = useState(false)
   const [imgFile, setImgFile] = useState<any>([])
@@ -80,7 +80,7 @@ const AddEditComment = ({navigation, route}: Props) => {
       }
       setAttachedImages(res)
     }
-    if (method === 'edit') {
+    if (method === 'edit' && comment) {
       getAttrFromString(comment.description)
     }
 
@@ -90,7 +90,7 @@ const AddEditComment = ({navigation, route}: Props) => {
           <IconButton
             size={ms(20)}
             source={Icons.trash}
-            styles={styles.screenHader}
+            styles={styles.screenHeader}
             onPress={deleteCommentConfirmation}
           />
         ) : null,
@@ -150,10 +150,7 @@ const AddEditComment = ({navigation, route}: Props) => {
             })
           )
         }
-        res = await updateComment(
-          comment?.id,
-          comment.description.match(/^[^-<]*/) + tempComment
-        )
+        res = await updateComment(comment?.id, description + tempComment)
         if (typeof res === 'object') {
           showToast('Comment updated.', 'success')
           getNavigationLogComments(navigationLogDetails?.id)
