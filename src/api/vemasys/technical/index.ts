@@ -49,14 +49,14 @@ const reloadVesselBunkeringSuppliers = async () => {
 }
 
 const createVesselBunkering = async (bunkering: any) => {
-  return API.post(`consumption_bunkerings`, {
+  return API.post('consumption_bunkerings', {
     value: parseInt(bunkering.amount ? bunkering.amount : 0),
     entity: {
       id: bunkering.bunkeringId,
     },
     date: moment(bunkering.date).format(),
     user: {
-      id: useEntity.getState().user.id,
+      id: useEntity.getState().user?.id,
     },
     exploitationVessel: {
       id: useEntity.getState().vesselId,
@@ -212,7 +212,7 @@ const uploadFileBySubject = async (
 }
 
 const createVesselTask = async (task: Task) => {
-  return API.post(`tasks`, task)
+  return API.post('tasks', task)
     .then(response => {
       if (response.data) {
         return response.data
@@ -309,7 +309,7 @@ const reloadVesselInventory = async (vesselId: string) => {
 }
 
 const reloadConsumableTypes = async () => {
-  return API.get(`consumable_types`)
+  return API.get('consumable_types')
     .then(response => {
       if (response.data) {
         return response.data
