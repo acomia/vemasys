@@ -4,8 +4,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as API from '@bluecentury/api/vemasys'
 import {Credentials, Auth} from 'src/models'
 import * as Keychain from 'react-native-keychain'
-import axios from 'axios'
-import {useSettings} from './settings'
 
 type AuthState = {
   hasAuthHydrated: boolean
