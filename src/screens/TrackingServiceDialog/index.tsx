@@ -27,8 +27,11 @@ export default function TrackingServiceDialog() {
         <AlertDialog.Header>{t('tracking')}</AlertDialog.Header>
         <AlertDialog.Body>
           <Text>
-            This will {status} tracking service in this device and will{' '}
-            {isMobileTracking ? 'stop' : 'start'} sending GPS coordinates for{' '}
+            {/*This will {status} tracking service in this device and will{' '}*/}
+            {/*{isMobileTracking ? 'stop' : 'start'} sending GPS coordinates for{' '}*/}
+            {isMobileTracking
+              ? t('disableTrackingServiceWarning')
+              : t('enableTrackingServiceWarning')}
             {selectedVessel?.alias}.
           </Text>
         </AlertDialog.Body>

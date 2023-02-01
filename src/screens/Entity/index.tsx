@@ -256,8 +256,8 @@ export default function Entity({route, navigation}: Props) {
         </Shadow>
       </Box>
       <CustomAlert
-        title="Logout"
-        content="Are you sure you want to logout?"
+        title={t('logoutOneWord')}
+        content={t('logoutConfirm')}
         alert={{
           leastDestructiveRef: logoutCancelRef,
           isOpen: isOpenLogoutAlert,
@@ -269,21 +269,17 @@ export default function Entity({route, navigation}: Props) {
             _text: {
               color: Colors.black,
             },
-            children: 'Yes',
+            children: t('yes'),
             onPress: handleOnPressYesLogout,
           },
           {
             colorScheme: 'danger',
-            children: 'No',
+            children: t('no'),
             onPress: () => setIsOpenLogoutAlert(false),
           },
         ]}
       />
       <CustomAlert
-        title="Tracking"
-        content={`Device is currently sending GPS Data for ${
-          selectedVessel && selectedVessel?.alias
-        }. You will have to disable it in order to proceed with your latest action.`}
         alert={{
           leastDestructiveRef: logoutCancelRef,
           isOpen: isOpenAlertIsMobileTracking,
@@ -295,10 +291,14 @@ export default function Entity({route, navigation}: Props) {
             _text: {
               color: Colors.black,
             },
-            children: 'OK',
+            children: t('ok'),
             onPress: () => setIsOpenAlertIsMobileTracking(false),
           },
         ]}
+        content={`${t('sendingGPSDataFor')} ${
+          selectedVessel && selectedVessel?.alias
+        } ${t('requiredTurnOffGPS')}`}
+        title={t('tracking')}
       />
       <Modal
         isOpen={confirmModal}

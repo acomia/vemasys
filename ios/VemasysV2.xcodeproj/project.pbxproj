@@ -14,6 +14,7 @@
 		29626B39284F989300F9BC9D /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = 29626B38284F989300F9BC9D /* Fonts */; };
 		7A2CFFDE192A51E6CE819A20 /* libPods-VemasysV2-VemasysV2Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A7988668BF91817C8ACE529 /* libPods-VemasysV2-VemasysV2Tests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		8445C06229896CA900A02C0A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8445C06429896CA900A02C0A /* InfoPlist.strings */; };
 		8BE0B8922919440400F66E87 /* RNBackgroundFetch+AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BE0B8912919440400F66E87 /* RNBackgroundFetch+AppDelegate.m */; };
 		9C1AEC1BEC63C4247829EDD4 /* libPods-VemasysV2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D54F195C6143212A99DD9C54 /* libPods-VemasysV2.a */; };
 /* End PBXBuildFile section */
@@ -43,6 +44,7 @@
 		2CEC0478303217E37124BD41 /* Pods-VemasysV2.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VemasysV2.release.xcconfig"; path = "Target Support Files/Pods-VemasysV2/Pods-VemasysV2.release.xcconfig"; sourceTree = "<group>"; };
 		2E444E5F704C5DDCBC55BA98 /* Pods-VemasysV2-VemasysV2Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VemasysV2-VemasysV2Tests.debug.xcconfig"; path = "Target Support Files/Pods-VemasysV2-VemasysV2Tests/Pods-VemasysV2-VemasysV2Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = VemasysV2/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		8445C06329896CA900A02C0A /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8A7988668BF91817C8ACE529 /* libPods-VemasysV2-VemasysV2Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-VemasysV2-VemasysV2Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8BE0B8912919440400F66E87 /* RNBackgroundFetch+AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "RNBackgroundFetch+AppDelegate.m"; path = "../node_modules/react-native-background-fetch/ios/RNBackgroundFetch/RNBackgroundFetch+AppDelegate.m"; sourceTree = "<group>"; };
 		D4F065FCFD9538BDC81DBDD8 /* Pods-VemasysV2-VemasysV2Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VemasysV2-VemasysV2Tests.release.xcconfig"; path = "Target Support Files/Pods-VemasysV2-VemasysV2Tests/Pods-VemasysV2-VemasysV2Tests.release.xcconfig"; sourceTree = "<group>"; };
@@ -98,6 +100,7 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
+				8445C06429896CA900A02C0A /* InfoPlist.strings */,
 			);
 			name = VemasysV2;
 			sourceTree = "<group>";
@@ -223,6 +226,7 @@
 			knownRegions = (
 				en,
 				Base,
+				fr,
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
@@ -248,6 +252,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				29626B39284F989300F9BC9D /* Fonts in Resources */,
+				8445C06229896CA900A02C0A /* InfoPlist.strings in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 			);
@@ -411,6 +416,17 @@
 			targetProxy = 00E356F41AD99517003FC87E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		8445C06429896CA900A02C0A /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				8445C06329896CA900A02C0A /* fr */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {

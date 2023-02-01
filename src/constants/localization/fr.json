@@ -315,5 +315,13 @@
   "Pegels": "Pegels",
   "Rules": "Des règles",
   "Ticker Oil Prices": "Prix du pétrole au ticker",
-  "noResultsAvailable": "Aucun résultat disponible"
+  "noResultsAvailable": "Aucun résultat disponible",
+
+  "logoutOneWord": "Se déconnecter",
+  "logoutConfirm": "Êtes-vous sûr de vouloir vous déconnecter?",
+  "unsavedChangesProceedConfirmation": "Il y a des modifications non enregistrées dans cette page. Êtes-vous sur de vouloir continuer?",
+  "enableTrackingServiceWarning": "Cela activera le service de suivi dans cet appareil et commencera à envoyer des coordonnées GPS pour ",
+  "disableTrackingServiceWarning": "Cela désactivera le service de suivi dans cet appareil et cessera d'envoyer des coordonnées GPS pour ",
+  "sendingGPSDataFor": "L'appareil envoie actuellement des données GPS pour ",
+  "requiredTurnOffGPS": "Vous devrez le désactiver afin de poursuivre votre dernière action."
 }

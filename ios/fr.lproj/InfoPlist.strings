@@ -1,0 +1,13 @@
+/* 
+  InfoPlist.strings
+  VemasysV2
+
+  Created by Admin on 31.01.2023.
+  
+*/
+NSCameraUsageDescription = "Autoriser l'application à prendre des photos pour télécharger des documents et d'autres rapports.";
+NSLocationAlwaysAndWhenInUseUsageDescription = "L'application nécessite un suivi en arrière-plan";
+NSLocationAlwaysUsageDescription = "L'application nécessite un suivi en arrière-plan";
+NSLocationWhenInUseUsageDescription = "L'application nécessite un suivi en arrière-plan";
+NSMotionUsageDescription = "L'application nécessite un suivi de mouvement car l'application l'utilise pour détecter si elle envoie des informations au serveur pour le suivi du navire.";
+NSPhotoLibraryUsageDescription = "Autoriser l’application d’accéder à la bibliothèque/aux photos pour télécharger des documents et d’autres rapports.";
