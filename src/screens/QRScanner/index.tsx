@@ -4,13 +4,13 @@ import {Flex, Box, Text, Modal, Button} from 'native-base'
 import {BarCodeReadEvent, RNCamera} from 'react-native-camera'
 import BarcodeMask, {LayoutChangeEvent} from 'react-native-barcode-mask'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
-import {useIsFocused} from '@react-navigation/native'
 import {ms} from 'react-native-size-matters'
 
 import {Colors} from '@bluecentury/styles'
 import {LoadingAnimated} from '@bluecentury/components'
 import {useEntity, useMap} from '@bluecentury/stores'
 import {useTranslation} from 'react-i18next'
+import {RootStackParamList} from '@bluecentury/types/nav.types'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 
@@ -23,52 +23,43 @@ export default function QRScanner({navigation}: Props) {
     activeFormations,
     tokenHasConnectedToShip,
   } = useMap()
-  const [barcodeType, setBarcodeType] = useState([
-    RNCamera.Constants.BarCodeType.qr,
-  ])
-  const focused = useIsFocused()
+  const [isReaderEnabled, setIsReaderEnabled] = useState(true)
 
   const onBarCodeRead = async (scanResult: BarCodeReadEvent) => {
-    // f20e7067-cd68-4808-9a6f-bd12833bcded without ship
-    // 108c2f78-32a4-4744-94dd-e9174acf38d5 with ship
-    // e69c3bce-ecfa-456b-8ead-292109c89ecd with ship
-    // navigation.navigate('Formations')
-
-    if (focused) {
-      setBarcodeType([])
-      if (
-        scanResult.data.includes(
-          'https://app.vemasys.eu/deeplink/tracking_device'
-        )
-      ) {
-        const myString =
-          'https://app.vemasys.eu/deeplink/tracking_device?static_authenticator_token='
-        const staticToken = scanResult.data.substring(
-          myString.length,
-          scanResult.data.length
-        )
-        try {
-          if (activeFormations.length === 0) {
-            verifyTrackingDeviceToken(vesselId, staticToken, 'create')
-          } else {
-            verifyTrackingDeviceToken(vesselId, staticToken, 'add')
+    setIsReaderEnabled(false)
+    if (
+      scanResult.data.includes(
+        'https://app.vemasys.eu/deeplink/tracking_device'
+      )
+    ) {
+      const myString =
+        'https://app.vemasys.eu/deeplink/tracking_device?static_authenticator_token='
+      const staticToken = scanResult.data.substring(
+        myString.length,
+        scanResult.data.length
+      )
+      try {
+        if (activeFormations.length === 0) {
+          verifyTrackingDeviceToken(vesselId, staticToken, 'create')
+        } else {
+          verifyTrackingDeviceToken(vesselId, staticToken, 'add')
+        }
+        setTimeout(() => {
+          if (!tokenHasConnectedToShip) {
+            Alert.alert('Info', 'The QR is not linked to a ship.')
           }
-          setTimeout(() => {
-            if (!tokenHasConnectedToShip) {
-              Alert.alert('Info', 'The QR is not linked to a ship.')
-            }
-          }, 1000)
-          setBarcodeType([RNCamera.Constants.BarCodeType.qr])
-          navigation.navigate('Formations')
-        } catch {}
-      } else {
-        Alert.alert('Info', 'The QR code was not recognized.', [
-          {
-            text: 'OK',
-            onPress: () => setBarcodeType([RNCamera.Constants.BarCodeType.qr]),
-          },
-        ])
+        }, 1000)
+        navigation.navigate('Formations')
+      } catch (e) {
+        console.log('QR_FETCH_ERR', e)
       }
+    } else {
+      Alert.alert('Info', 'The QR code was not recognized.', [
+        {
+          text: 'OK',
+          onPress: () => setIsReaderEnabled(true),
+        },
+      ])
     }
   }
   const onLayoutMeasuredHandler = (e: LayoutChangeEvent) => {}
@@ -77,12 +68,12 @@ export default function QRScanner({navigation}: Props) {
     <Flex backgroundColor={Colors.black} flex="1">
       <RNCamera
         autoFocus={'on'}
-        barCodeTypes={barcodeType}
+        barCodeTypes={[RNCamera.Constants.BarCodeType.qr]}
         captureAudio={false}
         flashMode={RNCamera.Constants.FlashMode.auto}
         style={{flex: 1, justifyContent: 'flex-end', alignItems: 'center'}}
         type={RNCamera.Constants.Type.back}
-        onBarCodeRead={onBarCodeRead}
+        onBarCodeRead={isReaderEnabled ? onBarCodeRead : undefined}
       >
         <BarcodeMask
           backgroundColor="rgba(0, 0, 0, 0.3)"
