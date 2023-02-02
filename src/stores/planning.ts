@@ -1,7 +1,6 @@
 import create from 'zustand'
 import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import moment from 'moment'
 
 import * as API from '@bluecentury/api/vemasys'
 import {NavigationLog} from '@bluecentury/models'
@@ -12,7 +11,7 @@ type PlanningState = {
   isPlanningActionsLoading: boolean
   isPlanningCommentsLoading: boolean
   isPlanningDocumentsLoading: boolean
-  plannedNavigationLogs: Array<any> | undefined
+  plannedNavigationLogs: NavigationLog[] | undefined
   historyNavigationLogs: any[]
   navigationLogDetails?: NavigationLog | undefined
   navigationLogActions?: any[] | undefined
