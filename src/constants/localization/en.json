@@ -69,7 +69,8 @@
   "cargoHold": "Cargo Hold",
   "noCargoHold": "No cargo hold configured for this vessel",
   "manageCargoInWeb": "You can manage your cargo hold in the technical module of the web app at &nbsp;",
-  "noDate&TimeSet": "'No Date & Time Set'",
+  "noDate&TimeSet": "No Date & Time Set",
+  "noDateSet": "No Date Set",
   "firstName": "First name",
   "lastName": "Last name",
   "birthdate": "Birthdate",
@@ -314,5 +315,9 @@
   "Payment confirmed": "Payment confirmed",
   "Pegels": "Pegels",
   "Rules": "Rules",
-  "Ticker Oil Prices": "Ticker Oil Prices"
+  "Ticker Oil Prices": "Ticker Oil Prices",
+  "dontHaveAnAcct": "Don't have an account",
+  "signUp": "Sign Up",
+  "username": "Username",
+  "email": "Email"
 }

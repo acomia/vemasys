@@ -36,6 +36,8 @@ type RootStackParamList = {
   ImgViewer: {url: string; title: string}
   CharterAcceptSign: {charter?: any}
   TrackingServiceDialog: undefined
+  SignUp: undefined
+  SignUpVerification: undefined
 }
 
 type MainStackParamList = {

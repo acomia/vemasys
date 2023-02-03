@@ -26,10 +26,12 @@ import {_t} from '@bluecentury/constants'
 import {useAuth, useSettings} from '@bluecentury/stores'
 import {VersionBuildLabel} from '@bluecentury/components/version-build-label'
 import {useTranslation} from 'react-i18next'
+import {useNavigation} from '@react-navigation/native'
 
 export default function Login() {
   const {t} = useTranslation()
   const insets = useSafeAreaInsets()
+  const navigation = useNavigation()
   const {isAuthenticatingUser, authenticate, hasAuthenticationError} = useAuth()
   const {isRemainLoggedIn, setIsRemainLoggedIn} = useSettings()
   const [user, setUser] = useState<Credentials>({username: '', password: ''})
@@ -76,7 +78,7 @@ export default function Login() {
   }, [])
 
   return (
-    <Box flex="1" safeArea>
+    <Box safeArea flex="1">
       <KeyboardAvoidingView
         h={{
           base: '100%',
@@ -84,43 +86,43 @@ export default function Login() {
         }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <VStack space="10" flex="1" p="5" justifyContent="center">
+        <VStack flex="1" justifyContent="center" p="5" space="10">
           <Center>
             <Image
               alt="Company Logo"
-              source={Images.logo}
               resizeMode="contain"
+              source={Images.logo}
             />
           </Center>
           <VStack space="5">
-            <Text bold fontSize="2xl" color={Colors.azure}>
+            <Text bold color={Colors.azure} fontSize="2xl">
               {t('loginHeader')}
             </Text>
             <FormControl isInvalid={isUsernameEmpty || hasAuthenticationError}>
               <Input
                 ref={userNameRef}
+                InputLeftElement={
+                  <Icon
+                    as={<Ionicons name="person-outline" />}
+                    color={Colors.azure}
+                    marginLeft={ms(10)}
+                    size={ms(20)}
+                  />
+                }
+                _disabled={{bgColor: '#ADADAD'}}
+                autoCapitalize="none"
+                autoCorrect={false}
                 bg={Colors.white}
+                fontSize={ms(15)}
+                keyboardType="email-address"
+                placeholder="Username"
+                returnKeyType="next"
+                size="lg"
                 value={user.username}
                 onChangeText={text => {
                   setUser({...user, username: text})
                   setIsUsernameEmpty(false)
                 }}
-                placeholder="Username"
-                InputLeftElement={
-                  <Icon
-                    as={<Ionicons name="person-outline" />}
-                    size={ms(20)}
-                    color={Colors.azure}
-                    marginLeft={ms(10)}
-                  />
-                }
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoCorrect={false}
-                _disabled={{bgColor: '#ADADAD'}}
-                fontSize={ms(15)}
-                size="lg"
-                returnKeyType="next"
                 onSubmitEditing={() => passwordRef.current.focus()}
               />
               <FormControl.ErrorMessage
@@ -132,21 +134,13 @@ export default function Login() {
             </FormControl>
             <FormControl isInvalid={isPasswordEmpty || hasAuthenticationError}>
               <Input
-                bg={Colors.white}
                 ref={passwordRef}
-                value={user.password}
-                onChangeText={text => {
-                  setUser({...user, password: text})
-                  setIsPasswordEmpty(false)
-                }}
-                type={isShowPassword ? 'text' : 'password'}
-                placeholder="Password"
                 InputLeftElement={
                   <Icon
                     as={<Ionicons name="lock-open-outline" />}
-                    size={ms(20)}
                     color="#23475C"
                     marginLeft={ms(10)}
+                    size={ms(20)}
                   />
                 }
                 InputRightElement={
@@ -158,15 +152,23 @@ export default function Login() {
                         }
                       />
                     }
-                    size={ms(20)}
                     color={Colors.azure}
                     marginRight={ms(10)}
+                    size={ms(20)}
                     onPress={() => setIsShowPassword(!isShowPassword)}
                   />
                 }
-                fontSize={ms(15)}
+                bg={Colors.white}
                 color={Colors.disabled}
+                fontSize={ms(15)}
+                placeholder="Password"
                 size="lg"
+                type={isShowPassword ? 'text' : 'password'}
+                value={user.password}
+                onChangeText={text => {
+                  setUser({...user, password: text})
+                  setIsPasswordEmpty(false)
+                }}
                 onSubmitEditing={handleOnSubmitEditingPassword}
               />
               <FormControl.ErrorMessage
@@ -182,30 +184,49 @@ export default function Login() {
             <HStack justifyContent="flex-end">
               <Checkbox
                 isChecked={isRemainLoggedIn}
-                onChange={v => setIsRemainLoggedIn(v)}
                 value="remain-logged-in"
+                onChange={v => setIsRemainLoggedIn(v)}
               >
                 {t('remainLogin')}
               </Checkbox>
             </HStack>
           </VStack>
           <Button
-            colorScheme="azure"
-            isLoadingText="Logging in"
-            isLoading={isAuthenticatingUser}
             _spinner={{
               color: Colors.white,
             }}
             _text={{
               textTransform: 'uppercase',
+              fontWeight: 'bold',
+              fontSize: 16,
             }}
+            colorScheme="azure"
+            isLoading={isAuthenticatingUser}
+            isLoadingText="Logging in"
             onPress={handleOnPressLogin}
           >
             {t('login')}
           </Button>
+          <HStack alignItems="center" justifyContent="center" mt={ms(15)}>
+            <Text bold color={Colors.text} fontSize={15}>
+              {t('dontHaveAnAcct')}?
+            </Text>
+            <Button
+              _text={{
+                fontWeight: 'bold',
+                fontSize: 15,
+                textDecorationLine: 'underline',
+              }}
+              size="lg"
+              variant="link"
+              onPress={() => navigation.navigate('SignUp')}
+            >
+              {t('signUp')}
+            </Button>
+          </HStack>
         </VStack>
       </KeyboardAvoidingView>
-      <Box position="absolute" bottom={0} left={0} right={0} safeAreaBottom>
+      <Box safeAreaBottom bottom={0} left={0} position="absolute" right={0}>
         <Center pb={insets.bottom > 0 ? 0 : 5}>
           <VersionBuildLabel hideVersionName={true} />
         </Center>
