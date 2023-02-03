@@ -1,5 +1,4 @@
-import {Location} from '@bluecentury/models'
-import {Platform} from 'react-native'
+import {Location, NavigationLog} from '@bluecentury/models'
 
 // todo fix Types
 export function formatLocationLabel(location?: GeographicPoint | Location) {
@@ -37,7 +36,9 @@ export function formatNumber(
     .replace(/(\d)(?=(\d{3})+(?!\d))/g, `$1${separator}`)
 }
 
-export function calculateTotalIn(navigationlog: any): number {
+export function calculateTotalIn(
+  navigationlog: NavigationLog
+): string | number {
   let totalIn = 0
   if (!navigationlog.cargoType) {
     return totalIn
@@ -47,11 +48,11 @@ export function calculateTotalIn(navigationlog: any): number {
     navigationlog.standardContainerCargo.length > 0
   ) {
     totalIn = navigationlog.standardContainerCargo.reduce(
-      (accumulator: number, container: {nbIn: string}) => {
-        if (typeof container.nbIn === 'string') {
-          return accumulator + parseInt(container.nbIn)
+      (accumulator: number, container: {nbIn: NumberOrNull}) => {
+        if (typeof container.nbIn === 'number') {
+          return accumulator + container.nbIn
         }
-        return accumulator + container.nbIn
+        return accumulator
       },
       totalIn
     )
@@ -62,19 +63,21 @@ export function calculateTotalIn(navigationlog: any): number {
     totalIn = navigationlog.loadedContainerCargo.length
   } else if (navigationlog.bulkCargo && navigationlog.bulkCargo.length > 0) {
     totalIn = navigationlog.bulkCargo
-      .filter((cargo: {isLoading: any}) => cargo.isLoading)
-      .reduce((accumulator: number, cargo: {actualTonnage: string}) => {
-        if (typeof cargo.actualTonnage === 'string') {
-          return accumulator + parseFloat(cargo.actualTonnage)
+      .filter((cargo: {isLoading: boolean}) => cargo.isLoading)
+      .reduce((accumulator: number, cargo: {actualTonnage: NumberOrNull}) => {
+        if (typeof cargo.actualTonnage === 'number') {
+          return accumulator + cargo.actualTonnage
         }
 
-        return accumulator + cargo.actualTonnage
+        return accumulator
       }, totalIn)
   }
-  return totalIn
+  return totalIn.toString().replace('.', ',')
 }
 
-export function calculateTotalOut(navigationlog: any): number {
+export function calculateTotalOut(
+  navigationlog: NavigationLog
+): number | string {
   let totalOut = 0
   if (!navigationlog.cargoType) {
     return totalOut
@@ -84,11 +87,11 @@ export function calculateTotalOut(navigationlog: any): number {
     navigationlog.standardContainerCargo.length > 0
   ) {
     totalOut = navigationlog.standardContainerCargo.reduce(
-      (accumulator: number, container: {nbOut: string}) => {
-        if (typeof container.nbOut === 'string') {
-          return accumulator + parseInt(container.nbOut)
+      (accumulator: number, container: {nbOut: NumberOrNull}) => {
+        if (typeof container.nbOut === 'number') {
+          return accumulator + container.nbOut
         }
-        return accumulator + container.nbOut
+        return accumulator
       },
       totalOut
     )
@@ -99,16 +102,16 @@ export function calculateTotalOut(navigationlog: any): number {
     totalOut = navigationlog.unloadedContainerCargo.length
   } else if (navigationlog.bulkCargo && navigationlog.bulkCargo.length > 0) {
     totalOut = navigationlog.bulkCargo
-      .filter((cargo: {isLoading: any}) => !cargo.isLoading)
-      .reduce((accumulator: number, cargo: {actualTonnage: string}) => {
-        if (typeof cargo.actualTonnage === 'string') {
-          return accumulator + parseFloat(cargo.actualTonnage)
+      .filter((cargo: {isLoading: boolean}) => !cargo.isLoading)
+      .reduce((accumulator: number, cargo: {actualTonnage: NumberOrNull}) => {
+        if (typeof cargo.actualTonnage === 'number') {
+          return accumulator + cargo.actualTonnage
         }
 
-        return accumulator + cargo.actualTonnage
+        return accumulator
       }, totalOut)
   }
-  return totalOut
+  return totalOut.toString().replace('.', ',')
 }
 
 export const hasSelectedEntityUserSomePermission = (

@@ -42,27 +42,31 @@ const ActionCard = ({
   return (
     <TouchableOpacity activeOpacity={0.7} onPress={onActionPress}>
       <HStack
-        borderWidth={1}
+        alignItems="center"
+        bg={Colors.white}
         borderColor={Colors.light}
         borderRadius={5}
+        borderWidth={1}
+        mt={ms(10)}
         px={ms(12)}
         py={ms(8)}
-        mt={ms(10)}
-        bg={Colors.white}
         shadow={1}
-        alignItems="center"
       >
         <Image
+          height={
+            action.type === 'Cleaning' && _.isNull(action.end) ? ms(60) : null
+          }
+          width={
+            action.type === 'Cleaning' && _.isNull(action.end) ? ms(60) : null
+          }
           alt="navlog-action-animated"
-          source={renderAnimatedIcon(action.type, action.end)}
-          width={action.type === 'Cleaning' ? ms(30) : ms(40)}
-          height={action.type === 'Cleaning' ? ms(30) : ms(40)}
-          resizeMode="contain"
           mr={ms(10)}
+          resizeMode="contain"
+          source={renderAnimatedIcon(action.type, action.end)}
         />
         <Box flex="1">
           <HStack alignItems="center">
-            <Text bold fontSize={ms(15)} color={Colors.text}>
+            <Text bold color={Colors.text} fontSize={ms(15)}>
               {titleCase(action.type)}
             </Text>
           </HStack>
@@ -78,16 +82,16 @@ const ActionCard = ({
           )}
         </Box>
         <TouchableOpacity
-          disabled={_.isNull(action.end) ? false : true}
           activeOpacity={0.7}
+          disabled={_.isNull(action.end) ? false : true}
           onPress={onActionStopPress}
         >
           <Image
             alt="navlog-action-icon"
-            source={_.isNull(action.end) ? Icons.stop : null}
-            width={ms(30)}
             height={ms(30)}
             resizeMode="contain"
+            source={_.isNull(action.end) ? Icons.stop : null}
+            width={ms(30)}
           />
         </TouchableOpacity>
       </HStack>

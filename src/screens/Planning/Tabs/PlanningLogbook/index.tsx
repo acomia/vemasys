@@ -40,7 +40,7 @@ const PlanningLogbook = () => {
     isDeleteNavLogActionSuccess,
   ])
 
-  plannedNavigationLogs.sort(
+  plannedNavigationLogs?.sort(
     (a: any, b: any) =>
       moment(a.arrivalDatetime || a.plannedEta || a.arrivalZoneTwo).valueOf() -
       moment(b.arrivalDatetime || b.plannedEta || b.arrivalZoneTwo).valueOf()
@@ -173,16 +173,16 @@ const PlanningLogbook = () => {
               </Text>
             </Center>
           </Box>
-        ) : plannedNavigationLogs.length == 0 ? (
+        ) : plannedNavigationLogs?.length === 0 ? (
           <Box bgColor={Colors.white} flex="1" p="2">
             <Center>
               <Text bold color={Colors.azure}>
-                No results available
+                {t('noResultsAvailable')}
               </Text>
             </Center>
           </Box>
         ) : (
-          plannedNavigationLogs.map((navigationLog: any, i: number) => (
+          plannedNavigationLogs?.map((navigationLog, i: number) => (
             <NavLogCard key={i} navigationLog={navigationLog} />
           ))
         )}

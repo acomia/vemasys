@@ -259,7 +259,6 @@
   "french": "French",
   "german": "German",
   "close": "Close",
-
   "selectYourRole": "Select your role",
   "bunkeringDetails": "Bunkering Details",
   "PDFViewer": "PDF Viewer",
@@ -304,7 +303,6 @@
   "Cargo Holds": "Cargo Holds",
   "Documents": "Documents",
   "Map": "Map",
-
   "New": "New",
   "Read": "Read",
   "Accepted": "Accepted",
@@ -316,6 +314,6 @@
   "Payment confirmed": "Payment confirmed",
   "Pegels": "Pegels",
   "Rules": "Rules",
-  "Ticker Oil Prices": "Ticker Oil Prices"
-
+  "Ticker Oil Prices": "Ticker Oil Prices",
+  "noResultsAvailable": "No results available"
 }

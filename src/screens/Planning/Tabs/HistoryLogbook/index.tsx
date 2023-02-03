@@ -3,6 +3,7 @@ import {Box, Center, HStack, Image, ScrollView, Text} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import {useNavigation} from '@react-navigation/native'
+import {useTranslation} from 'react-i18next'
 
 import {Colors} from '@bluecentury/styles'
 import {Icons} from '@bluecentury/assets'
@@ -16,6 +17,7 @@ import {RefreshControl, TouchableOpacity} from 'react-native'
 import {LoadingAnimated, NavigationLogType} from '@bluecentury/components'
 
 const HistoryLogbook = ({routeIndex}: any) => {
+  const {t} = useTranslation()
   const navigation = useNavigation()
   const {
     isPlanningLoading,
@@ -135,9 +137,9 @@ const HistoryLogbook = ({routeIndex}: any) => {
         {dateChanged && (
           <Box
             key={`${navigationLog.id}-date`}
-            borderBottomWidth={1}
             borderBottomColor={Colors.light}
             borderBottomStyle={'solid'}
+            borderBottomWidth={1}
             mb={ms(15)}
           >
             <Text bold fontSize={ms(16)} mb={ms(5)}>
@@ -165,9 +167,9 @@ const HistoryLogbook = ({routeIndex}: any) => {
               py={ms(10)}
             >
               <Text
+                bold
                 color={navigationLog.isActive ? Colors.white : Colors.text}
                 fontSize={ms(15)}
-                bold
               >
                 {formatLocationLabel(navigationLog?.location)}
               </Text>
@@ -181,13 +183,13 @@ const HistoryLogbook = ({routeIndex}: any) => {
             {/* End of Header */}
             {navigationLog.bulkCargo.length < 1 ? null : (
               <Box
-                px={ms(16)}
-                py={ms(5)}
-                pt={3}
-                borderWidth={3}
                 borderColor={Colors.border}
                 borderStyle="dashed"
+                borderWidth={3}
                 mt={-3}
+                pt={3}
+                px={ms(16)}
+                py={ms(5)}
               >
                 <HStack alignItems="center" my={ms(5)}>
                   <Box flex="1">
@@ -199,17 +201,19 @@ const HistoryLogbook = ({routeIndex}: any) => {
                               return (
                                 <Text
                                   key={i}
-                                  color={Colors.highlighted_text}
                                   bold
+                                  color={Colors.highlighted_text}
                                 >
                                   {`${Math.ceil(cargo.tonnage)} MT - ${
-                                    cargo.type ? cargo.type.nameEn : 'Unknown'
+                                    cargo.type
+                                      ? cargo.type.nameEn || cargo.type.nameNl
+                                      : t('unknown')
                                   }  `}
                                   <Image
                                     alt="navlogs-tags"
-                                    source={Icons.tags}
                                     mx={ms(5)}
                                     resizeMode="contain"
+                                    source={Icons.tags}
                                   />
                                 </Text>
                               )
@@ -218,16 +222,16 @@ const HistoryLogbook = ({routeIndex}: any) => {
                         </Box>
                       )}
                     <HStack alignItems="center" mt={ms(5)}>
-                      <Text color={Colors.highlighted_text} bold>
+                      <Text bold color={Colors.highlighted_text}>
                         {calculateTotalOut(navigationLog)} MT
                       </Text>
                       <Image
                         alt="triple-arrow-navlogs"
-                        source={Icons.triple_arrow}
                         mx={ms(5)}
                         resizeMode="contain"
+                        source={Icons.triple_arrow}
                       />
-                      <Text color={Colors.highlighted_text} bold>
+                      <Text bold color={Colors.highlighted_text}>
                         {calculateTotalIn(navigationLog)} MT
                       </Text>
                     </HStack>
@@ -266,33 +270,33 @@ const HistoryLogbook = ({routeIndex}: any) => {
   if (isPlanningLoading && !isPageChange) return <LoadingAnimated />
 
   return (
-    <Box flex="1" bg={Colors.white}>
+    <Box bg={Colors.white} flex="1">
       <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={isRefreshing} onRefresh={onPullRefresh} />
+        }
         contentContainerStyle={{flexGrow: 1, paddingBottom: 20}}
+        pointerEvents={isPageChange ? 'none' : 'auto'}
+        px={ms(12)}
+        py={ms(15)}
+        scrollEventThrottle={16}
         onScroll={({nativeEvent}) => {
           if (shouldLoadNextPage(nativeEvent)) {
             loadNextPage()
           }
         }}
-        scrollEventThrottle={16}
-        refreshControl={
-          <RefreshControl onRefresh={onPullRefresh} refreshing={isRefreshing} />
-        }
-        pointerEvents={isPageChange ? 'none' : 'auto'}
-        px={ms(12)}
-        py={ms(15)}
       >
         {hasErrorLoadingVesselHistoryNavLogs ? (
-          <Box flex="1" bgColor={Colors.white} p="5">
+          <Box bgColor={Colors.white} flex="1" p="5">
             <Center>
               <Text>Failed to load the requested resource.</Text>
             </Center>
           </Box>
         ) : historyNavigationLogs.length == 0 ? (
-          <Box flex="1" bgColor={Colors.white} p="2">
+          <Box bgColor={Colors.white} flex="1" p="2">
             <Center>
               <Text bold color={Colors.azure}>
-                No results available
+                {t('noResultsAvailable')}
               </Text>
             </Center>
           </Box>
@@ -318,9 +322,9 @@ const HistoryLogbook = ({routeIndex}: any) => {
             return (
               <NavLogCard
                 key={i}
-                navigationLog={navigationLog}
                 currentDate={currentDate}
                 dateChanged={dateChanged}
+                navigationLog={navigationLog}
               />
             )
           })

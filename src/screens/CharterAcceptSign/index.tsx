@@ -58,7 +58,7 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
       showToast('Charter accepted failed.', 'failed')
     }
     const signData = {
-      user: user.id,
+      user: user?.id,
       signature: signature,
       signedDate: new Date().toLocaleDateString(),
       charter: charter.id,
