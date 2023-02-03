@@ -15,7 +15,7 @@ import {LoadingAnimated} from '@bluecentury/components'
 const Me = () => {
   const {isCrewLoading, crew, planning, getCrew, getCrewPlanning} = useCrew()
   const {vesselId, user} = useEntity()
-  const isSelfPlanning = !user.id
+  const isSelfPlanning = !user?.id
   const [currentMonth, setCurrentMonth] = useState(
     new Date().toLocaleDateString()
   )
@@ -23,8 +23,11 @@ const Me = () => {
   const customHeaderProps: any = useRef()
 
   useEffect(() => {
-    getCrew(vesselId)
-    getCrewPlanning(vesselId)
+    if (typeof vesselId !== 'undefined') {
+      getCrew(vesselId)
+      getCrewPlanning(vesselId)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vesselId])
 
   const getSelfPlanningDates = () => {
@@ -32,7 +35,7 @@ const Me = () => {
     const dates: any = {}
 
     planning
-      .filter((p: any) => p.user.id === user.id)
+      .filter((p: any) => p.user.id === user?.id)
       .forEach((plan: any) => {
         const startDate = moment(plan.plannedStartDate).format('YYYY-MM-DD')
         const currentObject = dates[startDate]
@@ -80,22 +83,22 @@ const Me = () => {
         // mx={ms(-4)}
         p={ms(10)}
       >
-        <Text fontSize={ms(20)} bold color={Colors.azure}>
+        <Text bold color={Colors.azure} fontSize={ms(20)}>
           {moment(currentMonth).format('MMM yyyy')}
         </Text>
         <HStack>
           <TouchableOpacity onPress={movePrevious}>
             <MaterialIcons
+              color={Colors.azure}
               name="arrow-back-ios"
               size={ms(24)}
-              color={Colors.azure}
             />
           </TouchableOpacity>
           <TouchableOpacity onPress={moveNext}>
             <MaterialIcons
+              color={Colors.azure}
               name="arrow-forward-ios"
               size={ms(24)}
-              color={Colors.azure}
             />
           </TouchableOpacity>
         </HStack>
@@ -104,44 +107,46 @@ const Me = () => {
   })
 
   const onPullToReload = () => {
-    getCrew(vesselId)
-    getCrewPlanning(vesselId)
+    if (typeof vesselId !== 'undefined') {
+      getCrew(vesselId)
+      getCrewPlanning(vesselId)
+    }
   }
 
   if (isCrewLoading) return <LoadingAnimated />
 
   return (
-    <Box flex="1" bg={Colors.white}>
+    <Box bg={Colors.white} flex="1">
       <ScrollView
-        contentContainerStyle={{flexGrow: 1, paddingBottom: 20}}
         refreshControl={
           <RefreshControl
-            onRefresh={onPullToReload}
             refreshing={isCrewLoading}
+            onRefresh={onPullToReload}
           />
         }
+        contentContainerStyle={{flexGrow: 1, paddingBottom: 20}}
       >
         <Calendar
           current={new Date().toLocaleDateString()}
+          disableAllTouchEventsForDisabledDays={true}
+          disableMonthChange={true}
+          enableSwipeMonths={false}
+          firstDay={7}
           hideArrows={true}
           hideExtraDays={true}
-          disableMonthChange={true}
-          firstDay={7}
-          onPressArrowLeft={subtractMonth => subtractMonth()}
-          onPressArrowRight={addMonth => addMonth()}
-          disableAllTouchEventsForDisabledDays={true}
-          enableSwipeMonths={false}
           markedDates={getSelfPlanningDates()}
           markingType="multi-period"
+          onPressArrowLeft={subtractMonth => subtractMonth()}
+          onPressArrowRight={addMonth => addMonth()}
           // customHeader={CustomHeader}
         />
         <Box mt={ms(30)} px={ms(12)}>
           <HStack
+            bg={Colors.white}
+            borderRadius={ms(5)}
             mb={ms(8)}
             px={ms(15)}
             py={ms(20)}
-            borderRadius={ms(5)}
-            bg={Colors.white}
             shadow={5}
           >
             <Text flex="1" fontWeight="medium">
@@ -150,11 +155,11 @@ const Me = () => {
             <Image alt="working-icon" source={Icons.check} />
           </HStack>
           <HStack
+            bg={Colors.white}
+            borderRadius={ms(5)}
             mb={ms(8)}
             px={ms(15)}
             py={ms(20)}
-            borderRadius={ms(5)}
-            bg={Colors.white}
             shadow={5}
           >
             <Text flex="1" fontWeight="medium">
@@ -162,9 +167,9 @@ const Me = () => {
             </Text>
             <Image
               alt="working-icon"
+              h={ms(20)}
               source={Icons.status_x}
               w={ms(20)}
-              h={ms(20)}
             />
           </HStack>
         </Box>

@@ -3,7 +3,7 @@ import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as API from '@bluecentury/api/vemasys'
 import {ENTITY_TYPE_EXPLOITATION_VESSEL} from '@bluecentury/constants'
-import {EntityUser, User, Vessel} from '@bluecentury/models'
+import {Entity, EntityUser, User, Vessel} from '@bluecentury/models'
 import {useSettings} from '@bluecentury/stores/settings'
 
 type EntityState = {
@@ -16,14 +16,14 @@ type EntityState = {
   user: User | null
   userVessels: Array<any>
   entityUsers: Array<EntityUser>
-  entityId: string | undefined
-  entityType: string
+  entityId: string | number | undefined
+  entityType: string | number | undefined
   entityRole: string
-  entityUserId: string | undefined
+  entityUserId: string | number | undefined
   vesselId: string | undefined
   vesselDetails: Vessel | undefined
-  selectedVessel: {}
-  selectedEntity: {}
+  selectedVessel: Entity | null
+  selectedEntity: EntityUser | null
   physicalVesselId: string
   fleetVessel: number
   pendingRoles: Array<any>
@@ -60,8 +60,8 @@ const initialEntityState: EntityState = {
   entityUserId: undefined,
   vesselId: undefined,
   vesselDetails: undefined,
-  selectedVessel: {},
-  selectedEntity: {},
+  selectedVessel: null,
+  selectedEntity: null,
   physicalVesselId: '',
   fleetVessel: 0,
   pendingRoles: [],
@@ -133,38 +133,39 @@ export const useEntity = create(
           })
         }
       },
-      selectEntityUser: async (entity: any) => {
+      selectEntityUser: async (entity: EntityUser) => {
         set({fleetVessel: 0})
         const entityRole = entity.role.title
         const entityType = entity.entity.type.title
         const physicalVesselId =
           ENTITY_TYPE_EXPLOITATION_VESSEL === entityType &&
-          entity.entity.exploitationVessel.physicalVessel
+          entity.entity.exploitationVessel?.physicalVessel
             ? entity.entity.exploitationVessel.physicalVessel.id
-            : entity.entity.exploitationGroup.exploitationVessels[0]
+            : entity.entity.exploitationGroup?.exploitationVessels[0]
                 .physicalVessel.id
         const vesselId =
           ENTITY_TYPE_EXPLOITATION_VESSEL === entityType
-            ? entity.entity.exploitationVessel.id
-            : entity.entity.exploitationGroup.exploitationVessels[0].id
+            ? entity.entity.exploitationVessel?.id
+            : entity.entity.exploitationGroup?.exploitationVessels[0].id
 
         const selectedVessel =
           ENTITY_TYPE_EXPLOITATION_VESSEL === entityType
             ? entity.entity
-            : entity.entity.exploitationGroup.exploitationVessels[0].entity
+            : entity.entity.exploitationGroup &&
+              entity.entity.exploitationGroup.exploitationVessels[0].entity
 
         set({
           entityId: entity.entity.id,
           entityUserId: entity.id,
           entityRole: entityRole,
-          physicalVesselId: physicalVesselId,
+          physicalVesselId: `${physicalVesselId}`,
           entityType: entityType,
-          vesselId: vesselId,
+          vesselId: `${vesselId}`,
           selectedVessel: selectedVessel,
           selectedEntity: entity,
         })
         try {
-          const response = await API.getVesselNavigationDetails(vesselId)
+          const response = await API.getVesselNavigationDetails(`${vesselId}`)
           set({
             vesselDetails: response,
           })
@@ -231,9 +232,9 @@ export const useEntity = create(
       updatePendingRole: async (id: string, accept: boolean) => {
         set({isLoadingPendingRoles: true})
         try {
-          let response
-          if (accept) response = await API.acceptPendingRole(id)
-          else response = await API.rejectPendingRole(id)
+          const response = accept
+            ? await API.acceptPendingRole(id)
+            : await API.rejectPendingRole(id)
           set({acceptRoleStatus: response})
         } catch (error) {
           set({isLoadingPendingRoles: false})
