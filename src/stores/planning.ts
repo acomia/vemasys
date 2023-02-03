@@ -1,7 +1,6 @@
 import create from 'zustand'
 import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-
 import * as API from '@bluecentury/api/vemasys'
 import {NavigationLog} from '@bluecentury/models'
 
@@ -13,11 +12,11 @@ type PlanningState = {
   isPlanningDocumentsLoading: boolean
   plannedNavigationLogs: NavigationLog[] | undefined
   historyNavigationLogs: any[]
-  navigationLogDetails?: NavigationLog | undefined
-  navigationLogActions?: any[] | undefined
-  navigationLogCargoHolds?: any[]
-  navigationLogComments?: any[]
-  navigationLogDocuments?: any[]
+  navigationLogDetails: NavigationLog | undefined
+  navigationLogActions: any[] | undefined
+  navigationLogCargoHolds: any[]
+  navigationLogComments: any[]
+  navigationLogDocuments: any[]
   bulkTypes?: []
   hasErrorLoadingPlannedNavigationLogs: boolean
   hasErrorLoadingVesselHistoryNavLogs: boolean
@@ -66,24 +65,33 @@ type PlanningActions = {
 
 export type PlanningStore = PlanningState & PlanningActions
 
+const initialState: PlanningState = {
+  isPlanningLoading: false,
+  isPlanningDetailsLoading: false,
+  isPlanningActionsLoading: false,
+  isPlanningCommentsLoading: false,
+  isPlanningDocumentsLoading: false,
+  plannedNavigationLogs: [],
+  historyNavigationLogs: [],
+  hasErrorLoadingPlannedNavigationLogs: false,
+  hasErrorLoadingVesselHistoryNavLogs: false,
+  isCreateNavLogActionSuccess: false,
+  isUpdateNavLogActionSuccess: false,
+  isDeleteNavLogActionSuccess: false,
+  updateNavlogDatesSuccess: '',
+  updateNavlogDatesFailed: '',
+  updateNavlogDatesMessage: '',
+  navigationLogDetails: undefined,
+  navigationLogActions: undefined,
+  navigationLogCargoHolds: [],
+  navigationLogComments: [],
+  navigationLogDocuments: [],
+}
+
 export const usePlanning = create(
   persist<PlanningStore>(
     (set, get) => ({
-      isPlanningLoading: false,
-      isPlanningDetailsLoading: false,
-      isPlanningActionsLoading: false,
-      isPlanningCommentsLoading: false,
-      isPlanningDocumentsLoading: false,
-      plannedNavigationLogs: [],
-      historyNavigationLogs: [],
-      hasErrorLoadingPlannedNavigationLogs: false,
-      hasErrorLoadingVesselHistoryNavLogs: false,
-      isCreateNavLogActionSuccess: false,
-      isUpdateNavLogActionSuccess: false,
-      isDeleteNavLogActionSuccess: false,
-      updateNavlogDatesSuccess: '',
-      updateNavlogDatesFailed: '',
-      updateNavlogDatesMessage: '',
+      ...initialState,
       getVesselHistoryNavLogs: async (vesselId: string, page: number) => {
         set({
           isPlanningLoading: true,
@@ -282,14 +290,15 @@ export const usePlanning = create(
             navLogId,
             dates
           )
-          if (response === 'SUCCESS')
+          if (response === 'SUCCESS') {
             set({isPlanningLoading: false, updateNavlogDatesSuccess: response})
-          else
+          } else {
             set({
               isPlanningLoading: false,
               updateNavlogDatesFailed: 'FAILED',
               updateNavlogDatesMessage: response,
             })
+          }
         } catch (error) {
           set({isPlanningLoading: false})
         }
@@ -404,7 +413,7 @@ export const usePlanning = create(
       ) => {
         const {start, end, estimatedEnd, type, cargoHoldActions} =
           navigationLogActionDetails
-        let body = {
+        const body = {
           navigationLog: {
             id: navigationLogId,
           },
@@ -439,7 +448,7 @@ export const usePlanning = create(
       ) => {
         const {start, end, estimatedEnd, type, cargoHoldActions} =
           navigationLogActionDetails
-        let body = {
+        const body = {
           navigationLog: {
             id: navigationLogId,
           },
