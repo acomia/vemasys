@@ -323,5 +323,6 @@
   "enableTrackingServiceWarning": "Cela activera le service de suivi dans cet appareil et commencera à envoyer des coordonnées GPS pour ",
   "disableTrackingServiceWarning": "Cela désactivera le service de suivi dans cet appareil et cessera d'envoyer des coordonnées GPS pour ",
   "sendingGPSDataFor": "L'appareil envoie actuellement des données GPS pour ",
-  "requiredTurnOffGPS": "Vous devrez le désactiver afin de poursuivre votre dernière action."
+  "requiredTurnOffGPS": "Vous devrez le désactiver afin de poursuivre votre dernière action.",
+  "back": "Dos"
 }
