@@ -12,6 +12,7 @@ import {
   WarningOutlineIcon,
   Center,
   KeyboardAvoidingView,
+  HStack,
 } from 'native-base'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import {ms} from 'react-native-size-matters'
@@ -23,10 +24,12 @@ import {Images} from '@bluecentury/assets'
 import {useAuth} from '@bluecentury/stores'
 import {VersionBuildLabel} from '@bluecentury/components/version-build-label'
 import {useTranslation} from 'react-i18next'
+import {useNavigation} from '@react-navigation/native'
 
 export default function Login() {
   const {t} = useTranslation()
   const insets = useSafeAreaInsets()
+  const navigation = useNavigation()
   const {isAuthenticatingUser, authenticate, hasAuthenticationError} = useAuth()
   // const {isRemainLoggedIn, setIsRemainLoggedIn} = useSettings()
   const [user, setUser] = useState<Credentials>({username: '', password: ''})
@@ -192,6 +195,8 @@ export default function Login() {
             }}
             _text={{
               textTransform: 'uppercase',
+              fontWeight: 'bold',
+              fontSize: 16,
             }}
             colorScheme="azure"
             isLoading={isAuthenticatingUser}
@@ -200,6 +205,23 @@ export default function Login() {
           >
             {t('login')}
           </Button>
+          <HStack alignItems="center" justifyContent="center" mt={ms(15)}>
+            <Text bold color={Colors.text} fontSize={15}>
+              {t('dontHaveAnAcct')}?
+            </Text>
+            <Button
+              _text={{
+                fontWeight: 'bold',
+                fontSize: 15,
+                textDecorationLine: 'underline',
+              }}
+              size="lg"
+              variant="link"
+              onPress={() => navigation.navigate('SignUp')}
+            >
+              {t('signUp')}
+            </Button>
+          </HStack>
         </VStack>
       </KeyboardAvoidingView>
       <Box safeAreaBottom bottom={0} left={0} position="absolute" right={0}>
