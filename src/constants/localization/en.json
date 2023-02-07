@@ -315,5 +315,14 @@
   "Pegels": "Pegels",
   "Rules": "Rules",
   "Ticker Oil Prices": "Ticker Oil Prices",
-  "noResultsAvailable": "No results available"
+  "noResultsAvailable": "No results available",
+
+  "logoutOneWord": "Logout",
+  "logoutConfirm": "Are you sure you want to logout?",
+  "unsavedChangesProceedConfirmation": "There are unsaved changes in this page. Are you sure you want to proceed?",
+  "enableTrackingServiceWarning": "This will enable tracking service in this device and will start sending GPS coordinates for ",
+  "disableTrackingServiceWarning": "This will disable tracking service in this device and will stop sending GPS coordinates for ",
+  "sendingGPSDataFor": "Device is currently sending GPS Data for ",
+  "requiredTurnOffGPS": "You will have to disable it in order to proceed with your latest action.",
+  "back": "Back"
 }

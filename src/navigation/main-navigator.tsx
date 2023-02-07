@@ -217,7 +217,7 @@ export default function MainNavigator({navigation}: Props) {
       />
       <Screen
         options={{
-          headerTitle: 'Select your role',
+          headerTitle: t('selectYourRole'),
         }}
         component={Entity}
         name={Screens.ChangeRole}

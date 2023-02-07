@@ -662,9 +662,9 @@ const Details = () => {
           size="full"
         >
           <Modal.Content>
-            <Modal.Header>Confirmation</Modal.Header>
+            <Modal.Header>{t('confirmation')}</Modal.Header>
             <Text fontWeight="medium" mx={ms(12)} my={ms(20)}>
-              Are you sure you want to stop this action?
+              {t('areYouSure')}
             </Text>
             <HStack>
               <Button
@@ -674,7 +674,7 @@ const Details = () => {
                 onPress={() => setConfirmModal(false)}
               >
                 <Text color={Colors.disabled} fontWeight="medium">
-                  Cancel
+                  {t('cancel')}
                 </Text>
               </Button>
               <Button
@@ -684,7 +684,7 @@ const Details = () => {
                 onPress={onStopAction}
               >
                 <Text color={Colors.white} fontWeight="medium">
-                  Stop
+                  {t('stop')}
                 </Text>
               </Button>
             </HStack>
@@ -697,10 +697,9 @@ const Details = () => {
           size="full"
         >
           <Modal.Content>
-            <Modal.Header>Confirmation</Modal.Header>
+            <Modal.Header>{t('confirmation')}</Modal.Header>
             <Text fontWeight="medium" mx={ms(12)} my={ms(20)}>
-              There are unsaved changes in this page. Are you sure you want to
-              proceed?
+              {t('unsavedChangesProceedConfirmation')}
             </Text>
             <HStack>
               <Button
@@ -712,7 +711,7 @@ const Details = () => {
                 }}
               >
                 <Text color={Colors.disabled} fontWeight="medium">
-                  No
+                  {t('no')}
                 </Text>
               </Button>
               <Button
@@ -722,7 +721,7 @@ const Details = () => {
                 onPress={onProceedToNextTab}
               >
                 <Text color={Colors.white} fontWeight="medium">
-                  Yes
+                  {t('yes')}
                 </Text>
               </Button>
             </HStack>
@@ -745,7 +744,7 @@ const Details = () => {
                 variant="ghost"
                 onPress={onCancelUnsavedChanges}
               >
-                Cancel
+                {t('cancel')}
               </Button>
               <Button
                 bg={Colors.primary}
@@ -753,7 +752,7 @@ const Details = () => {
                 m={ms(16)}
                 onPress={handleOnSaveDateUpdates}
               >
-                Save
+                {t('save')}
               </Button>
             </HStack>
           </Shadow>

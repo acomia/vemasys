@@ -52,6 +52,7 @@ export default function RootNavigator() {
         headerStyle: {backgroundColor: Colors.light},
         headerTitleStyle: {fontSize: 16, fontWeight: 'bold'},
         animation: 'fade',
+        headerBackTitle: t('back'),
       }}
     >
       <Group>
@@ -147,7 +148,7 @@ export default function RootNavigator() {
           component={TechnicalTasksList}
           options={({route}) => ({
             headerShown: true,
-            title: route.params.title,
+            title: t(route.params.title),
           })}
         />
         <Screen
@@ -220,7 +221,7 @@ export default function RootNavigator() {
           component={TechnicalRoutinesList}
           options={({route}) => ({
             headerShown: true,
-            title: route.params.title,
+            title: t(route.params.title),
           })}
         />
         <Screen
