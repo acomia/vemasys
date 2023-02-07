@@ -1,13 +1,19 @@
 import React from 'react'
 import {Box, Button, Image, Text} from 'native-base'
 import {Shadow} from 'react-native-shadow-2'
-import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
-import {Images} from '@bluecentury/assets'
-import {NativeStackScreenProps} from '@react-navigation/native-stack'
+import {useTranslation} from 'react-i18next'
 
-type Props = NativeStackScreenProps<RootStackParamList>
-export default function SignUpFinish({navigation}: Props) {
+import {Icons} from '@bluecentury/assets'
+import {Colors} from '@bluecentury/styles'
+
+interface ISignUpFinish {
+  email: string
+  onProceed: () => void
+}
+
+export default function SignUpFinish({email, onProceed}: ISignUpFinish) {
+  const {t} = useTranslation()
   return (
     <Box bg={Colors.white} flex="1">
       <Box flex="1" justifyContent="center" p={ms(16)}>
@@ -16,7 +22,7 @@ export default function SignUpFinish({navigation}: Props) {
           h={200}
           mb={ms(10)}
           resizeMode="contain"
-          source={Images.signup_pending}
+          source={Icons.signup_pending}
           w="100%"
         />
         <Text
@@ -26,7 +32,7 @@ export default function SignUpFinish({navigation}: Props) {
           my={ms(20)}
           textAlign="center"
         >
-          Pending request
+          {t('pendingRequest')}
         </Text>
         <Text
           bold
@@ -35,10 +41,10 @@ export default function SignUpFinish({navigation}: Props) {
           maxW={200}
           textAlign="center"
         >
-          We will send a confirmation email once approved to
+          {t('weWillSendEmail')}
         </Text>
         <Text bold color={Colors.primary} textAlign="center">
-          email@sample.com
+          {email}
         </Text>
       </Box>
       <Box bg={Colors.white}>
@@ -51,9 +57,9 @@ export default function SignUpFinish({navigation}: Props) {
             bg={Colors.primary}
             m={ms(16)}
             size="md"
-            onPress={() => navigation.navigate('Login')}
+            onPress={onProceed}
           >
-            Back to Login
+            {t('backToLogin')}
           </Button>
         </Shadow>
       </Box>

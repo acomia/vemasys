@@ -15,34 +15,48 @@ import {
 } from 'native-base'
 import {useTranslation} from 'react-i18next'
 import {ms} from 'react-native-size-matters'
-import {Colors} from '@bluecentury/styles'
-import {DatetimePicker} from './components'
 import DatePicker from 'react-native-date-picker'
-import {Vemasys} from '@bluecentury/helpers'
 import {Shadow} from 'react-native-shadow-2'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
+
+import {Colors} from '@bluecentury/styles'
+import {DatetimePicker} from './components'
+import {Vemasys} from '@bluecentury/helpers'
+import {_t} from '@bluecentury/constants'
+
+const allFieldsRequired = _t('allFieldsRequired')
+const userFirstname = _t('newUserFirstname')
+const userLastname = _t('newUserLastname')
+const userPhone = _t('newUserPhone')
+const userEmail = _t('newUserEmail')
 
 type Props = NativeStackScreenProps<RootStackParamList>
 export default function SignUp({navigation}: Props) {
   const {t} = useTranslation()
+
   const [values, setValues] = useState({
-    firstname: '',
-    lastname: '',
-    username: '',
+    firstName: '',
+    lastName: '',
+    phone: '',
     email: '',
-    birthdate: '',
-    startdate: '',
-    language: '',
-    roles: '',
-    mmis: '',
-    vessel_name: '',
-    certificate_level: '',
-    password: '',
-    confirm_password: '',
+    // birthdate: '',
+    // startdate: '',
+    // language: '',
+    // roles: '',
+    mmsi: '',
+    euid: '',
+    // certificate_level: '',
+    // password: '',
+    // confirm_password: '',
   })
+  const [isAllFieldEmpty, setIsAllFieldEmpty] = useState(false)
+  const [isFirstnameEmpty, setIsFirstnameEmpty] = useState(false)
+  const [isLastnameEmpty, setIsLastnameEmpty] = useState(false)
+  const [isPhoneEmpty, setIsPhoneEmpty] = useState(false)
+  const [isEmailEmpty, setIsEmailEmpty] = useState(false)
   const [selectedDate, setSelectedDate] = useState('')
   const [openDatePicker, setOpenDatePicker] = useState(false)
-  const [requestAsOwner, setRequestAsOwner] = useState(false)
+  // const [requestAsOwner, setRequestAsOwner] = useState(false)
 
   const onDatesChange = (date: Date) => {
     const formattedDate = Vemasys.formatDate(date)
@@ -51,6 +65,35 @@ export default function SignUp({navigation}: Props) {
     } else {
       setValues({...values, startdate: formattedDate})
     }
+  }
+
+  const onSignUpSubmit = () => {
+    if (
+      values.firstName === '' &&
+      values.lastName === '' &&
+      values.phone === '' &&
+      values.email === ''
+    ) {
+      setIsAllFieldEmpty(true)
+      return
+    }
+    if (
+      values.firstName === '' ||
+      values.lastName === '' ||
+      values.phone === '' ||
+      values.email === ''
+    ) {
+      values.firstName === ''
+        ? setIsFirstnameEmpty(true)
+        : setIsFirstnameEmpty(false)
+      values.lastName === ''
+        ? setIsLastnameEmpty(true)
+        : setIsLastnameEmpty(false)
+      values.phone === '' ? setIsPhoneEmpty(true) : setIsPhoneEmpty(false)
+      values.email === '' ? setIsEmailEmpty(true) : setIsEmailEmpty(false)
+      return
+    }
+    navigation.navigate('SignUpVerification', {signUpInfo: values})
   }
 
   return (
@@ -66,7 +109,7 @@ export default function SignUp({navigation}: Props) {
         }}
         showsVerticalScrollIndicator={false}
       >
-        <FormControl isInvalid={false} mt={ms(10)}>
+        <FormControl isRequired isInvalid={isFirstnameEmpty} mt={ms(10)}>
           <FormControl.Label color={Colors.disabled}>
             {t('firstName')}
           </FormControl.Label>
@@ -75,16 +118,16 @@ export default function SignUp({navigation}: Props) {
             placeholder=" "
             size="lg"
             style={{backgroundColor: '#F7F7F7'}}
-            value={values.firstname}
+            value={values.firstName}
             onChangeText={e => {
-              setValues({...values, firstname: e})
+              setValues({...values, firstName: e})
             }}
           />
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-            Firstname
+            {userFirstname}
           </FormControl.ErrorMessage>
         </FormControl>
-        <FormControl isInvalid={false} mt={ms(10)}>
+        <FormControl isRequired isInvalid={isLastnameEmpty} mt={ms(10)}>
           <FormControl.Label color={Colors.disabled}>
             {t('lastName')}
           </FormControl.Label>
@@ -93,35 +136,37 @@ export default function SignUp({navigation}: Props) {
             placeholder=" "
             size="lg"
             style={{backgroundColor: '#F7F7F7'}}
-            value={values.lastname}
+            value={values.lastName}
             onChangeText={e => {
-              setValues({...values, lastname: e})
+              setValues({...values, lastName: e})
             }}
           />
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-            Lastname
+            {userLastname}
           </FormControl.ErrorMessage>
         </FormControl>
-        <FormControl isInvalid={false} mt={ms(10)}>
+        <FormControl isRequired isInvalid={isPhoneEmpty} mt={ms(10)}>
           <FormControl.Label color={Colors.disabled}>
-            Username
+            {t('phone')}
           </FormControl.Label>
           <Input
             autoCapitalize="words"
             placeholder=" "
             size="lg"
             style={{backgroundColor: '#F7F7F7'}}
-            value={values.username}
+            value={values.phone}
             onChangeText={e => {
-              setValues({...values, username: e})
+              setValues({...values, phone: e})
             }}
           />
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-            Username
+            {userPhone}
           </FormControl.ErrorMessage>
         </FormControl>
-        <FormControl isInvalid={false} mt={ms(10)}>
-          <FormControl.Label color={Colors.disabled}>Email</FormControl.Label>
+        <FormControl isRequired isInvalid={isEmailEmpty} mt={ms(10)}>
+          <FormControl.Label color={Colors.disabled}>
+            {t('email')}
+          </FormControl.Label>
           <Input
             autoCapitalize="words"
             keyboardType="email-address"
@@ -134,10 +179,10 @@ export default function SignUp({navigation}: Props) {
             }}
           />
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-            Email
+            {userEmail}
           </FormControl.ErrorMessage>
         </FormControl>
-        <HStack>
+        {/* <HStack>
           <FormControl flex="1" isInvalid={false} mt={ms(10)}>
             <FormControl.Label color={Colors.disabled}>
               Birth date
@@ -175,8 +220,8 @@ export default function SignUp({navigation}: Props) {
               Start date
             </FormControl.ErrorMessage>
           </FormControl>
-        </HStack>
-        <FormControl isInvalid={false} mt={ms(10)}>
+        </HStack> */}
+        {/* <FormControl isInvalid={false} mt={ms(10)}>
           <FormControl.Label color={Colors.disabled}>
             Language
           </FormControl.Label>
@@ -220,60 +265,54 @@ export default function SignUp({navigation}: Props) {
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
             Please select a role
           </FormControl.ErrorMessage>
-        </FormControl>
-        <HStack alignItems="center" my={ms(10)} space={2}>
+        </FormControl> */}
+        {/* <HStack alignItems="center" my={ms(10)} space={2}>
           <Switch
             size="md"
             value={requestAsOwner}
             onValueChange={() => setRequestAsOwner(!requestAsOwner)}
           />
           <Text fontWeight="medium">Request as owner (no role)</Text>
-        </HStack>
-        {requestAsOwner ? (
-          <>
-            <FormControl isInvalid={false} mt={ms(10)}>
-              <FormControl.Label color={Colors.disabled}>
-                MMSI number
-              </FormControl.Label>
-              <Input
-                autoCapitalize="words"
-                placeholder=" "
-                size="lg"
-                style={{backgroundColor: '#F7F7F7'}}
-                value={values.mmis}
-                onChangeText={e => {
-                  setValues({...values, mmis: e})
-                }}
-              />
-              <FormControl.ErrorMessage
-                leftIcon={<WarningOutlineIcon size="xs" />}
-              >
-                MMSI number
-              </FormControl.ErrorMessage>
-            </FormControl>
-            <FormControl isInvalid={false} mt={ms(10)}>
-              <FormControl.Label color={Colors.disabled}>
-                Vessel name
-              </FormControl.Label>
-              <Input
-                autoCapitalize="words"
-                placeholder=" "
-                size="lg"
-                style={{backgroundColor: '#F7F7F7'}}
-                value={values.vessel_name}
-                onChangeText={e => {
-                  setValues({...values, vessel_name: e})
-                }}
-              />
-              <FormControl.ErrorMessage
-                leftIcon={<WarningOutlineIcon size="xs" />}
-              >
-                Vessel name
-              </FormControl.ErrorMessage>
-            </FormControl>
-          </>
-        ) : null}
+        </HStack> */}
+        {/* {requestAsOwner ? (
+          <> */}
         <FormControl isInvalid={false} mt={ms(10)}>
+          <FormControl.Label color={Colors.disabled}>
+            MMSI number
+          </FormControl.Label>
+          <Input
+            autoCapitalize="words"
+            placeholder=""
+            size="lg"
+            style={{backgroundColor: '#F7F7F7'}}
+            value={values.mmsi}
+            onChangeText={e => {
+              setValues({...values, mmsi: e})
+            }}
+          />
+          <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
+            MMSI number
+          </FormControl.ErrorMessage>
+        </FormControl>
+        <FormControl isInvalid={false} mt={ms(10)}>
+          <FormControl.Label color={Colors.disabled}>EUID</FormControl.Label>
+          <Input
+            autoCapitalize="words"
+            placeholder=" "
+            size="lg"
+            style={{backgroundColor: '#F7F7F7'}}
+            value={values.euid}
+            onChangeText={e => {
+              setValues({...values, euid: e})
+            }}
+          />
+          <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
+            EUID
+          </FormControl.ErrorMessage>
+        </FormControl>
+        {/* </>
+        ) : null} */}
+        {/* <FormControl isInvalid={false} mt={ms(10)}>
           <FormControl.Label color={Colors.disabled}>
             Certificate level
           </FormControl.Label>
@@ -335,7 +374,7 @@ export default function SignUp({navigation}: Props) {
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
             Confirm Password
           </FormControl.ErrorMessage>
-        </FormControl>
+        </FormControl> */}
 
         <DatePicker
           modal
@@ -350,6 +389,11 @@ export default function SignUp({navigation}: Props) {
             onDatesChange(date)
           }}
         />
+        {isAllFieldEmpty ? (
+          <Text color="red.500" fontSize={ms(12)} my={ms(10)}>
+            * {allFieldsRequired}
+          </Text>
+        ) : null}
       </ScrollView>
       <Shadow viewStyle={{width: '100%'}}>
         <Button
@@ -360,7 +404,7 @@ export default function SignUp({navigation}: Props) {
           bg={Colors.primary}
           m={ms(16)}
           size="md"
-          onPress={() => navigation.navigate('SignUpVerification')}
+          onPress={onSignUpSubmit}
         >
           {t('signUp')}
         </Button>

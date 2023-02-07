@@ -82,6 +82,30 @@ const rejectPendingRole = async (id: string) => {
     })
 }
 
+const createSignUpRequest = async (userInfo: any, docs: Array<any>) => {
+  const signUpRequest = Object.assign(
+    {},
+    userInfo,
+    {
+      mmsi: parseInt(userInfo.mmsi),
+    },
+    ...docs.map(file => file)
+  )
+
+  return API.post('signup_requests', signUpRequest)
+    .then(response => {
+      return Promise.resolve(
+        typeof response.data === 'object' && response.status === 201
+          ? 'SUCCESS'
+          : 'FAILED'
+      )
+    })
+    .catch(error => {
+      console.error('Error: API Signup requests', error)
+      return Promise.reject('')
+    })
+}
+
 export {
   reloadEntityUsers,
   getVesselNavigationDetails,
@@ -89,4 +113,5 @@ export {
   getRoleForAccept,
   acceptPendingRole,
   rejectPendingRole,
+  createSignUpRequest,
 }
