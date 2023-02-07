@@ -34,6 +34,8 @@ import {
   ImgViewer,
   CharterAcceptSign,
   TrackingServiceDialog,
+  SignUp,
+  SignUpVerification,
 } from '@bluecentury/screens'
 import {Colors} from '@bluecentury/styles'
 import {useTranslation} from 'react-i18next'
@@ -45,94 +47,92 @@ export default function RootNavigator() {
   const {t} = useTranslation()
   return (
     <Navigator
-      initialRouteName="Splash"
       screenOptions={{
         headerShown: false,
         headerShadowVisible: false,
         headerStyle: {backgroundColor: Colors.light},
         headerTitleStyle: {fontSize: 16, fontWeight: 'bold'},
         animation: 'fade',
-        headerBackTitle: t('back'),
+        headerBackTitleVisible: false,
       }}
+      initialRouteName="Splash"
     >
       <Group>
-        <Screen name="Splash" component={Splash} />
+        <Screen component={Splash} name="Splash" />
         <Screen
-          name="Login"
+          options={{
+            headerShown: false,
+          }}
           component={Login}
+          name="Login"
+        />
+        <Screen
           options={{
             headerShown: false,
           }}
-        />
-        <Screen
-          name="SelectEnvironment"
           component={SelectEnvironment}
-          options={{
-            headerShown: false,
-          }}
+          name="SelectEnvironment"
         />
         <Screen
-          name="SelectEntity"
-          component={Entity}
           options={{
             title: t('selectYourRole'),
             headerStyle: {backgroundColor: '#F0F0F0'},
           }}
+          component={Entity}
+          name="SelectEntity"
         />
         <Screen
-          name="Main"
           component={MainNavigator}
+          name="Main"
           options={{headerShown: false}}
         />
         <Screen
-          name="QRScanner"
           component={QRScanner}
+          name="QRScanner"
           options={{headerShown: false}}
         />
         <Screen
-          name="Formations"
-          component={Formations}
           options={{
             title: t('activeFormations'),
             headerShown: true,
           }}
+          component={Formations}
+          name="Formations"
         />
         <Screen
-          name={'CharterDetails'}
           component={CharterDetails}
+          name={'CharterDetails'}
           options={{headerShown: true, title: t('charterInformation')}}
         />
         <Screen
-          name={'PDFView'}
           component={PDFView}
+          name={'PDFView'}
           options={{headerShown: true, title: t('PDFViewer')}}
         />
         <Screen
-          name={'NewBunkering'}
           component={NewBunkering}
+          name={'NewBunkering'}
           options={{headerShown: true, title: t('addBunkering')}}
         />
         <Screen
-          name={'BunkeringDetails'}
           component={BunkeringDetails}
+          name={'BunkeringDetails'}
           options={{headerShown: true, title: t('bunkeringDetails')}}
         />
         <Screen
-          name={'PlanningDetails'}
-          component={PlanningDetails}
           options={({route}) => ({
             headerShown: true,
             title: route.params.title,
           })}
+          component={PlanningDetails}
+          name={'PlanningDetails'}
         />
         <Screen
-          name={'PlanningNewComment'}
           component={PlanningNewComment}
+          name={'PlanningNewComment'}
           options={{headerShown: true, title: t('planning')}}
         />
         <Screen
-          name={'AddEditNavlogAction'}
-          component={AddEditNavlogAction}
           options={({route}) => ({
             headerShown: true,
             title:
@@ -142,53 +142,54 @@ export default function RootNavigator() {
                 ? route.params.actionType
                 : `New ${route.params.actionType}`,
           })}
+          component={AddEditNavlogAction}
+          name={'AddEditNavlogAction'}
         />
         <Screen
-          name={'TechnicalTasksList'}
-          component={TechnicalTasksList}
           options={({route}) => ({
             headerShown: true,
             title: t(route.params.title),
           })}
+          component={TechnicalTasksList}
+          name={'TechnicalTasksList'}
         />
         <Screen
-          name={'TechnicalTaskDetails'}
           component={TechnicalTaskDetails}
+          name={'TechnicalTaskDetails'}
           options={{headerShown: true, title: t('taskDetails')}}
         />
         <Screen
-          name={'TechnicalTaskNewComment'}
           component={TechnicalTaskNewComment}
+          name={'TechnicalTaskNewComment'}
           options={{headerShown: true, title: t('newComment')}}
         />
         <Screen
-          name={'AddEditTechnicalTask'}
-          component={AddEditTechnicalTask}
           options={({route}) => ({
             headerShown: true,
-            title: route.params.method === 'add' ? t('addATask') : t('editTask'),
+            title:
+              route.params.method === 'add' ? t('addATask') : t('editTask'),
           })}
+          component={AddEditTechnicalTask}
+          name={'AddEditTechnicalTask'}
         />
 
         <Screen
-          name={'TechnicalCertificateList'}
-          component={TechnicalCertificateList}
           options={({route}) => ({
             headerShown: true,
             title: route.params.title,
           })}
+          component={TechnicalCertificateList}
+          name={'TechnicalCertificateList'}
         />
         <Screen
-          name={'TechnicalCertificateDetails'}
-          component={TechnicalCertificateDetails}
           options={{
             headerShown: true,
             title: t('certificateDetails'),
           }}
+          component={TechnicalCertificateDetails}
+          name={'TechnicalCertificateDetails'}
         />
         <Screen
-          name={'AddEditBulkCargo'}
-          component={AddEditBulkCargo}
           options={({route}) => ({
             headerShown: true,
             title:
@@ -196,10 +197,10 @@ export default function RootNavigator() {
                 ? t('updateCargoAmount')
                 : t('newCargoEntry'),
           })}
+          component={AddEditBulkCargo}
+          name={'AddEditBulkCargo'}
         />
         <Screen
-          name={'AddEditComment'}
-          component={AddEditComment}
           options={({route}) => ({
             headerShown: true,
             title:
@@ -207,78 +208,97 @@ export default function RootNavigator() {
                 ? t('editComment')
                 : t('newComment'),
           })}
+          component={AddEditComment}
+          name={'AddEditComment'}
         />
         <Screen
-          name={'Measurements'}
-          component={Measurements}
           options={{
             headerShown: true,
             title: t('measurements'),
           }}
+          component={Measurements}
+          name={'Measurements'}
         />
         <Screen
-          name={'TechnicalRoutinesList'}
+          options={({route}) => ({
+            headerShown: true,
+            title: route.params.title,
+          })}
           component={TechnicalRoutinesList}
+          name={'TechnicalRoutinesList'}
+        />
+        <Screen
           options={({route}) => ({
             headerShown: true,
             title: t(route.params.title),
           })}
-        />
-        <Screen
-          name={'TechnicalRoutineDetails'}
           component={TechnicalRoutineDetails}
+          name={'TechnicalRoutineDetails'}
+        />
+        <Screen
           options={({route}) => ({
             headerShown: true,
             title: route.params.title,
           })}
-        />
-        <Screen
-          name={'FinancialInvoiceDetails'}
           component={FinancialInvoiceDetails}
-          options={({route}) => ({
-            headerShown: true,
-            title: route.params.title,
-          })}
+          name={'FinancialInvoiceDetails'}
         />
         <Screen
-          name={'TickerOilPriceDetails'}
-          component={TickerOilPriceDetails}
           options={{
             headerShown: true,
             title: t('tickerOilPriceDetails'),
           }}
+          component={TickerOilPriceDetails}
+          name={'TickerOilPriceDetails'}
         />
         <Screen
-          name={'AddCrewMember'}
-          component={AddCrewMember}
           options={{
             headerShown: true,
             title: t('addCrewMember'),
           }}
+          component={AddCrewMember}
+          name={'AddCrewMember'}
         />
         <Screen
-          name={'InformationPegelDetails'}
-          component={InformationPegelDetails}
           options={{
             headerShown: true,
             title: t('pegelDetails'),
           }}
+          component={InformationPegelDetails}
+          name={'InformationPegelDetails'}
         />
         <Screen
-          name={'ImgViewer'}
-          component={ImgViewer}
           options={({route}) => ({
             headerShown: true,
             title: route.params.title,
           })}
+          component={ImgViewer}
+          name={'ImgViewer'}
         />
         <Screen
-          name={'CharterAcceptSign'}
-          component={CharterAcceptSign}
           options={{
             headerShown: true,
             title: t('signature'),
           }}
+          component={CharterAcceptSign}
+          name={'CharterAcceptSign'}
+        />
+        <Screen
+          options={{
+            headerShown: true,
+            title: t('signUp'),
+          }}
+          component={SignUp}
+          name={'SignUp'}
+        />
+        <Screen
+          options={{
+            headerShown: true,
+            title: 'Verification',
+            headerStyle: {backgroundColor: Colors.white},
+          }}
+          component={SignUpVerification}
+          name={'SignUpVerification'}
         />
       </Group>
       <Group
@@ -288,10 +308,10 @@ export default function RootNavigator() {
         }}
       >
         <Screen
-          name="TrackingServiceDialog"
           component={TrackingServiceDialog}
+          name="TrackingServiceDialog"
         />
-        <Screen name="GPSTracker" component={GPSTracker} />
+        <Screen component={GPSTracker} name="GPSTracker" />
       </Group>
     </Navigator>
   )
