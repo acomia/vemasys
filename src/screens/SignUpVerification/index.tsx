@@ -12,12 +12,16 @@ import {Selfie, SignUpFinish, UploadDocs, UploadID} from './components'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 export default function SignUpVerification({navigation, route}: Props) {
-  const {signUpInfo}: any = route.params
-  const {createSignUpRequest, signUpRequestStatus} = useEntity()
+  const {signUpInfo, requestAsOwner}: any = route.params
+  const {createSignUpRequest, signUpRequestStatus, reset} = useEntity()
   const [page, setPage] = useState(1)
   const [documentFile, setDocumentFile] = useState<ImageFile | string>('')
   const [signUpDocs, setSignUpDocs] = useState([])
   const {onClose} = useDisclose()
+
+  useEffect(() => {
+    if (requestAsOwner) setPage(3)
+  }, [requestAsOwner])
 
   useEffect(() => {
     if (page === 1 && documentFile !== '') {
@@ -65,6 +69,7 @@ export default function SignUpVerification({navigation, route}: Props) {
 
   const onBackToLogin = () => {
     setPage(1)
+    reset()
     navigation.navigate('Login')
   }
 
