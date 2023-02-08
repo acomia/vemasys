@@ -30,7 +30,7 @@ export default function PlanningDetails({route}: Props) {
   const [routes, setRoutes] = useState(tabs)
   const isUnknownLocation = title === 'Unknown Location' ? true : false
   const screenWidth = useWindowDimensions().width
-
+ 
   useEffect(() => {
     if (
       navigationLogDetails?.cargoType !== 'liquid_bulk' &&
@@ -52,7 +52,7 @@ export default function PlanningDetails({route}: Props) {
       setRoutes(newRoutes)
     }
   }, [navigationLogDetails])
-
+  
   return (
     <Tab.Navigator
       screenOptions={({route}) => ({
@@ -62,11 +62,12 @@ export default function PlanningDetails({route}: Props) {
           height: 3,
           borderRadius: 3,
           width: ms(45),
-          marginLeft: screenWidth > 500 ? 40 : 25,
+          marginLeft: screenWidth > 500 ? 60 : 25,
         },
         tabBarItemStyle: {
-          width: screenWidth > 500 ? 160 : 100,
-          height: screenWidth > 500 ? 55 : 45,
+          width: screenWidth > 500 ? 200 : 100,
+          height: screenWidth > 500 ? 60 : 45,
+          paddingHorizontal: 5
         },
         tabBarScrollEnabled: true,
         lazy: true,
