@@ -104,7 +104,6 @@ export default function UploadDocs({
               fontSize: 16,
             }}
             bg={Colors.primary}
-            colorScheme="azure"
             isLoading={isLoadingSignUpRequest}
             isLoadingText="Creating request"
             m={ms(16)}
