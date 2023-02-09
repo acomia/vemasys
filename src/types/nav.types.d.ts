@@ -38,7 +38,7 @@ type RootStackParamList = {
   CharterAcceptSign: {charter?: any}
   TrackingServiceDialog: undefined
   SignUp: undefined
-  SignUpVerification: {signUpInfo: any}
+  SignUpVerification: {signUpInfo: any; requestAsOwner: boolean}
 }
 
 type MainStackParamList = {

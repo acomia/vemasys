@@ -24,6 +24,8 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context'
 import {CustomAlert} from '@bluecentury/components/custom-alert'
 import {EntityUser} from '@bluecentury/models'
 import {useTranslation} from 'react-i18next'
+import {RootStackParamList} from '@bluecentury/types/nav.types'
+import {StyleSheet} from 'react-native'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 
@@ -46,10 +48,11 @@ export default function Entity({route, navigation}: Props) {
     pendingRoles,
     updatePendingRole,
     acceptRoleStatus,
+    entityId,
   } = useEntity()
   const [entityItems, setEntityItems] = useState<EntityUser[]>()
   const {logout, isLoggingOut} = useAuth()
-  const {isMobileTracking} = useSettings()
+  const {isMobileTracking, setIsMobileTracking} = useSettings()
   const [isOpenLogoutAlert, setIsOpenLogoutAlert] = useState(false)
   const [isOpenAlertIsMobileTracking, setIsOpenAlertIsMobileTracking] =
     useState(false)
@@ -78,8 +81,12 @@ export default function Entity({route, navigation}: Props) {
       setEntityItems(entities)
       return
     }
-    const first = entityUsers.filter(e => e.id === parseInt(entityUserId))
-    const rest = entityUsers.filter(e => e.id !== parseInt(entityUserId))
+    const first = entityUsers.filter(
+      e => e.id === parseInt(entityUserId as string)
+    )
+    const rest = entityUsers.filter(
+      e => e.id !== parseInt(entityUserId as string)
+    )
     const entities = [...uniqPendingRoles, ...first, ...rest]
     setEntityItems(entities)
   }, [pendingRoles, entityUsers, entityUserId])
@@ -94,6 +101,7 @@ export default function Entity({route, navigation}: Props) {
     if (acceptRoleStatus === 'FAILED') {
       showToast('Role failed.', 'failed')
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [acceptRoleStatus])
 
   const showToast = (text: string, res: string) => {
@@ -103,11 +111,11 @@ export default function Entity({route, navigation}: Props) {
         return (
           <Text
             bg={res === 'success' ? 'emerald.500' : 'red.500'}
+            color={Colors.white}
+            mb={5}
             px="2"
             py="1"
             rounded="sm"
-            mb={5}
-            color={Colors.white}
           >
             {text}
           </Text>
@@ -124,13 +132,15 @@ export default function Entity({route, navigation}: Props) {
     onPressRefresh()
   }
 
-  const onSelectEntityUser = (entity: any) => {
-    if (isMobileTracking) {
+  const onSelectEntityUser = (entity: EntityUser) => {
+    if (isMobileTracking && entityId) {
       setIsOpenAlertIsMobileTracking(true)
       return
     }
-    if (entity?.hasUserAccepted !== undefined) {
-    } else {
+    if (isMobileTracking && !entityId) {
+      setIsMobileTracking(false)
+    }
+    if (!entity?.hasUserAccepted) {
       selectEntityUser(entity)
       navigation.dispatch(
         CommonActions.reset({
@@ -173,19 +183,19 @@ export default function Entity({route, navigation}: Props) {
   }
 
   return (
-    <Box flex="1" bg={Colors.light} pt={paddingTop}>
+    <Box bg={Colors.light} flex="1" pt={paddingTop}>
       <Box
         bg={Colors.white}
+        borderTopRadius={borderTopRadius}
         flex="1"
         pt={ms(20)}
         px={ms(20)}
-        borderTopRadius={borderTopRadius}
       >
         <HStack justifyContent="space-between" justifyItems="center">
           <Heading fontSize="xl" pb="2">
             {t('roles')}
           </Heading>
-          <Button variant="link" p={0} m={0} onPress={onPressRefresh}>
+          <Button m={0} p={0} variant="link" onPress={onPressRefresh}>
             {t('clickToRefresh')}
           </Button>
         </HStack>
@@ -194,43 +204,34 @@ export default function Entity({route, navigation}: Props) {
           <LoadingAnimated />
         ) : (
           <FlatList
-            data={entityItems}
-            renderItem={({item}: any) => {
+            renderItem={({item}) => {
               return (
                 <EntityCard
                   item={item}
                   selected={item.id === entityUserId}
-                  onPress={() => onSelectEntityUser(item)}
                   onPressAcceptPendingRole={(id, accept) =>
                     onAcceptRoleConfirm(id, accept)
                   }
+                  onPress={() => onSelectEntityUser(item)}
                 />
               )
             }}
-            keyExtractor={(item: any) => `entity-${item?.id}`}
-            // eslint-disable-next-line react-native/no-inline-styles
-            contentContainerStyle={{paddingBottom: 150}}
+            contentContainerStyle={styles.flatListContentContainerStyle}
+            data={entityItems}
+            keyExtractor={(item: EntityUser) => `entity-${item?.id}`}
             showsVerticalScrollIndicator={false}
           />
         )}
       </Box>
-      <Box bg={Colors.white} position="absolute" left={0} right={0} bottom={0}>
-        <Shadow
-          distance={25}
-          // eslint-disable-next-line react-native/no-inline-styles
-          viewStyle={{
-            width: '100%',
-          }}
-        >
+      <Box bg={Colors.white} bottom={0} left={0} position="absolute" right={0}>
+        <Shadow distance={25} viewStyle={styles.shadow}>
           <Box p={ms(20)} pb={ms(insets.bottom === 0 ? 20 : insets.bottom)}>
             <Button
-              bg={Colors.danger}
               _light={{
                 _pressed: {
                   bg: Colors.dangerDarker,
                 },
               }}
-              isLoading={isLoggingOut}
               _loading={{
                 opacity: 0.5,
                 bg: Colors.danger,
@@ -239,15 +240,17 @@ export default function Entity({route, navigation}: Props) {
                 size: ms(20),
                 color: Colors.white,
               }}
-              isLoadingText="Logging out"
               leftIcon={
                 <Image
                   alt="logout-img"
-                  source={Icons.logout}
                   resizeMode="contain"
                   size={ms(20)}
+                  source={Icons.logout}
                 />
               }
+              bg={Colors.danger}
+              isLoading={isLoggingOut}
+              isLoadingText="Logging out"
               onPress={handleOnPressLogout}
             >
               {t('logOut')}
@@ -256,8 +259,6 @@ export default function Entity({route, navigation}: Props) {
         </Shadow>
       </Box>
       <CustomAlert
-        title={t('logoutOneWord')}
-        content={t('logoutConfirm')}
         alert={{
           leastDestructiveRef: logoutCancelRef,
           isOpen: isOpenLogoutAlert,
@@ -278,6 +279,8 @@ export default function Entity({route, navigation}: Props) {
             onPress: () => setIsOpenLogoutAlert(false),
           },
         ]}
+        content={t('logoutConfirm')}
+        title={t('logoutOneWord') as string}
       />
       <CustomAlert
         alert={{
@@ -298,46 +301,46 @@ export default function Entity({route, navigation}: Props) {
         content={`${t('sendingGPSDataFor')} ${
           selectedVessel && selectedVessel?.alias
         } ${t('requiredTurnOffGPS')}`}
-        title={t('tracking')}
+        title={t('tracking') as string}
       />
       <Modal
-        isOpen={confirmModal}
-        size="full"
-        px={ms(12)}
         animationPreset="slide"
+        isOpen={confirmModal}
+        px={ms(12)}
+        size="full"
       >
         <Modal.Content>
           <Modal.Header>Confirmation</Modal.Header>
-          <Text my={ms(20)} mx={ms(12)} fontWeight="medium">
+          <Text fontWeight="medium" mx={ms(12)} my={ms(20)}>
             Are you sure you want to{' '}
             {acceptRoleData.accept ? 'accept' : 'decline'} this role?
           </Text>
           <HStack>
             <Button
-              flex="1"
-              m={ms(12)}
-              bg={Colors.grey}
-              onPress={() => setConfirmModal(false)}
               _light={{
                 _text: {
                   fontWeight: 'medium',
                   color: Colors.disabled,
                 },
               }}
+              bg={Colors.grey}
+              flex="1"
+              m={ms(12)}
+              onPress={() => setConfirmModal(false)}
             >
               Cancel
             </Button>
             <Button
-              flex="1"
-              m={ms(12)}
-              bg={acceptRoleData.accept ? Colors.secondary : Colors.danger}
-              onPress={onAcceptDeclineRole}
               _light={{
                 _text: {
                   fontWeight: 'medium',
                   color: Colors.white,
                 },
               }}
+              bg={acceptRoleData.accept ? Colors.secondary : Colors.danger}
+              flex="1"
+              m={ms(12)}
+              onPress={onAcceptDeclineRole}
             >
               {acceptRoleData.accept ? 'Accept' : 'Decline'}
             </Button>
@@ -347,3 +350,12 @@ export default function Entity({route, navigation}: Props) {
     </Box>
   )
 }
+
+const styles = StyleSheet.create({
+  flatListContentContainerStyle: {
+    paddingBottom: 150,
+  },
+  shadow: {
+    width: '100%',
+  },
+})
