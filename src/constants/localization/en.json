@@ -340,5 +340,6 @@
   "finish": "Finish",
   "pendingRequest": "Pending request",
   "weWillSendEmail": "We will send a confirmation email once approved to",
-  "backToLogin": "Back to Login"
+  "backToLogin": "Back to Login",
+  "newMeasurementInputError": "New Measurement should be higher than previous Measurement."
 }
