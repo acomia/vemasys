@@ -62,12 +62,12 @@ export default function PlanningDetails({route}: Props) {
           height: 3,
           borderRadius: 3,
           width: ms(45),
-          marginLeft: screenWidth > 500 ? 60 : 25,
+          marginLeft: screenWidth > 500 ? ms(68) : ms(25),
         },
         tabBarItemStyle: {
-          width: screenWidth > 500 ? 200 : 100,
-          height: screenWidth > 500 ? 60 : 45,
-          paddingHorizontal: 5
+          width: screenWidth > 500 ? ms(180) : ms(100),
+          height: screenWidth > 500 ? ms(60) : ms(45),
+          paddingHorizontal: ms(5)
         },
         tabBarScrollEnabled: true,
         lazy: true,
