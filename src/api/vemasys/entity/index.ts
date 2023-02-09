@@ -78,14 +78,20 @@ const rejectPendingRole = async (id: string) => {
 }
 
 const createSignUpRequest = async (userInfo: any, docs: Array<any>) => {
-  const signUpRequest = Object.assign(
-    {},
-    userInfo,
-    {
-      mmsi: parseInt(userInfo.mmsi),
-    },
-    ...docs.map(file => file)
-  )
+  let signUpRequest
+  signUpRequest = Object.assign({}, userInfo, {
+    mmsi: userInfo.mmsi ? parseInt(userInfo.mmsi) : null,
+  })
+  if (docs.length > 0) {
+    signUpRequest = Object.assign(
+      {},
+      userInfo,
+      {
+        mmsi: userInfo.mmsi ? parseInt(userInfo.mmsi) : null,
+      },
+      ...docs.map(file => file)
+    )
+  }
 
   return API.post('signup_requests', signUpRequest)
     .then(response => {

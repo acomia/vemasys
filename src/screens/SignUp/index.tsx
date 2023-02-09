@@ -23,6 +23,7 @@ import {Colors} from '@bluecentury/styles'
 import {DatetimePicker} from './components'
 import {Vemasys} from '@bluecentury/helpers'
 import {_t} from '@bluecentury/constants'
+import {useEntity} from '@bluecentury/stores'
 
 const allFieldsRequired = _t('allFieldsRequired')
 const userFirstname = _t('newUserFirstname')
@@ -33,6 +34,7 @@ const userEmail = _t('newUserEmail')
 type Props = NativeStackScreenProps<RootStackParamList>
 export default function SignUp({navigation}: Props) {
   const {t} = useTranslation()
+  const {createSignUpRequest, isLoadingSignUpRequest} = useEntity()
 
   const [values, setValues] = useState({
     firstName: '',
@@ -56,7 +58,7 @@ export default function SignUp({navigation}: Props) {
   const [isEmailEmpty, setIsEmailEmpty] = useState(false)
   const [selectedDate, setSelectedDate] = useState('')
   const [openDatePicker, setOpenDatePicker] = useState(false)
-  // const [requestAsOwner, setRequestAsOwner] = useState(false)
+  const [requestAsOwner, setRequestAsOwner] = useState(false)
 
   const onDatesChange = (date: Date) => {
     const formattedDate = Vemasys.formatDate(date)
@@ -93,7 +95,11 @@ export default function SignUp({navigation}: Props) {
       values.email === '' ? setIsEmailEmpty(true) : setIsEmailEmpty(false)
       return
     }
-    navigation.navigate('SignUpVerification', {signUpInfo: values})
+    if (requestAsOwner) createSignUpRequest(values, [])
+    navigation.navigate('SignUpVerification', {
+      signUpInfo: values,
+      requestAsOwner,
+    })
   }
 
   return (
@@ -150,8 +156,8 @@ export default function SignUp({navigation}: Props) {
             {t('phone')}
           </FormControl.Label>
           <Input
-            autoCapitalize="words"
-            placeholder=" "
+            keyboardType="numeric"
+            placeholder=""
             size="lg"
             style={{backgroundColor: '#F7F7F7'}}
             value={values.phone}
@@ -168,7 +174,7 @@ export default function SignUp({navigation}: Props) {
             {t('email')}
           </FormControl.Label>
           <Input
-            autoCapitalize="words"
+            autoCapitalize="none"
             keyboardType="email-address"
             placeholder=" "
             size="lg"
@@ -266,52 +272,58 @@ export default function SignUp({navigation}: Props) {
             Please select a role
           </FormControl.ErrorMessage>
         </FormControl> */}
-        {/* <HStack alignItems="center" my={ms(10)} space={2}>
+        <HStack alignItems="center" my={ms(10)} space={2}>
           <Switch
             size="md"
             value={requestAsOwner}
             onValueChange={() => setRequestAsOwner(!requestAsOwner)}
           />
           <Text fontWeight="medium">Request as owner (no role)</Text>
-        </HStack> */}
-        {/* {requestAsOwner ? (
-          <> */}
-        <FormControl isInvalid={false} mt={ms(10)}>
-          <FormControl.Label color={Colors.disabled}>
-            MMSI number
-          </FormControl.Label>
-          <Input
-            autoCapitalize="words"
-            placeholder=""
-            size="lg"
-            style={{backgroundColor: '#F7F7F7'}}
-            value={values.mmsi}
-            onChangeText={e => {
-              setValues({...values, mmsi: e})
-            }}
-          />
-          <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-            MMSI number
-          </FormControl.ErrorMessage>
-        </FormControl>
-        <FormControl isInvalid={false} mt={ms(10)}>
-          <FormControl.Label color={Colors.disabled}>EUID</FormControl.Label>
-          <Input
-            autoCapitalize="words"
-            placeholder=" "
-            size="lg"
-            style={{backgroundColor: '#F7F7F7'}}
-            value={values.euid}
-            onChangeText={e => {
-              setValues({...values, euid: e})
-            }}
-          />
-          <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-            EUID
-          </FormControl.ErrorMessage>
-        </FormControl>
-        {/* </>
-        ) : null} */}
+        </HStack>
+        {requestAsOwner ? (
+          <>
+            <FormControl isInvalid={false} mt={ms(10)}>
+              <FormControl.Label color={Colors.disabled}>
+                MMSI number
+              </FormControl.Label>
+              <Input
+                autoCapitalize="words"
+                placeholder=""
+                size="lg"
+                style={{backgroundColor: '#F7F7F7'}}
+                value={values.mmsi}
+                onChangeText={e => {
+                  setValues({...values, mmsi: e})
+                }}
+              />
+              <FormControl.ErrorMessage
+                leftIcon={<WarningOutlineIcon size="xs" />}
+              >
+                MMSI number
+              </FormControl.ErrorMessage>
+            </FormControl>
+            <FormControl isInvalid={false} mt={ms(10)}>
+              <FormControl.Label color={Colors.disabled}>
+                EUID
+              </FormControl.Label>
+              <Input
+                autoCapitalize="words"
+                placeholder=" "
+                size="lg"
+                style={{backgroundColor: '#F7F7F7'}}
+                value={values.euid}
+                onChangeText={e => {
+                  setValues({...values, euid: e})
+                }}
+              />
+              <FormControl.ErrorMessage
+                leftIcon={<WarningOutlineIcon size="xs" />}
+              >
+                EUID
+              </FormControl.ErrorMessage>
+            </FormControl>
+          </>
+        ) : null}
         {/* <FormControl isInvalid={false} mt={ms(10)}>
           <FormControl.Label color={Colors.disabled}>
             Certificate level
@@ -402,6 +414,8 @@ export default function SignUp({navigation}: Props) {
             fontSize: 16,
           }}
           bg={Colors.primary}
+          isLoading={isLoadingSignUpRequest}
+          isLoadingText="Creating request"
           m={ms(16)}
           size="md"
           onPress={onSignUpSubmit}
