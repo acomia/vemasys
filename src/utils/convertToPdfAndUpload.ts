@@ -4,17 +4,19 @@ import moment from 'moment'
 
 export const convertToPdfAndUpload = async (
   files: string[],
-  showToast: Function,
+  showToast: (msgText: string, type: string) => void,
   planning?: boolean,
   navlog?: any,
-  setScannedImage?: Function
+  setScannedImage?: (description: string) => void
 ) => {
   const uploadImgFile = usePlanning.getState().uploadImgFile
-  const addFilesInGroup = useFinancial.getState().addFilesInGroup
+  const addFinancialScan = useFinancial.getState().addFinancialScan
   const navigationLogDocuments = usePlanning.getState().navigationLogDocuments
   const navigationLogDetails = usePlanning.getState().navigationLogDetails
-  const uploadVesselNavigationLogFile = usePlanning.getState().uploadVesselNavigationLogFile
-  const getNavigationLogDocuments = usePlanning.getState().getNavigationLogDocuments
+  const uploadVesselNavigationLogFile =
+    usePlanning.getState().uploadVesselNavigationLogFile
+  const getNavigationLogDocuments =
+    usePlanning.getState().getNavigationLogDocuments
 
   // Remove 'file://' from file link is react-native-image-to-pdf requirement
   const arrayForPdf = files.map(item => {
@@ -43,12 +45,9 @@ export const convertToPdfAndUpload = async (
 
     const upload = await uploadImgFile(file)
 
-    console.log('IMG_UPLOAD_RES', upload)
-
     if (typeof upload === 'object' && !planning) {
-      const uploadDocs = await addFilesInGroup(upload.path)
-      console.log('UPLOAD_DOCS', uploadDocs)
-      if (typeof uploadDocs === 'object' && uploadDocs[1] === 200) {
+      const uploadDocs = await addFinancialScan(upload.path)
+      if (uploadDocs === 'SUCCESS') {
         showToast('File upload successfully.', 'success')
       } else {
         showToast('File upload failed.', 'failed')

@@ -14,10 +14,10 @@ import {useTranslation} from 'react-i18next'
 const Scan = () => {
   const {t} = useTranslation()
   const {uploadImgFile} = usePlanning()
-  const {addFilesInGroup, isFinancialLoading} = useFinancial()
-  const {isOpen, onOpen, onClose} = useDisclose()
+  const {isFinancialLoading} = useFinancial()
+  const {onClose} = useDisclose()
   const toast = useToast()
-  const [result, setResult] = useState<ImageFile>({})
+  const [result, setResult] = useState<ImageFile | null>(null)
 
   const requestCameraPermission = async () => {
     try {
@@ -41,11 +41,11 @@ const Scan = () => {
         return (
           <Text
             bg={res === 'success' ? 'emerald.500' : 'red.500'}
+            color={Colors.white}
+            mb={5}
             px="2"
             py="1"
             rounded="sm"
-            mb={5}
-            color={Colors.white}
           >
             {text}
           </Text>
@@ -60,7 +60,9 @@ const Scan = () => {
       await requestCameraPermission()
     }
     const {scannedImages} = await DocumentScanner.scanDocument()
-    await convertToPdfAndUpload(scannedImages, showToast)
+    if (scannedImages) {
+      await convertToPdfAndUpload(scannedImages, showToast)
+    }
   }
 
   const handleError = (err: unknown) => {
@@ -89,12 +91,11 @@ const Scan = () => {
         fileName: pickerResult.name,
         type: pickerResult.type,
       })
-      const upload = await uploadImgFile({
+      await uploadImgFile({
         uri: pickerResult.uri,
         fileName: pickerResult.name,
         type: pickerResult.type,
       })
-      console.log('IMG_UPLOAD', upload)
     } catch (e) {
       handleError(e)
     }
@@ -103,20 +104,20 @@ const Scan = () => {
   if (isFinancialLoading) return <LoadingAnimated />
 
   return (
-    <Box flex="1" bg={Colors.white} px={ms(12)} py={ms(20)}>
-      <Text fontSize={ms(20)} bold color={Colors.azure}>
+    <Box bg={Colors.white} flex="1" px={ms(12)} py={ms(20)}>
+      <Text bold color={Colors.azure} fontSize={ms(20)}>
         {t('scanInvoice')}
       </Text>
       <Image
-        alt="Financial-invoice-logo"
-        source={Animated.invoice}
         style={{
           width: 224,
           height: 229,
           alignSelf: 'center',
         }}
+        alt="Financial-invoice-logo"
         my={ms(20)}
         resizeMode="contain"
+        source={Animated.invoice}
       />
       <Button bg={Colors.primary} size="md" onPress={() => onSelectDocument()}>
         {t('uploadImage')}
