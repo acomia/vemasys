@@ -3,7 +3,6 @@ import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import * as API from '@bluecentury/api/vemasys'
-import {useEntity} from './entity'
 
 type FinancialState = {
   isFinancialLoading: boolean
@@ -23,6 +22,7 @@ type FinancialActions = {
     out_status: string
   ) => void
   addFilesInGroup: (path: string) => void
+  addFinancialScan: (path: string) => Promise<string>
 }
 
 type FinancialStore = FinancialActions & FinancialState
@@ -36,8 +36,6 @@ export const useFinancial = create(
       outgoingInvoices: [],
       invoiceDetails: [],
       getInvoiceStatistics: async (year: string) => {
-        const entityType = useEntity.getState().entityType
-        const entityUser = useEntity.getState().entityUsers
         set({
           isFinancialLoading: true,
           invoiceStatistics: [],
@@ -161,16 +159,34 @@ export const useFinancial = create(
         try {
           const response = await API.uploadFinancialFile(path)
           set({
-            isFinancialLoading: false
+            isFinancialLoading: false,
           })
           return response
         } catch (error) {
           set({
-            isFinancialLoading: false
+            isFinancialLoading: false,
           })
           console.log('FILE_ADDING_TO_GROUP_ERROR', error)
         }
-      }
+      },
+      addFinancialScan: async (path: string) => {
+        set({
+          isFinancialLoading: true,
+        })
+        try {
+          const response = await API.addFinancialScan(path)
+          set({
+            isFinancialLoading: false,
+          })
+          return response
+        } catch (error) {
+          set({
+            isFinancialLoading: false,
+          })
+          console.log('ADD_FINANCIAL_SCAN_ERROR', error)
+          return 'ADD_FINANCIAL_SCAN_FAILED'
+        }
+      },
     }),
     {
       name: 'financial-storage',

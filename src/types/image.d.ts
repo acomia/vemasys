@@ -4,7 +4,7 @@ type ImageFile = {
   width?: number
   height?: number
   fileSize?: number
-  type?: string
+  type: string | null
   fileName?: string
   duration?: number
   bitrate?: number
