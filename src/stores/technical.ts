@@ -108,8 +108,9 @@ export const useTechnical = create(
                   gasoil.type.title === 'Fuel'
               )
               .filter(
-                (reservoir: {vesselZone: {physicalVessel: {id: any}}}) =>
-                  reservoir?.vesselZone?.physicalVessel?.id === physicalVesselId
+                (reservoir: {vesselZone: {physicalVessel: {id: number}}}) =>
+                  reservoir?.vesselZone?.physicalVessel?.id ===
+                  parseInt(physicalVesselId)
               )
             gasoilR.forEach(async (reservoir, index) => {
               const lastM = await API.reloadVesselPartLastMeasurements(
@@ -191,8 +192,9 @@ export const useTechnical = create(
               const lastM = await API.reloadVesselPartLastMeasurements(tank.id)
               tank.lastMeasurement = lastM[0]
               set({reservoirs: waterTank})
-              if (index == waterTank.length - 1)
+              if (index == waterTank.length - 1) {
                 set({isTechnicalLoading: false})
+              }
             })
           } else {
             set({
