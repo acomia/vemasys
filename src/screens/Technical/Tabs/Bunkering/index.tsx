@@ -40,32 +40,32 @@ const Bunkering = () => {
   return (
     <Flex flex="1">
       <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={pullRefresh} onRefresh={onPullToReload} />
+        }
         contentContainerStyle={{flexGrow: 1, paddingBottom: 110}}
         px={ms(12)}
         py={ms(20)}
-        refreshControl={
-          <RefreshControl onRefresh={onPullToReload} refreshing={pullRefresh} />
-        }
         showsVerticalScrollIndicator={false}
       >
-        <Text color={Colors.azure} fontSize={ms(20)} bold>
+        <Text bold color={Colors.azure} fontSize={ms(20)}>
           {t('gasoil')}
         </Text>
         {/* Gasoil Card */}
         {gasoilReserviors?.length > 0 ? (
           <ReservoirLevel
-            reservoir={gasoilReserviors}
             physicalVesselId={physicalVesselId}
+            reservoir={gasoilReserviors}
           />
         ) : (
           <LoadingAnimated />
         )}
         <Text
+          bold
           color={Colors.azure}
           fontSize={ms(20)}
-          bold
-          mt={ms(20)}
           mb={ms(10)}
+          mt={ms(20)}
         >
           {t('bunkering')}
         </Text>
@@ -76,16 +76,16 @@ const Bunkering = () => {
         )}
       </ScrollView>
       {/* Add Bunkering Button */}
-      <Box bg={Colors.white} position="absolute" left={0} right={0} bottom={0}>
+      <Box bg={Colors.white} bottom={0} left={0} position="absolute" right={0}>
         <Shadow
-          distance={25}
           viewStyle={{
             width: '100%',
           }}
+          distance={25}
         >
           <Button
-            m={ms(16)}
             bg={Colors.primary}
+            m={ms(16)}
             onPress={() => navigation.navigate('NewBunkering')}
           >
             {t('addBunkering')}
