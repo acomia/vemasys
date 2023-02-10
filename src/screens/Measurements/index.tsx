@@ -263,7 +263,6 @@ const Measurements = ({navigation, route}: Props) => {
 
   const clearNewmeasurements = () => { 
     setInputInvalid(false);
-    setInvalidError('');
     setNewMeasurement('')
   }
 
