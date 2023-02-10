@@ -45,7 +45,6 @@ const Measurements = ({navigation, route}: Props) => {
   const [newMeasurement, setNewMeasurement] = useState('')
   const [open, setOpen] = useState(false)
   const [inputInvalid, setInputInvalid] = useState(false)
-  const [invalidError, setInvalidError] = useState('')
   useEffect(() => {
     getVesselPartLastMeasurements(
       routeFrom === 'reservoir' ? data?.id : data?.data[0]?.id
@@ -240,9 +239,8 @@ const Measurements = ({navigation, route}: Props) => {
       return showWarningToast('Measurement is required.')
     }
 
-    if (lastMeasurements[0] && newMeasurement < lastMeasurements[0]?.value){
+    if (lastMeasurements.length && newMeasurement < lastMeasurements[0]?.value){
       setInputInvalid(true)
-      setInvalidError(t('newMeasurementInputError'));
       return;
     }
     
@@ -310,7 +308,7 @@ const Measurements = ({navigation, route}: Props) => {
               onChangeText={e => setNewMeasurement(e)}
               isInvalid={inputInvalid}
             />
-            {inputInvalid && <Text style={styles.error}>{invalidError}</Text>}
+            {inputInvalid && <Text style={styles.error}>{t('newMeasurementInputError')}</Text>}
           </Modal.Body>
           <Modal.Footer>
             <Button
