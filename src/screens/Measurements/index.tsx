@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState } from 'react'
 import {
   Box,
   Button,
@@ -13,6 +13,7 @@ import {
   Text,
   useToast,
 } from 'native-base'
+import { StyleSheet } from 'react-native'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import moment from 'moment'
 import {Shadow} from 'react-native-shadow-2'
@@ -43,7 +44,7 @@ const Measurements = ({navigation, route}: Props) => {
   const {physicalVesselId} = useEntity()
   const [newMeasurement, setNewMeasurement] = useState('')
   const [open, setOpen] = useState(false)
-
+  const [inputInvalid, setInputInvalid] = useState(false)
   useEffect(() => {
     getVesselPartLastMeasurements(
       routeFrom === 'reservoir' ? data?.id : data?.data[0]?.id
@@ -237,6 +238,12 @@ const Measurements = ({navigation, route}: Props) => {
     if (newMeasurement === '') {
       return showWarningToast('Measurement is required.')
     }
+
+    if (lastMeasurements.length && newMeasurement < lastMeasurements[0]?.value){
+      setInputInvalid(true)
+      return;
+    }
+    
     const selectedId = routeFrom === 'reservoir' ? data?.id : data?.data[0]?.id
     setOpen(false)
     const res = await createNewConsumptionMeasure(selectedId, newMeasurement)
@@ -252,6 +259,11 @@ const Measurements = ({navigation, route}: Props) => {
     }
     getVesselPartLastMeasurements(selectedId)
     showToast('New measurement added.', 'success')
+  }
+
+  const clearNewmeasurements = () => { 
+    setInputInvalid(false);
+    setNewMeasurement('')
   }
 
   return (
@@ -293,14 +305,19 @@ const Measurements = ({navigation, route}: Props) => {
               value={newMeasurement}
               variant="filled"
               onChangeText={e => setNewMeasurement(e)}
+              isInvalid={inputInvalid}
             />
+            {inputInvalid && <Text style={styles.error}>{t('newMeasurementInputError')}</Text>}
           </Modal.Body>
           <Modal.Footer>
             <Button
               bg="#E0E0E0"
               flex="1"
               m={ms(5)}
-              onPress={() => setOpen(false)}
+              onPress={() => {
+                setOpen(false);
+                clearNewmeasurements();
+              }}
             >
               {t('cancel')}
             </Button>
@@ -334,5 +351,12 @@ const Measurements = ({navigation, route}: Props) => {
     </Box>
   )
 }
+
+const styles = StyleSheet.create({
+  error: {
+    color: 'red',
+    textAlign: 'center',
+  }
+})
 
 export default Measurements
