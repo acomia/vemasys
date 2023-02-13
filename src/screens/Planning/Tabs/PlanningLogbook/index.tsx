@@ -7,7 +7,7 @@ import {Colors} from '@bluecentury/styles'
 import {useEntity, usePlanning} from '@bluecentury/stores'
 import {LoadingAnimated} from '@bluecentury/components'
 import {useTranslation} from 'react-i18next'
-import {NavLogCard} from '@bluecentury/components'
+import {NavLogCard, NavLogDivider} from '@bluecentury/components'
 
 const PlanningLogbook = () => {
   const {t} = useTranslation()
@@ -77,9 +77,24 @@ const PlanningLogbook = () => {
             </Center>
           </Box>
         ) : (
-          plannedNavigationLogs?.map((navigationLog, i: number) => (
-            <NavLogCard key={i} navigationLog={navigationLog} />
-          ))
+          plannedNavigationLogs?.map((navigationLog, i: number) => {
+            const plannedEta = moment(navigationLog.plannedEta).format('YYYY-MM-DD');
+            const dateToday = moment().format('YYYY-MM-DD')
+            const previousDate = moment(plannedNavigationLogs[i - 1]?.plannedEta).format('YYYY-MM-DD');
+
+           if( plannedEta === dateToday && previousDate < dateToday){
+              <NavLogDivider key={`divider_${i}`}/>
+           }
+            return (
+              <>
+              {plannedEta === dateToday && previousDate < dateToday
+                ? <NavLogDivider key={`divider_${i}`}/>
+                : null
+              }
+              <NavLogCard key={i} navigationLog={navigationLog} />
+              </>
+            )
+        })
         )}
       </ScrollView>
     </Box>
