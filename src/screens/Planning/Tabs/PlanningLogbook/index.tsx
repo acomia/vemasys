@@ -117,15 +117,6 @@ const PlanningLogbook = () => {
     }
   })
 
-  // defineFirstAndLastIndex.some(item => {
-  //   const crossoversArray = defineFirstAndLastIndex.filter(
-  //     crossedItem =>
-  //       item.lastIndex > crossedItem.firstIndex && item.id !== crossedItem.id
-  //   )
-  //   console.log('CROSSOVER_LENGTH', crossoversArray.length)
-  //   return crossoversArray.length > 2
-  // })
-
   if (isPlanningLoading) return <LoadingAnimated />
 
   return (
