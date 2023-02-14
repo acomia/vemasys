@@ -132,7 +132,7 @@ const Details = () => {
       plannedETA: navigationLogDetails?.plannedEta,
       captainDatetimeETA: navigationLogDetails?.captainDatetimeEta,
       announcedDatetime: navigationLogDetails?.announcedDatetime,
-      arrivalDatetime: navigationLogDetails?.captainDatetimeEta,
+      arrivalDatetime: navigationLogDetails?.arrivalDatetime || navigationLogDetails?.captainDatetimeEta,
       terminalApprovedDeparture:
         navigationLogDetails?.terminalApprovedDeparture,
       departureDatetime: navigationLogDetails?.departureDatetime,
