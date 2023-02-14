@@ -172,7 +172,7 @@
   "arrived": "Arrived: ",
   "planned-": "Planned-",
   "lastMeasurements": "Last Measurements",
-  "enterNewMeasurements": "Enter new measurement (L)",
+  "enterNewMeasurements": "Enter new measurement (H)",
   "addAMeasurement": "Add a measurement",
   "supplier": "Supplier",
   "today": "Today",
@@ -341,5 +341,6 @@
   "pendingRequest": "Pending request",
   "weWillSendEmail": "We will send a confirmation email once approved to",
   "backToLogin": "Back to Login",
-  "newMeasurementInputError": "New Measurement should be higher than previous Measurement."
+  "newMeasurementInputError": "New measurement should be higher than last entry.",
+  "nowToday": "Now / Today"
 }

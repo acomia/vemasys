@@ -1,8 +1,8 @@
 import create from 'zustand'
-import {persist} from 'zustand/middleware'
+import { persist } from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as API from '@bluecentury/api/vemasys'
-import {NavigationLog} from '@bluecentury/models'
+import { NavigationLog, NavigationLogRoutes } from '@bluecentury/models'
 
 type PlanningState = {
   isPlanningLoading: boolean
@@ -10,6 +10,7 @@ type PlanningState = {
   isPlanningActionsLoading: boolean
   isPlanningCommentsLoading: boolean
   isPlanningDocumentsLoading: boolean
+  isPlanningRoutesLoading: boolean
   plannedNavigationLogs: NavigationLog[] | undefined
   historyNavigationLogs: any[]
   navigationLogDetails: NavigationLog | undefined
@@ -17,6 +18,7 @@ type PlanningState = {
   navigationLogCargoHolds: any[]
   navigationLogComments: any[]
   navigationLogDocuments: any[]
+  navigationLogRoutes: NavigationLogRoutes[] | undefined
   bulkTypes?: []
   hasErrorLoadingPlannedNavigationLogs: boolean
   hasErrorLoadingVesselHistoryNavLogs: boolean
@@ -36,6 +38,7 @@ type PlanningActions = {
   getNavigationLogCargoHolds: (physicalVesselId: string) => void
   getNavigationLogComments: (navLogId: string) => void
   getNavigationLogDocuments: (navLogId: string) => void
+  getNavigationLogRoutes: (navLogId: string) => void
   updateNavlogDates: (navLogId: string, dates: object) => void
   createNavlogComment: (
     navLogId: string,
@@ -283,15 +286,42 @@ export const usePlanning = create(
           })
         }
       },
+      getNavigationLogRoutes: async (navLogId: string) => {
+        set({
+          isPlanningRoutesLoading: true,
+          navigationLogRoutes: [],
+        })
+        try {
+          const response = await API.reloadNavigationLogRoutes(navLogId)
+          if (response.routes.length) {
+            set({
+              isPlanningRoutesLoading: false,
+              navigationLogRoutes: response.routes[0].waypoints,
+            })
+          } else {
+            set({
+              isPlanningRoutesLoading: false,
+              navigationLogRoutes: [],
+            })
+          }
+        } catch (error) {
+          set({
+            isPlanningRoutesLoading: false,
+          })
+        }
+      },
       updateNavlogDates: async (navLogId: string, dates: object) => {
-        set({isPlanningLoading: true})
+        set({ isPlanningLoading: true })
         try {
           const response = await API.updateNavigationLogDatetimeFields(
             navLogId,
             dates
           )
           if (response === 'SUCCESS') {
-            set({isPlanningLoading: false, updateNavlogDatesSuccess: response})
+            set({
+              isPlanningLoading: false,
+              updateNavlogDatesSuccess: response,
+            })
           } else {
             set({
               isPlanningLoading: false,
@@ -300,7 +330,7 @@ export const usePlanning = create(
             })
           }
         } catch (error) {
-          set({isPlanningLoading: false})
+          set({ isPlanningLoading: false })
         }
       },
       createNavlogComment: async (
@@ -308,110 +338,110 @@ export const usePlanning = create(
         comment: string,
         userId: string
       ) => {
-        set({isPlanningLoading: true})
+        set({ isPlanningLoading: true })
         try {
           const response = await API.createNavlogComment(
             navLogId,
             comment,
             userId
           )
-          set({isPlanningLoading: false})
+          set({ isPlanningLoading: false })
           return response
         } catch (error) {
-          set({isPlanningLoading: false})
+          set({ isPlanningLoading: false })
         }
       },
       getBulkTypes: async (query: string) => {
-        set({isPlanningLoading: true, bulkTypes: []})
+        set({ isPlanningLoading: true, bulkTypes: [] })
         try {
           const response = await API.reloadBulkTypes(query)
           if (Array.isArray(response)) {
-            set({isPlanningLoading: false, bulkTypes: response})
+            set({ isPlanningLoading: false, bulkTypes: response })
           } else {
-            set({isPlanningLoading: false, bulkTypes: []})
+            set({ isPlanningLoading: false, bulkTypes: [] })
           }
         } catch (error) {
-          set({isPlanningLoading: false})
+          set({ isPlanningLoading: false })
         }
       },
       updateBulkCargo: async (cargo: any) => {
-        set({isPlanningLoading: true})
+        set({ isPlanningLoading: true })
         try {
           const response = await API.updateBulkCargoEntry(cargo)
-          set({isPlanningLoading: false})
+          set({ isPlanningLoading: false })
           return response
         } catch (error) {
-          set({isPlanningLoading: false})
+          set({ isPlanningLoading: false })
         }
       },
       createBulkCargo: async (cargo: any, navLogId: string) => {
-        set({isPlanningLoading: true})
+        set({ isPlanningLoading: true })
         try {
           const response = await API.createNewBulkCargoEntry(cargo, navLogId)
-          set({isPlanningLoading: false})
+          set({ isPlanningLoading: false })
           return response
         } catch (error) {
-          set({isPlanningLoading: false})
+          set({ isPlanningLoading: false })
         }
       },
       deleteBulkCargo: async (id: string) => {
-        set({isPlanningLoading: true})
+        set({ isPlanningLoading: true })
         try {
           const response = await API.deleteBulkCargoEntry(id)
-          set({isPlanningLoading: false})
+          set({ isPlanningLoading: false })
           return response
         } catch (error) {
-          set({isPlanningLoading: false})
+          set({ isPlanningLoading: false })
         }
       },
       updateComment: async (id: string, description: string) => {
-        set({isPlanningLoading: true})
+        set({ isPlanningLoading: true })
         try {
           const response = await API.updateComment(id, description)
-          set({isPlanningLoading: false})
+          set({ isPlanningLoading: false })
           return response
         } catch (error) {
-          set({isPlanningLoading: false})
+          set({ isPlanningLoading: false })
         }
       },
       uploadImgFile: async (file: ImageFile) => {
-        set({isPlanningLoading: true})
+        set({ isPlanningLoading: true })
         try {
           const response = await API.uploadImgFile(file)
-          set({isPlanningLoading: false})
+          set({ isPlanningLoading: false })
           return response
         } catch (error) {
-          set({isPlanningLoading: false})
+          set({ isPlanningLoading: false })
         }
       },
       deleteComment: async (id: string) => {
-        set({isPlanningLoading: true})
+        set({ isPlanningLoading: true })
         try {
           const response = await API.deleteComment(id)
-          set({isPlanningLoading: false})
+          set({ isPlanningLoading: false })
           return response
         } catch (error) {
-          set({isPlanningLoading: false})
+          set({ isPlanningLoading: false })
         }
       },
       uploadVesselNavigationLogFile: async (navLogId: string, body: any) => {
-        set({isPlanningLoading: true})
+        set({ isPlanningLoading: true })
         try {
           const response = await API.uploadVesselNavigationLogFile(
             navLogId,
             body
           )
-          set({isPlanningLoading: false})
+          set({ isPlanningLoading: false })
           return response
         } catch (error) {
-          set({isPlanningLoading: false})
+          set({ isPlanningLoading: false })
         }
       },
       createNavigationLogAction: async (
         navigationLogId: string,
         navigationLogActionDetails: NavigationLogAction
       ) => {
-        const {start, end, estimatedEnd, type, cargoHoldActions} =
+        const { start, end, estimatedEnd, type, cargoHoldActions } =
           navigationLogActionDetails
         const body = {
           navigationLog: {
@@ -426,11 +456,11 @@ export const usePlanning = create(
             amount: cargoHoldActions[0].amount,
           },
         }
-        set({isPlanningActionsLoading: true})
+        set({ isPlanningActionsLoading: true })
         try {
           const response = await API.createNavigationLogAction(body)
           if (typeof response === 'object' && response?.id) {
-            set({isCreateNavLogActionSuccess: true})
+            set({ isCreateNavLogActionSuccess: true })
           } else {
             set({
               isPlanningActionsLoading: false,
@@ -438,7 +468,7 @@ export const usePlanning = create(
             })
           }
         } catch (error) {
-          set({isPlanningActionsLoading: false})
+          set({ isPlanningActionsLoading: false })
         }
       },
       updateNavigationLogAction: async (
@@ -446,7 +476,7 @@ export const usePlanning = create(
         navigationLogId: string,
         navigationLogActionDetails: NavigationLogAction
       ) => {
-        const {start, end, estimatedEnd, type, cargoHoldActions} =
+        const { start, end, estimatedEnd, type, cargoHoldActions } =
           navigationLogActionDetails
         const body = {
           navigationLog: {
@@ -463,11 +493,11 @@ export const usePlanning = create(
               }
             : {},
         }
-        set({isPlanningActionsLoading: true})
+        set({ isPlanningActionsLoading: true })
         try {
           const response = await API.updateNavigationLogAction(id, body)
           if (typeof response === 'object' && response?.id) {
-            set({isUpdateNavLogActionSuccess: true})
+            set({ isUpdateNavLogActionSuccess: true })
           } else {
             set({
               isPlanningActionsLoading: false,
@@ -475,15 +505,15 @@ export const usePlanning = create(
             })
           }
         } catch (error) {
-          set({isPlanningActionsLoading: false})
+          set({ isPlanningActionsLoading: false })
         }
       },
       deleteNavLogAction: async (id: string) => {
-        set({isPlanningActionsLoading: true})
+        set({ isPlanningActionsLoading: true })
         try {
           const response = await API.deleteNavigationLogAction(id)
           if (response === 204) {
-            set({isDeleteNavLogActionSuccess: true})
+            set({ isDeleteNavLogActionSuccess: true })
           } else {
             set({
               isPlanningActionsLoading: false,
@@ -491,7 +521,7 @@ export const usePlanning = create(
             })
           }
         } catch (error) {
-          set({isPlanningActionsLoading: false})
+          set({ isPlanningActionsLoading: false })
         }
       },
       reset: () => {

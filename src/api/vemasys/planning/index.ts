@@ -1,7 +1,7 @@
-import {API} from '../../apiService'
-import {VESSEL_PART_CARGO_TYPE} from '@bluecentury/constants'
+import { API } from '../../apiService'
+import { VESSEL_PART_CARGO_TYPE } from '@bluecentury/constants'
 import axios from 'axios'
-import {useAuth, useEntity, useSettings} from '@bluecentury/stores'
+import { useAuth, useEntity, useSettings } from '@bluecentury/stores'
 
 const reloadNavigationLogDetails = async (navLogId: string) => {
   return API.get(`navigation_logs/${navLogId}`)
@@ -71,7 +71,20 @@ const reloadNavigationLogDocuments = async (navLogId: string) => {
       console.error('Error: Navigation log documents fetching data', error)
     })
 }
+const reloadNavigationLogRoutes = async (navLogId: string) => {
+  return API.get(`v3/navigation_logs/${navLogId}/routes`)
+    .then(response => {
+      if (response.data) {
+        console.clear()
+        return response.data
+      }
 
+      throw new Error('Navigation log routes failed.')
+    })
+    .catch(error => {
+      console.error('Error: Navigation log routes fetching data', error)
+    })
+}
 const updateNavigationLogDatetimeFields = async (
   navLogId: string,
   dates: object
@@ -109,7 +122,7 @@ const createNavlogComment = async (
   comment: string,
   userId: string
 ) => {
-  return API.post(`navigation_log_comments`, {
+  return API.post('navigation_log_comments', {
     description: comment,
     user: {
       id: userId,
@@ -148,7 +161,7 @@ const reloadBulkTypes = async (query: string) => {
 
 const updateBulkCargoEntry = async (cargo: any) => {
   return API.put(`navigation_bulks/${cargo.id}`, {
-    type: {id: parseInt(cargo.typeId)},
+    type: { id: parseInt(cargo.typeId) },
     amount: cargo.amount.toString(),
     actualAmount: cargo.actualAmount.toString(),
     isLoading: cargo.isLoading === '1',
@@ -167,12 +180,12 @@ const updateBulkCargoEntry = async (cargo: any) => {
 
 const createNewBulkCargoEntry = async (cargo: any, navLogId: string) => {
   return API.post(
-    `navigation_bulks`,
+    'navigation_bulks',
     {
       log: {
         id: navLogId,
       },
-      type: {id: parseInt(cargo.typeId)},
+      type: { id: parseInt(cargo.typeId) },
       amount: cargo.amount,
       actualAmount: cargo.actualAmount,
       isLoading: cargo.isLoading === '1',
@@ -206,7 +219,7 @@ const deleteBulkCargoEntry = async (id: string) => {
 }
 
 const updateComment = async (id: string, description: string) => {
-  return API.put(`comments/${id}`, {description})
+  return API.put(`comments/${id}`, { description })
     .then(response => {
       if (response.data) {
         return response.data
@@ -221,7 +234,7 @@ const updateComment = async (id: string, description: string) => {
 
 const uploadImgFile = async (file: ImageFile) => {
   const formData = new FormData()
-  let image = {
+  const image = {
     uri: file.uri,
     type: file.type,
     name: file.fileName || `IMG_${Date.now()}`,
@@ -276,7 +289,7 @@ const uploadVesselNavigationLogFile = async (navLogId: string, body: any) => {
 }
 
 const createNavigationLogAction = async (body: any) => {
-  return API.post(`navigation_log_actions`, body)
+  return API.post('navigation_log_actions', body)
     .then(response => {
       if (response.data) {
         return response.data
@@ -322,6 +335,7 @@ export {
   reloadNavigationLogCargoHolds,
   reloadNavigationLogComments,
   reloadNavigationLogDocuments,
+  reloadNavigationLogRoutes,
   updateNavigationLogDatetimeFields,
   createNavlogComment,
   reloadBulkTypes,

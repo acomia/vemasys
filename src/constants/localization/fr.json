@@ -169,7 +169,7 @@
   "arrived": "Arrivé: ",
   "planned-": "Prévu-",
   "lastMeasurements": "Dernières mesures",
-  "enterNewMeasurements": "Entrez une nouvelle mesure (L)",
+  "enterNewMeasurements": "Entrez une nouvelle mesure (H)",
   "addAMeasurement": "Ajouter une mesure",
   "supplier": "Fournisseur",
   "today": "Aujourd’hui",
@@ -325,5 +325,6 @@
   "sendingGPSDataFor": "L'appareil envoie actuellement des données GPS pour ",
   "requiredTurnOffGPS": "Vous devrez le désactiver afin de poursuivre votre dernière action.",
   "back": "Dos",
-  "newMeasurementInputError": "New Measurement should be higher than previous Measurement."
+  "newMeasurementInputError": "New measurement should be higher than last entry.",
+  "nowToday": "Now / Today"
 }

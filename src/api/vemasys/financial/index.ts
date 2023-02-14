@@ -60,7 +60,7 @@ const updateInvoiceStatus = async (
 ) => {
   return API.put(`invoices/${id}`, {
     status: in_status,
-    outgoingStatus: out_status
+    outgoingStatus: out_status,
   })
     .then(response => {
       if (response.data) {
@@ -77,7 +77,8 @@ const updateInvoiceStatus = async (
 const uploadFinancialFile = async (filePath: string) => {
   const entityUsers = useEntity.getState().entityUsers
   const entityUserId = useEntity.getState().entityUserId
-  const fileGroupId = entityUsers.find(item => item.id == entityUserId).entity.fileGroup.id
+  const fileGroupId = entityUsers.find(item => item.id === entityUserId)?.entity
+    .fileGroup.id
   return API.put(`add_file_to_file_group/${fileGroupId}`, {
     path: filePath,
     description: `Invoice scan ${Date.now()}.pdf`,
@@ -92,6 +93,28 @@ const uploadFinancialFile = async (filePath: string) => {
     })
     .catch(error => {
       console.error('Error: Invoice details data', error)
+    })
+}
+
+const addFinancialScan = async (filePath: string) => {
+  const entityId = useEntity.getState().entityId
+  console.log('ADD_FINANCIAL_SCAN_STARTED')
+  return API.post(`v3/Entity/${entityId}/files`, {
+    path: filePath,
+    description: `Invoice scan ${Date.now()}.pdf`,
+    uploader: useEntity.getState().user?.id,
+    type: {
+      title: 'mobile upload',
+      relevance: 'financial',
+    },
+  })
+    .then(response => {
+      console.log('ADD_FINANCIAL_SCAN_SUCCESS', response)
+      return Promise.resolve(response.data.id ? 'SUCCESS' : 'FAILED')
+    })
+    .catch(error => {
+      console.error('Error: Invoice details data', error)
+      return Promise.reject('')
     })
 }
 
@@ -117,4 +140,5 @@ export {
   updateInvoiceStatus,
   uploadFinancialFile,
   getFinancialFile,
+  addFinancialScan,
 }
