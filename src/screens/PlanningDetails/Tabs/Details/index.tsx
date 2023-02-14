@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react'
-import {RefreshControl} from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { RefreshControl } from 'react-native'
 import {
   Box,
   Button,
@@ -12,7 +12,7 @@ import {
   Text,
   useToast,
 } from 'native-base'
-import {ms} from 'react-native-size-matters'
+import { ms } from 'react-native-size-matters'
 import DatePicker from 'react-native-date-picker'
 import {
   NavigationProp,
@@ -22,21 +22,21 @@ import {
 } from '@react-navigation/native'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import _ from 'lodash'
-import {useTranslation} from 'react-i18next'
-import {Shadow} from 'react-native-shadow-2'
+import { useTranslation } from 'react-i18next'
+import { Shadow } from 'react-native-shadow-2'
 
-import {ActionCard, CommentCard, DatetimePickerList} from '../../components'
-import {Colors} from '@bluecentury/styles'
-import {Icons} from '@bluecentury/assets'
-import {useEntity, usePlanning} from '@bluecentury/stores'
+import { ActionCard, CommentCard, DatetimePickerList } from '../../components'
+import { Colors } from '@bluecentury/styles'
+import { Icons } from '@bluecentury/assets'
+import { useEntity, usePlanning } from '@bluecentury/stores'
 import {
   formatLocationLabel,
   hasSelectedEntityUserPermission,
   ROLE_PERMISSION_NAVIGATION_LOG_ADD_COMMENT,
   titleCase,
 } from '@bluecentury/constants'
-import {LoadingAnimated} from '@bluecentury/components'
-import {Vemasys} from '@bluecentury/helpers'
+import { LoadingAnimated } from '@bluecentury/components'
+import { Vemasys } from '@bluecentury/helpers'
 
 type Dates = {
   plannedETA: Date | undefined | StringOrNull
@@ -47,7 +47,7 @@ type Dates = {
   departureDatetime: Date | undefined | StringOrNull
 }
 const Details = () => {
-  const {t} = useTranslation()
+  const { t } = useTranslation()
   const toast = useToast()
   const navigation = useNavigation<NavigationProp<RootStackParamList>>()
   const route = useRoute()
@@ -57,12 +57,15 @@ const Details = () => {
     isPlanningDetailsLoading,
     isPlanningActionsLoading,
     isPlanningCommentsLoading,
+    isPlanningRoutesLoading,
     navigationLogDetails,
     navigationLogComments,
     navigationLogActions,
+    navigationLogRoutes,
     getNavigationLogDetails,
     getNavigationLogActions,
     getNavigationLogComments,
+    getNavigationLogRoutes,
     updateNavlogDates,
     updateNavlogDatesSuccess,
     updateNavlogDatesFailed,
@@ -72,8 +75,8 @@ const Details = () => {
     isCreateNavLogActionSuccess,
     reset,
   } = usePlanning()
-  const {selectedEntity} = useEntity()
-  const {navlog, title}: any = route.params
+  const { selectedEntity } = useEntity()
+  const { navlog, title }: any = route.params
   const [dates, setDates] = useState<Dates>({
     plannedETA: navigationLogDetails?.plannedEta,
     captainDatetimeETA: navigationLogDetails?.captainDatetimeEta,
@@ -83,10 +86,10 @@ const Details = () => {
     departureDatetime: navigationLogDetails?.departureDatetime,
   })
   const [didDateChange, setDidDateChange] = useState({
-    Pln: {didUpdate: false},
-    Eta: {didUpdate: false},
-    Nor: {didUpdate: false},
-    Doc: {didUpdate: false},
+    Pln: { didUpdate: false },
+    Eta: { didUpdate: false },
+    Nor: { didUpdate: false },
+    Doc: { didUpdate: false },
   })
 
   const [viewImg, setViewImg] = useState(false)
@@ -117,6 +120,7 @@ const Details = () => {
     getNavigationLogDetails(navlog?.id)
     getNavigationLogActions(navlog?.id)
     getNavigationLogComments(navlog?.id)
+    getNavigationLogRoutes(navlog?.id)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -128,7 +132,7 @@ const Details = () => {
       plannedETA: navigationLogDetails?.plannedEta,
       captainDatetimeETA: navigationLogDetails?.captainDatetimeEta,
       announcedDatetime: navigationLogDetails?.announcedDatetime,
-      arrivalDatetime: navigationLogDetails?.arrivalDatetime,
+      arrivalDatetime: navigationLogDetails?.captainDatetimeEta,
       terminalApprovedDeparture:
         navigationLogDetails?.terminalApprovedDeparture,
       departureDatetime: navigationLogDetails?.departureDatetime,
@@ -140,7 +144,22 @@ const Details = () => {
     } else {
       setButtonActionLabel('Loading')
     }
-  }, [navigationLogActions, navigationLogDetails, isCreateNavLogActionSuccess])
+
+    if (navigationLogRoutes.length) {
+      setDates({
+        ...dates,
+        arrivalDatetime: dates?.captainDatetimeETA
+          ? navigationLogDetails?.captainDatetimeEta
+          : navigationLogRoutes[navigationLogRoutes.length - 1]
+              ?.estimatedArrival,
+      })
+    }
+  }, [
+    navigationLogActions,
+    navigationLogDetails,
+    isCreateNavLogActionSuccess,
+    navigationLogRoutes,
+  ])
 
   useEffect(() => {
     if (updateNavlogDatesSuccess === 'SUCCESS' && focused) {
@@ -190,10 +209,10 @@ const Details = () => {
   const onSuccess = () => {
     setDidDateChange({
       ...didDateChange,
-      Pln: {didUpdate: false},
-      Eta: {didUpdate: false},
-      Nor: {didUpdate: false},
-      Doc: {didUpdate: false},
+      Pln: { didUpdate: false },
+      Eta: { didUpdate: false },
+      Nor: { didUpdate: false },
+      Doc: { didUpdate: false },
     })
     onPullToReload()
     reset()
@@ -207,26 +226,30 @@ const Details = () => {
     const formattedDate = Vemasys.formatDate(date)
     switch (selectedType) {
       case 'PLN':
-        setDates({...dates, plannedETA: formattedDate})
-        setDidDateChange({...didDateChange, Pln: {didUpdate: true}})
+        setDates({ ...dates, plannedETA: formattedDate })
+        setDidDateChange({ ...didDateChange, Pln: { didUpdate: true } })
         return
       case 'ETA':
-        setDates({...dates, captainDatetimeETA: formattedDate})
-        setDidDateChange({...didDateChange, Eta: {didUpdate: true}})
+        setDates({
+          ...dates,
+          captainDatetimeETA: formattedDate,
+          arrivalDatetime: formattedDate,
+        })
+        setDidDateChange({ ...didDateChange, Eta: { didUpdate: true } })
         return
       case 'NOR':
-        setDates({...dates, announcedDatetime: formattedDate})
-        setDidDateChange({...didDateChange, Nor: {didUpdate: true}})
+        setDates({ ...dates, announcedDatetime: formattedDate })
+        setDidDateChange({ ...didDateChange, Nor: { didUpdate: true } })
         return
       case 'ARR':
-        setDates({...dates, arrivalDatetime: formattedDate})
+        setDates({ ...dates, arrivalDatetime: formattedDate })
         return
       case 'DOC':
-        setDates({...dates, terminalApprovedDeparture: formattedDate})
-        setDidDateChange({...didDateChange, Doc: {didUpdate: true}})
+        setDates({ ...dates, terminalApprovedDeparture: formattedDate })
+        setDidDateChange({ ...didDateChange, Doc: { didUpdate: true } })
         return
       case 'DEP':
-        setDates({...dates, departureDatetime: formattedDate})
+        setDates({ ...dates, departureDatetime: formattedDate })
         return
     }
   }
@@ -256,9 +279,9 @@ const Details = () => {
         onClearDate={() => {
           setDidDateChange({
             ...didDateChange,
-            Pln: {didUpdate: _.isNull(dates.plannedETA) ? false : true},
+            Pln: { didUpdate: _.isNull(dates.plannedETA) ? false : true },
           })
-          setDates({...dates, plannedETA: null})
+          setDates({ ...dates, plannedETA: null })
         }}
       />
       <DatetimePickerList
@@ -272,7 +295,9 @@ const Details = () => {
         onClearDate={() => {
           setDidDateChange({
             ...didDateChange,
-            Eta: {didUpdate: _.isNull(dates.captainDatetimeETA) ? false : true},
+            Eta: {
+              didUpdate: _.isNull(dates.captainDatetimeETA) ? false : true,
+            },
           })
           setDates({
             ...dates,
@@ -283,35 +308,38 @@ const Details = () => {
     </Box>
   )
 
-  const renderAnnouncingAndArrivalDates = () => (
-    <Box>
-      <DatetimePickerList
-        date={dates.announcedDatetime}
-        locked={isUnknownLocation ? true : navigationLogDetails?.locked}
-        title="Notice of Readiness"
-        onChangeDate={() => {
-          setSelectedType('NOR')
-          setOpenDatePicker(true)
-        }}
-        onClearDate={() => {
-          setDidDateChange({
-            ...didDateChange,
-            Nor: {didUpdate: _.isNull(dates.announcedDatetime) ? false : true},
-          })
-          setDates({
-            ...dates,
-            announcedDatetime: null,
-          })
-        }}
-      />
-
-      <DatetimePickerList
-        date={dates.arrivalDatetime}
-        readOnly={true}
-        title="Arrival"
-      />
-    </Box>
-  )
+  const renderAnnouncingAndArrivalDates = () => {
+    return (
+      <Box>
+        <DatetimePickerList
+          date={dates.announcedDatetime}
+          locked={isUnknownLocation ? true : navigationLogDetails?.locked}
+          title="Notice of Readiness"
+          onChangeDate={() => {
+            setSelectedType('NOR')
+            setOpenDatePicker(true)
+          }}
+          onClearDate={() => {
+            setDidDateChange({
+              ...didDateChange,
+              Nor: {
+                didUpdate: _.isNull(dates.announcedDatetime) ? false : true,
+              },
+            })
+            setDates({
+              ...dates,
+              announcedDatetime: null,
+            })
+          }}
+        />
+        
+        <DatetimePickerList
+          date={dates.arrivalDatetime}
+          readOnly={true}
+          title="Arrival"
+        />
+      </Box>
+    )
 
   const renderDepartureDates = () => (
     <Box>
@@ -463,10 +491,10 @@ const Details = () => {
     })
     setDidDateChange({
       ...didDateChange,
-      Pln: {didUpdate: false},
-      Eta: {didUpdate: false},
-      Nor: {didUpdate: false},
-      Doc: {didUpdate: false},
+      Pln: { didUpdate: false },
+      Eta: { didUpdate: false },
+      Nor: { didUpdate: false },
+      Doc: { didUpdate: false },
     })
   }
 
@@ -482,10 +510,10 @@ const Details = () => {
     })
     setDidDateChange({
       ...didDateChange,
-      Pln: {didUpdate: false},
-      Eta: {didUpdate: false},
-      Nor: {didUpdate: false},
-      Doc: {didUpdate: false},
+      Pln: { didUpdate: false },
+      Eta: { didUpdate: false },
+      Nor: { didUpdate: false },
+      Doc: { didUpdate: false },
     })
   }
 
@@ -518,7 +546,7 @@ const Details = () => {
           />
         }
         bg={Colors.white}
-        contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 30 }}
         px={ms(12)}
         py={ms(20)}
         scrollEventThrottle={16}
@@ -765,7 +793,7 @@ const Details = () => {
             alt="file-preview"
             h="100%"
             resizeMode="contain"
-            source={{uri: selectedImg.uri}}
+            source={{ uri: selectedImg.uri }}
             w="100%"
           />
         </Modal.Content>
