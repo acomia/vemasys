@@ -127,12 +127,15 @@ const Details = () => {
   useEffect(() => {
     const active = navigationLogActions?.filter(action => _.isNull(action?.end))
     setActiveActions(active)
+
     setDates({
       ...dates,
       plannedETA: navigationLogDetails?.plannedEta,
       captainDatetimeETA: navigationLogDetails?.captainDatetimeEta,
       announcedDatetime: navigationLogDetails?.announcedDatetime,
-      arrivalDatetime: navigationLogDetails?.arrivalDatetime || navigationLogDetails?.captainDatetimeEta,
+      arrivalDatetime:
+        navigationLogDetails?.arrivalDatetime ||
+        navigationLogDetails?.captainDatetimeEta,
       terminalApprovedDeparture:
         navigationLogDetails?.terminalApprovedDeparture,
       departureDatetime: navigationLogDetails?.departureDatetime,
@@ -148,10 +151,12 @@ const Details = () => {
     if (navigationLogRoutes.length) {
       setDates({
         ...dates,
-        arrivalDatetime: dates?.captainDatetimeETA
-          ? navigationLogDetails?.captainDatetimeEta
-          : navigationLogRoutes[navigationLogRoutes.length - 1]
-              ?.estimatedArrival,
+        arrivalDatetime:
+          navigationLogDetails?.announcedDatetime &&
+          navigationLogDetails?.captainDatetimeEta
+            ? navigationLogDetails?.captainDatetimeEta
+            : navigationLogRoutes[navigationLogRoutes.length - 1]
+                ?.estimatedArrival,
       })
     }
   }, [
@@ -332,7 +337,7 @@ const Details = () => {
             })
           }}
         />
-        
+
         <DatetimePickerList
           date={dates.arrivalDatetime}
           readOnly={true}
@@ -340,6 +345,7 @@ const Details = () => {
         />
       </Box>
     )
+  }
 
   const renderDepartureDates = () => (
     <Box>
