@@ -43,6 +43,89 @@ const PlanningLogbook = () => {
     getVesselPlannedNavLogs(vesselId as string)
   }
 
+  // Logic to choose right colour for planned item start
+
+  const colours = [
+    Colors.navLogItemBlue,
+    Colors.navLogItemOrange,
+    Colors.navLogItemViolet,
+    Colors.navLogItemPink,
+    Colors.navLogItemGreen,
+  ]
+
+  //This function has two steps on first one we create an array of unique planned items,
+  // on the second we define a colour of each item
+  // after that we return an array of unique items with colour
+  const addColourToUniqueItem = (arr: NavigationLog[]) => {
+    const uniqueCharters: NavigationLog[] = []
+    arr.forEach(item => {
+      if (!item.charter.id) {
+        uniqueCharters.push(item)
+      } else {
+        const found = uniqueCharters.find(
+          uniqueItem => item.charter.id === uniqueItem.charter?.id
+        )
+        if (!found) {
+          uniqueCharters.push(item)
+        }
+      }
+    })
+    let index = 0
+    return uniqueCharters.map(item => {
+      if (index === colours.length - 1) {
+        index = 0
+        return {...item, colour: colours[colours.length - 1]}
+      } else {
+        index += 1
+        return {...item, colour: colours[index - 1]}
+      }
+    })
+  }
+
+  const arrayWithColours = addColourToUniqueItem(plannedNavigationLogs)
+
+  // This function looks for items in unique items array and returns a colour for passed item
+  const defineColour = (item: NavigationLog) => {
+    if (item.charter.id) {
+      return arrayWithColours.find(
+        secondaryItem => secondaryItem.charter.id === item.charter.id
+      )?.colour
+    } else {
+      return arrayWithColours.find(
+        secondaryItem => secondaryItem.id === item.id
+      )?.colour
+    }
+  }
+
+  //Logic to choose right colour for planned item end
+
+  // Logic to add the line united planned items with common charter start
+  const defineFirstAndLastIndex = arrayWithColours.map(item => {
+    return {
+      ...item,
+      firstIndex: plannedNavigationLogs?.findIndex(planned =>
+        item.charter.id
+          ? planned.charter.id === item.charter.id
+          : planned.id === item.id
+      ),
+      lastIndex: plannedNavigationLogs?.findLastIndex(
+        (planned: NavigationLog) =>
+          item.charter.id
+            ? planned.charter.id === item.charter.id
+            : planned.id === item.id
+      ),
+    }
+  })
+
+  // defineFirstAndLastIndex.some(item => {
+  //   const crossoversArray = defineFirstAndLastIndex.filter(
+  //     crossedItem =>
+  //       item.lastIndex > crossedItem.firstIndex && item.id !== crossedItem.id
+  //   )
+  //   console.log('CROSSOVER_LENGTH', crossoversArray.length)
+  //   return crossoversArray.length > 2
+  // })
+
   if (isPlanningLoading) return <LoadingAnimated />
 
   return (
@@ -55,7 +138,7 @@ const PlanningLogbook = () => {
           />
         }
         contentContainerStyle={{flexGrow: 1, paddingBottom: 20}}
-        px={ms(12)}
+        pr={ms(12)}
         py={ms(15)}
         scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
@@ -82,16 +165,22 @@ const PlanningLogbook = () => {
             const dateToday = moment().format('YYYY-MM-DD')
             const previousDate = moment(plannedNavigationLogs[i - 1]?.plannedEta).format('YYYY-MM-DD');
 
-           if( plannedEta === dateToday && previousDate < dateToday){
+            if (plannedEta === dateToday && previousDate < dateToday) {
               <NavLogDivider key={`divider_${i}`}/>
-           }
+            }
             return (
               <>
-              {plannedEta === dateToday && previousDate < dateToday
-                ? <NavLogDivider key={`divider_${i}`}/>
-                : null
-              }
-              <NavLogCard key={i} navigationLog={navigationLog} />
+                {plannedEta === dateToday && previousDate < dateToday
+                  ? <NavLogDivider key={`divider_${i}`}/>
+                  : null
+                }
+                <NavLogCard
+                  key={i}
+                  index={i}
+                  navigationLog={navigationLog}
+                  defineFirstAndLastIndex={defineFirstAndLastIndex}
+                  itemColor={defineColour(navigationLog)}
+                />
               </>
             )
         })
