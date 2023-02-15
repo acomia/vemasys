@@ -148,7 +148,7 @@ const Details = () => {
       setButtonActionLabel('Loading')
     }
 
-    if (navigationLogRoutes.length) {
+    if (navigationLogRoutes) {
       setDates({
         ...dates,
         arrivalDatetime:
