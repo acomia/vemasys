@@ -1,10 +1,10 @@
 import create from 'zustand'
-import {persist} from 'zustand/middleware'
+import { persist } from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as API from '@bluecentury/api/vemasys'
-import {ENTITY_TYPE_EXPLOITATION_VESSEL} from '@bluecentury/constants'
-import {Entity, EntityUser, User, Vessel} from '@bluecentury/models'
-import {useSettings} from '@bluecentury/stores/settings'
+import { ENTITY_TYPE_EXPLOITATION_VESSEL } from '@bluecentury/constants'
+import { Entity, EntityUser, User, Vessel } from '@bluecentury/models'
+import { useSettings } from '@bluecentury/stores/settings'
 
 type EntityState = {
   hasEntityHydrated: boolean
@@ -97,13 +97,15 @@ export const useEntity = create(
           hasErrorLoadingCurrentUser: false,
         })
         try {
+          console.log('getUserInfo')
           const response = await API.getUserInfo()
           const setLanguage = useSettings.getState().setLanguage
-          setLanguage(response.language)
+
           set({
             user: response,
             isLoadingCurrentUserInfo: false,
           })
+          setLanguage(response.language)
         } catch (error) {
           set({
             hasErrorLoadingCurrentUser: true,
@@ -139,7 +141,7 @@ export const useEntity = create(
         }
       },
       selectEntityUser: async (entity: EntityUser) => {
-        set({fleetVessel: 0})
+        set({ fleetVessel: 0 })
         const entityRole = entity.role.title
         const entityType = entity.entity.type.title
         const physicalVesselId =
@@ -224,10 +226,10 @@ export const useEntity = create(
         })
       },
       getRoleForAccept: async () => {
-        set({isLoadingPendingRoles: true, pendingRoles: []})
+        set({ isLoadingPendingRoles: true, pendingRoles: [] })
         try {
           const response = await API.getRoleForAccept(get().user?.id)
-          set({pendingRoles: response, isLoadingPendingRoles: false})
+          set({ pendingRoles: response, isLoadingPendingRoles: false })
         } catch (error) {
           set({
             isLoadingEntityUsers: false,
@@ -235,23 +237,23 @@ export const useEntity = create(
         }
       },
       updatePendingRole: async (id: string, accept: boolean) => {
-        set({isLoadingPendingRoles: true})
+        set({ isLoadingPendingRoles: true })
         try {
           const response = accept
             ? await API.acceptPendingRole(id)
             : await API.rejectPendingRole(id)
-          set({acceptRoleStatus: response})
+          set({ acceptRoleStatus: response })
         } catch (error) {
-          set({isLoadingPendingRoles: false})
+          set({ isLoadingPendingRoles: false })
         }
       },
       createSignUpRequest: async (userInfo: any, docs: Array<any>) => {
-        set({isLoadingSignUpRequest: true})
+        set({ isLoadingSignUpRequest: true })
         try {
           const response = await API.createSignUpRequest(userInfo, docs)
-          set({signUpRequestStatus: response, isLoadingSignUpRequest: false})
+          set({ signUpRequestStatus: response, isLoadingSignUpRequest: false })
         } catch (error) {
-          set({isLoadingSignUpRequest: false})
+          set({ isLoadingSignUpRequest: false })
         }
       },
       reset: () => {

@@ -240,6 +240,7 @@ const Measurements = ({ navigation, route }: Props) => {
     }
 
     if (
+      routeFrom !== 'reservoir' &&
       lastMeasurements.length &&
       newMeasurement < lastMeasurements[0]?.value
     ) {
@@ -297,7 +298,7 @@ const Measurements = ({ navigation, route }: Props) => {
       </Box>
       <Modal animationPreset="slide" isOpen={open} px={ms(15)} size="full">
         <Modal.Content>
-          <Modal.Header>{t('enterNewMeasurements')}</Modal.Header>
+          <Modal.Header>{routeFrom === 'reservoir' ? t('enterNewMeasurements') : t('enterNewMeasurementsHour')}</Modal.Header>
           <Modal.Body>
             <Input
               bold
