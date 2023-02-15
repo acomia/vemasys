@@ -8,6 +8,8 @@ import {useEntity, usePlanning} from '@bluecentury/stores'
 import {LoadingAnimated} from '@bluecentury/components'
 import {useTranslation} from 'react-i18next'
 import {NavLogCard, NavLogDivider} from '@bluecentury/components'
+import {NavigationLog} from '@bluecentury/models'
+import findLastIndex from 'lodash/findLastIndex'
 
 const PlanningLogbook = () => {
   const {t} = useTranslation()
@@ -100,20 +102,20 @@ const PlanningLogbook = () => {
   //Logic to choose right colour for planned item end
 
   // Logic to add the line united planned items with common charter start
-  const defineFirstAndLastIndex = arrayWithColours.map(item => {
-    return {
-      ...item,
-      firstIndex: plannedNavigationLogs?.findIndex(planned =>
-        item.charter.id
-          ? planned.charter.id === item.charter.id
-          : planned.id === item.id
-      ),
-      lastIndex: plannedNavigationLogs?.findLastIndex(
-        (planned: NavigationLog) =>
+  const defineFirstAndLastIndex = arrayWithColours?.map(item => {
+    if (plannedNavigationLogs) {
+      return {
+        ...item,
+        firstIndex: plannedNavigationLogs?.findIndex(planned =>
           item.charter.id
             ? planned.charter.id === item.charter.id
             : planned.id === item.id
-      ),
+        ),
+        lastIndex: findLastIndex(plannedNavigationLogs, planned =>
+          item.charter.id
+            ? planned.charter.id === item.charter.id
+            : planned.id === item.id)
+      }
     }
   })
 
@@ -152,29 +154,32 @@ const PlanningLogbook = () => {
           </Box>
         ) : (
           plannedNavigationLogs?.map((navigationLog, i: number) => {
-            const plannedEta = moment(navigationLog.plannedEta).format('YYYY-MM-DD');
+            const plannedEta = moment(navigationLog.plannedEta).format(
+              'YYYY-MM-DD'
+            )
             const dateToday = moment().format('YYYY-MM-DD')
-            const previousDate = moment(plannedNavigationLogs[i - 1]?.plannedEta).format('YYYY-MM-DD');
+            const previousDate = moment(
+              plannedNavigationLogs[i - 1]?.plannedEta
+            ).format('YYYY-MM-DD')
 
             if (plannedEta === dateToday && previousDate < dateToday) {
-              <NavLogDivider key={`divider_${i}`}/>
+              <NavLogDivider key={`divider_${i}`} />
             }
             return (
               <>
-                {plannedEta === dateToday && previousDate < dateToday
-                  ? <NavLogDivider key={`divider_${i}`}/>
-                  : null
-                }
+                {plannedEta === dateToday && previousDate < dateToday ? (
+                  <NavLogDivider key={`divider_${i}`} />
+                ) : null}
                 <NavLogCard
                   key={i}
-                  index={i}
-                  navigationLog={navigationLog}
                   defineFirstAndLastIndex={defineFirstAndLastIndex}
+                  index={i}
                   itemColor={defineColour(navigationLog)}
+                  navigationLog={navigationLog}
                 />
               </>
             )
-        })
+          })
         )}
       </ScrollView>
     </Box>
