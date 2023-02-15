@@ -19,4 +19,9 @@ export const Colors = {
   highlighted_text: '#29B7EF',
   //shadow color
   shadow: '#2e3134',
+  navLogItemBlue: '#BEE2F7',
+  navLogItemOrange: '#FFD4AE',
+  navLogItemViolet: '#D8CBF7',
+  navLogItemPink: '#FFB7B7',
+  navLogItemGreen: '#B3E8AD',
 }
