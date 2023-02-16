@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, {useEffect, useState} from 'react'
 import {
   Box,
   Button,
@@ -13,24 +13,24 @@ import {
   Text,
   useToast,
 } from 'native-base'
-import { StyleSheet } from 'react-native'
+import {StyleSheet} from 'react-native'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import moment from 'moment'
-import { Shadow } from 'react-native-shadow-2'
-import { ms } from 'react-native-size-matters'
-import { NativeStackScreenProps } from '@react-navigation/native-stack'
+import {Shadow} from 'react-native-shadow-2'
+import {ms} from 'react-native-size-matters'
+import {NativeStackScreenProps} from '@react-navigation/native-stack'
+import {useTranslation} from 'react-i18next'
 
-import { formatNumber } from '@bluecentury/constants'
-import { useEntity, useTechnical } from '@bluecentury/stores'
-import { LoadingAnimated } from '@bluecentury/components'
-import { Colors } from '@bluecentury/styles'
-import { MeasurementCard } from './measurement-card'
-import { useTranslation } from 'react-i18next'
+import {formatNumber} from '@bluecentury/constants'
+import {useEntity, useTechnical} from '@bluecentury/stores'
+import {LoadingAnimated} from '@bluecentury/components'
+import {Colors} from '@bluecentury/styles'
+import {MeasurementCard} from './measurement-card'
 
 type Props = NativeStackScreenProps<RootStackParamList>
-const Measurements = ({ navigation, route }: Props) => {
-  const { t } = useTranslation()
-  const { data, routeFrom } = route.params
+const Measurements = ({navigation, route}: Props) => {
+  const {t} = useTranslation()
+  const {data, routeFrom} = route.params
   const toast = useToast()
   const {
     isTechnicalLoading,
@@ -41,7 +41,7 @@ const Measurements = ({ navigation, route }: Props) => {
     getVesselEngines,
     getVesselReservoirs,
   } = useTechnical()
-  const { physicalVesselId } = useEntity()
+  const {physicalVesselId} = useEntity()
   const [newMeasurement, setNewMeasurement] = useState('')
   const [open, setOpen] = useState(false)
   const [inputInvalid, setInputInvalid] = useState(false)
@@ -290,7 +290,7 @@ const Measurements = ({ navigation, route }: Props) => {
             renderItem={props => (
               <MeasurementCard routeFrom={routeFrom} {...props} />
             )}
-            contentContainerStyle={{ paddingBottom: 20 }}
+            contentContainerStyle={{paddingBottom: 20}}
             data={lastMeasurements}
             keyExtractor={(item: any) => `LastMeasure-${item?.id}`}
           />
@@ -298,11 +298,15 @@ const Measurements = ({ navigation, route }: Props) => {
       </Box>
       <Modal animationPreset="slide" isOpen={open} px={ms(15)} size="full">
         <Modal.Content>
-          <Modal.Header>{routeFrom === 'reservoir' ? t('enterNewMeasurements') : t('enterNewMeasurementsHour')}</Modal.Header>
+          <Modal.Header>
+            {routeFrom === 'reservoir'
+              ? t('enterNewMeasurements')
+              : t('enterNewMeasurementsHour')}
+          </Modal.Header>
           <Modal.Body>
             <Input
               bold
-              backgroundColor="#F7F7F7"
+              backgroundColor={Colors.light_grey}
               fontSize={ms(15)}
               height={ms(40)}
               isInvalid={inputInvalid}

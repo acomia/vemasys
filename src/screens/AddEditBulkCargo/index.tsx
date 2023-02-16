@@ -195,7 +195,7 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
           {t('cargo')}
         </Text>
         {method === 'edit' ? (
-          <Box bg="#F7F7F7" borderRadius={ms(5)} px="2" py="3">
+          <Box bg={Colors.light_grey} borderRadius={ms(5)} px="2" py="3">
             <Text
               color={Colors.text}
               ellipsizeMode="tail"
@@ -207,7 +207,7 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
           </Box>
         ) : (
           <Select
-            bg="#F7F7F7"
+            bg={Colors.light_grey}
             minWidth="280"
             selectedValue={defaultType}
             onValueChange={val => setCargoData({...cargoData, typeId: val})}

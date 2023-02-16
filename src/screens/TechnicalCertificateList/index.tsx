@@ -14,13 +14,12 @@ import moment from 'moment'
 import {Shadow} from 'react-native-shadow-2'
 import Material from 'react-native-vector-icons/MaterialCommunityIcons'
 import {ms} from 'react-native-size-matters'
+import {useTranslation} from 'react-i18next'
 
 import {Colors} from '@bluecentury/styles'
 import {IconButton} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
-import {useTranslation} from 'react-i18next'
-
 type Props = NativeStackScreenProps<RootStackParamList>
 const TechnicalCertificareList = ({navigation, route}: Props) => {
   const {t} = useTranslation()
@@ -56,19 +55,19 @@ const TechnicalCertificareList = ({navigation, route}: Props) => {
         }
       >
         <Box
+          bg={Colors.white}
+          borderColor={Colors.border}
           borderRadius={ms(5)}
           borderWidth={1}
-          borderColor={Colors.border}
           mt={ms(10)}
-          bg={Colors.white}
           shadow={1}
         >
           {/* Certificate Header */}
           <HStack
+            alignItems="center"
             backgroundColor={Colors.border}
             px={ms(15)}
             py={ms(12)}
-            alignItems="center"
           >
             <Box flex="1">
               <Text color={Colors.text} fontWeight="medium">
@@ -88,10 +87,10 @@ const TechnicalCertificareList = ({navigation, route}: Props) => {
             </Box>
 
             <IconButton
-              source={Icons.cloud_download}
-              onPress={() => {}}
               size={ms(25)}
+              source={Icons.cloud_download}
               tintColor={canBeDownload ? '' : '#8FB4C9'}
+              onPress={() => {}}
             />
           </HStack>
           {/* End of Header */}
@@ -100,9 +99,9 @@ const TechnicalCertificareList = ({navigation, route}: Props) => {
               <Text color={Colors.disabled} fontWeight="medium">
                 {t('validityPeriod')}
               </Text>
-              <Text color={Colors.secondary} bold>
+              <Text bold color={Colors.secondary}>
                 {moment(item?.startDate).format('DD MMM YYYY')} -{' '}
-                <Text color={Colors.danger} bold>
+                <Text bold color={Colors.danger}>
                   {item?.endDate
                     ? moment(item?.endDate).format('DD MMM YYYY')
                     : t('never')}
@@ -111,21 +110,21 @@ const TechnicalCertificareList = ({navigation, route}: Props) => {
             </Box>
             {!isValid ? (
               <IconButton
+                size={ms(25)}
                 source={Icons.status_x}
                 onPress={() => {}}
-                size={ms(25)}
               />
             ) : isExpiring ? (
               <IconButton
+                size={ms(25)}
                 source={Icons.status_exclamation}
                 onPress={() => {}}
-                size={ms(25)}
               />
             ) : (
               <IconButton
+                size={ms(25)}
                 source={Icons.status_check}
                 onPress={() => {}}
-                size={ms(25)}
               />
             )}
           </HStack>
@@ -137,29 +136,29 @@ const TechnicalCertificareList = ({navigation, route}: Props) => {
   const renderHeader = () => (
     <Box>
       <Input
-        w={{
-          base: '100%',
-        }}
-        backgroundColor="#F7F7F7"
         InputLeftElement={
           <Icon
             as={<Material name="magnify" />}
-            size={5}
-            ml="2"
             color={Colors.disabled}
+            ml="2"
+            size={5}
           />
         }
-        placeholderTextColor={Colors.disabled}
+        w={{
+          base: '100%',
+        }}
+        backgroundColor={Colors.light_grey}
         fontWeight="medium"
-        placeholder={t('searchCertificate')}
-        variant="filled"
-        size="sm"
         mb={ms(10)}
+        placeholder={t('searchCertificate')}
+        placeholderTextColor={Colors.disabled}
+        size="sm"
         value={searchedValue}
+        variant="filled"
         onChangeText={e => onSearchCertificate(e)}
       />
 
-      <Text fontSize={ms(20)} bold color={Colors.azure}>
+      <Text bold color={Colors.azure} fontSize={ms(20)}>
         {t('certificates')}
       </Text>
       <Divider my={ms(10)} />
@@ -168,10 +167,21 @@ const TechnicalCertificareList = ({navigation, route}: Props) => {
 
   return (
     <Box flex="1">
-      <Box flex="1" px={ms(12)} py={ms(20)} bg={Colors.white}>
+      <Box bg={Colors.white} flex="1" px={ms(12)} py={ms(20)}>
         {renderHeader()}
 
         <FlatList
+          ListEmptyComponent={() => (
+            <Text
+              bold
+              color={Colors.azure}
+              fontSize={ms(20)}
+              mt={ms(20)}
+              textAlign="center"
+            >
+              {t('noCertificates')}
+            </Text>
+          )}
           data={
             searchedValue !== ''
               ? certData
@@ -185,21 +195,10 @@ const TechnicalCertificareList = ({navigation, route}: Props) => {
                     : -1
                 )
           }
-          renderItem={renderItem}
-          keyExtractor={item => `Certificate-${item.id}`}
-          showsVerticalScrollIndicator={false}
           contentContainerStyle={{paddingBottom: 10}}
-          ListEmptyComponent={() => (
-            <Text
-              fontSize={ms(20)}
-              bold
-              color={Colors.azure}
-              mt={ms(20)}
-              textAlign="center"
-            >
-              {t('noCertificates')}
-            </Text>
-          )}
+          keyExtractor={item => `Certificate-${item.id}`}
+          renderItem={renderItem}
+          showsVerticalScrollIndicator={false}
         />
       </Box>
       <Box bg={Colors.white}>
@@ -209,12 +208,12 @@ const TechnicalCertificareList = ({navigation, route}: Props) => {
           }}
         >
           <Button
-            bg={Colors.primary}
             leftIcon={
               <Icon as={Material} name="folder-download-outline" size="md" />
             }
-            my={ms(15)}
+            bg={Colors.primary}
             mx={ms(12)}
+            my={ms(15)}
           >
             {t('downloadAll')}
           </Button>
