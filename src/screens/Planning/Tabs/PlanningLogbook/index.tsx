@@ -159,21 +159,23 @@ const PlanningLogbook = () => {
               'YYYY-MM-DD'
             )
             const dateToday = moment().format('YYYY-MM-DD')
-            const previousDate = moment(
-              plannedNavigationLogs[i - 1]?.plannedEta
+            const forwardDate = moment(
+              plannedNavigationLogs[i + 1]?.plannedEta
             ).format('YYYY-MM-DD')
 
-            if (plannedEta === dateToday && previousDate < dateToday) {
-              return <NavLogDivider key={`divider_${i}`} />
-            }
             return (
-              <NavLogCard
-                key={i}
-                defineFirstAndLastIndex={defineFirstAndLastIndex}
-                index={i}
-                itemColor={defineColour(navigationLog)}
-                navigationLog={navigationLog}
-              />
+              <>
+                <NavLogCard
+                  key={i}
+                  defineFirstAndLastIndex={defineFirstAndLastIndex}
+                  index={i}
+                  itemColor={defineColour(navigationLog)}
+                  navigationLog={navigationLog}
+                />
+                {forwardDate >= dateToday && plannedEta <= dateToday ? (
+                  <NavLogDivider key={`divider_${i}`} />
+                ) : null}
+              </>
             )
           })
         )}
