@@ -114,7 +114,8 @@ const PlanningLogbook = () => {
         lastIndex: findLastIndex(plannedNavigationLogs, planned =>
           item.charter.id
             ? planned.charter.id === item.charter.id
-            : planned.id === item.id)
+            : planned.id === item.id
+        ),
       }
     }
   })
@@ -163,21 +164,16 @@ const PlanningLogbook = () => {
             ).format('YYYY-MM-DD')
 
             if (plannedEta === dateToday && previousDate < dateToday) {
-              <NavLogDivider key={`divider_${i}`} />
+              return <NavLogDivider key={`divider_${i}`} />
             }
             return (
-              <>
-                {plannedEta === dateToday && previousDate < dateToday ? (
-                  <NavLogDivider key={`divider_${i}`} />
-                ) : null}
-                <NavLogCard
-                  key={i}
-                  defineFirstAndLastIndex={defineFirstAndLastIndex}
-                  index={i}
-                  itemColor={defineColour(navigationLog)}
-                  navigationLog={navigationLog}
-                />
-              </>
+              <NavLogCard
+                key={i}
+                defineFirstAndLastIndex={defineFirstAndLastIndex}
+                index={i}
+                itemColor={defineColour(navigationLog)}
+                navigationLog={navigationLog}
+              />
             )
           })
         )}
