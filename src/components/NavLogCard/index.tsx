@@ -64,15 +64,8 @@ export const NavLogCard = (props: {
   return (
     <TouchableOpacity
       key={navigationLog.id}
-      style={[
-        styles.navLogItemWrapper,
-        navigationLog.isActive ||
-        (!_.isNull(navigationLog.startActionDatetime) &&
-          _.isNull(navigationLog.endActionDate))
-          ? styles.navLogActiveItem
-          : null,
-      ]}
       activeOpacity={0.7}
+      style={styles.navLogItemWrapper}
       onPress={() =>
         navigation.navigate('PlanningDetails', {
           navlog: navigationLog,
@@ -133,7 +126,18 @@ export const NavLogCard = (props: {
           mt={currentItemType?.firstIndex === key ? ms(0) : ms(-7)}
         />
       </Box>
-      <Box borderRadius={ms(5)} overflow="hidden" w={'95%'}>
+      <Box
+        style={
+          navigationLog.isActive ||
+          (!_.isNull(navigationLog.startActionDatetime) &&
+            _.isNull(navigationLog.endActionDate))
+            ? styles.navLogActiveItem
+            : null
+        }
+        borderRadius={ms(5)}
+        overflow="hidden"
+        w={'95%'}
+      >
         {/* Navlog Header */}
         <Box backgroundColor={itemColor} px={ms(16)} py={ms(10)}>
           <Text bold color={Colors.text} fontSize={ms(15)}>
