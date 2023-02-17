@@ -176,7 +176,7 @@ const PlanningLogbook = () => {
                   itemColor={defineColour(navigationLog)}
                   navigationLog={navigationLog}
                 />
-                {forwardDate >= dateToday && plannedEta <= dateToday ? (
+                {forwardDate >= dateToday && plannedEta < dateToday ? (
                   <NavLogDivider key={`divider_${i}`} />
                 ) : null}
               </>
