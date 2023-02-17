@@ -14,20 +14,15 @@ export const getUserInfo = async () => {
   }
 }
 
-export const changeUserLanguage = async (
-  id: string,
-  lang: string,
-  user: User
-) => {
+export const changeUserLanguage = async (id: number, lang: string) => {
   try {
-    const changedUser = {...user, language: lang}
-    const response = await API.put(`users/${id}`, changedUser)
+    const response = await API.put(`users/${id}`, {language: lang})
     if (!response.data) {
       throw 'Failed to change user language.'
     }
     return response.data
   } catch (error) {
-    console.log('Error: change user language', error)
+    console.log('Error: change user language', JSON.stringify(error))
     return null
   }
 }

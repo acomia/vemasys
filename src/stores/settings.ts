@@ -51,7 +51,9 @@ export const useSettings = create(
         set({language: lang})
         i18next.changeLanguage(lang)
         const user = useEntity.getState().user
-        await API.changeUserLanguage(user.id, lang, user)
+        if (user) {
+          await API.changeUserLanguage(user.id, lang)
+        }
       },
       setIsMobileTracking: val => {
         set({
