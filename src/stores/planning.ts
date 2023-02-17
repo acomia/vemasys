@@ -74,7 +74,7 @@ const initialState: PlanningState = {
   isPlanningActionsLoading: false,
   isPlanningCommentsLoading: false,
   isPlanningDocumentsLoading: false,
-  plannedNavigationLogs: [],
+  plannedNavigationLogs: undefined,
   historyNavigationLogs: [],
   hasErrorLoadingPlannedNavigationLogs: false,
   hasErrorLoadingVesselHistoryNavLogs: false,
@@ -127,7 +127,7 @@ export const usePlanning = create(
       getVesselPlannedNavLogs: async (vesselId: string) => {
         set({
           isPlanningLoading: true,
-          plannedNavigationLogs: [],
+          plannedNavigationLogs: undefined,
           hasErrorLoadingPlannedNavigationLogs: false,
         })
         try {
@@ -142,14 +142,10 @@ export const usePlanning = create(
                 plan.endActionDate = undefined
                 plan.actionType = ''
               }
-              set({
-                plannedNavigationLogs: response,
-              })
-              if (index === response.length - 1) {
-                set({
-                  isPlanningLoading: false,
-                })
-              }
+            })
+            set({
+              plannedNavigationLogs: response,
+              isPlanningLoading: false,
             })
           } else {
             set({

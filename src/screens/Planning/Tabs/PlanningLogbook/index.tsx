@@ -84,18 +84,22 @@ const PlanningLogbook = () => {
     })
   }
 
-  const arrayWithColours = addColourToUniqueItem(plannedNavigationLogs)
+  const arrayWithColours = plannedNavigationLogs
+    ? addColourToUniqueItem(plannedNavigationLogs)
+    : []
 
   // This function looks for items in unique items array and returns a colour for passed item
   const defineColour = (item: NavigationLog) => {
     if (item.charter.id) {
-      return arrayWithColours.find(
+      const itemWithColour = arrayWithColours.find(
         secondaryItem => secondaryItem.charter.id === item.charter.id
-      )?.colour
+      )
+      return itemWithColour ? itemWithColour.colour : '#000'
     } else {
-      return arrayWithColours.find(
+      const itemWithColour = arrayWithColours.find(
         secondaryItem => secondaryItem.id === item.id
-      )?.colour
+      )
+      return itemWithColour ? itemWithColour.colour : '#000'
     }
   }
 
@@ -114,7 +118,8 @@ const PlanningLogbook = () => {
         lastIndex: findLastIndex(plannedNavigationLogs, planned =>
           item.charter.id
             ? planned.charter.id === item.charter.id
-            : planned.id === item.id)
+            : planned.id === item.id
+        ),
       }
     }
   })
@@ -140,11 +145,11 @@ const PlanningLogbook = () => {
           <Box bgColor={Colors.white} flex="1" p="5">
             <Center>
               <Text bold color={Colors.azure}>
-                Failed to load requested resource
+                {t('failedToLoadRequestedResource')}
               </Text>
             </Center>
           </Box>
-        ) : plannedNavigationLogs?.length === 0 ? (
+        ) : plannedNavigationLogs?.length === 0 && !isPlanningLoading ? (
           <Box bgColor={Colors.white} flex="1" p="2">
             <Center>
               <Text bold color={Colors.azure}>
@@ -158,18 +163,12 @@ const PlanningLogbook = () => {
               'YYYY-MM-DD'
             )
             const dateToday = moment().format('YYYY-MM-DD')
-            const previousDate = moment(
-              plannedNavigationLogs[i - 1]?.plannedEta
+            const forwardDate = moment(
+              plannedNavigationLogs[i + 1]?.plannedEta
             ).format('YYYY-MM-DD')
 
-            if (plannedEta === dateToday && previousDate < dateToday) {
-              <NavLogDivider key={`divider_${i}`} />
-            }
             return (
               <>
-                {plannedEta === dateToday && previousDate < dateToday ? (
-                  <NavLogDivider key={`divider_${i}`} />
-                ) : null}
                 <NavLogCard
                   key={i}
                   defineFirstAndLastIndex={defineFirstAndLastIndex}
@@ -177,6 +176,9 @@ const PlanningLogbook = () => {
                   itemColor={defineColour(navigationLog)}
                   navigationLog={navigationLog}
                 />
+                {forwardDate >= dateToday && plannedEta < dateToday ? (
+                  <NavLogDivider key={`divider_${i}`} />
+                ) : null}
               </>
             )
           })
