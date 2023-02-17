@@ -84,18 +84,22 @@ const PlanningLogbook = () => {
     })
   }
 
-  const arrayWithColours = addColourToUniqueItem(plannedNavigationLogs)
+  const arrayWithColours = plannedNavigationLogs
+    ? addColourToUniqueItem(plannedNavigationLogs)
+    : []
 
   // This function looks for items in unique items array and returns a colour for passed item
   const defineColour = (item: NavigationLog) => {
     if (item.charter.id) {
-      return arrayWithColours.find(
+      const itemWithColour = arrayWithColours.find(
         secondaryItem => secondaryItem.charter.id === item.charter.id
-      )?.colour
+      )
+      return itemWithColour ? itemWithColour.colour : '#000'
     } else {
-      return arrayWithColours.find(
+      const itemWithColour = arrayWithColours.find(
         secondaryItem => secondaryItem.id === item.id
-      )?.colour
+      )
+      return itemWithColour ? itemWithColour.colour : '#000'
     }
   }
 
@@ -141,11 +145,11 @@ const PlanningLogbook = () => {
           <Box bgColor={Colors.white} flex="1" p="5">
             <Center>
               <Text bold color={Colors.azure}>
-                Failed to load requested resource
+                {t('failedToLoadRequestedResource')}
               </Text>
             </Center>
           </Box>
-        ) : plannedNavigationLogs?.length === 0 ? (
+        ) : plannedNavigationLogs?.length === 0 && !isPlanningLoading ? (
           <Box bgColor={Colors.white} flex="1" p="2">
             <Center>
               <Text bold color={Colors.azure}>
