@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import * as Sentry from '@sentry/react-native'
 import {SENTRY_DSN} from '@vemasys/env'
 import {AppContainer} from '@bluecentury/components'
@@ -13,14 +13,23 @@ import * as RNLocalize from 'react-native-localize'
 
 enableLatestRenderer()
 
-Sentry.init({
-  dsn: SENTRY_DSN,
-  tracesSampleRate: 1.0
-})
+// Sentry.init({
+//   dsn: SENTRY_DSN,
+//   tracesSampleRate: 1.0
+// })
 
 const App = () => {
   const token = useAuth().token
   const languageFromStore = useSettings().language
+  const env = useSettings().env
+
+  useEffect(() => {
+    Sentry.init({
+      dsn: SENTRY_DSN,
+      tracesSampleRate: 1.0,
+      environment: env === 'PROD' ? 'production' : 'testing',
+    })
+  }, [])
 
   const preferredLanguage = () => {
     const devicePreferredLanguage = RNLocalize.getLocales()[0].languageCode
