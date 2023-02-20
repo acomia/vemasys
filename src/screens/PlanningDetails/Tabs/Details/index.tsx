@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { RefreshControl } from 'react-native'
+import React, {useEffect, useState} from 'react'
+import {RefreshControl} from 'react-native'
 import {
   Box,
   Button,
@@ -12,7 +12,7 @@ import {
   Text,
   useToast,
 } from 'native-base'
-import { ms } from 'react-native-size-matters'
+import {ms} from 'react-native-size-matters'
 import DatePicker from 'react-native-date-picker'
 import {
   NavigationProp,
@@ -22,21 +22,21 @@ import {
 } from '@react-navigation/native'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import _ from 'lodash'
-import { useTranslation } from 'react-i18next'
-import { Shadow } from 'react-native-shadow-2'
+import {useTranslation} from 'react-i18next'
+import {Shadow} from 'react-native-shadow-2'
 
-import { ActionCard, CommentCard, DatetimePickerList } from '../../components'
-import { Colors } from '@bluecentury/styles'
-import { Icons } from '@bluecentury/assets'
-import { useEntity, usePlanning } from '@bluecentury/stores'
+import {ActionCard, CommentCard, DatetimePickerList} from '../../components'
+import {Colors} from '@bluecentury/styles'
+import {Icons} from '@bluecentury/assets'
+import {useEntity, usePlanning} from '@bluecentury/stores'
 import {
   formatLocationLabel,
   hasSelectedEntityUserPermission,
   ROLE_PERMISSION_NAVIGATION_LOG_ADD_COMMENT,
   titleCase,
 } from '@bluecentury/constants'
-import { LoadingAnimated } from '@bluecentury/components'
-import { Vemasys } from '@bluecentury/helpers'
+import {LoadingAnimated} from '@bluecentury/components'
+import {Vemasys} from '@bluecentury/helpers'
 
 type Dates = {
   plannedETA: Date | undefined | StringOrNull
@@ -47,7 +47,7 @@ type Dates = {
   departureDatetime: Date | undefined | StringOrNull
 }
 const Details = () => {
-  const { t } = useTranslation()
+  const {t} = useTranslation()
   const toast = useToast()
   const navigation = useNavigation<NavigationProp<RootStackParamList>>()
   const route = useRoute()
@@ -75,8 +75,8 @@ const Details = () => {
     isCreateNavLogActionSuccess,
     reset,
   } = usePlanning()
-  const { selectedEntity } = useEntity()
-  const { navlog, title }: any = route.params
+  const {selectedEntity} = useEntity()
+  const {navlog, title}: any = route.params
   const [dates, setDates] = useState<Dates>({
     plannedETA: navigationLogDetails?.plannedEta,
     captainDatetimeETA: navigationLogDetails?.captainDatetimeEta,
@@ -86,10 +86,10 @@ const Details = () => {
     departureDatetime: navigationLogDetails?.departureDatetime,
   })
   const [didDateChange, setDidDateChange] = useState({
-    Pln: { didUpdate: false },
-    Eta: { didUpdate: false },
-    Nor: { didUpdate: false },
-    Doc: { didUpdate: false },
+    Pln: {didUpdate: false},
+    Eta: {didUpdate: false},
+    Nor: {didUpdate: false},
+    Doc: {didUpdate: false},
   })
 
   const [viewImg, setViewImg] = useState(false)
@@ -109,11 +109,14 @@ const Details = () => {
   const unsavedChanges = Object.values(didDateChange).filter(
     date => date.didUpdate === true
   )
+  const isDestinationVesselExist = !navlog.id ? true : false
 
+  console.log('details', navigationLogDetails)
   useEffect(() => {
     if (!focused && unsavedChanges.length > 0) {
       setLeaveTabModal(true)
     }
+    /* eslint-disable react-hooks/exhaustive-deps */
   }, [focused])
 
   useEffect(() => {
@@ -214,10 +217,10 @@ const Details = () => {
   const onSuccess = () => {
     setDidDateChange({
       ...didDateChange,
-      Pln: { didUpdate: false },
-      Eta: { didUpdate: false },
-      Nor: { didUpdate: false },
-      Doc: { didUpdate: false },
+      Pln: {didUpdate: false},
+      Eta: {didUpdate: false},
+      Nor: {didUpdate: false},
+      Doc: {didUpdate: false},
     })
     onPullToReload()
     reset()
@@ -231,8 +234,8 @@ const Details = () => {
     const formattedDate = Vemasys.formatDate(date)
     switch (selectedType) {
       case 'PLN':
-        setDates({ ...dates, plannedETA: formattedDate })
-        setDidDateChange({ ...didDateChange, Pln: { didUpdate: true } })
+        setDates({...dates, plannedETA: formattedDate})
+        setDidDateChange({...didDateChange, Pln: {didUpdate: true}})
         return
       case 'ETA':
         setDates({
@@ -240,35 +243,62 @@ const Details = () => {
           captainDatetimeETA: formattedDate,
           arrivalDatetime: formattedDate,
         })
-        setDidDateChange({ ...didDateChange, Eta: { didUpdate: true } })
+        setDidDateChange({...didDateChange, Eta: {didUpdate: true}})
         return
       case 'NOR':
-        setDates({ ...dates, announcedDatetime: formattedDate })
-        setDidDateChange({ ...didDateChange, Nor: { didUpdate: true } })
+        setDates({...dates, announcedDatetime: formattedDate})
+        setDidDateChange({...didDateChange, Nor: {didUpdate: true}})
         return
       case 'ARR':
-        setDates({ ...dates, arrivalDatetime: formattedDate })
+        setDates({...dates, arrivalDatetime: formattedDate})
         return
       case 'DOC':
-        setDates({ ...dates, terminalApprovedDeparture: formattedDate })
-        setDidDateChange({ ...didDateChange, Doc: { didUpdate: true } })
+        setDates({...dates, terminalApprovedDeparture: formattedDate})
+        setDidDateChange({...didDateChange, Doc: {didUpdate: true}})
         return
       case 'DEP':
-        setDates({ ...dates, departureDatetime: formattedDate })
+        setDates({...dates, departureDatetime: formattedDate})
         return
     }
   }
 
   const renderLocation = () => (
-    <HStack alignItems="center">
-      <Image
-        alt="navglog-cargo-img"
-        source={isUnknownLocation ? Icons.map_marker_question : Icons.cargo}
-      />
-      <Text fontSize={ms(16)} fontWeight="medium" ml={ms(20)}>
-        {formatLocationLabel(navigationLogDetails?.location)}
-      </Text>
-    </HStack>
+    <>
+      <HStack alignItems="center">
+        <Image
+          alt="navglog-cargo-img"
+          source={isUnknownLocation ? Icons.map_marker_question : Icons.cargo}
+        />
+        <Text fontSize={ms(16)} fontWeight="medium" ml={ms(20)}>
+          {formatLocationLabel(navigationLogDetails?.location)}
+        </Text>
+      </HStack>
+
+      {isDestinationVesselExist ? (
+        <>
+          <Text color={Colors.disabled} fontWeight="medium" mt={ms(10)}>
+            Destination vessel
+          </Text>
+          <HStack
+            alignItems="center"
+            bg={Colors.light_grey}
+            borderRadius={ms(5)}
+            mt={ms(8)}
+            p={ms(6)}
+          >
+            <Image alt="navglog-ship" source={Icons.ship} />
+            <Text
+              color={Colors.text}
+              fontSize={16}
+              fontWeight="medium"
+              ml={ms(10)}
+            >
+              Vessel name
+            </Text>
+          </HStack>
+        </>
+      ) : null}
+    </>
   )
 
   const renderPlanningDates = () => (
@@ -284,9 +314,9 @@ const Details = () => {
         onClearDate={() => {
           setDidDateChange({
             ...didDateChange,
-            Pln: { didUpdate: _.isNull(dates.plannedETA) ? false : true },
+            Pln: {didUpdate: _.isNull(dates.plannedETA) ? false : true},
           })
-          setDates({ ...dates, plannedETA: null })
+          setDates({...dates, plannedETA: null})
         }}
       />
       <DatetimePickerList
@@ -497,10 +527,10 @@ const Details = () => {
     })
     setDidDateChange({
       ...didDateChange,
-      Pln: { didUpdate: false },
-      Eta: { didUpdate: false },
-      Nor: { didUpdate: false },
-      Doc: { didUpdate: false },
+      Pln: {didUpdate: false},
+      Eta: {didUpdate: false},
+      Nor: {didUpdate: false},
+      Doc: {didUpdate: false},
     })
   }
 
@@ -516,10 +546,10 @@ const Details = () => {
     })
     setDidDateChange({
       ...didDateChange,
-      Pln: { didUpdate: false },
-      Eta: { didUpdate: false },
-      Nor: { didUpdate: false },
-      Doc: { didUpdate: false },
+      Pln: {didUpdate: false},
+      Eta: {didUpdate: false},
+      Nor: {didUpdate: false},
+      Doc: {didUpdate: false},
     })
   }
 
@@ -552,7 +582,7 @@ const Details = () => {
           />
         }
         bg={Colors.white}
-        contentContainerStyle={{ flexGrow: 1, paddingBottom: 30 }}
+        contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
         px={ms(12)}
         py={ms(20)}
         scrollEventThrottle={16}
@@ -563,6 +593,7 @@ const Details = () => {
         </Text>
         <Divider bg={Colors.light} h={ms(2)} my={ms(8)} />
         {renderLocation()}
+
         {/* End of Location Section */}
         {/* Planning dates Section */}
         <Text bold color={Colors.azure} fontSize={ms(20)} mt={ms(20)}>
@@ -799,7 +830,7 @@ const Details = () => {
             alt="file-preview"
             h="100%"
             resizeMode="contain"
-            source={{ uri: selectedImg.uri }}
+            source={{uri: selectedImg.uri}}
             w="100%"
           />
         </Modal.Content>
