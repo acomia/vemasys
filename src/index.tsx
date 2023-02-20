@@ -24,7 +24,6 @@ const App = () => {
   const env = useSettings().env
 
   useEffect(() => {
-    console.log('env', env)
     Sentry.init({
       dsn: SENTRY_DSN,
       tracesSampleRate: 1.0,
