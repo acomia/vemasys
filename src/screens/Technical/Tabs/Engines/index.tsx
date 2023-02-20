@@ -5,11 +5,12 @@ import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import _ from 'lodash'
 import {useNavigation} from '@react-navigation/native'
+import {useTranslation} from 'react-i18next'
+
 import {useEntity, useTechnical} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
 import {LoadingAnimated} from '@bluecentury/components'
 import {formatNumber} from '@bluecentury/constants'
-import {useTranslation} from 'react-i18next'
 
 const Engines = () => {
   const {t} = useTranslation()
@@ -20,16 +21,18 @@ const Engines = () => {
 
   useEffect(() => {
     getVesselEngines(physicalVesselId)
+    /* eslint-disable react-hooks/exhaustive-deps */
   }, [physicalVesselId])
 
-  let vesselZones = Object.values(
+  const vesselZones = Object.values(
     engines.reduce((acc: any, item) => {
       const zones = item.vesselZone.title
-      if (!acc[zones])
+      if (!acc[zones]) {
         acc[zones] = {
           zones: zones,
           data: [],
         }
+      }
       acc[zones].data.push(item)
       return acc
     }, {})
@@ -62,17 +65,17 @@ const Engines = () => {
                     : t('loadingPoints')}
                 </Text>
               </Box>
-              <Text flex="1" color={Colors.azure} fontSize={ms(15)} bold>
+              <Text bold color={Colors.azure} flex="1" fontSize={ms(15)}>
                 {lastMeasurement
                   ? `${formatNumber(lastMeasurement.value, 0, ' ')}h`
                   : t('loadingPoints')}
               </Text>
               <Box
-                flex="1"
-                py={ms(2)}
-                px={ms(10)}
-                borderRadius={ms(20)}
                 bg={Colors.highlighted_text}
+                borderRadius={ms(20)}
+                flex="1"
+                px={ms(10)}
+                py={ms(2)}
               >
                 <Text color={Colors.white} fontSize={ms(11)} textAlign="center">
                   {partType.part}
@@ -95,17 +98,17 @@ const Engines = () => {
   }
 
   return (
-    <Box flex="1" bg={Colors.white}>
+    <Box bg={Colors.white} flex="1">
       <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={pullRefresh} onRefresh={onPullToReload} />
+        }
         contentContainerStyle={{flexGrow: 1, paddingBottom: 20}}
         px={ms(12)}
         py={ms(20)}
-        refreshControl={
-          <RefreshControl onRefresh={onPullToReload} refreshing={pullRefresh} />
-        }
         showsVerticalScrollIndicator={false}
       >
-        <Text color={Colors.azure} fontSize={ms(20)} bold mb={ms(15)}>
+        <Text bold color={Colors.azure} fontSize={ms(20)} mb={ms(15)}>
           {t('engines')}
         </Text>
         {vesselZones.length > 0 ? (
@@ -113,11 +116,12 @@ const Engines = () => {
             const groupByPart = Object.values(
               engine.data.reduce((acc: any, item) => {
                 const part = item.name
-                if (!acc[part])
+                if (!acc[part]) {
                   acc[part] = {
                     part: part,
                     data: [],
                   }
+                }
                 acc[part].data.push(item)
                 return acc
               }, {})
@@ -125,17 +129,17 @@ const Engines = () => {
             return (
               <Box
                 key={index}
+                borderColor={Colors.border}
                 borderRadius={ms(5)}
                 borderWidth={1}
-                borderColor={Colors.border}
                 mb={ms(25)}
               >
                 {/* Engine Header */}
                 <Box
                   backgroundColor={Colors.border}
+                  justifyContent="center"
                   px={ms(16)}
                   py={ms(10)}
-                  justifyContent="center"
                 >
                   <Text color={Colors.azure} fontWeight="medium">
                     {_.startCase(_.toLower(engine.zones))}

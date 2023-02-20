@@ -343,6 +343,7 @@
   "weWillSendEmail": "We will send a confirmation email once approved to",
   "backToLogin": "Back to Login",
   "newMeasurementInputError": "New measurement should be higher than last entry.",
+  "newMeasurementInputConfirmation": "New measurement is less than last entry. Are you sure you want to update?",
   "nowToday": "Now / Today",
   "failedToLoadRequestedResource": "Failed to load requested resource"
 }
