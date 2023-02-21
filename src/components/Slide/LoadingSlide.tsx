@@ -1,18 +1,17 @@
 import React from 'react'
-import {Alert, Slide, Spinner, Text} from 'native-base'
+import {Alert, View, Spinner, Text} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import {Colors} from '@bluecentury/styles'
 
 interface Props {
-  isOpen: boolean
   label: string
   loading: boolean
   color: string
 }
 
-export default ({isOpen, label, loading, color}: Props) => {
+export default ({label, loading, color}: Props) => {
   return (
-    <Slide in={isOpen} mt={ms(53)} placement="top">
+    <View>
       <Alert
         backgroundColor={color}
         display="flex"
@@ -22,6 +21,6 @@ export default ({isOpen, label, loading, color}: Props) => {
         {loading && <Spinner color={Colors.white} pr={2} />}
         <Text color={Colors.white}>{label}</Text>
       </Alert>
-    </Slide>
+    </View>
   )
 }
