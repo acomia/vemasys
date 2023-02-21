@@ -75,7 +75,8 @@ const Details = () => {
     isCreateNavLogActionSuccess,
     reset,
   } = usePlanning()
-  const {selectedEntity} = useEntity()
+  const {selectedEntity, isLoadingEntityUsers, getLinkEntityInfo, linkEntity} =
+    useEntity()
   const {navlog, title}: any = route.params
   const [dates, setDates] = useState<Dates>({
     plannedETA: navigationLogDetails?.plannedEta,
@@ -109,9 +110,9 @@ const Details = () => {
   const unsavedChanges = Object.values(didDateChange).filter(
     date => date.didUpdate === true
   )
-  const isDestinationVesselExist = !navlog.id ? true : false
+  const isDestinationVesselExist =
+    navigationLogDetails?.link !== null ? true : false
 
-  console.log('details', navigationLogDetails)
   useEffect(() => {
     if (!focused && unsavedChanges.length > 0) {
       setLeaveTabModal(true)
@@ -161,6 +162,20 @@ const Details = () => {
             : navigationLogRoutes[navigationLogRoutes.length - 1]
                 ?.estimatedArrival,
       })
+    }
+    if (
+      navigationLogDetails?.link !== null ||
+      navigationLogDetails?.link !== undefined
+    ) {
+      const linkEntityU =
+        navigationLogDetails?.link?.navigationLogExploitationVessels.filter(
+          entity => entity.id !== navigationLogDetails.id
+        )[0]
+      if (linkEntityU?.id) {
+        getLinkEntityInfo(
+          linkEntityU?.exploitationVessel?.entity?.id.toString()
+        )
+      }
     }
   }, [
     navigationLogActions,
@@ -286,14 +301,18 @@ const Details = () => {
             mt={ms(8)}
             p={ms(6)}
           >
-            <Image alt="navglog-ship" source={Icons.ship} />
+            <Image
+              alt="navglog-ship"
+              source={Icons.ship}
+              tintColor={Colors.azure}
+            />
             <Text
               color={Colors.text}
               fontSize={16}
               fontWeight="medium"
               ml={ms(10)}
             >
-              Vessel name
+              {linkEntity?.name}
             </Text>
           </HStack>
         </>
@@ -563,7 +582,8 @@ const Details = () => {
     isPlanningLoading ||
     isPlanningDetailsLoading ||
     isPlanningActionsLoading ||
-    isPlanningCommentsLoading
+    isPlanningCommentsLoading ||
+    isLoadingEntityUsers
   ) {
     return <LoadingAnimated />
   }

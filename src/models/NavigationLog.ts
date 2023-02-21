@@ -62,4 +62,16 @@ export type NavigationLog = {
     title: StringOrNull
   }
   unloadedContainerCargo: Array<any>
+  link: {
+    id: number
+    navigationLogExploitationVessels: Array<{
+      id: number
+      exploitationVessel: {
+        id: number
+        entity: {exploitationVessel: string; icon: StringOrNull; id: number}
+        physicalVessel: {id: number}
+        lastGeolocation: string
+      }
+    }>
+  }
 }

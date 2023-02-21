@@ -107,6 +107,20 @@ const createSignUpRequest = async (userInfo: any, docs: Array<any>) => {
     })
 }
 
+const getEntityInfo = async (id: string) => {
+  return API.get(`entities/${id}`)
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw Error('Request Failed')
+      }
+    })
+    .catch(error => {
+      console.error('Error: API Entity Info ', error)
+    })
+}
+
 export {
   reloadEntityUsers,
   getVesselNavigationDetails,
@@ -115,4 +129,5 @@ export {
   acceptPendingRole,
   rejectPendingRole,
   createSignUpRequest,
+  getEntityInfo,
 }

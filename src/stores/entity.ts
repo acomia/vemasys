@@ -1,10 +1,10 @@
 import create from 'zustand'
-import { persist } from 'zustand/middleware'
+import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as API from '@bluecentury/api/vemasys'
-import { ENTITY_TYPE_EXPLOITATION_VESSEL } from '@bluecentury/constants'
-import { Entity, EntityUser, User, Vessel } from '@bluecentury/models'
-import { useSettings } from '@bluecentury/stores/settings'
+import {ENTITY_TYPE_EXPLOITATION_VESSEL} from '@bluecentury/constants'
+import {Entity, EntityUser, User, Vessel} from '@bluecentury/models'
+import {useSettings} from '@bluecentury/stores/settings'
 
 type EntityState = {
   hasEntityHydrated: boolean
@@ -21,6 +21,7 @@ type EntityState = {
   entityType: string | number | undefined
   entityRole: string
   entityUserId: string | number | undefined
+  linkEntity: object | null
   vesselId: string | undefined
   vesselDetails: Vessel | undefined
   selectedVessel: Entity | null
@@ -43,6 +44,7 @@ type EntityActions = {
   getRoleForAccept: () => void
   updatePendingRole: (id: string, accept: boolean) => void
   createSignUpRequest: (userInfo: any, docs: Array<any>) => void
+  getLinkEntityInfo: (id: string) => void
 }
 
 type EntityStore = EntityState & EntityActions
@@ -62,6 +64,7 @@ const initialEntityState: EntityState = {
   entityType: '',
   entityRole: '',
   entityUserId: undefined,
+  linkEntity: null,
   vesselId: undefined,
   vesselDetails: undefined,
   selectedVessel: null,
@@ -141,7 +144,7 @@ export const useEntity = create(
         }
       },
       selectEntityUser: async (entity: EntityUser) => {
-        set({ fleetVessel: 0 })
+        set({fleetVessel: 0})
         const entityRole = entity.role.title
         const entityType = entity.entity.type.title
         const physicalVesselId =
@@ -226,10 +229,10 @@ export const useEntity = create(
         })
       },
       getRoleForAccept: async () => {
-        set({ isLoadingPendingRoles: true, pendingRoles: [] })
+        set({isLoadingPendingRoles: true, pendingRoles: []})
         try {
           const response = await API.getRoleForAccept(get().user?.id)
-          set({ pendingRoles: response, isLoadingPendingRoles: false })
+          set({pendingRoles: response, isLoadingPendingRoles: false})
         } catch (error) {
           set({
             isLoadingEntityUsers: false,
@@ -237,23 +240,32 @@ export const useEntity = create(
         }
       },
       updatePendingRole: async (id: string, accept: boolean) => {
-        set({ isLoadingPendingRoles: true })
+        set({isLoadingPendingRoles: true})
         try {
           const response = accept
             ? await API.acceptPendingRole(id)
             : await API.rejectPendingRole(id)
-          set({ acceptRoleStatus: response })
+          set({acceptRoleStatus: response})
         } catch (error) {
-          set({ isLoadingPendingRoles: false })
+          set({isLoadingPendingRoles: false})
         }
       },
       createSignUpRequest: async (userInfo: any, docs: Array<any>) => {
-        set({ isLoadingSignUpRequest: true })
+        set({isLoadingSignUpRequest: true})
         try {
           const response = await API.createSignUpRequest(userInfo, docs)
-          set({ signUpRequestStatus: response, isLoadingSignUpRequest: false })
+          set({signUpRequestStatus: response, isLoadingSignUpRequest: false})
         } catch (error) {
-          set({ isLoadingSignUpRequest: false })
+          set({isLoadingSignUpRequest: false})
+        }
+      },
+      getLinkEntityInfo: async (id: string) => {
+        set({isLoadingEntityUsers: true})
+        try {
+          const response = await API.getEntityInfo(id)
+          set({linkEntity: response, isLoadingEntityUsers: false})
+        } catch (error) {
+          set({isLoadingEntityUsers: false})
         }
       },
       reset: () => {
