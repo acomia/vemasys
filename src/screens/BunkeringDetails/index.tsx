@@ -7,7 +7,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import {Colors} from '@bluecentury/styles'
 import moment from 'moment'
 import {formatNumber, VEMASYS_PRODUCTION_FILE_URL} from '@bluecentury/constants'
-import {IconButton} from '@bluecentury/components'
+import {IconButton, NoInternetConnectionMessage} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {TouchableOpacity} from 'react-native'
 import {useTranslation} from 'react-i18next'
@@ -49,6 +49,7 @@ export default function BunkeringDetails({route, navigation}: Props) {
   }
   return (
     <Box flex="1" bg={Colors.white}>
+      <NoInternetConnectionMessage />
       <Box px={ms(12)} py={ms(20)}>
         <Text fontSize={ms(20)} bold color={Colors.azure}>
           {t('details')}

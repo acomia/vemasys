@@ -16,7 +16,7 @@ import {ms} from 'react-native-size-matters'
 
 import {Colors} from '@bluecentury/styles'
 import {useEntity, usePlanning, useTechnical} from '@bluecentury/stores'
-import {LoadingAnimated} from '@bluecentury/components'
+import {LoadingAnimated, NoInternetConnectionMessage} from '@bluecentury/components'
 import {useTranslation} from 'react-i18next'
 
 export default function PlanningNewComment() {
@@ -85,6 +85,7 @@ export default function PlanningNewComment() {
 
   return (
     <Box flex="1">
+      <NoInternetConnectionMessage />
       <ScrollView
         contentContainerStyle={{flexGrow: 1}}
         px={ms(12)}

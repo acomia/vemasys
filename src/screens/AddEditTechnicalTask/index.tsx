@@ -27,7 +27,7 @@ import * as ImagePicker from 'react-native-image-picker'
 import {Colors} from '@bluecentury/styles'
 import {useEntity, useTechnical} from '@bluecentury/stores'
 import moment from 'moment'
-import {IconButton, LoadingAnimated} from '@bluecentury/components'
+import {IconButton, LoadingAnimated, NoInternetConnectionMessage} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {useTranslation} from 'react-i18next'
 
@@ -166,6 +166,7 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
       borderTopLeftRadius={ms(15)}
       borderTopRightRadius={ms(15)}
     >
+      <NoInternetConnectionMessage />
       <ScrollView
         contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
         p={ms(12)}

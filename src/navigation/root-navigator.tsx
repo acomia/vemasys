@@ -39,6 +39,7 @@ import {
 } from '@bluecentury/screens'
 import {Colors} from '@bluecentury/styles'
 import {useTranslation} from 'react-i18next'
+import {RootStackParamList} from '@bluecentury/types/nav.types'
 
 const {Navigator, Screen, Group} =
   createNativeStackNavigator<RootStackParamList>()

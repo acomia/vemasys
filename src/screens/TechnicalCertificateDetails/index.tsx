@@ -6,7 +6,7 @@ import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 
 import {Colors} from '@bluecentury/styles'
-import {IconButton} from '@bluecentury/components'
+import {IconButton, NoInternetConnectionMessage} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {VEMASYS_PRODUCTION_FILE_URL} from '@bluecentury/constants'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
@@ -71,6 +71,7 @@ const TechnicalCertificateDetails = ({navigation, route}: Props) => {
       borderTopLeftRadius={ms(15)}
       borderTopRightRadius={ms(15)}
     >
+      <NoInternetConnectionMessage />
       <ScrollView
         contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
         px={ms(12)}
