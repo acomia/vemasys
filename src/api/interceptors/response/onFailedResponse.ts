@@ -10,6 +10,7 @@ export const onFailedResponse = async (error: any) => {
   const failedRequest = error?.config
   const errorUrl = failedRequest?.url
   const isTokenRefresh = useAuth.getState().isTokenRefresh
+  const isOnline = useSettings.getState().isOnline
   // const setIsTokenRefresh = useAuth.getState().setIsTokenRefresh
   const authInterceptedRequests = useAuth.getState().authInterceptedRequests
   const setAuthInterceptedRequests =
@@ -27,7 +28,13 @@ export const onFailedResponse = async (error: any) => {
 
   const isLogin = errorUrl === 'login_check'
 
-  if (error?.response?.status === UNAUTHENTICATED && !isLogin && !isTokenRefresh && useAuth.getState().refreshToken) {
+  if (
+    error?.response?.status === UNAUTHENTICATED &&
+    !isLogin &&
+    !isTokenRefresh &&
+    useAuth.getState().refreshToken &&
+    isOnline
+  ) {
     try {
       // reset the token using the refresh_token
       await useAuth.getState().resetToken()
@@ -44,15 +51,19 @@ export const onFailedResponse = async (error: any) => {
     } catch (err) {
       console.log('Error: Failed to Refresh Token ', err)
     }
-
-    //This part should help us to ensure that refresh will called just once
-    if (error?.response?.status === UNAUTHENTICATED && !isLogin && isTokenRefresh) {
-      setAuthInterceptedRequests([...authInterceptedRequests, failedRequest])
-      console.log(
-        'REQUEST_ADDED_TO_authInterceptedRequests',
-        authInterceptedRequests.length
-      )
-    }
+  }
+  //This part should help us to ensure that refresh will called just once
+  if (
+    error?.response?.status === UNAUTHENTICATED &&
+    !isLogin &&
+    isTokenRefresh &&
+    isOnline
+  ) {
+    setAuthInterceptedRequests([...authInterceptedRequests, failedRequest])
+    console.log(
+      'REQUEST_ADDED_TO_authInterceptedRequests',
+      authInterceptedRequests.length
+    )
   }
   return Promise.reject(error)
 }

@@ -12,7 +12,7 @@ import {
   financialTabs,
 } from '@bluecentury/constants'
 import {useEntity} from '@bluecentury/stores'
-import {FleetHeader} from '@bluecentury/components'
+import {FleetHeader, NoInternetConnectionMessage} from '@bluecentury/components'
 
 export default function Financial() {
   const {t} = useTranslation()
@@ -78,6 +78,7 @@ export default function Financial() {
           }
         />
       )}
+      <NoInternetConnectionMessage />
       <TabView
         lazy
         navigationState={{index, routes}}

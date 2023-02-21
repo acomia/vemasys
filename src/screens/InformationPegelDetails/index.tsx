@@ -12,7 +12,7 @@ import moment from 'moment'
 import {ms} from 'react-native-size-matters'
 
 import {useInformation} from '@bluecentury/stores'
-import {LoadingAnimated} from '@bluecentury/components'
+import {LoadingAnimated, NoInternetConnectionMessage} from '@bluecentury/components'
 import {Colors} from '@bluecentury/styles'
 import {useTranslation} from 'react-i18next'
 
@@ -111,6 +111,7 @@ const InformationPegelDetails = ({navigation, route}: Props) => {
 
   return (
     <Box flex="1" px={ms(12)} py={ms(15)} bg={Colors.white}>
+      <NoInternetConnectionMessage />
       <ScrollView
         contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
         scrollEventThrottle={16}

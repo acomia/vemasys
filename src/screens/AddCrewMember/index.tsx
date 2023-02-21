@@ -23,7 +23,7 @@ import moment from 'moment'
 import {Colors} from '@bluecentury/styles'
 import {useCrew, useEntity} from '@bluecentury/stores'
 import {titleCase, _t} from '@bluecentury/constants'
-import {LoadingAnimated} from '@bluecentury/components'
+import {LoadingAnimated, NoInternetConnectionMessage} from '@bluecentury/components'
 import {useTranslation} from 'react-i18next'
 
 const allFieldsRequired = _t('allFieldsRequired')
@@ -150,6 +150,7 @@ const AddCrewMember = ({navigation}: Props) => {
 
   return (
     <Box flex="1">
+      <NoInternetConnectionMessage />
       <ScrollView
         contentContainerStyle={{flexGrow: 1, paddingBottom: 40}}
         scrollEventThrottle={16}

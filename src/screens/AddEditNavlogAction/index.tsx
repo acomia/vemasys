@@ -29,7 +29,7 @@ import DatePicker from 'react-native-date-picker'
 import {Colors} from '@bluecentury/styles'
 import {usePlanning} from '@bluecentury/stores'
 import {formatBulkTypeLabel, titleCase} from '@bluecentury/constants'
-import {IconButton, LoadingAnimated} from '@bluecentury/components'
+import {IconButton, LoadingAnimated, NoInternetConnectionMessage} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {Vemasys} from '@bluecentury/helpers'
 import {useTranslation} from 'react-i18next'
@@ -419,6 +419,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
   }
   return (
     <Box flex="1">
+      <NoInternetConnectionMessage />
       <ScrollView
         bg={Colors.white}
         contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}

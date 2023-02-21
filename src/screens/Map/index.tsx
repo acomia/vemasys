@@ -21,6 +21,7 @@ import {
   IconButton,
   FleetHeader,
   MapBottomSheetToggle,
+  NoInternetConnectionMessage,
 } from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
@@ -509,6 +510,7 @@ export default function Map({navigation}: Props) {
           }
         />
       )}
+      <NoInternetConnectionMessage />
       <Box flex="1">
         <MapView
           ref={mapRef}

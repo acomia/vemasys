@@ -18,7 +18,11 @@ import {ms} from 'react-native-size-matters'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import _ from 'lodash'
 
-import {IconButton, LoadingAnimated} from '@bluecentury/components'
+import {
+  IconButton,
+  LoadingAnimated,
+  NoInternetConnectionMessage,
+} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
 import {PROD_URL} from '@vemasys/env'
@@ -356,6 +360,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
       borderTopLeftRadius={ms(15)}
       borderTopRightRadius={ms(15)}
     >
+      <NoInternetConnectionMessage />
       <ScrollView
         contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
         px={ms(12)}

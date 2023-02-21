@@ -16,7 +16,7 @@ import Material from 'react-native-vector-icons/MaterialCommunityIcons'
 import {ms} from 'react-native-size-matters'
 
 import {Colors} from '@bluecentury/styles'
-import {IconButton} from '@bluecentury/components'
+import {IconButton, NoInternetConnectionMessage} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {useTranslation} from 'react-i18next'
@@ -168,6 +168,7 @@ const TechnicalCertificareList = ({navigation, route}: Props) => {
 
   return (
     <Box flex="1">
+      <NoInternetConnectionMessage />
       <Box flex="1" px={ms(12)} py={ms(20)} bg={Colors.white}>
         {renderHeader()}
 

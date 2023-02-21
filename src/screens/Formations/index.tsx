@@ -7,7 +7,7 @@ import Icon from 'react-native-vector-icons/FontAwesome5'
 import {ms} from 'react-native-size-matters'
 
 import {Colors} from '@bluecentury/styles'
-import {IconButton} from '@bluecentury/components'
+import {IconButton, NoInternetConnectionMessage} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {useEntity, useMap, useSettings} from '@bluecentury/stores'
 import {useTranslation} from 'react-i18next'
@@ -102,6 +102,7 @@ export default function Formations({navigation}: Props) {
 
   return (
     <SafeAreaView style={{flex: 1}}>
+      <NoInternetConnectionMessage />
       <FlatList
         data={
           activeFormations.length > 0

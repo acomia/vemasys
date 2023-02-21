@@ -23,6 +23,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {useFinancial} from '@bluecentury/stores'
 import {ms} from 'react-native-size-matters'
 import {useTranslation} from 'react-i18next'
+import {NoInternetConnectionMessage} from '@bluecentury/components'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const FinancialInvoiceDetails = ({navigation, route}: Props) => {
@@ -282,6 +283,7 @@ const FinancialInvoiceDetails = ({navigation, route}: Props) => {
       borderTopRightRadius={ms(15)}
       bg={Colors.white}
     >
+      <NoInternetConnectionMessage />
       <ScrollView contentContainerStyle={{flexGrow: 1}}>
         <Box px={ms(14)} py={ms(20)}>
           <CardContent

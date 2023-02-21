@@ -22,7 +22,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack'
 
 import { formatNumber } from '@bluecentury/constants'
 import { useEntity, useTechnical } from '@bluecentury/stores'
-import { LoadingAnimated } from '@bluecentury/components'
+import {LoadingAnimated, NoInternetConnectionMessage} from '@bluecentury/components'
 import { Colors } from '@bluecentury/styles'
 import { MeasurementCard } from './measurement-card'
 import { useTranslation } from 'react-i18next'
@@ -277,6 +277,7 @@ const Measurements = ({ navigation, route }: Props) => {
       borderTopRightRadius={ms(15)}
       flex="1"
     >
+      <NoInternetConnectionMessage />
       <Box flex="1" px={ms(12)} py={ms(20)}>
         {routeFrom === 'reservoir' ? renderReservoirCard() : renderEngineCard()}
         <Text bold color={Colors.text} fontSize={ms(16)} mt={ms(25)}>

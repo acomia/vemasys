@@ -7,6 +7,7 @@ import {ms} from 'react-native-size-matters'
 import {useInformation} from '@bluecentury/stores'
 import moment from 'moment'
 import {useTranslation} from 'react-i18next'
+import {NoInternetConnectionMessage} from '@bluecentury/components'
 
 const TickerOilPriceDetails = () => {
   const {t} = useTranslation()
@@ -30,6 +31,7 @@ const TickerOilPriceDetails = () => {
   }
   return (
     <Box flex="1">
+      <NoInternetConnectionMessage />
       <ScrollView
         contentContainerStyle={{flexGrow: 1, paddingBottom: 20}}
         bg={Colors.white}

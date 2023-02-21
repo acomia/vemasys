@@ -8,6 +8,7 @@ import {DrawerContentComponentProps} from '@react-navigation/drawer'
 import {useSettings} from '@bluecentury/stores'
 import {VersionBuildLabel} from '@bluecentury/components/version-build-label'
 import {useTranslation} from 'react-i18next'
+import {NoInternetConnectionMessage} from '@bluecentury/components'
 
 const Settings = (props: DrawerContentComponentProps) => {
   const {t} = useTranslation()
@@ -32,6 +33,7 @@ const Settings = (props: DrawerContentComponentProps) => {
       backgroundColor={Colors.white}
       borderRadius="15"
     >
+      <NoInternetConnectionMessage />
       {/* <SettingsItem type="navigation"
         value={t('userInfo')}
         iconSource={Icons.user}
