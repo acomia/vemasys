@@ -21,6 +21,7 @@ import {
   IconButton,
   FleetHeader,
   MapBottomSheetToggle,
+  LoadingSlide,
 } from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
@@ -64,13 +65,6 @@ export default function Map({navigation}: Props) {
     vesselTracks,
   } = useMap()
 
-  const isLoadingMap =
-    isLoadingCurrentNavLogs ||
-    isLoadingPlannedNavLogs ||
-    isLoadingPreviousNavLogs ||
-    isLoadingVesselStatus ||
-    isLoadingVesselTrack
-
   const LATITUDE = 50.503887
   const LONGITUDE = 4.469936
   const sheetRef = useRef<BottomSheet>(null)
@@ -90,6 +84,7 @@ export default function Map({navigation}: Props) {
   const [vesselUpdated, setVesselUpdated] = useState(false)
   const uniqueTracks: any[] = []
   const uniqueVesselTracks: {latitude: any; longitude: any}[] = []
+  const [isLoadingMap, setLoadingMap] = useState(false)
 
   const uniqueVesselTrack = vesselTracks?.filter(element => {
     const isDuplicate = uniqueTracks.includes(element.latitude)
@@ -111,11 +106,13 @@ export default function Map({navigation}: Props) {
   useEffect(() => {
     if (vesselId) {
       const init = async () => {
+        setLoadingMap(true)
         await getVesselStatus(vesselId)
         await getPreviousNavigationLogs(vesselId)
         await getPlannedNavigationLogs(vesselId)
         await getCurrentNavigationLogs(vesselId)
         await getLastCompleteNavigationLogs(vesselId)
+        setLoadingMap(false)
       }
 
       init()
@@ -178,10 +175,12 @@ export default function Map({navigation}: Props) {
 
   const updateMap = async () => {
     if (vesselId) {
+      setLoadingMap(true)
       await getPreviousNavigationLogs(vesselId)
       await getPlannedNavigationLogs(vesselId)
       await getCurrentNavigationLogs(vesselId)
       await getVesselStatus(vesselId)
+      setLoadingMap(false)
     }
   }
 
@@ -510,6 +509,12 @@ export default function Map({navigation}: Props) {
         />
       )}
       <Box flex="1">
+        <LoadingSlide
+          color={Colors.primary}
+          isOpen={isLoadingMap}
+          label={`${t('refreshing')}...`}
+          loading={true}
+        />
         <MapView
           ref={mapRef}
           initialRegion={region} // remove if not using Google Maps
@@ -586,21 +591,6 @@ export default function Map({navigation}: Props) {
           onCloseEnd={() => setSnapStatus(0)}
           onOpenEnd={() => setSnapStatus(1)}
         />
-
-        {isLoadingMap && (
-          <Box
-            backgroundColor="rgba(0,0,0,0.5)"
-            bottom="0"
-            justifyContent="center"
-            left="0"
-            position="absolute"
-            right="0"
-            top="0"
-            zIndex={999}
-          >
-            <LoadingAnimated />
-          </Box>
-        )}
       </Box>
     </Box>
   )

@@ -344,5 +344,6 @@
   "backToLogin": "Back to Login",
   "newMeasurementInputError": "New measurement should be higher than last entry.",
   "nowToday": "Now / Today",
-  "failedToLoadRequestedResource": "Failed to load requested resource"
+  "failedToLoadRequestedResource": "Failed to load requested resource",
+  "refreshing": "Refreshing"
 }
