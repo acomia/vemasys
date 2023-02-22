@@ -8,7 +8,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {Colors} from '@bluecentury/styles'
 import {usePlanning} from '@bluecentury/stores'
 import {formatBulkTypeLabel} from '@bluecentury/constants'
-import {IconButton, LoadingAnimated} from '@bluecentury/components'
+import {IconButton, LoadingAnimated, NoInternetConnectionMessage} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {useTranslation} from 'react-i18next'
 
@@ -190,6 +190,7 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
       borderTopRightRadius={ms(15)}
       flex="1"
     >
+      <NoInternetConnectionMessage />
       <Box flex="1" px={ms(12)} py={ms(20)}>
         <Text color={Colors.disabled} fontWeight="medium" mb={ms(6)}>
           {t('cargo')}

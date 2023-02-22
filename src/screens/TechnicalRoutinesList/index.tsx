@@ -7,7 +7,10 @@ import moment from 'moment'
 
 import {Colors} from '@bluecentury/styles'
 import {useEntity, useTechnical} from '@bluecentury/stores'
-import {LoadingAnimated} from '@bluecentury/components'
+import {
+  LoadingAnimated,
+  NoInternetConnectionMessage,
+} from '@bluecentury/components'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import {Icons} from '@bluecentury/assets'
 import {useTranslation} from 'react-i18next'
@@ -85,6 +88,7 @@ const TechnicalRoutinesList = ({navigation, route}: Props) => {
       borderTopLeftRadius={ms(15)}
       borderTopRightRadius={ms(15)}
     >
+      <NoInternetConnectionMessage />
       <ScrollView
         contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
         scrollEventThrottle={16}

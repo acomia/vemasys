@@ -25,6 +25,7 @@ import {useAuth} from '@bluecentury/stores'
 import {VersionBuildLabel} from '@bluecentury/components/version-build-label'
 import {useTranslation} from 'react-i18next'
 import {useNavigation} from '@react-navigation/native'
+import {NoInternetConnectionMessage} from '@bluecentury/components'
 
 export default function Login() {
   const {t} = useTranslation()
@@ -77,6 +78,7 @@ export default function Login() {
 
   return (
     <Box safeArea flex="1">
+      <NoInternetConnectionMessage />
       <KeyboardAvoidingView
         h={{
           base: '100%',

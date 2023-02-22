@@ -24,6 +24,7 @@ import {DatetimePicker} from './components'
 import {Vemasys} from '@bluecentury/helpers'
 import {_t} from '@bluecentury/constants'
 import {useEntity} from '@bluecentury/stores'
+import {NoInternetConnectionMessage} from '@bluecentury/components'
 
 const allFieldsRequired = _t('allFieldsRequired')
 const userFirstname = _t('newUserFirstname')
@@ -104,6 +105,7 @@ export default function SignUp({navigation}: Props) {
 
   return (
     <Box flex="1">
+      <NoInternetConnectionMessage />
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,

@@ -11,7 +11,7 @@ import {
   chartersTabs,
   ENTITY_TYPE_EXPLOITATION_GROUP,
 } from '@bluecentury/constants'
-import {FleetHeader} from '@bluecentury/components'
+import {FleetHeader, NoInternetConnectionMessage} from '@bluecentury/components'
 import {useEntity} from '@bluecentury/stores'
 import {useTranslation} from 'react-i18next'
 
@@ -83,6 +83,7 @@ export default function Charters({navigation}: Props) {
           }
         />
       )}
+      <NoInternetConnectionMessage />
       <TabView
         lazy
         navigationState={{index, routes}}

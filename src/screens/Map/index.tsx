@@ -21,6 +21,7 @@ import {
   IconButton,
   FleetHeader,
   MapBottomSheetToggle,
+  NoInternetConnectionMessage,
   LoadingSlide,
 } from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
@@ -64,6 +65,13 @@ export default function Map({navigation}: Props) {
     vesselStatus,
     vesselTracks,
   } = useMap()
+
+  const isLoadingMap =
+    isLoadingCurrentNavLogs ||
+    isLoadingPlannedNavLogs ||
+    isLoadingPreviousNavLogs ||
+    isLoadingVesselStatus ||
+    isLoadingVesselTrack
 
   const LATITUDE = 50.503887
   const LONGITUDE = 4.469936
@@ -508,6 +516,7 @@ export default function Map({navigation}: Props) {
           }
         />
       )}
+      <NoInternetConnectionMessage />
       <Box flex="1">
         <MapView
           ref={mapRef}

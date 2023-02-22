@@ -18,7 +18,7 @@ import {
   ENTITY_TYPE_EXPLOITATION_GROUP,
   technicalTabs,
 } from '@bluecentury/constants'
-import {FleetHeader} from '@bluecentury/components'
+import {FleetHeader, NoInternetConnectionMessage} from '@bluecentury/components'
 import {useEntity} from '@bluecentury/stores'
 import {useTranslation} from 'react-i18next'
 
@@ -82,6 +82,7 @@ export default function Technical() {
           }
         />
       )}
+      <NoInternetConnectionMessage />
       <TabView
         lazy
         initialLayout={{width: layout.width}}
