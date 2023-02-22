@@ -21,6 +21,8 @@ import {
   IconButton,
   FleetHeader,
   MapBottomSheetToggle,
+  NoInternetConnectionMessage,
+  LoadingSlide,
 } from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
@@ -90,6 +92,7 @@ export default function Map({navigation}: Props) {
   const [vesselUpdated, setVesselUpdated] = useState(false)
   const uniqueTracks: any[] = []
   const uniqueVesselTracks: {latitude: any; longitude: any}[] = []
+  const [isLoadingMap, setLoadingMap] = useState(false)
 
   const uniqueVesselTrack = vesselTracks?.filter(element => {
     const isDuplicate = uniqueTracks.includes(element.latitude)
@@ -111,11 +114,13 @@ export default function Map({navigation}: Props) {
   useEffect(() => {
     if (vesselId) {
       const init = async () => {
+        setLoadingMap(true)
         await getVesselStatus(vesselId)
         await getPreviousNavigationLogs(vesselId)
         await getPlannedNavigationLogs(vesselId)
         await getCurrentNavigationLogs(vesselId)
         await getLastCompleteNavigationLogs(vesselId)
+        setLoadingMap(false)
       }
 
       init()
@@ -178,10 +183,12 @@ export default function Map({navigation}: Props) {
 
   const updateMap = async () => {
     if (vesselId) {
+      setLoadingMap(true)
       await getPreviousNavigationLogs(vesselId)
       await getPlannedNavigationLogs(vesselId)
       await getCurrentNavigationLogs(vesselId)
       await getVesselStatus(vesselId)
+      setLoadingMap(false)
     }
   }
 
@@ -509,6 +516,7 @@ export default function Map({navigation}: Props) {
           }
         />
       )}
+      <NoInternetConnectionMessage />
       <Box flex="1">
         <MapView
           ref={mapRef}
@@ -542,6 +550,13 @@ export default function Map({navigation}: Props) {
             uniqueVesselTracks.length > 0 &&
             renderTrackLineBeginningMarker()}
         </MapView>
+        {isLoadingMap && (
+          <LoadingSlide
+            color={Colors.primary}
+            label={`${t('refreshing')}...`}
+            loading={true}
+          />
+        )}
         <Box position="absolute" right="0">
           <VStack justifyContent="flex-start" m="4" space="5">
             {/*<Box bg={Colors.white} borderRadius="full" p="2" shadow={2}>*/}
@@ -586,21 +601,6 @@ export default function Map({navigation}: Props) {
           onCloseEnd={() => setSnapStatus(0)}
           onOpenEnd={() => setSnapStatus(1)}
         />
-
-        {isLoadingMap && (
-          <Box
-            backgroundColor="rgba(0,0,0,0.5)"
-            bottom="0"
-            justifyContent="center"
-            left="0"
-            position="absolute"
-            right="0"
-            top="0"
-            zIndex={999}
-          >
-            <LoadingAnimated />
-          </Box>
-        )}
       </Box>
     </Box>
   )

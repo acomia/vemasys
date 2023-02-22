@@ -116,11 +116,11 @@ export default function Charters({navigation, route}: any) {
         return (
           <Text
             bg={res === 'success' ? 'emerald.500' : 'red.500'}
+            color={Colors.white}
+            mb={5}
             px="2"
             py="1"
             rounded="sm"
-            mb={5}
-            color={Colors.white}
           >
             {text}
           </Text>
@@ -167,21 +167,21 @@ export default function Charters({navigation, route}: any) {
       >
         <Box
           key={index}
-          borderWidth={1}
-          borderColor={status === 'completed' ? Colors.secondary : Colors.grey}
-          borderRadius={ms(5)}
-          mb={ms(10)}
           borderStyle={
             status === 'draft' || status === 'new' ? 'dashed' : 'solid'
           }
+          borderColor={status === 'completed' ? Colors.secondary : Colors.grey}
+          borderRadius={ms(5)}
+          borderWidth={1}
+          mb={ms(10)}
           overflow="hidden"
         >
           <HStack
-            py={ms(8)}
-            pl={ms(12)}
-            pr={ms(10)}
             alignItems="center"
             justifyContent="space-between"
+            pl={ms(12)}
+            pr={ms(10)}
+            py={ms(8)}
           >
             <VStack maxWidth="72%">
               <Text bold>
@@ -196,12 +196,12 @@ export default function Charters({navigation, route}: any) {
                         return (
                           <Text
                             key={cargo.id}
-                            fontWeight="semibold"
                             color={
                               item.isActive || isLoaded(item.cargo)
                                 ? '#29B7EF'
                                 : Colors.disabled
                             }
+                            fontWeight="semibold"
                           >
                             {parseInt(cargo.amount) || 0} MT -{' '}
                             {cargo.type
@@ -218,15 +218,15 @@ export default function Charters({navigation, route}: any) {
                   : 'TBD'}
               </Text>
             </VStack>
-            <CharterStatus entityType={entityType} charter={item} />
+            <CharterStatus charter={item} entityType={entityType} />
           </HStack>
           <Box
-            position="absolute"
-            left={0}
-            top={0}
-            bottom={0}
-            width={ms(7)}
             bg={status === 'completed' ? Colors.secondary : Colors.grey}
+            bottom={0}
+            left={0}
+            position="absolute"
+            top={0}
+            width={ms(7)}
           />
         </Box>
       </TouchableOpacity>
@@ -401,31 +401,42 @@ export default function Charters({navigation, route}: any) {
   if (isCharterLoading) return <LoadingAnimated />
 
   return (
-    <Box flex="1" safeArea backgroundColor={Colors.white} p={ms(12)}>
+    <Box safeArea backgroundColor={Colors.white} flex="1" p={ms(12)}>
       <Input
-        w={{
-          base: '100%',
-        }}
-        backgroundColor="#F7F7F7"
         InputLeftElement={
           <Icon
             as={<MaterialIcons name="magnify" />}
-            size={5}
-            ml="2"
             color={Colors.disabled}
+            ml="2"
+            size={5}
           />
         }
-        placeholderTextColor={Colors.disabled}
+        w={{
+          base: '100%',
+        }}
+        backgroundColor={Colors.light_grey}
         fontWeight="medium"
         placeholder="Search charter..."
-        variant="filled"
+        placeholderTextColor={Colors.disabled}
         size="sm"
         value={searchedValue}
+        variant="filled"
         onChangeText={e => onSearchCharter(e)}
       />
       <Divider my={ms(15)} />
 
       <FlatList
+        ListEmptyComponent={() => (
+          <Text
+            bold
+            color={Colors.azure}
+            fontSize={ms(20)}
+            mt={ms(20)}
+            textAlign="center"
+          >
+            {t('noCharters')}
+          </Text>
+        )}
         data={
           searchedValue !== ''
             ? chartersData
@@ -438,36 +449,25 @@ export default function Charters({navigation, route}: any) {
                   c.navigationLogs.length === 0
               )
         }
-        renderItem={renderItem}
-        keyExtractor={item => `Charter-${item.id}`}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={() => (
-          <Text
-            fontSize={ms(20)}
-            bold
-            color={Colors.azure}
-            mt={ms(20)}
-            textAlign="center"
-          >
-            {t('noCharters')}
-          </Text>
-        )}
         refreshControl={
           <RefreshControl
-            onRefresh={onPullToReload}
             refreshing={isCharterLoading}
+            onRefresh={onPullToReload}
           />
         }
+        keyExtractor={item => `Charter-${item.id}`}
+        renderItem={renderItem}
+        showsVerticalScrollIndicator={false}
       />
 
       <Modal
-        isOpen={reviewPDF}
-        size="full"
         animationPreset="slide"
+        isOpen={reviewPDF}
         safeAreaTop={true}
+        size="full"
         onClose={() => setReviewPDF(false)}
       >
-        <Modal.Content style={styles.bottom} bg="#23272F">
+        <Modal.Content bg="#23272F" style={styles.bottom}>
           {/* <HStack bg={Colors.black} py={ms(10)} px={ms(16)}>
             <Text
               flex="1"
@@ -484,21 +484,21 @@ export default function Charters({navigation, route}: any) {
             </Text> */}
           {!signature ? (
             <TouchableOpacity
-              onPress={() => {
-                setReviewPDF(false)
-                setIsPdfSigned(false)
-              }}
               style={{
                 alignItems: 'flex-end',
                 backgroundColor: Colors.black,
                 paddingHorizontal: ms(16),
                 paddingVertical: ms(10),
               }}
+              onPress={() => {
+                setReviewPDF(false)
+                setIsPdfSigned(false)
+              }}
             >
               <Text
+                bold
                 color={Colors.primary}
                 fontSize={ms(12)}
-                bold
                 textAlign="right"
               >
                 {t('done')}
@@ -514,9 +514,9 @@ export default function Charters({navigation, route}: any) {
               }}
             >
               <Text
+                bold
                 color={Colors.primary}
                 fontSize={ms(12)}
-                bold
                 textAlign="right"
               >
                 {t('makeSingleTap')}
@@ -526,7 +526,13 @@ export default function Charters({navigation, route}: any) {
           {/* </HStack> */}
 
           <Pdf
+            enablePaging
             source={source}
+            style={styles.pdf}
+            trustAllCerts={false}
+            onError={error => {
+              console.log(error)
+            }}
             onLoadComplete={(numberOfPages, filePath, {width, height}) => {
               console.log(`Number of pages: ${numberOfPages}`)
               setPageWidth(width)
@@ -535,17 +541,11 @@ export default function Charters({navigation, route}: any) {
             onPageChanged={(page, numberOfPages) => {
               console.log(`Current page: ${page}`)
             }}
-            onError={error => {
-              console.log(error)
+            onPageSingleTap={(page, x, y) => {
+              handleSingleTap(page, x, y)
             }}
             onPressLink={uri => {
               console.log(`Link pressed: ${uri}`)
-            }}
-            style={styles.pdf}
-            enablePaging
-            trustAllCerts={false}
-            onPageSingleTap={(page, x, y) => {
-              handleSingleTap(page, x, y)
             }}
           />
         </Modal.Content>
@@ -553,10 +553,10 @@ export default function Charters({navigation, route}: any) {
           <Modal.Footer bg={Colors.black}>
             <Box flex="1">
               <Button
-                variant="outline"
                 colorScheme="dark"
-                style={{borderColor: Colors.danger}}
                 mb={ms(8)}
+                style={{borderColor: Colors.danger}}
+                variant="outline"
                 onPress={handleOnDecline}
               >
                 {t('decline')}

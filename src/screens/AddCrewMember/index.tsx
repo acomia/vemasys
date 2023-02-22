@@ -23,7 +23,7 @@ import moment from 'moment'
 import {Colors} from '@bluecentury/styles'
 import {useCrew, useEntity} from '@bluecentury/stores'
 import {titleCase, _t} from '@bluecentury/constants'
-import {LoadingAnimated} from '@bluecentury/components'
+import {LoadingAnimated, NoInternetConnectionMessage} from '@bluecentury/components'
 import {useTranslation} from 'react-i18next'
 
 const allFieldsRequired = _t('allFieldsRequired')
@@ -74,11 +74,11 @@ const AddCrewMember = ({navigation}: Props) => {
         return (
           <Text
             bg={res === 'success' ? 'emerald.500' : 'red.500'}
+            color={Colors.white}
+            mb={5}
             px="2"
             py="1"
             rounded="sm"
-            mb={5}
-            color={Colors.white}
           >
             {text}
           </Text>
@@ -150,42 +150,43 @@ const AddCrewMember = ({navigation}: Props) => {
 
   return (
     <Box flex="1">
+      <NoInternetConnectionMessage />
       <ScrollView
+        bg={Colors.white}
         contentContainerStyle={{flexGrow: 1, paddingBottom: 40}}
-        scrollEventThrottle={16}
         px={ms(12)}
         py={ms(20)}
-        bg={Colors.white}
+        scrollEventThrottle={16}
       >
         <Input
-          w={{
-            base: '100%',
-          }}
-          mb={ms(20)}
-          backgroundColor="#F7F7F7"
           InputLeftElement={
             <Icon
               as={<MaterialCommunityIcons name="magnify" />}
-              size={5}
-              ml="2"
               color={Colors.disabled}
+              ml="2"
+              size={5}
             />
           }
-          placeholderTextColor={Colors.disabled}
+          w={{
+            base: '100%',
+          }}
+          backgroundColor={Colors.light_grey}
           fontWeight="medium"
+          mb={ms(20)}
           placeholder="Search users..."
-          variant="filled"
+          placeholderTextColor={Colors.disabled}
           size="sm"
+          variant="filled"
           onChangeText={e => onSearchCrewMember(e)}
         />
 
         {searchedText !== '' ? (
           <Box
-            position="absolute"
-            top="8%"
-            left={0}
-            right={0}
             bg={Colors.white}
+            left={0}
+            position="absolute"
+            right={0}
+            top="8%"
             zIndex={999}
           >
             {' '}
@@ -209,17 +210,17 @@ const AddCrewMember = ({navigation}: Props) => {
           </Box>
         ) : null}
 
-        <Text fontSize={ms(16)} bold color={Colors.text}>
+        <Text bold color={Colors.text} fontSize={ms(16)}>
           {t('userInfo')}
         </Text>
-        <Divider mt={ms(5)} mb={ms(10)} />
+        <Divider mb={ms(10)} mt={ms(5)} />
         <FormControl isInvalid={isFirstnameEmpty} mt={ms(10)}>
           <FormControl.Label color={Colors.disabled}>
             {t('firstName')}
           </FormControl.Label>
           <Input
-            placeholder=" "
             autoCapitalize="words"
+            placeholder=" "
             returnKeyType="next"
             style={{backgroundColor: '#F7F7F7'}}
             value={values.firstname}
@@ -238,8 +239,8 @@ const AddCrewMember = ({navigation}: Props) => {
             {t('lastName')}
           </FormControl.Label>
           <Input
-            placeholder=" "
             autoCapitalize="words"
+            placeholder=" "
             returnKeyType="next"
             style={{backgroundColor: '#F7F7F7'}}
             value={values.lastname}
@@ -258,24 +259,24 @@ const AddCrewMember = ({navigation}: Props) => {
             {t('birthdate')}
           </FormControl.Label>
           <HStack
-            mt={ms(3)}
-            bg="#F7F7F7"
-            borderRadius={ms(5)}
-            p="2"
             alignItems="center"
+            bg={Colors.light_grey}
+            borderRadius={ms(5)}
+            mt={ms(3)}
+            p="2"
           >
             <TouchableOpacity
-              activeOpacity={0.7}
               style={{
                 flex: 1,
                 marginLeft: 10,
               }}
+              activeOpacity={0.7}
               onPress={() => setOpenDatePicker(true)}
             >
               <Text
+                color={values.birthdate ? Colors.text : Colors.disabled}
                 fontSize={ms(16)}
                 fontWeight="medium"
-                color={values.birthdate ? Colors.text : Colors.disabled}
               >
                 {values.birthdate
                   ? moment(new Date(values.birthdate)).format('DD MMM YYYY')
@@ -283,9 +284,9 @@ const AddCrewMember = ({navigation}: Props) => {
               </Text>
             </TouchableOpacity>
             <MaterialCommunityIcons
+              color={Colors.primary}
               name="calendar-month-outline"
               size={ms(22)}
-              color={Colors.primary}
             />
           </HStack>
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
@@ -296,9 +297,9 @@ const AddCrewMember = ({navigation}: Props) => {
         <FormControl isInvalid={isEmailEmpty} mt={ms(10)}>
           <FormControl.Label color={Colors.disabled}>Email</FormControl.Label>
           <Input
-            placeholder=" "
-            keyboardType="email-address"
             autoCapitalize="none"
+            keyboardType="email-address"
+            placeholder=" "
             returnKeyType="next"
             style={{backgroundColor: '#F7F7F7'}}
             value={values.email}
@@ -315,8 +316,8 @@ const AddCrewMember = ({navigation}: Props) => {
         <FormControl mt={ms(10)}>
           <FormControl.Label color={Colors.disabled}>Phone</FormControl.Label>
           <Input
-            placeholder=" "
             keyboardType="phone-pad"
+            placeholder=" "
             returnKeyType="next"
             style={{backgroundColor: '#F7F7F7'}}
             value={values.phone}
@@ -326,11 +327,11 @@ const AddCrewMember = ({navigation}: Props) => {
         <FormControl isInvalid={isRoleEmpty} mt={ms(10)}>
           <FormControl.Label color={Colors.disabled}>Roles</FormControl.Label>
           <Select
-            minWidth="300"
             accessibilityLabel=""
-            placeholder=""
-            bg="#F7F7F7"
+            bg={Colors.light_grey}
+            minWidth="300"
             mt={ms(3)}
+            placeholder=""
             selectedValue={values.roles}
             onValueChange={e => {
               setValues({...values, roles: e})
@@ -351,14 +352,14 @@ const AddCrewMember = ({navigation}: Props) => {
           </FormControl.ErrorMessage>
         </FormControl>
         {isAllFieldEmpty ? (
-          <Text fontSize={ms(12)} color="red.500" my={ms(10)}>
+          <Text color="red.500" fontSize={ms(12)} my={ms(10)}>
             * {allFieldsRequired}
           </Text>
         ) : null}
         <Button
-          size="md"
-          mt={ms(20)}
           bg={Colors.primary}
+          mt={ms(20)}
+          size="md"
           onPress={onCreateNewUser}
         >
           {t('addUser')}
@@ -366,14 +367,14 @@ const AddCrewMember = ({navigation}: Props) => {
       </ScrollView>
       <DatePicker
         modal
-        open={openDatePicker}
         date={new Date()}
         mode="date"
-        onConfirm={date => {
-          setOpenDatePicker(false), onDatesChange(date)
-        }}
+        open={openDatePicker}
         onCancel={() => {
           setOpenDatePicker(false)
+        }}
+        onConfirm={date => {
+          setOpenDatePicker(false), onDatesChange(date)
         }}
       />
     </Box>

@@ -19,6 +19,7 @@ import {
   CharterStatus,
   IconButton,
   LoadingAnimated,
+  NoInternetConnectionMessage,
 } from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
@@ -270,6 +271,7 @@ export default function CharterDetails({navigation, route}: Props) {
 
   return (
     <Flex flex="1">
+      <NoInternetConnectionMessage />
       <Box
         backgroundColor={Colors.white}
         borderTopLeftRadius={ms(15)}

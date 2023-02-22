@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react'
 import {PermissionsAndroid, Platform} from 'react-native'
 import {Box, Button, Image, Text, useDisclose, useToast} from 'native-base'
@@ -13,7 +14,7 @@ import {useTranslation} from 'react-i18next'
 
 const Scan = () => {
   const {t} = useTranslation()
-  const {uploadImgFile} = usePlanning()
+  const {uploadImgFile, isPlanningLoading} = usePlanning()
   const {isFinancialLoading} = useFinancial()
   const {onClose} = useDisclose()
   const toast = useToast()
@@ -91,17 +92,20 @@ const Scan = () => {
         fileName: pickerResult.name,
         type: pickerResult.type,
       })
-      await uploadImgFile({
+      const upload = await uploadImgFile({
         uri: pickerResult.uri,
         fileName: pickerResult.name,
         type: pickerResult.type,
       })
+      if (typeof upload === 'object') {
+        showToast('File upload successfully', 'success')
+      }
     } catch (e) {
       handleError(e)
     }
   }
 
-  if (isFinancialLoading) return <LoadingAnimated />
+  if (isFinancialLoading || isPlanningLoading) return <LoadingAnimated />
 
   return (
     <Box bg={Colors.white} flex="1" px={ms(12)} py={ms(20)}>

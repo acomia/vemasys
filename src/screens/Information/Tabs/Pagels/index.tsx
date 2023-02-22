@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {TouchableOpacity, Modal} from 'react-native'
+import {TouchableOpacity} from 'react-native'
 import {
   Box,
   Divider,
@@ -13,13 +13,13 @@ import {
 import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import {useNavigation} from '@react-navigation/native'
 import {ms} from 'react-native-size-matters'
+import {useTranslation} from 'react-i18next'
 
 import {useEntity, useInformation} from '@bluecentury/stores'
 import {Icons} from '@bluecentury/assets'
 import {LoadingAnimated} from '@bluecentury/components'
 import {Colors} from '@bluecentury/styles'
 import {EXTERNAL_PEGEL_IMAGE_URL} from '@bluecentury/constants'
-import {useTranslation} from 'react-i18next'
 
 const Pegels = () => {
   const {t} = useTranslation()
@@ -32,6 +32,8 @@ const Pegels = () => {
 
   useEffect(() => {
     getVesselPegels('')
+    /* eslint-disable react-hooks/exhaustive-deps */
+    /* eslint-disable react-native/no-inline-styles */
   }, [vesselId])
 
   useEffect(() => {
@@ -42,27 +44,27 @@ const Pegels = () => {
     <HStack
       key={pegel.id}
       alignItems="center"
-      borderWidth={1}
+      bg={Colors.white}
       borderColor={Colors.light}
       borderRadius={ms(5)}
-      bg={Colors.white}
-      shadow={1}
+      borderWidth={1}
       mb={ms(4)}
       px={ms(10)}
       py={ms(8)}
+      shadow={1}
     >
-      <HStack flex="2" alignItems="center">
+      <HStack alignItems="center" flex="2">
         <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={() =>
-            navigation.navigate('InformationPegelDetails', {pegelId: pegel.id})
-          }
           style={{
             borderWidth: 1,
             borderColor: Colors.light,
             borderRadius: 5,
             marginRight: 5,
           }}
+          activeOpacity={0.7}
+          onPress={() =>
+            navigation.navigate('InformationPegelDetails', {pegelId: pegel.id})
+          }
         >
           <MaterialIcons name="history" size={ms(20)} />
         </TouchableOpacity>
@@ -70,14 +72,13 @@ const Pegels = () => {
           activeOpacity={0.7}
           onPress={() => onSelectPegel(pegel)}
         >
-          <Text fontWeight="medium" color={Colors.primary}>
+          <Text color={Colors.primary} fontWeight="medium">
             {pegel?.name}
           </Text>
         </TouchableOpacity>
       </HStack>
-      <HStack flex="1" alignItems="center" justifyContent="space-between">
+      <HStack alignItems="center" flex="1" justifyContent="space-between">
         <Image
-          alt={`Pegels-WaterLevel-${pegel.id}`}
           source={
             pegel.lastMeasurement && pegel.secondToLastMeasurement
               ? pegel.lastMeasurement.measureValue -
@@ -87,6 +88,7 @@ const Pegels = () => {
                 : Icons.water_low
               : Icons.water_normal
           }
+          alt={`Pegels-WaterLevel-${pegel.id}`}
         />
         {pegel?.lastMeasurement && pegel?.lastMeasurement.measureValue ? (
           <Text
@@ -117,10 +119,10 @@ const Pegels = () => {
   const renderPegels = () => {
     return pegelsData?.map((river: any, index: number) => (
       <Box key={`river-${index}`} mt={ms(20)}>
-        <Text fontSize={ms(16)} bold color={Colors.text} ml={ms(10)}>
+        <Text bold color={Colors.text} fontSize={ms(16)} ml={ms(10)}>
           {river?.riverName}
         </Text>
-        <Divider mt={ms(5)} mb={ms(15)} />
+        <Divider mb={ms(15)} mt={ms(5)} />
         {river?.streamGauges
           ?.sort((a: any, b: any) => `${a.name}`.localeCompare(b.name))
           ?.filter((pegel: any) => !pegel.isStreamGaugeReference)
@@ -131,11 +133,11 @@ const Pegels = () => {
 
   const renderEmpty = () => (
     <Text
-      fontSize={ms(15)}
       bold
-      textAlign="center"
       color={Colors.text}
+      fontSize={ms(15)}
       mt={ms(10)}
+      textAlign="center"
     >
       {t('noPegels')}
     </Text>
@@ -161,45 +163,45 @@ const Pegels = () => {
   }
 
   return (
-    <Box flex="1" px={ms(12)} py={ms(15)} bg={Colors.white}>
+    <Box bg={Colors.white} flex="1" px={ms(12)} py={ms(15)}>
       <Input
-        w={{
-          base: '100%',
-        }}
-        backgroundColor="#F7F7F7"
         InputLeftElement={
           <Icon
             as={<MaterialIcons name="magnify" />}
-            size={5}
-            ml="2"
             color={Colors.disabled}
+            ml="2"
+            size={5}
           />
         }
-        placeholderTextColor={Colors.disabled}
+        w={{
+          base: '100%',
+        }}
+        backgroundColor={Colors.light_grey}
         fontWeight="medium"
         placeholder="Search for pegels..."
-        variant="filled"
+        placeholderTextColor={Colors.disabled}
         size="sm"
         value={searchedValue}
+        variant="filled"
         onChangeText={e => onSearchPegel(e)}
       />
       <Divider my={ms(15)} />
       <ScrollView
-        minimumZoomScale={1}
-        maximumZoomScale={5}
         contentContainerStyle={{flexGrow: 1, paddingBottom: 20}}
+        maximumZoomScale={5}
+        minimumZoomScale={1}
         scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
       >
-        <HStack mt={ms(10)} alignItems="center" px={ms(10)}>
-          <Text flex="1" fontSize={ms(16)} bold color={Colors.text}>
+        <HStack alignItems="center" mt={ms(10)} px={ms(10)}>
+          <Text bold color={Colors.text} flex="1" fontSize={ms(16)}>
             {t('details')}
           </Text>
-          <Text fontSize={ms(16)} bold color={Colors.text}>
+          <Text bold color={Colors.text} fontSize={ms(16)}>
             {t('level')}
           </Text>
         </HStack>
-        <Divider mt={ms(5)} mb={ms(15)} />
+        <Divider mb={ms(15)} mt={ms(5)} />
         {streamGauges?.length === 0 &&
         pegels?.length === 0 &&
         !isInformationLoading

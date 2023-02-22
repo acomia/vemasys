@@ -22,7 +22,7 @@ import moment from 'moment'
 
 import {Colors} from '@bluecentury/styles'
 import {useTechnical} from '@bluecentury/stores'
-import {LoadingAnimated} from '@bluecentury/components'
+import {LoadingAnimated, NoInternetConnectionMessage} from '@bluecentury/components'
 import {useTranslation} from 'react-i18next'
 
 export default function NewBunkering() {
@@ -111,6 +111,7 @@ export default function NewBunkering() {
 
   return (
     <Box flex="1">
+      <NoInternetConnectionMessage />
       <ScrollView
         contentContainerStyle={{flexGrow: 1}}
         px={ms(12)}

@@ -20,7 +20,7 @@ import {
   CHARTER_CONTRACTOR_STATUS_ACCEPTED,
   UPDATE_CHARTER_SUCCESS,
 } from '@bluecentury/constants'
-import {LoadingAnimated} from '@bluecentury/components'
+import {LoadingAnimated, NoInternetConnectionMessage} from '@bluecentury/components'
 import {useTranslation} from 'react-i18next'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'CharterAcceptSign'>
@@ -123,6 +123,7 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
 
   return (
     <Box flex="1">
+      <NoInternetConnectionMessage />
       <ScrollView
         contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
         backgroundColor={Colors.white}

@@ -50,27 +50,27 @@ const ReservoirLevel = ({reservoir, physicalVesselId}: any) => {
         >
           <Box px={ms(16)} py={ms(5)}>
             <HStack alignItems="center">
-              <Text flex="1" color={Colors.azure} fontWeight="medium">
+              <Text color={Colors.azure} flex="1" fontWeight="medium">
                 {reservoir.name}
               </Text>
-              <Text color={Colors.azure} fontSize={ms(16)} bold>
-                {formatNumber(value, 0, ' ')} L (
+              <Text bold color={Colors.azure} fontSize={ms(16)}>
+                {formatNumber(value, 2, ' ')} L (
                 {isNaN(fillPct) || fillPct === Infinity
                   ? 0
                   : Math.floor(fillPct)}
                 %)
               </Text>
             </HStack>
-            <Text flex="1" color={Colors.disabled} fontWeight="medium">
+            <Text color={Colors.disabled} flex="1" fontWeight="medium">
               {moment(reservoir?.lastMeasurement?.date).fromNow()}
             </Text>
             <Progress
-              value={isNaN(fillPct) ? 0 : Math.floor(fillPct)}
-              mt={ms(10)}
-              size="md"
               colorScheme={
                 fillPct <= 25 ? 'danger' : fillPct <= 50 ? 'warning' : 'primary'
               }
+              mt={ms(10)}
+              size="md"
+              value={isNaN(fillPct) ? 0 : Math.floor(fillPct)}
             />
           </Box>
         </TouchableOpacity>
@@ -81,23 +81,23 @@ const ReservoirLevel = ({reservoir, physicalVesselId}: any) => {
 
   return (
     <Box
+      borderColor={Colors.border}
       borderRadius={ms(5)}
       borderWidth={1}
-      borderColor={Colors.border}
       mt={ms(10)}
     >
       {/* Total Gasoil Header */}
       <HStack
+        alignItems="center"
         backgroundColor={Colors.border}
         px={ms(16)}
         py={ms(10)}
-        alignItems="center"
       >
-        <Text flex="1" color={Colors.azure} fontWeight="medium">
+        <Text color={Colors.azure} flex="1" fontWeight="medium">
           {t('totalGasoil')}
         </Text>
-        <Text color={Colors.azure} fontSize={ms(20)} bold>
-          {formatNumber(totalGasoil, 0, ' ')} L
+        <Text bold color={Colors.azure} fontSize={ms(20)}>
+          {formatNumber(totalGasoil, 2, ' ')} L
         </Text>
       </HStack>
       {reservoir.length > 0 ? (

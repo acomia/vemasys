@@ -19,7 +19,12 @@ interface IDatetimePicker {
 const DatetimePicker = ({date, onChangeDate, color}: IDatetimePicker) => {
   const {t} = useTranslation()
   return (
-    <HStack alignItems="center" bg="#F7F7F7" borderRadius={ms(5)} p="2">
+    <HStack
+      alignItems="center"
+      bg={Colors.light_grey}
+      borderRadius={ms(5)}
+      p="2"
+    >
       <MaterialCommunityIcons
         color={color}
         name="calendar-month-outline"

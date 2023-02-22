@@ -6,6 +6,7 @@ import {Box} from 'native-base'
 import {ms} from 'react-native-size-matters'
 
 import {useCharters} from '@bluecentury/stores'
+import {NoInternetConnectionMessage} from '@bluecentury/components'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 export default function PDFView({route}: Props) {
@@ -16,6 +17,7 @@ export default function PDFView({route}: Props) {
 
   return (
     <Box flex="1" justifyContent="flex-start" alignItems="center" mt={ms(20)}>
+      <NoInternetConnectionMessage />
       <Pdf
         source={source}
         onLoadComplete={(numberOfPages, filePath) => {

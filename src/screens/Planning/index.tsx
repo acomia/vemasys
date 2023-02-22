@@ -9,7 +9,7 @@ import {
   ENTITY_TYPE_EXPLOITATION_GROUP,
   planningTabs,
 } from '@bluecentury/constants'
-import {FleetHeader} from '@bluecentury/components'
+import {FleetHeader, NoInternetConnectionMessage} from '@bluecentury/components'
 import {useEntity} from '@bluecentury/stores'
 import {useTranslation} from 'react-i18next'
 
@@ -74,6 +74,7 @@ export default function Planning() {
           }
         />
       )}
+      <NoInternetConnectionMessage />
       <TabView
         lazy
         navigationState={{index, routes}}
