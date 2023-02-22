@@ -220,7 +220,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
     return (
       <HStack
         alignItems="center"
-        bg="#F7F7F7"
+        bg={Colors.light_grey}
         borderRadius={ms(5)}
         mb={ms(30)}
         mt={ms(3)}
@@ -244,7 +244,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
     return (
       <HStack
         alignItems="center"
-        bg="#F7F7F7"
+        bg={Colors.light_grey}
         borderRadius={ms(5)}
         mb={ms(30)}
         mt={ms(3)}
@@ -288,7 +288,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
           </Text>
           {navigationLogDetails?.bulkCargo?.length > 1 ? (
             <Select
-              bg="#F7F7F7"
+              bg={Colors.light_grey}
               flex="1"
               selectedValue={selectedCargo}
               onValueChange={val => onSelectCargo(val)}
@@ -302,7 +302,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
               ))}
             </Select>
           ) : (
-            <Box bg="#F7F7F7" borderRadius={ms(5)} px="1" py="3">
+            <Box bg={Colors.light_grey} borderRadius={ms(5)} px="1" py="3">
               <Text color={Colors.text} ellipsizeMode="tail" numberOfLines={1}>
                 {nameEn || nameNl}
               </Text>
@@ -318,7 +318,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
             value={navActionDetails.cargoHoldActions[0].amount
               .toString()
               .replace('.', ',')}
-            bg="#F7F7F7"
+            bg={Colors.light_grey}
             fontSize={ms(15)}
             height={ms(40)}
             keyboardType="number-pad"

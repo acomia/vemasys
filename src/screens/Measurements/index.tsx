@@ -20,15 +20,12 @@ import {Shadow} from 'react-native-shadow-2'
 import {ms} from 'react-native-size-matters'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 
-import { formatNumber } from '@bluecentury/constants'
-import { useEntity, useTechnical } from '@bluecentury/stores'
-import {LoadingAnimated, NoInternetConnectionMessage} from '@bluecentury/components'
-import { Colors } from '@bluecentury/styles'
-import { MeasurementCard } from './measurement-card'
-import { useTranslation } from 'react-i18next'
 import {formatNumber} from '@bluecentury/constants'
 import {useEntity, useTechnical} from '@bluecentury/stores'
-import {LoadingAnimated} from '@bluecentury/components'
+import {
+  LoadingAnimated,
+  NoInternetConnectionMessage,
+} from '@bluecentury/components'
 import {Colors} from '@bluecentury/styles'
 import {MeasurementCard} from './measurement-card'
 import {useTranslation} from 'react-i18next'
@@ -322,7 +319,7 @@ const Measurements = ({navigation, route}: Props) => {
           <Modal.Body>
             <Input
               bold
-              backgroundColor="#F7F7F7"
+              backgroundColor={Colors.light_grey}
               fontSize={ms(15)}
               height={ms(40)}
               isInvalid={inputInvalid}

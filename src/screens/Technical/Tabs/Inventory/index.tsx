@@ -59,11 +59,11 @@ const Inventory = () => {
         return (
           <Text
             bg={res === 'success' ? 'emerald.500' : 'red.500'}
+            color={Colors.white}
+            mb={5}
             px="2"
             py="1"
             rounded="sm"
-            mb={5}
-            color={Colors.white}
           >
             {text}
           </Text>
@@ -79,11 +79,11 @@ const Inventory = () => {
         return (
           <Text
             bg="warning.500"
+            color={Colors.white}
+            mb={5}
             px="2"
             py="1"
             rounded="sm"
-            mb={5}
-            color={Colors.white}
           >
             {text}
           </Text>
@@ -95,28 +95,27 @@ const Inventory = () => {
   const renderSeachFilterSection = () => (
     <HStack justifyContent="space-between">
       <Input
-        w={{
-          base: '78%',
-        }}
-        backgroundColor="#F7F7F7"
         InputLeftElement={
           <Icon
             as={<MaterialIcons name="magnify" />}
-            size={5}
-            ml="2"
             color={Colors.disabled}
+            ml="2"
+            size={5}
           />
         }
-        placeholderTextColor={Colors.disabled}
+        w={{
+          base: '78%',
+        }}
+        backgroundColor={Colors.light_grey}
         fontWeight="medium"
         placeholder={t('searchStock')}
-        variant="filled"
+        placeholderTextColor={Colors.disabled}
         size="sm"
         value={searched}
+        variant="filled"
         onChangeText={e => onSearchInventory(e)}
       />
       <Button
-        size="xs"
         leftIcon={
           <Image
             alt="filter-icon"
@@ -125,6 +124,7 @@ const Inventory = () => {
           />
         }
         bg={Colors.highlighted_text}
+        size="xs"
         onPress={() => setOpenFilter(true)}
       >
         {t('filter')}
@@ -134,10 +134,10 @@ const Inventory = () => {
 
   const renderInventoryListHeaderSection = () => (
     <HStack mt={ms(20)}>
-      <Text flex="1" fontSize={ms(16)} bold color={Colors.text}>
+      <Text bold color={Colors.text} flex="1" fontSize={ms(16)}>
         {t('name')}
       </Text>
-      <Text fontSize={ms(16)} bold color={Colors.text} mr={ms(30)}>
+      <Text bold color={Colors.text} fontSize={ms(16)} mr={ms(30)}>
         {t('stock')}
       </Text>
     </HStack>
@@ -147,23 +147,23 @@ const Inventory = () => {
     return item.warningThreshold && item.quantity === 0 ? (
       <Image
         alt="filter-icon"
+        ml={ms(20)}
         source={Icons.status_x}
         style={{width: 20, height: 20}}
-        ml={ms(20)}
       />
     ) : item.quantity < item.warningThreshold ? (
       <Image
         alt="filter-icon"
+        ml={ms(20)}
         source={Icons.status_exclamation}
         style={{width: 20, height: 20}}
-        ml={ms(20)}
       />
     ) : (
       <Image
         alt="filter-icon"
+        ml={ms(20)}
         source={Icons.status_check}
         style={{width: 20, height: 20}}
-        ml={ms(20)}
       />
     )
   }
@@ -176,18 +176,18 @@ const Inventory = () => {
         onPress={() => onSelectItem(item.id)}
       >
         <HStack
+          alignItems="center"
+          bg={Colors.white}
+          borderColor={Colors.light}
           borderRadius={ms(5)}
           borderWidth={1}
-          borderColor={Colors.light}
-          bg={Colors.white}
-          alignItems="center"
-          shadow={1}
           mb={ms(5)}
           px={ms(15)}
           py={ms(11)}
+          shadow={1}
         >
           <Box flex="1">
-            <Text fontWeight="medium" color={Colors.text}>
+            <Text color={Colors.text} fontWeight="medium">
               {formatConsumableLabel(item.consumable)}
             </Text>
             <Text color={Colors.disabled}>{item?.consumable?.type?.title}</Text>
@@ -219,20 +219,20 @@ const Inventory = () => {
         onPress={() => onSelectFilterType(type?.title)}
       >
         <Box
-          borderRadius={ms(5)}
-          bg={selected !== undefined ? Colors.azure : Colors.light}
-          h={ms(40)}
-          py={ms(5)}
-          px={ms(15)}
-          mr={ms(10)}
-          mb={ms(10)}
           alignItems="center"
+          bg={selected !== undefined ? Colors.azure : Colors.light}
+          borderRadius={ms(5)}
+          h={ms(40)}
           justifyContent="center"
+          mb={ms(10)}
+          mr={ms(10)}
+          px={ms(15)}
+          py={ms(5)}
         >
           <Text
+            color={selected !== undefined ? Colors.white : Colors.disabled}
             fontSize={ms(15)}
             fontWeight="medium"
-            color={selected !== undefined ? Colors.white : Colors.disabled}
           >
             {type?.title}
           </Text>
@@ -307,7 +307,7 @@ const Inventory = () => {
 
   return (
     <Box flex="1">
-      <Box flex="1" bg={Colors.white} px={ms(12)} py={ms(20)}>
+      <Box bg={Colors.white} flex="1" px={ms(12)} py={ms(20)}>
         {renderSeachFilterSection()}
         {renderInventoryListHeaderSection()}
         <Divider my={ms(10)} />
@@ -315,36 +315,36 @@ const Inventory = () => {
           <LoadingAnimated />
         ) : (
           <FlatList
-            data={inventoryData}
-            renderItem={renderInventoryList}
-            keyExtractor={(item: any) => `Inventory-${item.id}`}
-            showsVerticalScrollIndicator={false}
             ListEmptyComponent={() => (
               <Text
-                fontSize={ms(16)}
                 bold
                 color={Colors.azure}
+                fontSize={ms(16)}
                 mt={ms(20)}
                 textAlign="center"
               >
                 {t('noInventory')}
               </Text>
             )}
+            data={inventoryData}
+            keyExtractor={(item: any) => `Inventory-${item.id}`}
+            renderItem={renderInventoryList}
+            showsVerticalScrollIndicator={false}
           />
         )}
         <Modal
-          isOpen={openFilter}
           animationPreset="slide"
+          isOpen={openFilter}
           minH="100%"
           onClose={() => setOpenFilter(false)}
         >
-          <Modal.Content ml="auto" mr={0} minH="100%" maxH="100%">
+          <Modal.Content maxH="100%" minH="100%" ml="auto" mr={0}>
             <Modal.Body>
               <Box flex="1">
-                <Text fontSize={ms(26)} bold color={Colors.azure}>
+                <Text bold color={Colors.azure} fontSize={ms(26)}>
                   {t('filter')}
                 </Text>
-                <Text fontSize={ms(20)} bold color={Colors.azure} mt={ms(20)}>
+                <Text bold color={Colors.azure} fontSize={ms(20)} mt={ms(20)}>
                   {t('type')}
                 </Text>
                 <HStack flexWrap="wrap" mt={ms(10)}>
@@ -367,17 +367,17 @@ const Inventory = () => {
             </Modal.Body>
             <Modal.Footer>
               <Button
-                flex="1"
-                variant="ghost"
-                m={ms(5)}
-                onPress={onResetFilter}
                 colorScheme="light"
+                flex="1"
+                m={ms(5)}
+                variant="ghost"
+                onPress={onResetFilter}
               >
                 {t('reset')}
               </Button>
               <Button
-                flex="1"
                 bg={Colors.primary}
+                flex="1"
                 m={ms(5)}
                 onPress={onApplyFilter}
               >
@@ -386,33 +386,33 @@ const Inventory = () => {
             </Modal.Footer>
           </Modal.Content>
         </Modal>
-        <Modal isOpen={openNewStock} animationPreset="slide">
-          <Modal.Content width="95%" px={ms(10)}>
+        <Modal animationPreset="slide" isOpen={openNewStock}>
+          <Modal.Content px={ms(10)} width="95%">
             <Modal.Header>Enter quantity</Modal.Header>
             <Modal.Body>
               <Input
-                variant="filled"
-                backgroundColor="#F7F7F7"
-                keyboardType="number-pad"
-                height={ms(40)}
-                fontSize={ms(15)}
                 bold
+                backgroundColor={Colors.light_grey}
+                fontSize={ms(15)}
+                height={ms(40)}
+                keyboardType="number-pad"
                 value={quantity}
+                variant="filled"
                 onChangeText={e => setQuantity(e)}
               />
             </Modal.Body>
             <Modal.Footer>
               <Button
-                flex="1"
                 bg="#E0E0E0"
+                flex="1"
                 m={ms(5)}
                 onPress={() => setOpenNewStock(false)}
               >
                 {t('cancel')}
               </Button>
               <Button
-                flex="1"
                 bg={Colors.primary}
+                flex="1"
                 m={ms(5)}
                 onPress={onSaveNewStock}
               >

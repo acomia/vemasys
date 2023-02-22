@@ -1,39 +1,30 @@
 import React, {useEffect, useState} from 'react'
-import {
-  Box,
-  Button,
-  Divider,
-  FlatList,
-  HStack,
-  Icon,
-  Image,
-  Input,
-  ScrollView,
-  Text,
-} from 'native-base'
-import {useEntity, useInformation} from '@bluecentury/stores'
+import {Box, Divider, FlatList, HStack, Icon, Input, Text} from 'native-base'
 import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons'
-import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
 import ReactNativeBlobUtil from 'react-native-blob-util'
-import {Icons} from '@bluecentury/assets'
-import {IconButton, LoadingAnimated} from '@bluecentury/components'
-import {Shadow} from 'react-native-shadow-2'
-import moment from 'moment'
-import {VEMASYS_PRODUCTION_FILE_URL} from '@bluecentury/constants'
 import {useNavigation} from '@react-navigation/native'
 import {useTranslation} from 'react-i18next'
+import moment from 'moment'
+
+import {Colors} from '@bluecentury/styles'
+import {Icons} from '@bluecentury/assets'
+import {IconButton, LoadingAnimated} from '@bluecentury/components'
+import {VEMASYS_PRODUCTION_FILE_URL} from '@bluecentury/constants'
+import {useEntity, useInformation} from '@bluecentury/stores'
 
 const Rules = () => {
   const {t} = useTranslation()
   const navigation = useNavigation()
-  const {isInformationLoading, rules, getVesselRules} = useInformation()
+  const {rules, getVesselRules} = useInformation()
   const {vesselId} = useEntity()
   const [searchedValue, setSearchedValue] = useState('')
   const [rulesData, setRulesData] = useState([])
 
   useEffect(() => {
     getVesselRules(vesselId, '')
+    /* eslint-disable react-hooks/exhaustive-deps */
+    /* eslint-disable react-native/no-inline-styles */
   }, [vesselId])
 
   useEffect(() => {
@@ -53,17 +44,17 @@ const Rules = () => {
       <HStack
         key={`Rules-${index}`}
         alignItems="center"
-        borderWidth={1}
+        bg={Colors.white}
         borderColor={Colors.light}
         borderRadius={ms(5)}
-        bg={Colors.white}
-        shadow={1}
+        borderWidth={1}
         mb={ms(4)}
         px={ms(10)}
         py={ms(8)}
+        shadow={1}
       >
         <Box flex="1" mr={ms(10)}>
-          <Text fontWeight="medium" color={Colors.text}>
+          <Text color={Colors.text} fontWeight="medium">
             {item?.name}
           </Text>
           <Text color={Colors.disabled}>
@@ -72,19 +63,19 @@ const Rules = () => {
         </Box>
         <HStack alignItems="center">
           <IconButton
-            source={Icons.file_download}
-            onPress={() => {}}
             size={ms(20)}
+            source={Icons.file_download}
             styles={{marginRight: 20}}
+            onPress={() => {}}
           />
           <IconButton
+            size={ms(20)}
             source={Icons.eye}
             onPress={() =>
               navigation.navigate('PDFView', {
                 path: filePath,
               })
             }
-            size={ms(20)}
           />
         </HStack>
       </HStack>
@@ -93,11 +84,11 @@ const Rules = () => {
 
   const renderEmpty = () => (
     <Text
-      fontSize={ms(15)}
       bold
-      textAlign="center"
       color={Colors.text}
+      fontSize={ms(15)}
       mt={ms(10)}
+      textAlign="center"
     >
       {t('noRules')}
     </Text>
@@ -117,44 +108,44 @@ const Rules = () => {
 
   return (
     <Box flex="1">
-      <Box flex="1" px={ms(12)} py={ms(15)} bg={Colors.white}>
+      <Box bg={Colors.white} flex="1" px={ms(12)} py={ms(15)}>
         <Input
-          w={{
-            base: '100%',
-          }}
-          backgroundColor="#F7F7F7"
           InputLeftElement={
             <Icon
               as={<MaterialIcons name="magnify" />}
-              size={5}
-              ml="2"
               color={Colors.disabled}
+              ml="2"
+              size={5}
             />
           }
-          placeholderTextColor={Colors.disabled}
+          w={{
+            base: '100%',
+          }}
+          backgroundColor={Colors.light_grey}
           fontWeight="medium"
           placeholder="Search for rules..."
-          variant="filled"
+          placeholderTextColor={Colors.disabled}
           size="sm"
           value={searchedValue}
+          variant="filled"
           onChangeText={e => onSearchPegel(e)}
         />
-        <HStack mt={ms(20)} alignItems="center" px={ms(10)}>
-          <Text flex="1" fontSize={ms(16)} bold color={Colors.text}>
+        <HStack alignItems="center" mt={ms(20)} px={ms(10)}>
+          <Text bold color={Colors.text} flex="1" fontSize={ms(16)}>
             {t('details')}
           </Text>
-          <Text fontSize={ms(16)} bold color={Colors.text}>
+          <Text bold color={Colors.text} fontSize={ms(16)}>
             {t('actions')}
           </Text>
         </HStack>
-        <Divider mt={ms(5)} mb={ms(15)} />
+        <Divider mb={ms(15)} mt={ms(5)} />
         {rules?.length > 0 ? (
           <FlatList
-            data={rulesData}
-            renderItem={renderRules}
-            contentContainerStyle={{paddingBottom: 20}}
-            keyExtractor={(item: any) => `Rule-${item.id}`}
             ListEmptyComponent={renderEmpty}
+            contentContainerStyle={{paddingBottom: 20}}
+            data={rulesData}
+            keyExtractor={(item: any) => `Rule-${item.id}`}
+            renderItem={renderRules}
             showsVerticalScrollIndicator={false}
           />
         ) : (
