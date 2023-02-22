@@ -64,7 +64,12 @@ const Overview = () => {
     )
   }
 
-  const CardContent = ({status, value, callback, withArrow}: CardContentArgument) => {
+  const CardContent = ({
+    status,
+    value,
+    callback,
+    withArrow,
+  }: CardContentArgument) => {
     return (
       <Pressable onPress={callback ? callback : null}>
         <HStack
@@ -78,11 +83,7 @@ const Overview = () => {
           px={ms(16)}
           width="100%"
         >
-          <Text
-            color={Colors.text}
-            flex="1"
-            fontWeight="medium"
-          >
+          <Text color={Colors.text} flex="1" fontWeight="medium">
             {status}
           </Text>
           <HStack
@@ -127,7 +128,9 @@ const Overview = () => {
                             .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
                     }`}
               </Text>
-              {withArrow ? <ChevronRightIcon color={Colors.text} size="4" /> : null}
+              {withArrow ? (
+                <ChevronRightIcon color={Colors.text} size="4" />
+              ) : null}
             </Skeleton>
           </HStack>
         </HStack>
@@ -153,7 +156,7 @@ const Overview = () => {
             onRefresh={onPullToReload}
           />
         }
-        bg="#F7F7F7"
+        bg={Colors.light_grey}
         contentContainerStyle={{flexGrow: 1, paddingBottom: 60}}
         scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
@@ -182,6 +185,7 @@ const Overview = () => {
             </Card> */}
           <Card title={t('total')}>
             <CardContent
+              withArrow
               value={
                 invoiceStatistics?.length > 0
                   ? invoiceStatistics[0]?.totalOutgoing || 0
@@ -189,9 +193,9 @@ const Overview = () => {
               }
               callback={() => setIsOutgoingVisible(true)}
               status={t('totalTurnover')}
-              withArrow
             />
             <CardContent
+              withArrow
               value={
                 invoiceStatistics?.length > 0
                   ? invoiceStatistics[0]?.totalIncoming || 0
@@ -199,7 +203,6 @@ const Overview = () => {
               }
               callback={() => setIsIncomingVisible(true)}
               status={t('totalCosts')}
-              withArrow
             />
             <CardContent
               value={

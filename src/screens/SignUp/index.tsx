@@ -237,7 +237,7 @@ export default function SignUp({navigation}: Props) {
             _selectedItem={{
               endIcon: <CheckIcon size={5} />,
             }}
-            bg="#F7F7F7"
+            bg={Colors.light_grey}
             fontSize={14}
             fontWeight="medium"
             placeholder="Choose Language"
@@ -257,7 +257,7 @@ export default function SignUp({navigation}: Props) {
             _selectedItem={{
               endIcon: <CheckIcon size={5} />,
             }}
-            bg="#F7F7F7"
+            bg={Colors.light_grey}
             fontSize={14}
             fontWeight="medium"
             isDisabled={requestAsOwner}
@@ -334,7 +334,7 @@ export default function SignUp({navigation}: Props) {
             _selectedItem={{
               endIcon: <CheckIcon size={5} />,
             }}
-            bg="#F7F7F7"
+            bg={Colors.light_grey}
             fontSize={14}
             fontWeight="medium"
             placeholder="Choose Level"

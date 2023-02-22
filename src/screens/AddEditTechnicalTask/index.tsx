@@ -82,7 +82,7 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
   }, [task])
 
   const launchImageLibrary = () => {
-    let options: ImagePicker.ImageLibraryOptions = {
+    const options: ImagePicker.ImageLibraryOptions = {
       mediaType: 'photo',
     }
 
@@ -104,11 +104,11 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
         return (
           <Text
             bg={res === 'success' ? 'emerald.500' : 'red.500'}
+            color={Colors.white}
+            mb={5}
             px="2"
             py="1"
             rounded="sm"
-            mb={5}
-            color={Colors.white}
           >
             {text}
           </Text>
@@ -161,10 +161,10 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
 
   return (
     <Box
-      flex="1"
       bg={Colors.white}
       borderTopLeftRadius={ms(15)}
       borderTopRightRadius={ms(15)}
+      flex="1"
     >
       <NoInternetConnectionMessage />
       <ScrollView
@@ -177,8 +177,8 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
           </FormControl.Label>
           <Input
             bg={'#F7F7F7'}
-            type="text"
             returnKeyType="next"
+            type="text"
             value={taskData.title}
             onChangeText={e => setTaskData({...taskData, title: e})}
           />
@@ -191,10 +191,10 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
             {t('taskType')}
           </FormControl.Label>
           <Select
-            minWidth="300"
             accessibilityLabel=""
+            bg={Colors.light_grey}
+            minWidth="300"
             placeholder=""
-            bg="#F7F7F7"
           >
             {types.map((supplier, index) => (
               <Select.Item
@@ -213,29 +213,29 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
             {t('deadLine')}
           </FormControl.Label>
           <HStack
-            mt={ms(3)}
-            bg="#F7F7F7"
-            borderRadius={ms(5)}
-            p="2"
             alignItems="center"
+            bg={Colors.light_grey}
+            borderRadius={ms(5)}
+            mt={ms(3)}
+            p="2"
           >
             <MaterialCommunityIcons
+              color={Colors.danger}
               name="calendar-month-outline"
               size={ms(22)}
-              color={Colors.danger}
             />
             <TouchableOpacity
-              activeOpacity={0.7}
               style={{
                 flex: 1,
                 marginLeft: 10,
               }}
+              activeOpacity={0.7}
               onPress={() => setOpenDatePicker(true)}
             >
               <Text
+                color={taskData.deadline ? Colors.text : Colors.disabled}
                 fontSize={ms(16)}
                 fontWeight="medium"
-                color={taskData.deadline ? Colors.text : Colors.disabled}
               >
                 {taskData.deadline
                   ? moment(taskData.deadline).format('D MMM YYYY')
@@ -253,11 +253,11 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
             {t('description')}
           </FormControl.Label>
           <TextArea
-            numberOfLines={4}
+            autoCompleteType={undefined}
             h="100"
+            numberOfLines={4}
             placeholder=""
             style={{backgroundColor: '#F7F7F7'}}
-            autoCompleteType={undefined}
             value={taskData.description}
             onChangeText={e => setTaskData({...taskData, description: e})}
           />
@@ -270,11 +270,11 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
             {t('instructions')}
           </FormControl.Label>
           <TextArea
-            numberOfLines={4}
+            autoCompleteType={undefined}
             h="100"
+            numberOfLines={4}
             placeholder=""
             style={{backgroundColor: '#F7F7F7'}}
-            autoCompleteType={undefined}
             value={taskData.instructions}
             onChangeText={e => setTaskData({...taskData, instructions: e})}
           />
@@ -284,29 +284,29 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
         </FormControl>
         {imgFile.uri !== '' || imgFile.fileName !== '' ? (
           <HStack
-            mt={ms(15)}
             alignItems="center"
             justifyContent="space-between"
+            mt={ms(15)}
           >
             <Image
               alt="file-preview"
+              borderRadius={ms(5)}
+              h={ms(45)}
               source={{uri: imgFile.uri}}
               w={ms(45)}
-              h={ms(45)}
-              borderRadius={ms(5)}
             />
             <Text
-              maxW="70%"
-              fontWeight="medium"
-              numberOfLines={1}
               ellipsizeMode="middle"
+              fontWeight="medium"
+              maxW="70%"
+              numberOfLines={1}
             >
               {imgFile.fileName}
             </Text>
             <IconButton
+              size={ms(25)}
               source={Icons.close}
               onPress={() => setImgFile({...imgFile, uri: '', fileName: ''})}
-              size={ms(25)}
             />
           </HStack>
         ) : null}
@@ -314,17 +314,17 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
         <Button
           bg={Colors.primary}
           leftIcon={<Icon as={Ionicons} name="camera" size="sm" />}
-          mt={ms(20)}
           mb={ms(20)}
+          mt={ms(20)}
           onPress={launchImageLibrary}
         >
           {t('uploadImage')}
         </Button>
         <DatePicker
           modal
-          open={openDatePicker}
           date={taskData.deadline}
           mode="datetime"
+          open={openDatePicker}
           onConfirm={date => {
             setOpenDatePicker(false), setTaskData({...taskData, deadline: date})
           }}
@@ -333,25 +333,25 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
       </ScrollView>
       <Box bg={Colors.white} position="relative">
         <Shadow
-          distance={25}
           viewStyle={{
             width: '100%',
           }}
+          distance={25}
         >
           <HStack>
             <Button
+              colorScheme="muted"
               flex="1"
               m={ms(16)}
               variant="ghost"
-              colorScheme="muted"
               onPress={() => navigation.goBack()}
             >
               {t('cancel')}
             </Button>
             <Button
+              bg={Colors.primary}
               flex="1"
               m={ms(16)}
-              bg={Colors.primary}
               onPress={handleOnCreateNewTask}
             >
               {t('save')}
