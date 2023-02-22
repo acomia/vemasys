@@ -5,11 +5,12 @@ import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import _ from 'lodash'
 import {useNavigation} from '@react-navigation/native'
+import {useTranslation} from 'react-i18next'
+
 import {useEntity, useTechnical} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
 import {LoadingAnimated} from '@bluecentury/components'
 import {formatNumber} from '@bluecentury/constants'
-import {useTranslation} from 'react-i18next'
 
 const Engines = () => {
   const {t} = useTranslation()
@@ -20,6 +21,7 @@ const Engines = () => {
 
   useEffect(() => {
     getVesselEngines(physicalVesselId)
+    /* eslint-disable react-hooks/exhaustive-deps */
   }, [physicalVesselId])
 
   const vesselZones = Object.values(
