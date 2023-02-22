@@ -66,6 +66,13 @@ export default function Map({navigation}: Props) {
     vesselTracks,
   } = useMap()
 
+  const isLoadingMap =
+    isLoadingCurrentNavLogs ||
+    isLoadingPlannedNavLogs ||
+    isLoadingPreviousNavLogs ||
+    isLoadingVesselStatus ||
+    isLoadingVesselTrack
+
   const LATITUDE = 50.503887
   const LONGITUDE = 4.469936
   const sheetRef = useRef<BottomSheet>(null)
