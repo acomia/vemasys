@@ -58,7 +58,7 @@ export default function BunkeringDetails({route, navigation}: Props) {
         {renderCardDetails('Date', moment(bunk.date).format('DD MMM YYYY'))}
         {renderCardDetails(
           'Bunkered quantity',
-          formatNumber(bunk.value, 0, ' '),
+          formatNumber(bunk.value, 2, ' '),
           'L'
         )}
         <Text fontSize={ms(20)} bold color={Colors.azure} mt={ms(15)}>
