@@ -239,16 +239,16 @@ const Measurements = ({navigation, route}: Props) => {
     )
   }
 
-  const onAddNewConsumptionMeasure = async (newMeasurement: string) => {
+  const onAddNewConsumptionMeasure = async (newMeasurementValue: string) => {
     setNewMeasurement(value => (value = convertCommaToPeriod(value)))
-    if (newMeasurement === '') {
+    if (newMeasurementValue === '') {
       return showWarningToast('Measurement is required.')
     }
 
     if (
       routeFrom !== 'reservoir' &&
       lastMeasurements.length &&
-      newMeasurement < lastMeasurements[0]?.value
+      newMeasurementValue < lastMeasurements[0]?.value
     ) {
       setInputInvalid(true)
       return
@@ -256,7 +256,10 @@ const Measurements = ({navigation, route}: Props) => {
 
     const selectedId = routeFrom === 'reservoir' ? data?.id : data?.data[0]?.id
     setOpen(false)
-    const res = await createNewConsumptionMeasure(selectedId, newMeasurement)
+    const res = await createNewConsumptionMeasure(
+      selectedId,
+      newMeasurementValue
+    )
     if (res === null) {
       showToast('New Measurement failed.', 'failed')
       return
@@ -302,13 +305,7 @@ const Measurements = ({navigation, route}: Props) => {
           />
         )}
       </Box>
-      <Modal
-        animationPreset="slide"
-        isOpen={open}
-        px={ms(15)}
-        size="full"
-        onClose={clearNewmeasurements()}
-      >
+      <Modal animationPreset="slide" isOpen={open} px={ms(15)} size="full">
         <Modal.Content>
           <Modal.Header>
             {routeFrom === 'reservoir'
