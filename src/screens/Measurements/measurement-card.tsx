@@ -13,7 +13,6 @@ type Props = {
 }
 
 export const MeasurementCard = ({item, index, routeFrom}: Props) => {
-  console.log('item.date', item.date)
   return (
     <Box
       key={index}
