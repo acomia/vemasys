@@ -509,12 +509,6 @@ export default function Map({navigation}: Props) {
         />
       )}
       <Box flex="1">
-        <LoadingSlide
-          color={Colors.primary}
-          isOpen={isLoadingMap}
-          label={`${t('refreshing')}...`}
-          loading={true}
-        />
         <MapView
           ref={mapRef}
           initialRegion={region} // remove if not using Google Maps
@@ -547,6 +541,13 @@ export default function Map({navigation}: Props) {
             uniqueVesselTracks.length > 0 &&
             renderTrackLineBeginningMarker()}
         </MapView>
+        {isLoadingMap && (
+          <LoadingSlide
+            color={Colors.primary}
+            label={`${t('refreshing')}...`}
+            loading={true}
+          />
+        )}
         <Box position="absolute" right="0">
           <VStack justifyContent="flex-start" m="4" space="5">
             {/*<Box bg={Colors.white} borderRadius="full" p="2" shadow={2}>*/}
