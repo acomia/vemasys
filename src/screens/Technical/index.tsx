@@ -50,14 +50,14 @@ export default function Technical() {
         width: ms(50),
         marginLeft: 25,
       }}
-      style={{backgroundColor: Colors.primary}}
-      tabStyle={{width: ms(100), height: ms(45)}}
       renderLabel={({route, color}) => (
-        <Text color={color} bold>
+        <Text bold color={color}>
           {t(route.title)}
         </Text>
       )}
       scrollEnabled={true}
+      style={{backgroundColor: Colors.primary}}
+      tabStyle={{width: ms(100), height: ms(45)}}
     />
   )
 
@@ -83,11 +83,12 @@ export default function Technical() {
         />
       )}
       <TabView
+        lazy
+        initialLayout={{width: layout.width}}
         navigationState={{index, routes}}
         renderScene={renderScene}
         renderTabBar={renderTabBar}
         onIndexChange={setIndex}
-        initialLayout={{width: layout.width}}
       />
     </Box>
   )
