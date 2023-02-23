@@ -168,7 +168,7 @@ const PlanningLogbook = () => {
             ).format('YYYY-MM-DD')
 
             return (
-              <View key={`test_${i}`}>
+              <View key={i}>
                 <NavLogCard
                   key={i}
                   defineFirstAndLastIndex={defineFirstAndLastIndex}
@@ -177,9 +177,7 @@ const PlanningLogbook = () => {
                   navigationLog={navigationLog}
                 />
                 {forwardDate >= dateToday && plannedEta < dateToday ? (
-                  <NavLogDivider
-                  //  key={`divider_${i}`}
-                  />
+                  <NavLogDivider />
                 ) : null}
               </View>
             )
