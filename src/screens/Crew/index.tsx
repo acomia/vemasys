@@ -8,7 +8,7 @@ import {Me, Planning} from './Tabs'
 import {Colors} from '@bluecentury/styles'
 import {crewTabs, ENTITY_TYPE_EXPLOITATION_GROUP} from '@bluecentury/constants'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
-import {FleetHeader, IconButton} from '@bluecentury/components'
+import {FleetHeader, IconButton, NoInternetConnectionMessage} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {useEntity, useMap} from '@bluecentury/stores'
 import {useTranslation} from 'react-i18next'
@@ -109,6 +109,7 @@ export default function Crew({navigation}: Props) {
           }
         />
       )}
+      <NoInternetConnectionMessage />
       <TabView
         lazy
         navigationState={{index, routes}}

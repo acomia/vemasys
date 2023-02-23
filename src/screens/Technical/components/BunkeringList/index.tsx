@@ -19,13 +19,13 @@ const BunkeringList = ({bunkering}: any) => {
         onPress={() => navigation.navigate('BunkeringDetails', {bunk})}
       >
         <HStack
-          p={ms(10)}
-          borderWidth={1}
+          alignItems="center"
+          bg={Colors.white}
           borderColor={Colors.light}
           borderRadius={ms(5)}
-          alignItems="center"
+          borderWidth={1}
           mt={ms(10)}
-          bg={Colors.white}
+          p={ms(10)}
           shadow={2}
         >
           <VStack flex="1">
@@ -36,8 +36,8 @@ const BunkeringList = ({bunkering}: any) => {
               {moment(bunk.date).format('DD/MM/YYYY - HH:mm')}
             </Text>
           </VStack>
-          <Text color={Colors.highlighted_text} bold>
-            {formatNumber(bunk.value, 0, ' ')} L
+          <Text bold color={Colors.highlighted_text}>
+            {formatNumber(bunk.value, 2, ' ')} L
           </Text>
         </HStack>
       </Pressable>
@@ -47,10 +47,10 @@ const BunkeringList = ({bunkering}: any) => {
   return (
     <Box>
       <HStack alignItems="center">
-        <Text flex="1" color={Colors.text} fontSize={ms(16)} bold>
+        <Text bold color={Colors.text} flex="1" fontSize={ms(16)}>
           {t('details')}
         </Text>
-        <Text color={Colors.text} fontSize={ms(16)} bold>
+        <Text bold color={Colors.text} fontSize={ms(16)}>
           {t('amount')}
         </Text>
       </HStack>
@@ -63,8 +63,8 @@ const BunkeringList = ({bunkering}: any) => {
         <Box py={ms(10)}>
           <Text
             color={Colors.text}
-            fontWeight="semibold"
             fontSize={ms(15)}
+            fontWeight="semibold"
             textAlign="justify"
           >
             {t('noBunkeringItemsYet')}

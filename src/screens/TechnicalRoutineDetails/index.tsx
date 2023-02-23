@@ -17,7 +17,11 @@ import moment from 'moment'
 import {ms} from 'react-native-size-matters'
 import _ from 'lodash'
 
-import {IconButton, LoadingAnimated} from '@bluecentury/components'
+import {
+  IconButton,
+  LoadingAnimated,
+  NoInternetConnectionMessage,
+} from '@bluecentury/components'
 import {Colors} from '@bluecentury/styles'
 import {PROD_URL} from '@vemasys/env'
 import {
@@ -196,6 +200,7 @@ const TechnicalRoutineDetails = ({navigation, route}: Props) => {
       borderTopLeftRadius={ms(15)}
       borderTopRightRadius={ms(15)}
     >
+      <NoInternetConnectionMessage />
       <ScrollView
         contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
         scrollEventThrottle={16}

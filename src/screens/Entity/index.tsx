@@ -17,7 +17,7 @@ import {ms} from 'react-native-size-matters'
 import {useEntity, useAuth, useSettings} from '@bluecentury/stores'
 import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
-import {EntityCard, LoadingAnimated} from '@bluecentury/components'
+import {EntityCard, LoadingAnimated, NoInternetConnectionMessage} from '@bluecentury/components'
 import {Shadow} from 'react-native-shadow-2'
 import {resetAllStates} from '@bluecentury/utils'
 import {useSafeAreaInsets} from 'react-native-safe-area-context'
@@ -184,6 +184,7 @@ export default function Entity({route, navigation}: Props) {
 
   return (
     <Box bg={Colors.light} flex="1" pt={paddingTop}>
+      <NoInternetConnectionMessage />
       <Box
         bg={Colors.white}
         borderTopRadius={borderTopRadius}

@@ -31,16 +31,16 @@ const Reservoirs = () => {
   return (
     <Box flex="1">
       <ScrollView
-        contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
-        scrollEventThrottle={16}
         refreshControl={
-          <RefreshControl onRefresh={onPullRefresh} refreshing={pullRefresh} />
+          <RefreshControl refreshing={pullRefresh} onRefresh={onPullRefresh} />
         }
-        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
         px={ms(12)}
         py={ms(20)}
+        scrollEventThrottle={16}
+        showsVerticalScrollIndicator={false}
       >
-        <Text fontSize={ms(20)} bold color={Colors.azure}>
+        <Text bold color={Colors.azure} fontSize={ms(20)}>
           {t('waterTanks')}
         </Text>
         {reservoirs?.length > 0 ? (
@@ -68,17 +68,17 @@ const Reservoirs = () => {
                 }
               >
                 <Box
+                  borderColor={Colors.border}
                   borderRadius={ms(5)}
                   borderWidth={1}
-                  borderColor={Colors.border}
                   mt={ms(10)}
                 >
                   {/* Reservoir Header */}
                   <HStack
+                    alignItems="center"
                     backgroundColor={Colors.border}
                     px={ms(16)}
                     py={ms(10)}
-                    alignItems="center"
                   >
                     <VStack flex="1">
                       <Text color={Colors.text} fontWeight="medium">
@@ -88,8 +88,8 @@ const Reservoirs = () => {
                         {moment(reservoir?.lastMeasurement?.date).fromNow()}
                       </Text>
                     </VStack>
-                    <Text color={Colors.azure} fontSize={ms(16)} bold>
-                      {formatNumber(value, 0, ' ')} L (
+                    <Text bold color={Colors.azure} fontSize={ms(16)}>
+                      {formatNumber(value, 2, ' ')} L (
                       {isNaN(fillPct) || fillPct === Infinity
                         ? 0
                         : Math.floor(fillPct)}
@@ -98,8 +98,6 @@ const Reservoirs = () => {
                   </HStack>
                   <Box p={ms(15)}>
                     <Progress
-                      value={isNaN(fillPct) ? 0 : Math.floor(fillPct)}
-                      size="md"
                       colorScheme={
                         fillPct <= 25
                           ? 'danger'
@@ -107,6 +105,8 @@ const Reservoirs = () => {
                           ? 'warning'
                           : 'primary'
                       }
+                      size="md"
+                      value={isNaN(fillPct) ? 0 : Math.floor(fillPct)}
                     />
                   </Box>
                 </Box>

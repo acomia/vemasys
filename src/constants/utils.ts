@@ -31,9 +31,23 @@ export function formatNumber(
   decimal: number,
   separator: string
 ) {
-  return Number(value)
+  const numberValue = Number(value)
     .toFixed(decimal)
     .replace(/(\d)(?=(\d{3})+(?!\d))/g, `$1${separator}`)
+
+  if (decimal > 0) {
+    return convertPeriodToComma(numberValue)
+  }
+
+  return numberValue
+}
+
+export function convertPeriodToComma(value: string) {
+  return value.replace('.', ',')
+}
+
+export function convertCommaToPeriod(value: string) {
+  return value.replace(',', '.')
 }
 
 export function calculateTotalIn(

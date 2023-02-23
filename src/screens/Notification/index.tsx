@@ -7,6 +7,7 @@ import {useNotif, useEntity} from '@bluecentury/stores'
 import {
   FleetHeader,
   LoadingAnimated,
+  NoInternetConnectionMessage,
   NotificationItem,
 } from '@bluecentury/components'
 import {ENTITY_TYPE_EXPLOITATION_GROUP} from '@bluecentury/constants'
@@ -74,6 +75,7 @@ export default function Notification() {
           }
         />
       )}
+      <NoInternetConnectionMessage />
       <Box
         backgroundColor={'#fff'}
         borderTopLeftRadius={ms(15)}

@@ -23,7 +23,7 @@ import {StyleSheet} from 'react-native'
 
 import {Colors} from '@bluecentury/styles'
 import {useEntity, usePlanning, useSettings} from '@bluecentury/stores'
-import {IconButton, LoadingAnimated} from '@bluecentury/components'
+import {IconButton, LoadingAnimated, NoInternetConnectionMessage} from '@bluecentury/components'
 import {Alert, TouchableOpacity} from 'react-native'
 import {Icons} from '@bluecentury/assets'
 import {PROD_URL, UAT_URL} from '@vemasys/env'
@@ -322,6 +322,7 @@ const AddEditComment = ({navigation, route}: Props) => {
 
   return (
     <Box flex="1">
+      <NoInternetConnectionMessage />
       <ScrollView
         bg={Colors.white}
         contentContainerStyle={{flexGrow: 1}}

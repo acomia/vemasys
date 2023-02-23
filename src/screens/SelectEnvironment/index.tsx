@@ -3,6 +3,7 @@ import {Box, Text, Button, Divider, VStack} from 'native-base'
 import {Colors} from '@bluecentury/styles'
 import {useSettings} from '@bluecentury/stores'
 import {CommonActions, useNavigation} from '@react-navigation/native'
+import {NoInternetConnectionMessage} from '@bluecentury/components'
 
 export default function SelectEnvironment() {
   const navigation = useNavigation()
@@ -27,6 +28,7 @@ export default function SelectEnvironment() {
   }
   return (
     <Box flex="1" bgColor={Colors.white} p={5} safeArea>
+      <NoInternetConnectionMessage />
       <Text fontSize="xl">Select Environment</Text>
       <Divider />
       <VStack space={2} mt={5}>

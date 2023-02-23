@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, {useEffect, useState} from 'react'
 import {
   Box,
   Button,
@@ -13,24 +13,33 @@ import {
   Text,
   useToast,
 } from 'native-base'
-import { StyleSheet } from 'react-native'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import moment from 'moment'
-import { Shadow } from 'react-native-shadow-2'
-import { ms } from 'react-native-size-matters'
-import { NativeStackScreenProps } from '@react-navigation/native-stack'
+import {Shadow} from 'react-native-shadow-2'
+import {ms} from 'react-native-size-matters'
+import {NativeStackScreenProps} from '@react-navigation/native-stack'
+import {useTranslation} from 'react-i18next'
 
-import { formatNumber } from '@bluecentury/constants'
-import { useEntity, useTechnical } from '@bluecentury/stores'
-import { LoadingAnimated } from '@bluecentury/components'
-import { Colors } from '@bluecentury/styles'
-import { MeasurementCard } from './measurement-card'
-import { useTranslation } from 'react-i18next'
+import {
+  convertCommaToPeriod,
+  convertPeriodToComma,
+  formatNumber,
+  hasSelectedEntityUserPermission,
+  ROLE_PERMISSION_TECHNICAL,
+} from '@bluecentury/constants'
+import {useEntity, useTechnical} from '@bluecentury/stores'
+import {
+  LoadingAnimated,
+  NoInternetConnectionMessage,
+} from '@bluecentury/components'
+import {Colors} from '@bluecentury/styles'
+import {MeasurementCard} from './measurement-card'
+import {LastMeasurement} from '@bluecentury/models'
 
 type Props = NativeStackScreenProps<RootStackParamList>
-const Measurements = ({ navigation, route }: Props) => {
-  const { t } = useTranslation()
-  const { data, routeFrom } = route.params
+const Measurements = ({navigation, route}: Props) => {
+  const {t} = useTranslation()
+  const {data, routeFrom} = route.params
   const toast = useToast()
   const {
     isTechnicalLoading,
@@ -41,14 +50,22 @@ const Measurements = ({ navigation, route }: Props) => {
     getVesselEngines,
     getVesselReservoirs,
   } = useTechnical()
-  const { physicalVesselId } = useEntity()
+  const {physicalVesselId, selectedEntity} = useEntity()
   const [newMeasurement, setNewMeasurement] = useState('')
   const [open, setOpen] = useState(false)
+  const [openConfirmation, setOpenConfirmation] = useState(false)
   const [inputInvalid, setInputInvalid] = useState(false)
+
+  const hasTechnicalPermission = hasSelectedEntityUserPermission(
+    selectedEntity,
+    ROLE_PERMISSION_TECHNICAL
+  )
+
   useEffect(() => {
     getVesselPartLastMeasurements(
       routeFrom === 'reservoir' ? data?.id : data?.data[0]?.id
     )
+    /* eslint-disable react-hooks/exhaustive-deps */
   }, [])
 
   const showToast = (text: string, res: string) => {
@@ -130,7 +147,7 @@ const Measurements = ({ navigation, route }: Props) => {
             w={ms(100)}
           >
             <Text bold color={Colors.azure} fontSize={ms(16)}>
-              {formatNumber(value, 0, ' ')} L (
+              {formatNumber(value, 2, ' ')} L (
               {isNaN(fillPct) || fillPct === Infinity ? 0 : Math.floor(fillPct)}
               %)
             </Text>
@@ -207,7 +224,7 @@ const Measurements = ({ navigation, route }: Props) => {
                 Array.isArray(lastMeasurements) && lastMeasurements
                   ? lastMeasurements[0]?.value
                   : 0,
-                0,
+                2,
                 ' '
               )}{' '}
               h
@@ -234,27 +251,58 @@ const Measurements = ({ navigation, route }: Props) => {
     )
   }
 
-  const onAddNewConsumptionMeasure = async () => {
-    if (newMeasurement === '') {
+  const onAddNewConsumptionMeasure = async (newMeasurementValue: string) => {
+    setNewMeasurement(value => (value = convertCommaToPeriod(value)))
+    if (newMeasurementValue === '') {
       return showWarningToast('Measurement is required.')
     }
-
     if (
+      hasTechnicalPermission &&
       routeFrom !== 'reservoir' &&
       lastMeasurements.length &&
       newMeasurement < lastMeasurements[0]?.value
+    ) {
+      setOpenConfirmation(true)
+      setOpen(false)
+      return
+    }
+    if (
+      routeFrom !== 'reservoir' &&
+      lastMeasurements.length &&
+      newMeasurementValue < lastMeasurements[0]?.value
     ) {
       setInputInvalid(true)
       return
     }
 
     const selectedId = routeFrom === 'reservoir' ? data?.id : data?.data[0]?.id
-    setOpen(false)
     const res = await createNewConsumptionMeasure(selectedId, newMeasurement)
     if (res === null) {
       showToast('New Measurement failed.', 'failed')
       return
     }
+    setNewMeasurement('')
+    setOpen(false)
+    if (routeFrom === 'reservoir') {
+      getVesselGasoilReservoirs(physicalVesselId)
+      getVesselReservoirs(physicalVesselId)
+    } else {
+      getVesselEngines(physicalVesselId)
+    }
+    getVesselPartLastMeasurements(selectedId)
+    showToast('New measurement added.', 'success')
+  }
+
+  const onForceAddMeasurement = async () => {
+    const selectedId = routeFrom === 'reservoir' ? data?.id : data?.data[0]?.id
+    const res = await createNewConsumptionMeasure(selectedId, newMeasurement)
+    if (res === null) {
+      showToast('New Measurement failed.', 'failed')
+      return
+    }
+    setNewMeasurement('')
+    setOpenConfirmation(false)
+    setOpen(false)
     if (routeFrom === 'reservoir') {
       getVesselGasoilReservoirs(physicalVesselId)
       getVesselReservoirs(physicalVesselId)
@@ -277,6 +325,7 @@ const Measurements = ({ navigation, route }: Props) => {
       borderTopRightRadius={ms(15)}
       flex="1"
     >
+      <NoInternetConnectionMessage />
       <Box flex="1" px={ms(12)} py={ms(20)}>
         {routeFrom === 'reservoir' ? renderReservoirCard() : renderEngineCard()}
         <Text bold color={Colors.text} fontSize={ms(16)} mt={ms(25)}>
@@ -290,29 +339,35 @@ const Measurements = ({ navigation, route }: Props) => {
             renderItem={props => (
               <MeasurementCard routeFrom={routeFrom} {...props} />
             )}
-            contentContainerStyle={{ paddingBottom: 20 }}
+            contentContainerStyle={{paddingBottom: 20}}
             data={lastMeasurements}
-            keyExtractor={(item: any) => `LastMeasure-${item?.id}`}
+            keyExtractor={(item: LastMeasurement) => `LastMeasure-${item?.id}`}
           />
         )}
       </Box>
       <Modal animationPreset="slide" isOpen={open} px={ms(15)} size="full">
         <Modal.Content>
-          <Modal.Header>{routeFrom === 'reservoir' ? t('enterNewMeasurements') : t('enterNewMeasurementsHour')}</Modal.Header>
+          <Modal.Header>
+            {routeFrom === 'reservoir'
+              ? t('enterNewMeasurements')
+              : t('enterNewMeasurementsHour')}
+          </Modal.Header>
           <Modal.Body>
             <Input
               bold
-              backgroundColor="#F7F7F7"
+              backgroundColor={Colors.light_grey}
               fontSize={ms(15)}
               height={ms(40)}
               isInvalid={inputInvalid}
               keyboardType="number-pad"
               value={newMeasurement}
               variant="filled"
-              onChangeText={e => setNewMeasurement(e)}
+              onChangeText={e => setNewMeasurement(convertPeriodToComma(e))}
             />
             {inputInvalid && (
-              <Text style={styles.error}>{t('newMeasurementInputError')}</Text>
+              <Text color={Colors.danger} textAlign="center">
+                {t('newMeasurementInputError')}
+              </Text>
             )}
           </Modal.Body>
           <Modal.Footer>
@@ -331,9 +386,47 @@ const Measurements = ({ navigation, route }: Props) => {
               bg={Colors.primary}
               flex="1"
               m={ms(5)}
-              onPress={onAddNewConsumptionMeasure}
+              onPress={() => {
+                onAddNewConsumptionMeasure(convertCommaToPeriod(newMeasurement))
+              }}
             >
               {t('save')}
+            </Button>
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal>
+      <Modal
+        animationPreset="slide"
+        isOpen={openConfirmation}
+        px={ms(15)}
+        size="full"
+      >
+        <Modal.Content>
+          <Modal.Header>{t('confirmation')}</Modal.Header>
+          <Modal.Body>
+            <Text color={Colors.text} fontSize={ms(15)} textAlign="center">
+              {t('newMeasurementInputConfirmation')}
+            </Text>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              bg="#E0E0E0"
+              flex="1"
+              m={ms(5)}
+              onPress={() => {
+                setOpenConfirmation(false)
+                setOpen(true)
+              }}
+            >
+              {t('no')}
+            </Button>
+            <Button
+              bg={Colors.primary}
+              flex="1"
+              m={ms(5)}
+              onPress={onForceAddMeasurement}
+            >
+              {t('yes')}
             </Button>
           </Modal.Footer>
         </Modal.Content>
@@ -357,12 +450,5 @@ const Measurements = ({ navigation, route }: Props) => {
     </Box>
   )
 }
-
-const styles = StyleSheet.create({
-  error: {
-    color: 'red',
-    textAlign: 'center',
-  },
-})
 
 export default Measurements

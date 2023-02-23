@@ -13,7 +13,6 @@ type Props = {
 }
 
 export const MeasurementCard = ({item, index, routeFrom}: Props) => {
-  console.log('item.date', item.date)
   return (
     <Box
       key={index}
@@ -36,7 +35,7 @@ export const MeasurementCard = ({item, index, routeFrom}: Props) => {
           </Text>
         </Box>
         <Text bold color={Colors.highlighted_text}>
-          {formatNumber(item?.value, 0, ' ')}{' '}
+          {formatNumber(item?.value, 2, ' ')}{' '}
           {routeFrom === 'reservoir' ? 'L' : 'h'}
         </Text>
       </HStack>

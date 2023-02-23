@@ -29,7 +29,7 @@ import DatePicker from 'react-native-date-picker'
 import {Colors} from '@bluecentury/styles'
 import {usePlanning} from '@bluecentury/stores'
 import {formatBulkTypeLabel, titleCase} from '@bluecentury/constants'
-import {IconButton, LoadingAnimated} from '@bluecentury/components'
+import {IconButton, LoadingAnimated, NoInternetConnectionMessage} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {Vemasys} from '@bluecentury/helpers'
 import {useTranslation} from 'react-i18next'
@@ -220,7 +220,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
     return (
       <HStack
         alignItems="center"
-        bg="#F7F7F7"
+        bg={Colors.light_grey}
         borderRadius={ms(5)}
         mb={ms(30)}
         mt={ms(3)}
@@ -244,7 +244,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
     return (
       <HStack
         alignItems="center"
-        bg="#F7F7F7"
+        bg={Colors.light_grey}
         borderRadius={ms(5)}
         mb={ms(30)}
         mt={ms(3)}
@@ -288,7 +288,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
           </Text>
           {navigationLogDetails?.bulkCargo?.length > 1 ? (
             <Select
-              bg="#F7F7F7"
+              bg={Colors.light_grey}
               flex="1"
               selectedValue={selectedCargo}
               onValueChange={val => onSelectCargo(val)}
@@ -302,7 +302,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
               ))}
             </Select>
           ) : (
-            <Box bg="#F7F7F7" borderRadius={ms(5)} px="1" py="3">
+            <Box bg={Colors.light_grey} borderRadius={ms(5)} px="1" py="3">
               <Text color={Colors.text} ellipsizeMode="tail" numberOfLines={1}>
                 {nameEn || nameNl}
               </Text>
@@ -318,7 +318,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
             value={navActionDetails.cargoHoldActions[0].amount
               .toString()
               .replace('.', ',')}
-            bg="#F7F7F7"
+            bg={Colors.light_grey}
             fontSize={ms(15)}
             height={ms(40)}
             keyboardType="number-pad"
@@ -419,6 +419,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
   }
   return (
     <Box flex="1">
+      <NoInternetConnectionMessage />
       <ScrollView
         bg={Colors.white}
         contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
