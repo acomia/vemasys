@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react'
 import {RefreshControl} from 'react-native'
-import {Box, Center, ScrollView, Text} from 'native-base'
+import {Box, Center, ScrollView, Text, View} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import {Colors} from '@bluecentury/styles'
@@ -61,15 +61,15 @@ const PlanningLogbook = () => {
   const addColourToUniqueItem = (arr: NavigationLog[]) => {
     const uniqueCharters: NavigationLog[] = []
     arr.forEach(item => {
-      if (!item.charter.id) {
-        uniqueCharters.push(item)
-      } else {
+      if (item?.charter?.id) {
         const found = uniqueCharters.find(
           uniqueItem => item.charter.id === uniqueItem.charter?.id
         )
         if (!found) {
           uniqueCharters.push(item)
         }
+      } else {
+        uniqueCharters.push(item)
       }
     })
     let index = 0
@@ -168,7 +168,7 @@ const PlanningLogbook = () => {
             ).format('YYYY-MM-DD')
 
             return (
-              <>
+              <View key={i}>
                 <NavLogCard
                   key={i}
                   defineFirstAndLastIndex={defineFirstAndLastIndex}
@@ -177,9 +177,9 @@ const PlanningLogbook = () => {
                   navigationLog={navigationLog}
                 />
                 {forwardDate >= dateToday && plannedEta < dateToday ? (
-                  <NavLogDivider key={`divider_${i}`} />
+                  <NavLogDivider />
                 ) : null}
-              </>
+              </View>
             )
           })
         )}
