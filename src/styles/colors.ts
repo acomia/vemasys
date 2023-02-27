@@ -25,4 +25,5 @@ export const Colors = {
   navLogItemViolet: '#D8CBF7',
   navLogItemPink: '#FFB7B7',
   navLogItemGreen: '#B3E8AD',
+  blue: '#00A3FF',
 }
