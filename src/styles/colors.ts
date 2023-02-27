@@ -25,4 +25,6 @@ export const Colors = {
   navLogItemViolet: '#D8CBF7',
   navLogItemPink: '#FFB7B7',
   navLogItemGreen: '#B3E8AD',
+  //Offline warning
+  offlineWarning: '#F85555',
 }
