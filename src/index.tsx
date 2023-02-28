@@ -23,20 +23,16 @@ const App = () => {
   const token = useAuth().token
   const languageFromStore = useSettings().language
   const env = useSettings().env
-
-  const isOnline = useSettings().isOnline
-  const netInfo = useNetInfo()
+  const {isConnected, isInternetReachable} = useNetInfo()
   const setIsOnline = useSettings(state => state.setIsOnline)
-  // const headerHeight = useHeaderHeight()
 
   const checkConnection = () => {
-    if (netInfo.isConnected && netInfo.isInternetReachable) {
+    if (isConnected === true && isInternetReachable === true) {
       console.log('You are online!')
-      // console.log('HEADER_HEIGHT', NativeStackHeaderProps)
       setIsOnline(true)
-    } else {
+    }
+    if (isConnected === false && isInternetReachable === false) {
       console.log('You are offline!')
-      // console.log('HEADER_HEIGHT', headerHeight || 0)
       setIsOnline(false)
     }
   }
@@ -51,11 +47,7 @@ const App = () => {
 
   useEffect(() => {
     checkConnection()
-  }, [netInfo])
-
-  useEffect(() => {
-    console.log('IS_ONLINE_FROM_STORE:', isOnline)
-  }, [isOnline])
+  }, [isConnected, isInternetReachable])
 
   const preferredLanguage = () => {
     const devicePreferredLanguage = RNLocalize.getLocales()[0].languageCode
