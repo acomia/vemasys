@@ -252,7 +252,6 @@ const Measurements = ({navigation, route}: Props) => {
   }
 
   const onAddNewConsumptionMeasure = async (newMeasurementValue: string) => {
-    setNewMeasurement(value => (value = convertCommaToPeriod(value)))
     if (newMeasurementValue === '') {
       return showWarningToast('Measurement is required.')
     }
@@ -276,7 +275,10 @@ const Measurements = ({navigation, route}: Props) => {
     }
 
     const selectedId = routeFrom === 'reservoir' ? data?.id : data?.data[0]?.id
-    const res = await createNewConsumptionMeasure(selectedId, newMeasurement)
+    const res = await createNewConsumptionMeasure(
+      selectedId,
+      newMeasurementValue
+    )
     if (res === null) {
       showToast('New Measurement failed.', 'failed')
       return
