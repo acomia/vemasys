@@ -83,6 +83,18 @@ export const useNotif = create(
         })
 
         API.markAllAsReadNotif()
+          .then(response => {
+            if (response) {
+              set({
+                isLoadingMarkAllAsRead: false,
+              })
+            }
+          })
+          .catch(error => {
+            set({
+              isLoadingMarkAllAsRead: false,
+            })
+          })
       },
       calculateBadge: async () => {
         let count = 0
