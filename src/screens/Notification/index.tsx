@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React, {useEffect, useCallback} from 'react'
 import {SectionList, RefreshControl} from 'react-native'
 import {Box, Divider, Text, VStack} from 'native-base'
 import {ms} from 'react-native-size-matters'
@@ -12,16 +12,40 @@ import {
 } from '@bluecentury/components'
 import {ENTITY_TYPE_EXPLOITATION_GROUP} from '@bluecentury/constants'
 import {useTranslation} from 'react-i18next'
+import {Colors} from '@bluecentury/styles'
+import {useFocusEffect} from '@react-navigation/native'
 
 export default function Notification() {
   const {t} = useTranslation()
   const {entityType, entityUsers, selectFleetVessel, vesselId} = useEntity()
-  const {isLoadingNotification, notifications, getAllNotifications} = useNotif()
+  const {
+    isLoadingNotification,
+    isLoadingReadNotification,
+    notifications,
+    getAllNotifications,
+    markAllAsReadNotif,
+  } = useNotif()
+
+  // commented for the future use
+  // this will mark all of the notifications as read
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     return () => {
+  //       markAllAsReadNotif()
+  //     }
+  //   }, [])
+  // )
 
   useEffect(() => {
     getAllNotifications()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vesselId])
+
+  useEffect(() => {
+    if (isLoadingReadNotification) {
+      getAllNotifications()
+    }
+  }, [isLoadingReadNotification])
 
   const groupByDate = Object.values(
     notifications.reduce((acc: any, item) => {
@@ -38,8 +62,8 @@ export default function Notification() {
   )
 
   const HeaderSection = ({title}: any) => (
-    <VStack backgroundColor="#fff">
-      <Text color="#23475C" fontSize={ms(15)} fontWeight="600" my="10px">
+    <VStack backgroundColor={Colors.white}>
+      <Text color={Colors.azure} fontSize={ms(15)} fontWeight="600" my="10px">
         {moment(new Date()).isSame(moment(new Date(title)))
           ? t('today')
           : moment(title).format('MMM DD, YYYY')}
@@ -77,7 +101,7 @@ export default function Notification() {
       )}
       <NoInternetConnectionMessage />
       <Box
-        backgroundColor={'#fff'}
+        backgroundColor={Colors.white}
         borderTopLeftRadius={ms(15)}
         borderTopRightRadius={ms(15)}
         flex="1"

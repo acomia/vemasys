@@ -26,7 +26,7 @@ import {
 } from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
-import {useMap, useEntity} from '@bluecentury/stores'
+import {useMap, useEntity, useNotif} from '@bluecentury/stores'
 import {
   ENTITY_TYPE_EXPLOITATION_GROUP,
   formatLocationLabel,
@@ -65,13 +65,7 @@ export default function Map({navigation}: Props) {
     vesselStatus,
     vesselTracks,
   } = useMap()
-
-  // const isLoadingMap =
-  //   isLoadingCurrentNavLogs ||
-  //   isLoadingPlannedNavLogs ||
-  //   isLoadingPreviousNavLogs ||
-  //   isLoadingVesselStatus ||
-  //   isLoadingVesselTrack
+  const {notifications, getAllNotifications, calculateBadge} = useNotif()
 
   const LATITUDE = 50.503887
   const LONGITUDE = 4.469936
@@ -115,6 +109,7 @@ export default function Map({navigation}: Props) {
     if (vesselId) {
       const init = async () => {
         setLoadingMap(true)
+        getAllNotifications()
         await getVesselStatus(vesselId)
         await getPreviousNavigationLogs(vesselId)
         await getPlannedNavigationLogs(vesselId)
@@ -181,9 +176,16 @@ export default function Map({navigation}: Props) {
     }
   }, [vesselTracks])
 
+  useEffect(() => {
+    if (notifications) {
+      calculateBadge()
+    }
+  }, [notifications])
+
   const updateMap = async () => {
     if (vesselId) {
       setLoadingMap(true)
+      getAllNotifications()
       await getPreviousNavigationLogs(vesselId)
       await getPlannedNavigationLogs(vesselId)
       await getCurrentNavigationLogs(vesselId)
@@ -199,7 +201,7 @@ export default function Map({navigation}: Props) {
 
   const renderBottomContent = () => {
     return (
-      <Box backgroundColor="#fff" height="full" px={ms(30)} py={ms(20)}>
+      <Box backgroundColor={Colors.white} height="full" px={ms(30)} py={ms(20)}>
         <MapBottomSheetToggle
           snapRef={snapRef}
           onPress={handleOnPressBottomSheetArrow}
@@ -246,7 +248,7 @@ export default function Map({navigation}: Props) {
           longitude: previousLocation?.location?.longitude,
         }}
         anchor={{x: 0, y: 0.5}}
-        pinColor={'#6BBF87'}
+        pinColor={Colors.secondary}
         title={`${t('from')} ${previousLocation?.location?.name}`}
         tracksViewChanges={false}
         zIndex={1}
@@ -262,7 +264,7 @@ export default function Map({navigation}: Props) {
           <HStack alignItems="center" borderRadius={ms(5)} px={ms(5)}>
             <Icon
               as={<FontAwesome5Icon name="check-circle" />}
-              color="#6BBF87"
+              color={Colors.secondary}
               size={25}
               solid={true}
             />
@@ -270,7 +272,11 @@ export default function Map({navigation}: Props) {
               <Text fontSize={ms(13)} fontWeight="semibold">
                 {formatLocationLabel(previousLocation?.location)}
               </Text>
-              <Text color="#ADADAD" fontSize={ms(12)} fontWeight="medium">
+              <Text
+                color={Colors.disabled}
+                fontSize={ms(12)}
+                fontWeight="medium"
+              >
                 {t('arrived')}
                 {moment(previousLocation?.arrivalDatetime).format(
                   'DD MMM YYYY | HH:mm'
@@ -279,7 +285,7 @@ export default function Map({navigation}: Props) {
             </Box>
             <Icon
               as={<FontAwesome5Icon name="angle-right" />}
-              color="#ADADAD"
+              color={Colors.disabled}
               size={25}
             />
           </HStack>
@@ -306,7 +312,7 @@ export default function Map({navigation}: Props) {
           longitude: nextLocation?.location?.longitude,
         }}
         anchor={{x: 0, y: 0.5}}
-        pinColor={'#29B7EF'}
+        pinColor={Colors.highlighted_text}
         title={`${t('to')} ${nextLocation?.location?.name}`}
         tracksViewChanges={false}
         zIndex={1}
@@ -335,14 +341,18 @@ export default function Map({navigation}: Props) {
               <Text fontSize={ms(13)} fontWeight="semibold">
                 {formatLocationLabel(nextLocation?.location)}
               </Text>
-              <Text color="#ADADAD" fontSize={ms(12)} fontWeight="medium">
+              <Text
+                color={Colors.disabled}
+                fontSize={ms(12)}
+                fontWeight="medium"
+              >
                 {t('planned')}
                 {moment(nextLocation?.plannedEta).format('DD MMM YYYY | HH:mm')}
               </Text>
             </Box>
             <Icon
               as={<FontAwesome5Icon name="angle-right" />}
-              color="#ADADAD"
+              color={Colors.disabled}
               size={25}
             />
           </HStack>
@@ -401,14 +411,16 @@ export default function Map({navigation}: Props) {
           longitude: log.location?.longitude,
         }}
         anchor={{x: 0, y: 0.5}}
-        pinColor={'#F0f0f0'}
+        pinColor={Colors.light}
         tracksViewChanges={false}
         zIndex={0}
       >
         <HStack zIndex={0}>
           <Box
-            backgroundColor={log?.arrivalDatetime ? '#44A7B9' : '#F0F0F0'}
-            borderColor={'#fff'}
+            backgroundColor={
+              log?.arrivalDatetime ? Colors.primary : Colors.light
+            }
+            borderColor={Colors.white}
             borderRadius={ms(20)}
             borderWidth={ms(2)}
             height={ms(20)}
@@ -418,7 +430,7 @@ export default function Map({navigation}: Props) {
           />
           {zoomLevel && zoomLevel >= 12 ? (
             <Box
-              backgroundColor="#fff"
+              backgroundColor={Colors.white}
               borderRadius={ms(5)}
               padding={ms(2)}
               zIndex={0}

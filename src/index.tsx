@@ -24,13 +24,6 @@ const App = () => {
   const languageFromStore = useSettings().language
   const env = useSettings().env
 
-  useEffect(() => {
-    Sentry.init({
-      dsn: SENTRY_DSN,
-      tracesSampleRate: 1.0,
-      environment: env === 'PROD' ? 'production' : 'testing',
-    })
-  }, [])
   const isOnline = useSettings().isOnline
   const netInfo = useNetInfo()
   const setIsOnline = useSettings(state => state.setIsOnline)
@@ -47,6 +40,14 @@ const App = () => {
       setIsOnline(false)
     }
   }
+
+  useEffect(() => {
+    Sentry.init({
+      dsn: SENTRY_DSN,
+      tracesSampleRate: 1.0,
+      environment: env === 'PROD' ? 'production' : 'testing',
+    })
+  }, [env])
 
   useEffect(() => {
     checkConnection()
