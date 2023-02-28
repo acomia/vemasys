@@ -79,12 +79,12 @@ const Details = () => {
     useEntity()
   const {navlog, title}: any = route.params
   const [dates, setDates] = useState<Dates>({
-    plannedETA: navigationLogDetails?.plannedEta,
-    captainDatetimeETA: navigationLogDetails?.captainDatetimeEta,
-    announcedDatetime: navigationLogDetails?.announcedDatetime,
-    arrivalDatetime: navigationLogDetails?.arrivalDatetime,
-    terminalApprovedDeparture: navigationLogDetails?.terminalApprovedDeparture,
-    departureDatetime: navigationLogDetails?.departureDatetime,
+    plannedETA: navlog?.plannedEta,
+    captainDatetimeETA: navlog?.captainDatetimeEta,
+    announcedDatetime: navlog?.announcedDatetime,
+    arrivalDatetime: navlog?.arrivalDatetime,
+    terminalApprovedDeparture: navlog?.terminalApprovedDeparture,
+    departureDatetime: navlog?.departureDatetime,
   })
   const [didDateChange, setDidDateChange] = useState({
     Pln: {didUpdate: false},
@@ -111,7 +111,10 @@ const Details = () => {
     date => date.didUpdate === true
   )
   const isDestinationVesselExist =
-    navigationLogDetails?.link !== null ? true : false
+    navigationLogDetails?.link !== undefined &&
+    navigationLogDetails?.link !== null
+      ? true
+      : false
 
   useEffect(() => {
     if (!focused && unsavedChanges.length > 0) {
@@ -164,8 +167,8 @@ const Details = () => {
       })
     }
     if (
-      navigationLogDetails?.link !== null ||
-      navigationLogDetails?.link !== undefined
+      navigationLogDetails?.link !== undefined &&
+      navigationLogDetails?.link !== null
     ) {
       const linkEntityU =
         navigationLogDetails?.link?.navigationLogExploitationVessels.filter(

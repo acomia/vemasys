@@ -31,10 +31,10 @@ export const NavLogCard = (props: {
   const {index, navigationLog, defineFirstAndLastIndex, itemColor} = props
   const key = index
   const currentItemType = defineFirstAndLastIndex.find(
-    item => item.charter.id === navigationLog.charter.id
+    item => item?.charter?.id === navigationLog?.charter?.id
   )
   const currentItemIndex = defineFirstAndLastIndex.findIndex(
-    item => item.charter.id === navigationLog.charter.id
+    item => item?.charter?.id === navigationLog?.charter?.id
   )
   const previousItemType = defineFirstAndLastIndex[currentItemIndex - 1]
   let displayLeftLine = false

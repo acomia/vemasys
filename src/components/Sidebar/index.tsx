@@ -1,6 +1,6 @@
 import React from 'react'
 import {ScrollView} from 'react-native'
-import {Box, Image, VStack, Divider, Icon} from 'native-base'
+import {Box, Image, VStack, Divider} from 'native-base'
 import {DrawerContentComponentProps} from '@react-navigation/drawer'
 import {ms} from 'react-native-size-matters'
 import {useTranslation} from 'react-i18next'
@@ -12,12 +12,13 @@ import {
   Screens,
 } from '@bluecentury/constants'
 import {Icons, Images} from '@bluecentury/assets'
-import {useEntity} from '@bluecentury/stores'
+import {useEntity, useNotif} from '@bluecentury/stores'
 
 const Sidebar = (props: DrawerContentComponentProps) => {
   const {t} = useTranslation()
   const {state, navigation} = props
   const {pendingRoles, entityUsers, selectedEntity, entityRole} = useEntity()
+  const {notificationBadge} = useNotif()
   let uniqPendingRoles: any[] = []
   if (pendingRoles) {
     uniqPendingRoles = pendingRoles?.filter(
@@ -35,7 +36,7 @@ const Sidebar = (props: DrawerContentComponentProps) => {
   )
 
   return (
-    <Box flex="1" safeArea p={ms(10)}>
+    <Box safeArea flex="1" p={ms(10)}>
       <ScrollView
         contentContainerStyle={{flexGrow: 1}}
         showsVerticalScrollIndicator={false}
@@ -43,87 +44,88 @@ const Sidebar = (props: DrawerContentComponentProps) => {
         <VStack flex="1">
           <Image
             alt="Company Logo"
-            source={Images.logo}
-            resizeMode="contain"
-            w={ms(150)}
             h={ms(60)}
             my={ms(20)}
+            resizeMode="contain"
+            source={Images.logo}
+            w={ms(150)}
           />
           <MenuButton
             active={currentRoute === Screens.Notifications}
-            onPress={() => handlePressMenu(Screens.Notifications)}
+            badge={notificationBadge}
             iconSource={Icons.notification}
+            onPress={() => handlePressMenu(Screens.Notifications)}
           >
             {t('notifications')}
           </MenuButton>
           <MenuButton
             active={currentRoute === Screens.MapView}
-            onPress={() => handlePressMenu(Screens.MapView)}
             iconSource={Icons.map}
+            onPress={() => handlePressMenu(Screens.MapView)}
           >
             {t('mapView')}
           </MenuButton>
           <MenuButton
             active={currentRoute === Screens.Planning}
-            onPress={() => handlePressMenu(Screens.Planning)}
             iconSource={Icons.calendar}
+            onPress={() => handlePressMenu(Screens.Planning)}
           >
             {t('planning')}
           </MenuButton>
           {hasCharterPermission ? (
             <MenuButton
               active={currentRoute === Screens.Charters}
-              onPress={() => handlePressMenu(Screens.Charters)}
               iconSource={Icons.fileContract}
+              onPress={() => handlePressMenu(Screens.Charters)}
             >
               {t('charters')}
             </MenuButton>
           ) : null}
           <MenuButton
             active={currentRoute === Screens.Technical}
-            onPress={() => handlePressMenu(Screens.Technical)}
             iconSource={Icons.tools}
+            onPress={() => handlePressMenu(Screens.Technical)}
           >
             {t('technical')}
           </MenuButton>
           {entityRole.toLowerCase() === 'admin' ? (
             <MenuButton
               active={currentRoute === ''}
-              onPress={() => handlePressMenu(Screens.Financial)}
               iconSource={Icons.card}
+              onPress={() => handlePressMenu(Screens.Financial)}
             >
               {t('financial')}
             </MenuButton>
           ) : null}
           <MenuButton
-            active={currentRoute === Screens.Information}
-            onPress={() => handlePressMenu(Screens.Information)}
-            iconSource={Icons.infoCircle}
             disabled
+            active={currentRoute === Screens.Information}
+            iconSource={Icons.infoCircle}
+            onPress={() => handlePressMenu(Screens.Information)}
           >
             {t('information')}
           </MenuButton>
           <MenuButton
-            active={currentRoute === Screens.ToDo}
-            onPress={() => handlePressMenu(Screens.ToDo)}
-            iconSource={Icons.clipboardCheck}
             disabled
+            active={currentRoute === Screens.ToDo}
+            iconSource={Icons.clipboardCheck}
+            onPress={() => handlePressMenu(Screens.ToDo)}
           >
             {t('toDo')}
           </MenuButton>
           <MenuButton
-            active={currentRoute === Screens.Crew}
-            onPress={() => handlePressMenu(Screens.Crew)}
-            iconSource={Icons.userHardHat}
             disabled
+            active={currentRoute === Screens.Crew}
+            iconSource={Icons.userHardHat}
+            onPress={() => handlePressMenu(Screens.Crew)}
           >
             {t('crew')}
           </MenuButton>
           <MenuButton
-            active={currentRoute === Screens.QSHE}
-            onPress={() => handlePressMenu(Screens.QSHE)}
-            iconSource={Icons.hardHat}
             disabled
+            active={currentRoute === Screens.QSHE}
+            iconSource={Icons.hardHat}
+            onPress={() => handlePressMenu(Screens.QSHE)}
           >
             {t('qshe')}
           </MenuButton>
@@ -132,20 +134,20 @@ const Sidebar = (props: DrawerContentComponentProps) => {
       <Divider />
       <VStack>
         <MenuButton
-          active={currentRoute === Screens.ChangeRole}
-          onPress={() => handlePressMenu(Screens.ChangeRole)}
-          iconSource={Icons.userCircle}
           rightIcon={
             uniqPendingRoles?.length > 0 ? Icons.status_exclamation : undefined
           }
+          active={currentRoute === Screens.ChangeRole}
+          iconSource={Icons.userCircle}
+          onPress={() => handlePressMenu(Screens.ChangeRole)}
         >
           {t('changeRole')}
         </MenuButton>
 
         <MenuButton
           active={currentRoute === Screens.Settings}
-          onPress={() => handlePressMenu(Screens.Settings)}
           iconSource={Icons.cog}
+          onPress={() => handlePressMenu(Screens.Settings)}
         >
           {t('settings')}
         </MenuButton>
