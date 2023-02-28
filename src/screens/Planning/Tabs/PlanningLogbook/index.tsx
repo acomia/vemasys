@@ -63,7 +63,7 @@ const PlanningLogbook = () => {
     arr.forEach(item => {
       if (item?.charter?.id) {
         const found = uniqueCharters.find(
-          uniqueItem => item.charter.id === uniqueItem.charter?.id
+          uniqueItem => item?.charter?.id === uniqueItem.charter?.id
         )
         if (!found) {
           uniqueCharters.push(item)
@@ -90,7 +90,7 @@ const PlanningLogbook = () => {
 
   // This function looks for items in unique items array and returns a colour for passed item
   const defineColour = (item: NavigationLog) => {
-    if (item.charter.id) {
+    if (item?.charter?.id) {
       const itemWithColour = arrayWithColours.find(
         secondaryItem => secondaryItem.charter.id === item.charter.id
       )
@@ -111,13 +111,13 @@ const PlanningLogbook = () => {
       return {
         ...item,
         firstIndex: plannedNavigationLogs?.findIndex(planned =>
-          item.charter.id
-            ? planned.charter.id === item.charter.id
+          item?.charter?.id
+            ? planned?.charter?.id === item.charter.id
             : planned.id === item.id
         ),
         lastIndex: findLastIndex(plannedNavigationLogs, planned =>
-          item.charter.id
-            ? planned.charter.id === item.charter.id
+          item?.charter?.id
+            ? planned?.charter?.id === item.charter.id
             : planned.id === item.id
         ),
       }

@@ -163,7 +163,7 @@ export const usePlanning = create(
       getNavigationLogDetails: async (navLogId: string) => {
         set({
           isPlanningDetailsLoading: true,
-          navigationLogDetails: {},
+          navigationLogDetails: undefined,
         })
         try {
           const response = await API.reloadNavigationLogDetails(navLogId)
@@ -175,7 +175,7 @@ export const usePlanning = create(
           } else {
             set({
               isPlanningDetailsLoading: false,
-              navigationLogDetails: {},
+              navigationLogDetails: undefined,
             })
           }
         } catch (error) {
