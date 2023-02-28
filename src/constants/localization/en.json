@@ -346,5 +346,7 @@
   "nowToday": "Now / Today",
   "failedToLoadRequestedResource": "Failed to load requested resource",
   "refreshing": "Refreshing",
-  "newMeasurementInputConfirmation": "New measurement is less than last entry. Are you sure you want to update?"
+  "newMeasurementInputConfirmation": "New measurement is less than last entry. Are you sure you want to update?",
+  "password": "Password",
+  "confirmPassword": "Confirm password"
 }
