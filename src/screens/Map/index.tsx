@@ -473,7 +473,7 @@ export default function Map({navigation}: Props) {
   }
 
   const centerMapToBeginningTrackLine = () => {
-    if (uniqueVesselTracks) {
+    if (uniqueVesselTracks && uniqueVesselTracks.length) {
       const {latitude, longitude}: VesselGeolocation =
         uniqueVesselTracks[uniqueVesselTracks?.length - 1]
       const camera: Camera = {
