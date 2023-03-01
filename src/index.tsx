@@ -23,6 +23,19 @@ const App = () => {
   const token = useAuth().token
   const languageFromStore = useSettings().language
   const env = useSettings().env
+  const {isConnected, isInternetReachable} = useNetInfo()
+  const setIsOnline = useSettings(state => state.setIsOnline)
+
+  const checkConnection = () => {
+    if (isConnected === true && isInternetReachable === true) {
+      console.log('You are online!')
+      setIsOnline(true)
+    }
+    if (isConnected === false && isInternetReachable === false) {
+      console.log('You are offline!')
+      setIsOnline(false)
+    }
+  }
 
   useEffect(() => {
     Sentry.init({
@@ -30,31 +43,11 @@ const App = () => {
       tracesSampleRate: 1.0,
       environment: env === 'PROD' ? 'production' : 'testing',
     })
-  }, [])
-  const isOnline = useSettings().isOnline
-  const netInfo = useNetInfo()
-  const setIsOnline = useSettings(state => state.setIsOnline)
-  // const headerHeight = useHeaderHeight()
-
-  const checkConnection = () => {
-    if (netInfo.isConnected && netInfo.isInternetReachable) {
-      console.log('You are online!')
-      // console.log('HEADER_HEIGHT', NativeStackHeaderProps)
-      setIsOnline(true)
-    } else {
-      console.log('You are offline!')
-      // console.log('HEADER_HEIGHT', headerHeight || 0)
-      setIsOnline(false)
-    }
-  }
+  }, [env])
 
   useEffect(() => {
     checkConnection()
-  }, [netInfo])
-
-  useEffect(() => {
-    console.log('IS_ONLINE_FROM_STORE:', isOnline)
-  }, [isOnline])
+  }, [isConnected, isInternetReachable])
 
   const preferredLanguage = () => {
     const devicePreferredLanguage = RNLocalize.getLocales()[0].languageCode
