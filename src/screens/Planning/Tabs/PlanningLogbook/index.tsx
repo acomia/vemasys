@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import {RefreshControl} from 'react-native'
 import {Box, Center, ScrollView, Text, View} from 'native-base'
 import {ms} from 'react-native-size-matters'
@@ -23,6 +23,8 @@ const PlanningLogbook = () => {
     isCreateNavLogActionSuccess,
   } = usePlanning()
   const {vesselId} = useEntity()
+  const [display, setDisplay] = useState(0)
+  const [sorted, setSorted] = useState(false)
 
   useEffect(() => {
     getVesselPlannedNavLogs(vesselId as string)
@@ -40,6 +42,33 @@ const PlanningLogbook = () => {
       moment(a.arrivalDatetime || a.plannedEta || a.arrivalZoneTwo).valueOf() -
       moment(b.arrivalDatetime || b.plannedEta || b.arrivalZoneTwo).valueOf()
   )
+
+  useEffect(() => {
+    if (plannedNavigationLogs) {
+      setDisplay(0)
+      let tempIndex = 0 // used the temp to prevent the updating in useState
+      // used the map function to get the index of the first condition
+      // to display divider
+      plannedNavigationLogs.map((navigationLog, index: number) => {
+        const plannedEta = moment(navigationLog.plannedEta).format('YYYY-MM-DD')
+        const dateToday = moment().format('YYYY-MM-DD')
+        const forwardDate = moment(
+          plannedNavigationLogs[index + 1]?.plannedEta
+        ).format('YYYY-MM-DD')
+
+        if (
+          forwardDate >= dateToday &&
+          plannedEta < dateToday &&
+          tempIndex <= 0
+        ) {
+          tempIndex = index
+        }
+      })
+      setDisplay(tempIndex)
+      //checking it is good to render
+      setSorted(true)
+    }
+  }, [plannedNavigationLogs])
 
   const onPullRefresh = () => {
     getVesselPlannedNavLogs(vesselId as string)
@@ -158,15 +187,8 @@ const PlanningLogbook = () => {
             </Center>
           </Box>
         ) : (
+          sorted &&
           plannedNavigationLogs?.map((navigationLog, i: number) => {
-            const plannedEta = moment(navigationLog.plannedEta).format(
-              'YYYY-MM-DD'
-            )
-            const dateToday = moment().format('YYYY-MM-DD')
-            const forwardDate = moment(
-              plannedNavigationLogs[i + 1]?.plannedEta
-            ).format('YYYY-MM-DD')
-
             return (
               <View key={i}>
                 <NavLogCard
@@ -176,9 +198,7 @@ const PlanningLogbook = () => {
                   itemColor={defineColour(navigationLog)}
                   navigationLog={navigationLog}
                 />
-                {forwardDate >= dateToday && plannedEta < dateToday ? (
-                  <NavLogDivider />
-                ) : null}
+                {i === display ? <NavLogDivider /> : null}
               </View>
             )
           })
