@@ -24,7 +24,6 @@ const PlanningLogbook = () => {
   } = usePlanning()
   const {vesselId} = useEntity()
   const [display, setDisplay] = useState(0)
-  const [sorted, setSorted] = useState(false)
 
   useEffect(() => {
     getVesselPlannedNavLogs(vesselId as string)
@@ -45,7 +44,6 @@ const PlanningLogbook = () => {
 
   useEffect(() => {
     if (plannedNavigationLogs) {
-      setDisplay(0)
       let tempIndex = 0 // used the temp to prevent the updating in useState
       // used the map function to get the index of the first condition
       // to display divider
@@ -59,14 +57,14 @@ const PlanningLogbook = () => {
         if (
           forwardDate >= dateToday &&
           plannedEta < dateToday &&
-          tempIndex <= 0
+          tempIndex === 0
         ) {
           tempIndex = index
         }
       })
-      setDisplay(tempIndex)
-      //checking it is good to render
-      setSorted(true)
+      if (tempIndex > 0) {
+        setDisplay(tempIndex)
+      }
     }
   }, [plannedNavigationLogs])
 
@@ -187,7 +185,6 @@ const PlanningLogbook = () => {
             </Center>
           </Box>
         ) : (
-          sorted &&
           plannedNavigationLogs?.map((navigationLog, i: number) => {
             return (
               <View key={i}>
@@ -198,7 +195,7 @@ const PlanningLogbook = () => {
                   itemColor={defineColour(navigationLog)}
                   navigationLog={navigationLog}
                 />
-                {i === display ? <NavLogDivider /> : null}
+                {display > 0 && i === display ? <NavLogDivider /> : null}
               </View>
             )
           })
