@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import {RefreshControl} from 'react-native'
 import {Box, Center, ScrollView, Text, View} from 'native-base'
 import {ms} from 'react-native-size-matters'
@@ -23,6 +23,7 @@ const PlanningLogbook = () => {
     isCreateNavLogActionSuccess,
   } = usePlanning()
   const {vesselId} = useEntity()
+  const [display, setDisplay] = useState(null)
 
   useEffect(() => {
     getVesselPlannedNavLogs(vesselId as string)
@@ -40,6 +41,30 @@ const PlanningLogbook = () => {
       moment(a.arrivalDatetime || a.plannedEta || a.arrivalZoneTwo).valueOf() -
       moment(b.arrivalDatetime || b.plannedEta || b.arrivalZoneTwo).valueOf()
   )
+
+  useEffect(() => {
+    if (plannedNavigationLogs) {
+      let tempIndex = null // used the temp to prevent the updating in useState
+      // used the map function to get the index of the first condition
+      // to display divider
+      plannedNavigationLogs.map((navigationLog, index: number) => {
+        const plannedEta = moment(navigationLog.plannedEta).format('YYYY-MM-DD')
+        const dateToday = moment().format('YYYY-MM-DD')
+        const forwardDate = moment(
+          plannedNavigationLogs[index + 1]?.plannedEta
+        ).format('YYYY-MM-DD')
+
+        if (
+          forwardDate >= dateToday &&
+          plannedEta < dateToday &&
+          tempIndex === null
+        ) {
+          tempIndex = index
+        }
+      })
+      setDisplay(tempIndex)
+    }
+  }, [plannedNavigationLogs])
 
   const onPullRefresh = () => {
     getVesselPlannedNavLogs(vesselId as string)
@@ -159,14 +184,7 @@ const PlanningLogbook = () => {
           </Box>
         ) : (
           plannedNavigationLogs?.map((navigationLog, i: number) => {
-            const plannedEta = moment(navigationLog.plannedEta).format(
-              'YYYY-MM-DD'
-            )
-            const dateToday = moment().format('YYYY-MM-DD')
-            const forwardDate = moment(
-              plannedNavigationLogs[i + 1]?.plannedEta
-            ).format('YYYY-MM-DD')
-
+            console.log('display', display)
             return (
               <View key={i}>
                 <NavLogCard
@@ -176,9 +194,7 @@ const PlanningLogbook = () => {
                   itemColor={defineColour(navigationLog)}
                   navigationLog={navigationLog}
                 />
-                {forwardDate >= dateToday && plannedEta < dateToday ? (
-                  <NavLogDivider />
-                ) : null}
+                {display && i === display ? <NavLogDivider /> : null}
               </View>
             )
           })
