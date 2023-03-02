@@ -173,12 +173,6 @@ export default function Map({navigation}: Props) {
   }, [trackViewMode])
 
   useEffect(() => {
-    if (trackViewMode) {
-      centerMapToCurrentLocation()
-    }
-  }, [vesselTracks])
-
-  useEffect(() => {
     if (notifications) {
       calculateBadge()
     }
