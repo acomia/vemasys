@@ -115,6 +115,7 @@ export default function Map({navigation}: Props) {
         await getPlannedNavigationLogs(vesselId)
         await getCurrentNavigationLogs(vesselId)
         await getLastCompleteNavigationLogs(vesselId)
+        getVesselTrack(vesselId, page)
         setLoadingMap(false)
       }
 
@@ -163,16 +164,17 @@ export default function Map({navigation}: Props) {
   }, [vesselStatus])
 
   useEffect(() => {
-    if (trackViewMode && vesselId) {
-      getVesselTrack(vesselId, page)
+    if (trackViewMode) {
+      if (page > 1) fitToAllMarkers()
+      else centerMapToBeginningTrackLine()
+    } else {
+      centerMapToCurrentLocation()
     }
-    centerMapToCurrentLocation()
   }, [trackViewMode])
 
   useEffect(() => {
     if (trackViewMode) {
-      if (page > 1) fitToAllMarkers()
-      else centerMapToBeginningTrackLine()
+      centerMapToCurrentLocation()
     }
   }, [vesselTracks])
 
@@ -190,6 +192,8 @@ export default function Map({navigation}: Props) {
       await getPlannedNavigationLogs(vesselId)
       await getCurrentNavigationLogs(vesselId)
       await getVesselStatus(vesselId)
+      uniqueVesselTracks.splice(0, uniqueVesselTracks.length)
+      getVesselTrack(vesselId, page)
       setLoadingMap(false)
     }
   }
@@ -551,13 +555,15 @@ export default function Map({navigation}: Props) {
             lastCompleteNavLogs?.map((log: any, index: number) =>
               renderLastCompleteNavLogs(log, index)
             )}
-          {trackViewMode && uniqueVesselTracks.length > 0 && (
-            <Polyline
-              coordinates={uniqueVesselTracks}
-              strokeColor={Colors.warning}
-              strokeWidth={5}
-            />
-          )}
+          {!isLoadingVesselTrack &&
+            trackViewMode &&
+            uniqueVesselTracks.length > 0 && (
+              <Polyline
+                coordinates={uniqueVesselTracks}
+                strokeColor={Colors.warning}
+                strokeWidth={5}
+              />
+            )}
           {trackViewMode &&
             uniqueVesselTracks.length > 0 &&
             renderTrackLineBeginningMarker()}
