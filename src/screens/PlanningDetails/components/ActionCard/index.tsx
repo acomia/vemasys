@@ -54,12 +54,16 @@ const ActionCard = ({
       >
         <View height={ms(50)} mr={ms(10)} width={ms(50)}>
           <Image
+            width={
+              action?.type === 'Cleaning' && !_.isNull(action.end)
+                ? '80%'
+                : '100%'
+            }
             alt="navlog-action-animated"
             height={'100%'}
             mr={ms(10)}
             resizeMode="contain"
             source={renderAnimatedIcon(action.type, action.end)}
-            width={action?.type === 'cleaning' && action.end ? '80%' : '100%'}
           />
         </View>
         <Box flex="1">
