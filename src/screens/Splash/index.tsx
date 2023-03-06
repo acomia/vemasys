@@ -7,15 +7,19 @@ import {useAuth, useEntity, useSettings} from '@bluecentury/stores'
 import {
   CommonActions,
   NavigationProp,
+  useIsFocused,
   useNavigation,
 } from '@react-navigation/native'
 import {resetAllStates} from '@bluecentury/utils'
 
 export default function Splash() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>()
+  const isFocused = useIsFocused()
   const {hasAuthHydrated, token, setUser} = useAuth(state => state)
   const {hasEntityHydrated, entityId} = useEntity(state => state)
-  const {hasSettingsRehydrated, apiUrl, setEnv, isRemainLoggedIn} = useSettings(state => state)
+  const {hasSettingsRehydrated, apiUrl, setEnv, isRemainLoggedIn} = useSettings(
+    state => state
+  )
   useEffect(() => {
     if (hasSettingsRehydrated) {
       console.log('apiUrl ', apiUrl)
@@ -32,7 +36,12 @@ export default function Splash() {
     }
   }, [hasSettingsRehydrated])
   useEffect(() => {
-    if (hasAuthHydrated && hasEntityHydrated && hasSettingsRehydrated) {
+    if (
+      hasAuthHydrated &&
+      hasEntityHydrated &&
+      hasSettingsRehydrated &&
+      isFocused
+    ) {
       // non-authenticated
       if (!token) {
         resetAllStates()
@@ -55,10 +64,17 @@ export default function Splash() {
       )
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasAuthHydrated, hasEntityHydrated, hasSettingsRehydrated, token, entityId])
+  }, [
+    hasAuthHydrated,
+    hasEntityHydrated,
+    hasSettingsRehydrated,
+    token,
+    entityId,
+    isFocused,
+  ])
 
   return (
-    <Box flex="1" justifyContent="center" safeArea>
+    <Box safeArea flex="1" justifyContent="center">
       <Center>
         <Image alt="Company Logo" source={Images.logo} />
         <ActivityIndicator size="small" />

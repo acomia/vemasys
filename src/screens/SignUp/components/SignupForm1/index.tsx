@@ -15,8 +15,9 @@ import {Shadow} from 'react-native-shadow-2'
 
 import {Colors} from '@bluecentury/styles'
 import {_t} from '@bluecentury/constants'
-import {useEntity} from '@bluecentury/stores'
+import {useUser} from '@bluecentury/stores'
 import {NoInternetConnectionMessage} from '@bluecentury/components'
+import {Credentials, UserRegistration} from '@bluecentury/models'
 
 const allFieldsRequired = _t('allFieldsRequired')
 const userUsername = _t('usernameRequired')
@@ -24,32 +25,41 @@ const userEmail = _t('newUserEmail')
 const userPassword = _t('passwordRequired')
 const userConfirmPassword = _t('confirmPasswordRequired')
 
-interface Props {
-  next: () => void
+// interface Props {
+//   next: () => void
+// }
+
+interface IForm1State extends UserRegistration {
+  confirmPassword?: string
 }
 
-export default function SignUpForm1({next}: Props) {
-  const {t} = useTranslation()
-  const {isLoadingSignUpRequest} = useEntity()
+type Props = {
+  loginCreds: (creds: Credentials) => void
+}
 
-  const [values, setValues] = useState({
+export default function SignUpForm1({loginCreds}: Props) {
+  const {t} = useTranslation()
+  const {isLoadingRegistration, registerNewUser} = useUser()
+
+  const [values, setValues] = useState<IForm1State>({
     username: '',
     email: '',
-    password: '',
-    confirm_password: '',
+    plainPassword: '',
+    confirmPassword: '',
   })
   const [isAllFieldEmpty, setIsAllFieldEmpty] = useState(false)
   const [isUsernameEmpty, setIsUsernameEmpty] = useState(false)
   const [isEmailEmpty, setIsEmailEmpty] = useState(false)
   const [isPasswordEmpty, setIsPasswordEmpty] = useState(false)
   const [isConfirmPasswordEmpty, setIsConfirmPasswordEmpty] = useState(false)
+  const [isPasswordMatch, setIsPasswordMatch] = useState(true)
 
   const onNextSubmit = () => {
     if (
       values.username === '' &&
       values.email === '' &&
-      values.password === '' &&
-      values.confirm_password === ''
+      values.plainPassword === '' &&
+      values.confirmPassword === ''
     ) {
       setIsAllFieldEmpty(true)
       return
@@ -57,22 +67,27 @@ export default function SignUpForm1({next}: Props) {
     if (
       values.username === '' ||
       values.email === '' ||
-      values.password === '' ||
-      values.confirm_password === ''
+      values.plainPassword === '' ||
+      values.confirmPassword === ''
     ) {
       values.username === ''
         ? setIsUsernameEmpty(true)
         : setIsUsernameEmpty(false)
       values.email === '' ? setIsEmailEmpty(true) : setIsEmailEmpty(false)
-      values.password === ''
+      values.plainPassword === ''
         ? setIsPasswordEmpty(true)
         : setIsPasswordEmpty(false)
-      values.confirm_password === ''
+      values.confirmPassword === ''
         ? setIsConfirmPasswordEmpty(true)
         : setIsConfirmPasswordEmpty(false)
       return
     }
-    next()
+    if (values.plainPassword !== values.confirmPassword) {
+      setIsPasswordMatch(false)
+      return
+    }
+    loginCreds({username: values.username, password: values.plainPassword})
+    registerNewUser(values)
   }
 
   return (
@@ -94,7 +109,7 @@ export default function SignUpForm1({next}: Props) {
             {t('username')}
           </FormControl.Label>
           <Input
-            autoCapitalize="words"
+            autoCapitalize="none"
             placeholder=""
             size="lg"
             style={{backgroundColor: '#F7F7F7'}}
@@ -116,7 +131,7 @@ export default function SignUpForm1({next}: Props) {
           <Input
             autoCapitalize="none"
             keyboardType="email-address"
-            placeholder=" "
+            placeholder=""
             size="lg"
             style={{backgroundColor: '#F7F7F7'}}
             value={values.email}
@@ -138,10 +153,11 @@ export default function SignUpForm1({next}: Props) {
             size="lg"
             style={{backgroundColor: '#F7F7F7'}}
             type="password"
-            value={values.password}
+            value={values.plainPassword}
             onChangeText={e => {
-              setValues({...values, password: e})
+              setValues({...values, plainPassword: e})
               setIsAllFieldEmpty(false)
+              setIsPasswordMatch(true)
             }}
           />
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
@@ -157,10 +173,11 @@ export default function SignUpForm1({next}: Props) {
             size="lg"
             style={{backgroundColor: '#F7F7F7'}}
             type="password"
-            value={values.confirm_password}
+            value={values.confirmPassword}
             onChangeText={e => {
-              setValues({...values, confirm_password: e})
+              setValues({...values, confirmPassword: e})
               setIsAllFieldEmpty(false)
+              setIsPasswordMatch(true)
             }}
           />
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
@@ -172,6 +189,11 @@ export default function SignUpForm1({next}: Props) {
             * {allFieldsRequired}
           </Text>
         ) : null}
+        {!isPasswordMatch ? (
+          <Text color="red.500" fontSize={ms(12)} my={ms(10)}>
+            Password is not match.
+          </Text>
+        ) : null}
       </ScrollView>
       <Shadow viewStyle={{width: '100%'}}>
         <Button
@@ -180,8 +202,8 @@ export default function SignUpForm1({next}: Props) {
             fontSize: 16,
           }}
           bg={Colors.primary}
-          isLoading={isLoadingSignUpRequest}
-          isLoadingText="Creating request"
+          isLoading={isLoadingRegistration}
+          isLoadingText="Creating new user"
           m={ms(16)}
           size="md"
           onPress={onNextSubmit}

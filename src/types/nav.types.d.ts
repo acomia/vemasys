@@ -1,4 +1,4 @@
-import {Comments} from '@bluecentury/models'
+import {Comments, ExtendedUser} from '@bluecentury/models'
 type RootStackParamList = {
   Splash: undefined
   SelectEnvironment: undefined
@@ -38,7 +38,7 @@ type RootStackParamList = {
   CharterAcceptSign: {charter?: any}
   TrackingServiceDialog: undefined
   SignUp: undefined
-  SignUpVerification: {signUpInfo: any; requestAsOwner: boolean}
+  SignUpVerification: {signUpInfo: any}
 }
 
 type MainStackParamList = {

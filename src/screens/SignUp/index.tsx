@@ -1,37 +1,91 @@
-/* eslint-disable react-native/no-inline-styles */
-import React, {useState} from 'react'
-import {Box, Button, ScrollView} from 'native-base'
-import {useTranslation} from 'react-i18next'
-import {ms} from 'react-native-size-matters'
-import {Shadow} from 'react-native-shadow-2'
-import {NativeStackScreenProps} from '@react-navigation/native-stack'
+import React, {useEffect, useState} from 'react'
+import {Box, Text, useToast} from 'native-base'
 
-import {Colors} from '@bluecentury/styles'
-import {_t} from '@bluecentury/constants'
-import {useEntity} from '@bluecentury/stores'
 import {NoInternetConnectionMessage} from '@bluecentury/components'
-import SignUpForm1 from './components/SignupForm1'
-import SignUpForm2 from './components/SignupForm2'
+import {SignupForm1, SignupForm2} from './components'
+import {NativeStackScreenProps} from '@react-navigation/native-stack'
+import Icon from 'react-native-vector-icons/Ionicons'
+import {useAuth, useUser} from '@bluecentury/stores'
+import {Colors} from '@bluecentury/styles'
+import {Credentials} from '@bluecentury/models'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 export default function SignUp({navigation}: Props) {
-  const {t} = useTranslation()
-  const {createSignUpRequest, isLoadingSignUpRequest} = useEntity()
-
+  const toast = useToast()
+  const {registrationStatus, user, reset, getLevelOfNavigationCertificate} =
+    useUser()
+  const {authenticate, token} = useAuth()
+  const [userCreds, setUserCreds] = useState<Credentials>({
+    username: '',
+    password: '',
+  })
   const [page, setPage] = useState(1)
 
-  const onNextFormSubmit = () => {
-    if (page === 1) setPage(2)
+  useEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <Icon name="arrow-back" size={28} onPress={onBackHeaderPress} />
+      ),
+    })
+    /* eslint-disable react-hooks/exhaustive-deps */
+  }, [])
+  useEffect(() => {
+    if (registrationStatus === 'SUCCESS') {
+      authenticate(userCreds)
+      setPage(2)
+      reset()
+    }
+    if (registrationStatus === 'FAILED') {
+      showToast('Unable to create new user', 'failed')
+      reset()
+    }
+    if (token) {
+      getLevelOfNavigationCertificate()
+    }
+  }, [registrationStatus, token])
+
+  const showToast = (text: string, res: string) => {
+    toast.show({
+      duration: 2000,
+      render: () => {
+        return (
+          <Text
+            bg={res === 'success' ? 'emerald.500' : 'red.500'}
+            color={Colors.white}
+            mb={5}
+            px="2"
+            py="1"
+            rounded="sm"
+          >
+            {text}
+          </Text>
+        )
+      },
+    })
+  }
+
+  const onBackHeaderPress = () => {
+    if (page === 1) navigation.goBack()
+    if (page === 2) setPage(1)
+  }
+
+  const loginUser = (creds: Credentials) => {
+    console.log('update creds state')
+
+    setUserCreds({
+      ...userCreds,
+      username: creds.username,
+      password: creds.password,
+    })
   }
 
   return (
     <Box flex="1">
       <NoInternetConnectionMessage />
-
       {page === 1 ? (
-        <SignUpForm1 next={onNextFormSubmit} />
+        <SignupForm1 loginCreds={loginUser} />
       ) : (
-        <SignUpForm2 next={onNextFormSubmit} />
+        <SignupForm2 userCreds={userCreds} userInfo={user} />
       )}
     </Box>
   )

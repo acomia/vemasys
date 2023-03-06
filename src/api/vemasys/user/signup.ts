@@ -1,15 +1,126 @@
 import {API} from '@bluecentury/api/apiService'
-import {UserRegistration} from '@bluecentury/models'
+import {ExtendedUser, SignupDocs, UserRegistration} from '@bluecentury/models'
 
 export const registerNewUser = async (user: UserRegistration) => {
   try {
     const response = await API.post('register', user)
     if (!response.data) {
-      throw 'Failed to get user information.'
+      throw 'Failed to create new user.'
     }
     return response.data
   } catch (error) {
-    console.log('Error: getUserInfo', error)
+    console.log('Error: Register new user:', error)
+    return null
+  }
+}
+
+export const updateUserInfo = async (
+  user: ExtendedUser,
+  docs: Array<SignupDocs>
+) => {
+  let updateUserRequest
+  if (docs.length > 0) {
+    updateUserRequest = Object.assign(
+      {},
+      {
+        firstname: user.firstname,
+        lastname: user.lastname,
+        birthday: user.birthday,
+        certificateLevel: Number(user.certificateLevel),
+        language: user.language,
+        email: user.email,
+        username: user.username,
+      },
+      ...docs.map(file => file)
+    )
+  }
+  console.log(updateUserRequest)
+
+  try {
+    const response = await API.put(
+      `users/${user.id.toString()}`,
+      updateUserRequest
+    )
+    if (!response.data) {
+      throw 'Failed to create new user.'
+    }
+    return response.data
+  } catch (error) {
+    console.log('Error: Update user info:', error)
+    return null
+  }
+}
+
+export const getEntityData = async (mmsi: number) => {
+  try {
+    const response = await API.get(
+      `entities?exploitationVessel.physicalVessel.mmsi=${mmsi}`
+    )
+    if (!response.data) {
+      throw 'Failed to get entities data.'
+    }
+    return response.data
+  } catch (error) {
+    console.log('Error: Entities data:', error)
+    return null
+  }
+}
+
+export const requestAccessToEntity = async (entity: string) => {
+  try {
+    const response = await API.post('entity_users/request_access_to_entity', {
+      entity,
+    })
+    if (!response.data) {
+      throw 'Failed to request access to entity.'
+    }
+    return response.data
+  } catch (error) {
+    console.log('Error: Request access to entity:', error)
+    return null
+  }
+}
+
+export const createSignupRequestForCurrentUser = async (user: ExtendedUser) => {
+  let signUpRequest
+  signUpRequest = Object.assign({}, userInfo, {
+    mmsi: userInfo.mmsi ? parseInt(userInfo.mmsi) : null,
+  })
+  if (docs.length > 0) {
+    signUpRequest = Object.assign(
+      {},
+      userInfo,
+      {
+        mmsi: userInfo.mmsi ? parseInt(userInfo.mmsi) : null,
+      },
+      ...docs.map(file => file)
+    )
+  }
+
+  try {
+    const response = await API.post(
+      'signup_requests/create_for_current_user',
+      user
+    )
+    if (!response.data) {
+      throw 'Failed to request signup for user.'
+    }
+    return response.data
+  } catch (error) {
+    console.log('Error: Signup request to current user:', error)
+    return null
+  }
+}
+
+export const getLevelOfNavigationCertificate = async () => {
+  try {
+    const response = await API.get('level_of_navigation_certificates')
+    if (!response.data) {
+      throw 'Failed to get level of navigation certificate data.'
+    }
+    return response.data
+  } catch (error) {
+    console.log('Error: Navigation certificate data:', error)
     return null
   }
 }

@@ -42,3 +42,19 @@ export type User = {
   entityUsers: string[]
   email: string
 }
+
+type ExtendUser = {
+  mmsi: number
+  identificationDocument: {
+    path: string
+    description: string
+    uploader: object | null
+    type: object | null
+  }
+  certificateLevel: string
+  username: string
+  enabled: boolean
+  plainPassword: string
+}
+
+export type ExtendedUser = User & ExtendUser

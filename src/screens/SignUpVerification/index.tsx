@@ -6,22 +6,35 @@ import {useDisclose} from 'native-base'
 import DocumentPicker, {isInProgress, types} from 'react-native-document-picker'
 import DocumentScanner from 'react-native-document-scanner-plugin'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
+import Icon from 'react-native-vector-icons/Ionicons'
 
-import {useEntity} from '@bluecentury/stores'
+import {useUser} from '@bluecentury/stores'
 import {Selfie, SignUpFinish, UploadDocs, UploadID} from './components'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 export default function SignUpVerification({navigation, route}: Props) {
-  const {signUpInfo, requestAsOwner}: any = route.params
-  const {createSignUpRequest, signUpRequestStatus, reset} = useEntity()
+  const {signUpInfo}: any = route.params
+  const {
+    isLoadingSignupRequest,
+    updateUserInfoStatus,
+    updateUserInfo,
+    entityData,
+    getEntityData,
+    requestAccessToEntity,
+    reset,
+  } = useUser()
   const [page, setPage] = useState(1)
   const [documentFile, setDocumentFile] = useState<ImageFile | string>('')
   const [signUpDocs, setSignUpDocs] = useState([])
   const {onClose} = useDisclose()
 
   useEffect(() => {
-    if (requestAsOwner) setPage(3)
-  }, [requestAsOwner])
+    navigation.setOptions({
+      headerLeft: () => (
+        <Icon name="arrow-back" size={28} onPress={onBackHeaderPress} />
+      ),
+    })
+  })
 
   useEffect(() => {
     if (page === 1 && documentFile !== '') {
@@ -29,15 +42,28 @@ export default function SignUpVerification({navigation, route}: Props) {
         return [
           ...prevS,
           {
-            userIdentificationDocument: {
+            icon: {
               path: documentFile.uri,
-              description: `ID of ${signUpInfo.firstName} ${signUpInfo.lastName}`,
+              description: `Selfie of ${signUpInfo.firstname} ${signUpInfo.lastname}`,
             },
           },
         ]
       })
     }
     if (page === 2 && documentFile !== '') {
+      setSignUpDocs((prevS: any) => {
+        return [
+          ...prevS,
+          {
+            identificationDocument: {
+              path: documentFile.uri,
+              description: `ID of ${signUpInfo.firstname} ${signUpInfo.lastname}`,
+            },
+          },
+        ]
+      })
+    }
+    if (page === 3 && documentFile !== '') {
       setSignUpDocs((prevS: any) => {
         return [
           ...prevS,
@@ -53,18 +79,44 @@ export default function SignUpVerification({navigation, route}: Props) {
   }, [documentFile])
 
   useEffect(() => {
-    if (signUpRequestStatus === 'SUCCESS') {
-      setPage(3)
+    if (updateUserInfoStatus === 'SUCCESS') {
+      getEntityData(signUpInfo.mmsi)
+      reset()
     }
-  }, [signUpRequestStatus])
+    if (entityData !== null) {
+      console.log('entities:', entityData)
+    }
+  }, [updateUserInfoStatus, entityData])
 
-  const onUploadIDProceed = () => {
+  const onBackHeaderPress = () => {
+    switch (page) {
+      case 1:
+        return navigation.goBack()
+      case 2:
+        return setPage(1)
+      case 3:
+        return setPage(2)
+      case 4:
+        return setPage(3)
+      default:
+        break
+    }
+  }
+
+  const onSelfieProceed = () => {
     setPage(2)
     setDocumentFile('')
   }
+  const onUploadIDProceed = () => {
+    setDocumentFile('')
+    console.log(signUpInfo)
+    updateUserInfo(signUpInfo, signUpDocs)
+  }
 
   const onFinishVerification = () => {
-    createSignUpRequest(signUpInfo, signUpDocs)
+    console.log(signUpDocs)
+
+    // createSignUpRequest(signUpInfo, signUpDocs)
   }
 
   const onBackToLogin = () => {
@@ -75,9 +127,11 @@ export default function SignUpVerification({navigation, route}: Props) {
 
   const renderScreen = () => {
     switch (page) {
-      // case 1:
-      //   return <Selfie onProceed={() => setPage(2)} />
       case 1:
+        return (
+          <Selfie onProceed={onSelfieProceed} onTakeSelfie={onTakeSelfie} />
+        )
+      case 2:
         return (
           <UploadID
             file={documentFile}
@@ -86,7 +140,7 @@ export default function SignUpVerification({navigation, route}: Props) {
             onUploadNew={onSelectDocument}
           />
         )
-      case 2:
+      case 3:
         return (
           <UploadDocs
             file={documentFile}
@@ -95,13 +149,21 @@ export default function SignUpVerification({navigation, route}: Props) {
             onUploadNew={onSelectDocument}
           />
         )
-      case 3:
+      case 4:
         return (
           <SignUpFinish email={signUpInfo.email} onProceed={onBackToLogin} />
         )
       default:
         break
     }
+  }
+
+  const onTakeSelfie = async (file: ImageFile) => {
+    setDocumentFile({
+      uri: file.uri,
+      fileName: file.fileName,
+      type: file.type,
+    })
   }
 
   const requestCameraPermission = async () => {
@@ -142,12 +204,6 @@ export default function SignUpVerification({navigation, route}: Props) {
         type: [types.images],
       })
       onClose()
-      console.log({
-        uri: pickerResult.uri,
-        fileName: pickerResult.name,
-        type: pickerResult.type,
-      })
-
       setDocumentFile({
         uri: pickerResult.uri,
         fileName: pickerResult.name,
