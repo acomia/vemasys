@@ -1,6 +1,6 @@
 import React from 'react'
 import {TouchableOpacity} from 'react-native'
-import {Box, HStack, Image, Text} from 'native-base'
+import {Box, HStack, Image, Text, View} from 'native-base'
 import moment from 'moment'
 import _ from 'lodash'
 import {ms} from 'react-native-size-matters'
@@ -52,18 +52,32 @@ const ActionCard = ({
         py={ms(8)}
         shadow={1}
       >
-        <Image
-          height={
-            action.type === 'Cleaning' && _.isNull(action.end) ? ms(60) : null
-          }
-          width={
-            action.type === 'Cleaning' && _.isNull(action.end) ? ms(60) : null
-          }
-          alt="navlog-action-animated"
+        <View
+          alignItems="center"
+          display="flex"
+          height={ms(50)}
+          justifyContent="center"
           mr={ms(10)}
-          resizeMode="contain"
-          source={renderAnimatedIcon(action.type, action.end)}
-        />
+          width={ms(50)}
+        >
+          <Image
+            height={
+              action?.type === 'Cleaning' && !_.isNull(action.end)
+                ? '70%'
+                : '100%'
+            }
+            width={
+              action?.type === 'Cleaning' && !_.isNull(action.end)
+                ? '70%'
+                : '100%'
+            }
+            alt="navlog-action-animated"
+            backgroundColor="blue"
+            mr={ms(10)}
+            resizeMode="contain"
+            source={renderAnimatedIcon(action.type, action.end)}
+          />
+        </View>
         <Box flex="1">
           <HStack alignItems="center">
             <Text bold color={Colors.text} fontSize={ms(15)}>
