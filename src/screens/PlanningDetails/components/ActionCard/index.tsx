@@ -52,15 +52,27 @@ const ActionCard = ({
         py={ms(8)}
         shadow={1}
       >
-        <View height={ms(50)} mr={ms(10)} width={ms(50)}>
+        <View
+          alignItems="center"
+          display="flex"
+          height={ms(50)}
+          justifyContent="center"
+          mr={ms(10)}
+          width={ms(50)}
+        >
           <Image
+            height={
+              action?.type === 'Cleaning' && !_.isNull(action.end)
+                ? '70%'
+                : '100%'
+            }
             width={
               action?.type === 'Cleaning' && !_.isNull(action.end)
-                ? '80%'
+                ? '70%'
                 : '100%'
             }
             alt="navlog-action-animated"
-            height={'100%'}
+            backgroundColor="blue"
             mr={ms(10)}
             resizeMode="contain"
             source={renderAnimatedIcon(action.type, action.end)}
