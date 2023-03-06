@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 import {Platform} from 'react-native'
 import {Box, HStack, Pressable} from 'native-base'
 import {createDrawerNavigator} from '@react-navigation/drawer'
@@ -14,7 +14,7 @@ import BackgroundGeolocation, {
 import BackgroundFetch from 'react-native-background-fetch'
 import {ms} from 'react-native-size-matters'
 import {Icons} from '@bluecentury/assets'
-import {Sidebar, IconButton} from '@bluecentury/components'
+import {Sidebar, IconButton, GPSTracker} from '@bluecentury/components'
 import {GPSAnimated} from '@bluecentury/components/gps-animated'
 import {Screens} from '@bluecentury/constants'
 import {
@@ -46,6 +46,7 @@ export default function MainNavigator({navigation}: Props) {
   const token = useAuth(state => state.token)
   const activeFormations = useMap(state => state.activeFormations)
   const getActiveFormations = useMap(state => state.getActiveFormations)
+  const [isGPSOpen, setIsGPSOpen] = useState(false)
 
   useFocusEffect(
     useCallback(() => {
@@ -127,102 +128,108 @@ export default function MainNavigator({navigation}: Props) {
   }
 
   return (
-    <Navigator
-      screenOptions={{
-        drawerStyle: {
-          width: ms(220),
-        },
-        headerTitleAlign: 'left',
-        headerTitleStyle: {fontSize: 16, fontWeight: 'bold'},
-        headerStyle: {backgroundColor: Colors.light},
-        headerShadowVisible: false,
-        headerRight: () => (
-          <Box alignItems="center" flexDirection="row" mr={2}>
-            <HStack space="3">
-              {activeFormations.length ? (
-                <IconButton
-                  size={ms(25)}
-                  source={Icons.formations}
-                  onPress={() => navigation.navigate(Screens.Formations)}
-                />
-              ) : null}
-              {isQrScanner ? (
-                <IconButton
-                  size={ms(25)}
-                  source={Icons.qr}
-                  onPress={() => navigation.navigate(Screens.QRScanner)}
-                />
-              ) : null}
-              <Pressable
-                size={ms(40)}
-                onPress={() => navigation.navigate('GPSTracker')}
-              >
-                <GPSAnimated />
-              </Pressable>
-            </HStack>
-          </Box>
-        ),
-        headerLeft: () => (
-          <Box ml={ms(20)}>
-            <IconButton
-              size={ms(20)}
-              source={Icons.menu}
-              onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
-            />
-          </Box>
-        ),
-      }}
-      drawerContent={props => <Sidebar {...props} />}
-      initialRouteName={Screens.MapView}
-    >
-      <Screen
-        component={Map}
-        name={Screens.MapView}
-        options={{title: t(Screens.MapView)}}
-      />
-      <Screen
-        component={Notification}
-        name={Screens.Notifications}
-        options={{title: t(Screens.Notifications)}}
-      />
-      <Screen
-        component={Planning}
-        name={Screens.Planning}
-        options={{title: t(Screens.Planning)}}
-      />
-      <Screen
-        component={Charters}
-        name={Screens.Charters}
-        options={{title: t(Screens.Charters)}}
-      />
-      <Screen
-        component={Technical}
-        name={Screens.Technical}
-        options={{title: t(Screens.Technical)}}
-      />
-      <Screen
-        component={Financial}
-        name={Screens.Financial}
-        options={{title: t(Screens.Financial)}}
-      />
-      <Screen
-        component={Information}
-        name={Screens.Information}
-        options={{title: t(Screens.Information)}}
-      />
-      <Screen
-        component={Crew}
-        name={Screens.Crew}
-        options={{title: t(Screens.Crew)}}
-      />
-      <Screen
-        options={{
-          headerTitle: t('selectYourRole'),
+    <>
+      <Navigator
+        screenOptions={{
+          drawerStyle: {
+            width: ms(220),
+          },
+          headerTitleAlign: 'left',
+          headerTitleStyle: {fontSize: 16, fontWeight: 'bold'},
+          headerStyle: {backgroundColor: Colors.light},
+          headerShadowVisible: false,
+          headerRight: () => (
+            <Box alignItems="center" flexDirection="row" mr={2}>
+              <HStack space="3">
+                {activeFormations.length ? (
+                  <IconButton
+                    size={ms(25)}
+                    source={Icons.formations}
+                    onPress={() => navigation.navigate(Screens.Formations)}
+                  />
+                ) : null}
+                {isQrScanner ? (
+                  <IconButton
+                    size={ms(25)}
+                    source={Icons.qr}
+                    onPress={() => navigation.navigate(Screens.QRScanner)}
+                  />
+                ) : null}
+                <Pressable
+                  size={ms(40)}
+                  // onPress={() => navigation.navigate('GPSTracker')}
+                  onPress={() => setIsGPSOpen(true)}
+                >
+                  <GPSAnimated />
+                </Pressable>
+              </HStack>
+            </Box>
+          ),
+          headerLeft: () => (
+            <Box ml={ms(20)}>
+              <IconButton
+                size={ms(20)}
+                source={Icons.menu}
+                onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
+              />
+            </Box>
+          ),
         }}
-        component={Entity}
-        name={Screens.ChangeRole}
-      />
-      <Screen component={Settings} name={Screens.Settings} />
-    </Navigator>
+        drawerContent={props => <Sidebar {...props} />}
+        initialRouteName={Screens.MapView}
+      >
+        <Screen
+          component={Map}
+          name={Screens.MapView}
+          options={{title: t(Screens.MapView)}}
+        />
+        <Screen
+          component={Notification}
+          name={Screens.Notifications}
+          options={{title: t(Screens.Notifications)}}
+        />
+        <Screen
+          component={Planning}
+          name={Screens.Planning}
+          options={{title: t(Screens.Planning)}}
+        />
+        <Screen
+          component={Charters}
+          name={Screens.Charters}
+          options={{title: t(Screens.Charters)}}
+        />
+        <Screen
+          component={Technical}
+          name={Screens.Technical}
+          options={{title: t(Screens.Technical)}}
+        />
+        <Screen
+          component={Financial}
+          name={Screens.Financial}
+          options={{title: t(Screens.Financial)}}
+        />
+        <Screen
+          component={Information}
+          name={Screens.Information}
+          options={{title: t(Screens.Information)}}
+        />
+        <Screen
+          component={Crew}
+          name={Screens.Crew}
+          options={{title: t(Screens.Crew)}}
+        />
+        <Screen
+          options={{
+            headerTitle: t('selectYourRole'),
+          }}
+          component={Entity}
+          name={Screens.ChangeRole}
+        />
+        <Screen component={Settings} name={Screens.Settings} />
+      </Navigator>
+      {isGPSOpen ? (
+        <GPSTracker close={() => setIsGPSOpen(false)} navigation={navigation} />
+      ) : null}
+    </>
   )
 }
