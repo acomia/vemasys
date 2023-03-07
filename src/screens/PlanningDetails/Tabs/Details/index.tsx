@@ -79,12 +79,12 @@ const Details = () => {
     useEntity()
   const {navlog, title}: any = route.params
   const [dates, setDates] = useState<Dates>({
-    plannedETA: navlog?.plannedEta,
-    captainDatetimeETA: navlog?.captainDatetimeEta,
-    announcedDatetime: navlog?.announcedDatetime,
-    arrivalDatetime: navlog?.arrivalDatetime,
-    terminalApprovedDeparture: navlog?.terminalApprovedDeparture,
-    departureDatetime: navlog?.departureDatetime,
+    plannedETA: navigationLogDetails?.plannedEta,
+    captainDatetimeETA: navigationLogDetails?.captainDatetimeEta,
+    announcedDatetime: navigationLogDetails?.announcedDatetime,
+    arrivalDatetime: navigationLogDetails?.arrivalDatetime,
+    terminalApprovedDeparture: navigationLogDetails?.terminalApprovedDeparture,
+    departureDatetime: navigationLogDetails?.departureDatetime,
   })
   const [didDateChange, setDidDateChange] = useState({
     Pln: {didUpdate: false},
@@ -135,7 +135,7 @@ const Details = () => {
     const active = navigationLogActions?.filter(action => _.isNull(action?.end))
     setActiveActions(active)
 
-    setDates({
+    const updatedDates = {
       ...dates,
       plannedETA: navigationLogDetails?.plannedEta,
       captainDatetimeETA: navigationLogDetails?.captainDatetimeEta,
@@ -146,25 +146,22 @@ const Details = () => {
       terminalApprovedDeparture:
         navigationLogDetails?.terminalApprovedDeparture,
       departureDatetime: navigationLogDetails?.departureDatetime,
-    })
+    }
+    if (navigationLogRoutes) {
+      updatedDates.arrivalDatetime =
+        navigationLogDetails?.announcedDatetime &&
+        navigationLogDetails?.captainDatetimeEta
+          ? navigationLogDetails?.captainDatetimeEta
+          : navigationLogRoutes[navigationLogRoutes.length - 1]
+              ?.estimatedArrival
+    }
+    setDates(updatedDates)
     if (
       navigationLogDetails?.bulkCargo?.some(cargo => cargo.isLoading === false)
     ) {
       setButtonActionLabel('Unloading')
     } else {
       setButtonActionLabel('Loading')
-    }
-
-    if (navigationLogRoutes) {
-      setDates({
-        ...dates,
-        arrivalDatetime:
-          navigationLogDetails?.announcedDatetime &&
-          navigationLogDetails?.captainDatetimeEta
-            ? navigationLogDetails?.captainDatetimeEta
-            : navigationLogRoutes[navigationLogRoutes.length - 1]
-                ?.estimatedArrival,
-      })
     }
     if (
       navigationLogDetails?.link !== undefined &&
