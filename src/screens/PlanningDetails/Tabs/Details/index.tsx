@@ -135,7 +135,7 @@ const Details = () => {
     const active = navigationLogActions?.filter(action => _.isNull(action?.end))
     setActiveActions(active)
 
-    const updatedDates = {
+    setDates({
       ...dates,
       plannedETA: navigationLogDetails?.plannedEta,
       captainDatetimeETA: navigationLogDetails?.captainDatetimeEta,
@@ -146,22 +146,25 @@ const Details = () => {
       terminalApprovedDeparture:
         navigationLogDetails?.terminalApprovedDeparture,
       departureDatetime: navigationLogDetails?.departureDatetime,
-    }
-    if (navigationLogRoutes) {
-      updatedDates.arrivalDatetime =
-        navigationLogDetails?.announcedDatetime &&
-        navigationLogDetails?.captainDatetimeEta
-          ? navigationLogDetails?.captainDatetimeEta
-          : navigationLogRoutes[navigationLogRoutes.length - 1]
-              ?.estimatedArrival
-    }
-    setDates(updatedDates)
+    })
     if (
       navigationLogDetails?.bulkCargo?.some(cargo => cargo.isLoading === false)
     ) {
       setButtonActionLabel('Unloading')
     } else {
       setButtonActionLabel('Loading')
+    }
+
+    if (navigationLogRoutes) {
+      setDates({
+        ...dates,
+        arrivalDatetime:
+          navigationLogDetails?.announcedDatetime &&
+          navigationLogDetails?.captainDatetimeEta
+            ? navigationLogDetails?.captainDatetimeEta
+            : navigationLogRoutes[navigationLogRoutes.length - 1]
+                ?.estimatedArrival,
+      })
     }
     if (
       navigationLogDetails?.link !== undefined &&
