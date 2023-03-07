@@ -72,7 +72,6 @@ const ActionCard = ({
                 : '100%'
             }
             alt="navlog-action-animated"
-            backgroundColor="blue"
             mr={ms(10)}
             resizeMode="contain"
             source={renderAnimatedIcon(action.type, action.end)}
