@@ -184,7 +184,6 @@ const PlanningLogbook = () => {
           </Box>
         ) : (
           plannedNavigationLogs?.map((navigationLog, i: number) => {
-            console.log('display', display)
             return (
               <View key={i}>
                 <NavLogCard

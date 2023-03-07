@@ -27,7 +27,9 @@ API.interceptors.request.use(async req => {
   }
   if (__DEV__) {
     const requestUrl = req.url?.split('?')[0]
-    console.log(`Request URL: api/${requestUrl}`)
+    console.log(
+      `Request URL (${useSettings.getState().env}): api/${requestUrl}`
+    )
   }
   return req
 })
