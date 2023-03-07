@@ -80,12 +80,12 @@ const Details = () => {
     useEntity()
   const {navlog, title}: any = route.params
   const [dates, setDates] = useState<Dates>({
-    plannedETA: navlog?.plannedEta,
-    captainDatetimeETA: navlog?.captainDatetimeEta,
-    announcedDatetime: navlog?.announcedDatetime,
-    arrivalDatetime: navlog?.arrivalDatetime,
-    terminalApprovedDeparture: navlog?.terminalApprovedDeparture,
-    departureDatetime: navlog?.departureDatetime,
+    plannedETA: navigationLogDetails?.plannedEta,
+    captainDatetimeETA: navigationLogDetails?.captainDatetimeEta,
+    announcedDatetime: navigationLogDetails?.announcedDatetime,
+    arrivalDatetime: navigationLogDetails?.arrivalDatetime,
+    terminalApprovedDeparture: navigationLogDetails?.terminalApprovedDeparture,
+    departureDatetime: navigationLogDetails?.departureDatetime,
   })
   const [didDateChange, setDidDateChange] = useState({
     Pln: {didUpdate: false},
