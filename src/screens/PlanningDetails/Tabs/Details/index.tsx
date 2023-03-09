@@ -76,7 +76,7 @@ const Details = () => {
     isCreateNavLogActionSuccess,
     reset,
   } = usePlanning()
-  const {selectedEntity, isLoadingEntityUsers, getLinkEntityInfo, linkEntity} =
+  const {selectedEntity, isLoadingEntityUsers, getLinkEntityInfo, linkEntity, commentsWaitingForUpload} =
     useEntity()
   const {navlog, title}: any = route.params
   const [dates, setDates] = useState<Dates>({
@@ -715,6 +715,20 @@ const Details = () => {
             />
           )
         })}
+        {commentsWaitingForUpload.length
+          ? commentsWaitingForUpload.map((comment, index) => {
+              return (
+                <CommentCard
+                  key={index}
+                  comment={comment.commentArg}
+                  commentDescription={comment.description}
+                  images={comment.imgFile}
+                  onCommentImagePress={() => {}}
+                  onCommentPress={() => {}}
+                />
+              )
+            })
+          : null}
         {hasAddCommentPermission && (
           <Button
             bg={Colors.primary}
@@ -725,6 +739,7 @@ const Details = () => {
               navigation.navigate('AddEditComment', {
                 method: 'add',
                 routeFrom: 'Planning',
+                navlogId: navlog.id,
               })
             }
           >

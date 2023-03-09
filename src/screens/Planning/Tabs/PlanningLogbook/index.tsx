@@ -4,7 +4,7 @@ import {Box, Center, ScrollView, Text, View} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import {Colors} from '@bluecentury/styles'
-import {useEntity, usePlanning} from '@bluecentury/stores'
+import {useEntity, usePlanning, useSettings} from '@bluecentury/stores'
 import {LoadingAnimated} from '@bluecentury/components'
 import {useTranslation} from 'react-i18next'
 import {NavLogCard, NavLogDivider} from '@bluecentury/components'
@@ -24,9 +24,12 @@ const PlanningLogbook = () => {
   } = usePlanning()
   const {vesselId} = useEntity()
   const [display, setDisplay] = useState(null)
+  const {isOnline} = useSettings()
 
   useEffect(() => {
-    getVesselPlannedNavLogs(vesselId as string)
+    if (isOnline) {
+      getVesselPlannedNavLogs(vesselId as string)
+    }
     /* eslint-disable react-hooks/exhaustive-deps */
     /* eslint-disable react-native/no-inline-styles */
   }, [
