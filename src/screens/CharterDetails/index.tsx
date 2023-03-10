@@ -54,13 +54,13 @@ export default function CharterDetails({navigation, route}: Props) {
         mb={ms(6)}
       >
         <Text color="#29B7EF" fontWeight="semibold" mx={ms(10)} my={ms(10)}>
-          {cargo.type.nameEn || cargo.type.nameNl}
+          {cargo?.type?.nameEn || cargo?.type?.nameNl}
         </Text>
         <HStack borderColor={Colors.light} borderTopWidth={1}>
           <HStack alignItems="center" flex="1" my={ms(10)}>
             <Text ml={ms(10)}>{t('booked')}</Text>
             <Text bold color={Colors.disabled} ml={ms(10)}>
-              {parseInt(cargo.amount) || 0} MT
+              {parseInt(cargo?.amount) || 0} MT
             </Text>
           </HStack>
           <HStack
@@ -71,7 +71,7 @@ export default function CharterDetails({navigation, route}: Props) {
           >
             <Text ml={ms(10)}>{t('actual')}</Text>
             <Text bold color="#29B7EF" ml={ms(10)}>
-              {parseInt(cargo.actualAmount) || 0} MT
+              {parseInt(cargo?.actualAmount) || 0} MT
             </Text>
           </HStack>
         </HStack>
