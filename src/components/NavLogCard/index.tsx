@@ -172,7 +172,7 @@ export const NavLogCard = (props: {
                   return (
                     <HStack key={i} alignItems="center" mr={ms(5)}>
                       <Text bold color={Colors.disabled}>
-                        {`(${Math.ceil(cargo.tonnage)} MT) `}
+                        {`(${Math.ceil(cargo?.tonnage)} MT) `}
                       </Text>
                       <Text
                         bold
@@ -183,9 +183,9 @@ export const NavLogCard = (props: {
                       >
                         {/* ${Math.ceil(cargo.actualTonnage)} MT -  */}
                         {` ${
-                          cargo.type.nameEn !== null ||
-                          cargo.type.nameNl !== null
-                            ? cargo.type.nameEn || cargo.type.nameNl
+                          cargo?.type?.nameEn !== null ||
+                          cargo?.type?.nameNl !== null
+                            ? cargo?.type?.nameEn || cargo?.type?.nameNl
                             : t('unknown')
                         }`}
                       </Text>

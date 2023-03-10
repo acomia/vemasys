@@ -195,9 +195,9 @@ export default function Charters({navigation, route}: any) {
                       if (cargo.isLoading) {
                         return (
                           <Text
-                            key={cargo.id}
+                            key={cargo?.id}
                             color={
-                              item.isActive || isLoaded(item.cargo)
+                              item?.isActive || isLoaded(item?.cargo)
                                 ? '#29B7EF'
                                 : Colors.disabled
                             }
@@ -205,7 +205,7 @@ export default function Charters({navigation, route}: any) {
                           >
                             {parseInt(cargo.amount) || 0} MT -{' '}
                             {cargo.type
-                              ? cargo.type.nameEn || cargo.type.nameNl
+                              ? cargo?.type?.nameEn || cargo?.type?.nameNl
                               : null}
                           </Text>
                         )

@@ -204,9 +204,10 @@ const HistoryLogbook = ({routeIndex}: any) => {
                                   bold
                                   color={Colors.highlighted_text}
                                 >
-                                  {`${Math.ceil(cargo.tonnage)} MT - ${
-                                    cargo.type
-                                      ? cargo.type.nameEn || cargo.type.nameNl
+                                  {`${Math.ceil(cargo?.tonnage)} MT - ${
+                                    cargo?.type
+                                      ? cargo?.type?.nameEn ||
+                                        cargo?.type?.nameNl
                                       : t('unknown')
                                   }  `}
                                   <Image
