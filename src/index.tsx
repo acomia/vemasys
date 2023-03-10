@@ -7,10 +7,11 @@ import {enableLatestRenderer} from 'react-native-maps'
 import {NativeBaseProvider} from 'native-base'
 import {theme} from '@bluecentury/styles'
 import './constants/localization/i18n'
-import {useAuth, useSettings} from '@bluecentury/stores'
+import { useAuth, useEntity, useSettings } from "@bluecentury/stores";
 import i18next from 'i18next'
 import * as RNLocalize from 'react-native-localize'
 import {useNetInfo} from '@react-native-community/netinfo'
+import { uploadComment } from "@bluecentury/utils";
 
 enableLatestRenderer()
 
@@ -25,17 +26,41 @@ const App = () => {
   const env = useSettings().env
   const {isConnected, isInternetReachable} = useNetInfo()
   const setIsOnline = useSettings(state => state.setIsOnline)
+  const isOnline = useSettings().isOnline
+  const commentsWaitingForUpload = useEntity().commentsWaitingForUpload
+  const setCommentsWaitingForUpload = useEntity().setCommentsWaitingForUpload
 
   const checkConnection = () => {
     if (isConnected === true && isInternetReachable === true) {
-      console.log('You are online!')
+      // console.log('You are online!')
       setIsOnline(true)
     }
     if (isConnected === false && isInternetReachable === false) {
-      console.log('You are offline!')
+      // console.log('You are offline!')
       setIsOnline(false)
     }
   }
+
+  console.log('WAITING_COMMENTS', commentsWaitingForUpload)
+
+  useEffect(() => {
+    isOnline ? console.log('ONLINE') : console.log('OFFLINE')
+    if (isOnline && commentsWaitingForUpload.length) {
+      commentsWaitingForUpload.forEach(item => {
+        uploadComment(
+          item.method,
+          item.routeFrom,
+          item.description,
+          item.imgFile,
+          item.attachedImgs,
+          item.showToast,
+          undefined,
+          item.navlogId
+        )
+      })
+      setCommentsWaitingForUpload('clear')
+    }
+  }, [isOnline])
 
   useEffect(() => {
     Sentry.init({
