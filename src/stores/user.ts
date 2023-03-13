@@ -10,15 +10,18 @@ import {
   Entity,
   LevelNavigationCertificate,
 } from '@bluecentury/models'
+import {useEntity} from './entity'
 
 type UserState = {
   isLoadingRegistration: boolean
   isLoadingUpdateUserInfo: boolean
   isLoadingSignupRequest: boolean
   user: ExtendedUser | null
-  entityData: Entity | null
+  entityData: Array<Entity>
   registrationStatus: string
   updateUserInfoStatus: string
+  requestAccessToEntityStatus: string
+  signupRequestStatus: string
   levelNavigationCertificate: Array<LevelNavigationCertificate>
 }
 
@@ -26,9 +29,13 @@ type UserActions = {
   registerNewUser: (user: UserRegistration) => void
   updateUserInfo: (user: ExtendedUser, signupDocs: Array<SignupDocs>) => void
   getEntityData: (mmsi: number) => void
-  requestAccessToEntity: (entity: string) => void
-  createSignupRequestForCurrentUser: (user: ExtendedUser) => void
+  requestAccessToEntity: (entityID: string) => void
+  createSignupRequestForCurrentUser: (
+    user: ExtendedUser,
+    signupDocs: Array<SignupDocs>
+  ) => void
   getLevelOfNavigationCertificate: () => void
+  getEntityAdminUser: () => void
   reset: () => void
 }
 
@@ -39,9 +46,11 @@ const initialUserState: UserState = {
   isLoadingUpdateUserInfo: false,
   isLoadingSignupRequest: false,
   user: null,
-  entityData: null,
+  entityData: [],
   registrationStatus: '',
   updateUserInfoStatus: '',
+  requestAccessToEntityStatus: '',
+  signupRequestStatus: '',
   levelNavigationCertificate: [],
 }
 
@@ -73,7 +82,6 @@ export const useUser = create(
         set({isLoadingUpdateUserInfo: true})
         try {
           const response = await API.updateUserInfo(user, signupDocs)
-          console.log('update info:', response)
           if (response.id) {
             set({
               updateUserInfoStatus: 'SUCCESS',
@@ -91,53 +99,62 @@ export const useUser = create(
         }
       },
       getEntityData: async (mmsi: number) => {
-        set({isLoadingSignupRequest: true})
+        set({isLoadingRegistration: true, entityData: []})
         try {
           const response = await API.getEntityData(mmsi)
-          console.log('Entity: ', response)
-          if (response) {
-            set({entityData: response, isLoadingSignupRequest: false})
+          if (response.length > 0) {
+            useEntity.setState({entityUserId: response[0].id})
+            set({entityData: response, isLoadingRegistration: false})
           } else {
-            set({isLoadingSignupRequest: false})
+            set({entityData: [], isLoadingRegistration: false})
           }
         } catch (error) {
-          set({isLoadingSignupRequest: false})
+          set({isLoadingRegistration: false})
         }
       },
-      requestAccessToEntity: async (entity: string) => {
+      requestAccessToEntity: async (entityID: string) => {
         set({isLoadingRegistration: true})
         try {
-          const response = await API.requestAccessToEntity(entity)
-          console.log('register: ', response)
+          const response = await API.requestAccessToEntity(entityID)
+          console.log('request access to entity: ', response)
           if (response.id) {
             set({
-              registrationStatus: 'SUCCESS',
-              user: response,
+              requestAccessToEntityStatus: 'SUCCESS',
               isLoadingRegistration: false,
             })
           } else {
-            set({registrationStatus: 'FAILED', isLoadingRegistration: false})
-          }
-        } catch (error) {
-          set({registrationStatus: 'FAILED', isLoadingRegistration: false})
-        }
-      },
-      createSignupRequestForCurrentUser: async (user: ExtendedUser) => {
-        set({isLoadingRegistration: true})
-        try {
-          const response = await API.createSignupRequestForCurrentUser(user)
-          console.log('register: ', response)
-          if (response.id) {
             set({
-              registrationStatus: 'SUCCESS',
-              user: response,
+              requestAccessToEntityStatus: 'FAILED',
               isLoadingRegistration: false,
             })
-          } else {
-            set({registrationStatus: 'FAILED', isLoadingRegistration: false})
           }
         } catch (error) {
-          set({registrationStatus: 'FAILED', isLoadingRegistration: false})
+          set({
+            requestAccessToEntityStatus: 'FAILED',
+            isLoadingRegistration: false,
+          })
+        }
+      },
+      createSignupRequestForCurrentUser: async (
+        user: ExtendedUser,
+        signupDocs: Array<SignupDocs>
+      ) => {
+        set({isLoadingSignupRequest: true})
+        try {
+          const response = await API.createSignupRequestForCurrentUser(
+            user,
+            signupDocs
+          )
+          if (typeof response === 'object' && response.mmsi) {
+            set({
+              signupRequestStatus: 'SUCCESS',
+              isLoadingSignupRequest: false,
+            })
+          } else {
+            set({signupRequestStatus: 'FAILED', isLoadingSignupRequest: false})
+          }
+        } catch (error) {
+          set({signupRequestStatus: 'FAILED', isLoadingSignupRequest: false})
         }
       },
       getLevelOfNavigationCertificate: async () => {
@@ -156,10 +173,27 @@ export const useUser = create(
           set({isLoadingSignupRequest: false})
         }
       },
+      getEntityAdminUser: async () => {
+        set({isLoadingRegistration: true})
+        try {
+          const response = await API.getLevelOfNavigationCertificate()
+          if (response) {
+            set({
+              isLoadingRegistration: false,
+            })
+          } else {
+            set({isLoadingRegistration: false})
+          }
+        } catch (error) {
+          set({isLoadingRegistration: false})
+        }
+      },
       reset: () => {
         set({
           registrationStatus: '',
           updateUserInfoStatus: '',
+          requestAccessToEntityStatus: '',
+          signupRequestStatus: '',
         })
       },
     }),

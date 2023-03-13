@@ -44,7 +44,7 @@ export type User = {
 }
 
 type ExtendUser = {
-  mmsi: number
+  mmsi: string
   identificationDocument: {
     path: string
     description: string

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import {Box, Button, Image, Text} from 'native-base'
 import {Shadow} from 'react-native-shadow-2'
 import {ms} from 'react-native-size-matters'
@@ -6,6 +6,7 @@ import {useTranslation} from 'react-i18next'
 
 import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
+import {useNavigation} from '@react-navigation/native'
 
 interface ISignUpFinish {
   email: string
@@ -14,6 +15,14 @@ interface ISignUpFinish {
 
 export default function SignUpFinish({email, onProceed}: ISignUpFinish) {
   const {t} = useTranslation()
+  const navigation = useNavigation()
+  useEffect(() => {
+    navigation.setOptions({
+      headerShown: false,
+    })
+    /* eslint-disable react-hooks/exhaustive-deps */
+  }, [])
+
   return (
     <Box bg={Colors.white} flex="1">
       <Box flex="1" justifyContent="center" p={ms(16)}>

@@ -12,8 +12,13 @@ import {Credentials} from '@bluecentury/models'
 type Props = NativeStackScreenProps<RootStackParamList>
 export default function SignUp({navigation}: Props) {
   const toast = useToast()
-  const {registrationStatus, user, reset, getLevelOfNavigationCertificate} =
-    useUser()
+  const {
+    registrationStatus,
+    user,
+    reset,
+    getLevelOfNavigationCertificate,
+    entityData,
+  } = useUser()
   const {authenticate, token} = useAuth()
   const [userCreds, setUserCreds] = useState<Credentials>({
     username: '',
@@ -44,6 +49,8 @@ export default function SignUp({navigation}: Props) {
     }
   }, [registrationStatus, token])
 
+  console.log('entity', entityData)
+
   const showToast = (text: string, res: string) => {
     toast.show({
       duration: 2000,
@@ -70,8 +77,6 @@ export default function SignUp({navigation}: Props) {
   }
 
   const loginUser = (creds: Credentials) => {
-    console.log('update creds state')
-
     setUserCreds({
       ...userCreds,
       username: creds.username,

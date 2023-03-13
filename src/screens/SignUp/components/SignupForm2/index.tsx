@@ -21,7 +21,7 @@ import {Colors} from '@bluecentury/styles'
 import {DatetimePicker} from '../../components'
 import {Vemasys} from '@bluecentury/helpers'
 import {_t} from '@bluecentury/constants'
-import {useEntity, useUser} from '@bluecentury/stores'
+import {useUser} from '@bluecentury/stores'
 import {NoInternetConnectionMessage} from '@bluecentury/components'
 import {Credentials, ExtendedUser} from '@bluecentury/models'
 import {NavigationProp, useNavigation} from '@react-navigation/native'
@@ -29,7 +29,7 @@ import {NavigationProp, useNavigation} from '@react-navigation/native'
 const allFieldsRequired = _t('allFieldsRequired')
 const userFirstname = _t('newUserFirstname')
 const userLastname = _t('newUserLastname')
-const userPhone = _t('newUserPhone')
+const userEmailNotValid = _t('emailIsInvalid')
 const userEmail = _t('newUserEmail')
 
 interface Props {
@@ -40,7 +40,12 @@ interface Props {
 export default function SignUpForm2({userInfo, userCreds}: Props) {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>()
   const {t} = useTranslation()
-  const {levelNavigationCertificate} = useUser()
+  const {
+    isLoadingSignupRequest,
+    levelNavigationCertificate,
+    getEntityData,
+    entityData,
+  } = useUser()
 
   const [values, setValues] = useState({
     id: userInfo.id,
@@ -58,10 +63,18 @@ export default function SignUpForm2({userInfo, userCreds}: Props) {
   const [isAllFieldEmpty, setIsAllFieldEmpty] = useState(false)
   const [isFirstnameEmpty, setIsFirstnameEmpty] = useState(false)
   const [isLastnameEmpty, setIsLastnameEmpty] = useState(false)
-  const [isPhoneEmpty, setIsPhoneEmpty] = useState(false)
+  const [isEmailNotValid, setIsEmailNotValid] = useState(false)
   const [isEmailEmpty, setIsEmailEmpty] = useState(false)
   const [selectedDate, setSelectedDate] = useState('')
   const [openDatePicker, setOpenDatePicker] = useState(false)
+
+  useEffect(() => {
+    if (entityData.length > 0) {
+      navigation.navigate('SignUpVerification', {
+        signUpInfo: values,
+      })
+    }
+  }, [entityData])
 
   const onDatesChange = (date: Date) => {
     const formattedDate = Vemasys.formatDate(date)
@@ -72,7 +85,12 @@ export default function SignUpForm2({userInfo, userCreds}: Props) {
     }
   }
 
+  const isValidEmail = (email: string) => {
+    return /\S+@\S+\.\S+/.test(email)
+  }
+
   const onSignUpSubmit = () => {
+    getEntityData(Number(values.mmsi))
     if (
       values.firstname === '' &&
       values.lastname === '' &&
@@ -96,9 +114,10 @@ export default function SignUpForm2({userInfo, userCreds}: Props) {
       values.email === '' ? setIsEmailEmpty(true) : setIsEmailEmpty(false)
       return
     }
-    navigation.navigate('SignUpVerification', {
-      signUpInfo: values,
-    })
+    if (!isValidEmail(values.email)) {
+      setIsEmailNotValid(true)
+      return
+    }
   }
 
   return (
@@ -169,7 +188,11 @@ export default function SignUpForm2({userInfo, userCreds}: Props) {
             {userPhone}
           </FormControl.ErrorMessage>
         </FormControl> */}
-        <FormControl isRequired isInvalid={isEmailEmpty} mt={ms(10)}>
+        <FormControl
+          isRequired
+          isInvalid={isEmailEmpty || isEmailNotValid}
+          mt={ms(10)}
+        >
           <FormControl.Label color={Colors.disabled}>
             {t('email')}
           </FormControl.Label>
@@ -182,10 +205,12 @@ export default function SignUpForm2({userInfo, userCreds}: Props) {
             value={values.email}
             onChangeText={e => {
               setValues({...values, email: e})
+              setIsEmailEmpty(false)
+              setIsEmailNotValid(false)
             }}
           />
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-            {userEmail}
+            {isEmailNotValid ? userEmailNotValid : userEmail}
           </FormControl.ErrorMessage>
         </FormControl>
         <HStack>
@@ -242,8 +267,8 @@ export default function SignUpForm2({userInfo, userCreds}: Props) {
             selectedValue={values.language}
             onValueChange={e => setValues({...values, language: e})}
           >
-            <Select.Item label="English" value="english" />
-            <Select.Item label="French" value="french" />
+            <Select.Item label="English" value="en" />
+            <Select.Item label="French" value="fr" />
           </Select>
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
             Please select a language
@@ -273,40 +298,6 @@ export default function SignUpForm2({userInfo, userCreds}: Props) {
           </FormControl.ErrorMessage>
         </FormControl> */}
 
-        <FormControl isInvalid={false} mt={ms(10)}>
-          <FormControl.Label color={Colors.disabled}>
-            MMSI number
-          </FormControl.Label>
-          <Input
-            autoCapitalize="words"
-            placeholder=""
-            size="lg"
-            style={{backgroundColor: '#F7F7F7'}}
-            value={values.mmsi}
-            onChangeText={e => {
-              setValues({...values, mmsi: e})
-            }}
-          />
-          <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-            MMSI number
-          </FormControl.ErrorMessage>
-        </FormControl>
-        <FormControl isInvalid={false} mt={ms(10)}>
-          <FormControl.Label color={Colors.disabled}>EUID</FormControl.Label>
-          <Input
-            autoCapitalize="words"
-            placeholder=" "
-            size="lg"
-            style={{backgroundColor: '#F7F7F7'}}
-            value={values.euid}
-            onChangeText={e => {
-              setValues({...values, euid: e})
-            }}
-          />
-          <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-            EUID
-          </FormControl.ErrorMessage>
-        </FormControl>
         <FormControl isInvalid={false} mt={ms(10)}>
           <FormControl.Label color={Colors.disabled}>
             Certificate level
@@ -361,6 +352,8 @@ export default function SignUpForm2({userInfo, userCreds}: Props) {
             fontSize: 16,
           }}
           bg={Colors.primary}
+          isLoading={isLoadingSignupRequest}
+          isLoadingText="Processing"
           m={ms(16)}
           size="md"
           onPress={onSignUpSubmit}

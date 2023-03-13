@@ -22,6 +22,9 @@ import {Credentials, UserRegistration} from '@bluecentury/models'
 const allFieldsRequired = _t('allFieldsRequired')
 const userUsername = _t('usernameRequired')
 const userEmail = _t('newUserEmail')
+const userEmailNotValid = _t('emailIsInvalid')
+const mmsiRequired = _t('mmsiIsRequired')
+const mmsiNotExist = _t('mmsiNotExist')
 const userPassword = _t('passwordRequired')
 const userConfirmPassword = _t('confirmPasswordRequired')
 
@@ -30,6 +33,8 @@ const userConfirmPassword = _t('confirmPasswordRequired')
 // }
 
 interface IForm1State extends UserRegistration {
+  mmsi: string
+  euid: string
   confirmPassword?: string
 }
 
@@ -39,25 +44,35 @@ type Props = {
 
 export default function SignUpForm1({loginCreds}: Props) {
   const {t} = useTranslation()
-  const {isLoadingRegistration, registerNewUser} = useUser()
+  const {isLoadingRegistration, registerNewUser, getEntityData} = useUser()
 
   const [values, setValues] = useState<IForm1State>({
     username: '',
     email: '',
+    mmsi: '',
+    euid: '',
     plainPassword: '',
     confirmPassword: '',
   })
   const [isAllFieldEmpty, setIsAllFieldEmpty] = useState(false)
   const [isUsernameEmpty, setIsUsernameEmpty] = useState(false)
   const [isEmailEmpty, setIsEmailEmpty] = useState(false)
+  const [isEmailNotValid, setIsEmailNotValid] = useState(false)
+  const [isMMSIEmpty, setIsMMSIEmpty] = useState(false)
+  const [isMMSIExist, setIsMMSIExist] = useState(false)
   const [isPasswordEmpty, setIsPasswordEmpty] = useState(false)
   const [isConfirmPasswordEmpty, setIsConfirmPasswordEmpty] = useState(false)
   const [isPasswordMatch, setIsPasswordMatch] = useState(true)
+
+  const isValidEmail = (email: string) => {
+    return /\S+@\S+\.\S+/.test(email)
+  }
 
   const onNextSubmit = () => {
     if (
       values.username === '' &&
       values.email === '' &&
+      values.mmsi === '' &&
       values.plainPassword === '' &&
       values.confirmPassword === ''
     ) {
@@ -67,6 +82,7 @@ export default function SignUpForm1({loginCreds}: Props) {
     if (
       values.username === '' ||
       values.email === '' ||
+      values.mmsi === '' ||
       values.plainPassword === '' ||
       values.confirmPassword === ''
     ) {
@@ -74,6 +90,7 @@ export default function SignUpForm1({loginCreds}: Props) {
         ? setIsUsernameEmpty(true)
         : setIsUsernameEmpty(false)
       values.email === '' ? setIsEmailEmpty(true) : setIsEmailEmpty(false)
+      values.mmsi === '' ? setIsMMSIEmpty(true) : setIsMMSIEmpty(false)
       values.plainPassword === ''
         ? setIsPasswordEmpty(true)
         : setIsPasswordEmpty(false)
@@ -86,8 +103,12 @@ export default function SignUpForm1({loginCreds}: Props) {
       setIsPasswordMatch(false)
       return
     }
+    if (!isValidEmail(values.email)) {
+      setIsEmailNotValid(true)
+      return
+    }
     loginCreds({username: values.username, password: values.plainPassword})
-    registerNewUser(values)
+    getEntityData(Number(values.mmsi))
   }
 
   return (
@@ -124,7 +145,11 @@ export default function SignUpForm1({loginCreds}: Props) {
           </FormControl.ErrorMessage>
         </FormControl>
 
-        <FormControl isRequired isInvalid={isEmailEmpty} mt={ms(10)}>
+        <FormControl
+          isRequired
+          isInvalid={isEmailEmpty || isEmailNotValid}
+          mt={ms(10)}
+        >
           <FormControl.Label color={Colors.disabled}>
             {t('email')}
           </FormControl.Label>
@@ -138,10 +163,50 @@ export default function SignUpForm1({loginCreds}: Props) {
             onChangeText={e => {
               setValues({...values, email: e})
               setIsAllFieldEmpty(false)
+              setIsEmailNotValid(false)
+              setIsEmailEmpty(false)
             }}
           />
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-            {userEmail}
+            {isEmailNotValid ? userEmailNotValid : userEmail}
+          </FormControl.ErrorMessage>
+        </FormControl>
+        <FormControl
+          isRequired
+          isInvalid={isMMSIEmpty || isMMSIExist}
+          mt={ms(10)}
+        >
+          <FormControl.Label color={Colors.disabled}>
+            MMSI number
+          </FormControl.Label>
+          <Input
+            autoCapitalize="words"
+            placeholder=""
+            size="lg"
+            style={{backgroundColor: '#F7F7F7'}}
+            value={values.mmsi}
+            onChangeText={e => {
+              setValues({...values, mmsi: e})
+            }}
+          />
+          <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
+            {isMMSIExist ? mmsiNotExist : mmsiRequired}{' '}
+          </FormControl.ErrorMessage>
+        </FormControl>
+        <FormControl isInvalid={false} mt={ms(10)}>
+          <FormControl.Label color={Colors.disabled}>EUID</FormControl.Label>
+          <Input
+            autoCapitalize="words"
+            placeholder=" "
+            size="lg"
+            style={{backgroundColor: '#F7F7F7'}}
+            value={values.euid}
+            onChangeText={e => {
+              setValues({...values, euid: e})
+            }}
+          />
+          <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
+            EUID
           </FormControl.ErrorMessage>
         </FormControl>
         <FormControl isRequired isInvalid={isPasswordEmpty} mt={ms(10)}>

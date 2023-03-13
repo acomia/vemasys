@@ -30,11 +30,11 @@ export const updateUserInfo = async (
         language: user.language,
         email: user.email,
         username: user.username,
+        professionalEmail: user.email,
       },
       ...docs.map(file => file)
     )
   }
-  console.log(updateUserRequest)
 
   try {
     const response = await API.put(
@@ -66,10 +66,10 @@ export const getEntityData = async (mmsi: number) => {
   }
 }
 
-export const requestAccessToEntity = async (entity: string) => {
+export const requestAccessToEntity = async (entityID: string) => {
   try {
     const response = await API.post('entity_users/request_access_to_entity', {
-      entity,
+      entity: entityID,
     })
     if (!response.data) {
       throw 'Failed to request access to entity.'
@@ -81,26 +81,32 @@ export const requestAccessToEntity = async (entity: string) => {
   }
 }
 
-export const createSignupRequestForCurrentUser = async (user: ExtendedUser) => {
+export const createSignupRequestForCurrentUser = async (
+  user: ExtendedUser,
+  docs: Array<SignupDocs>
+) => {
   let signUpRequest
-  signUpRequest = Object.assign({}, userInfo, {
-    mmsi: userInfo.mmsi ? parseInt(userInfo.mmsi) : null,
-  })
+  signUpRequest = Object.assign(
+    {},
+    {
+      mmsi: user.mmsi ? parseInt(user.mmsi) : null,
+    }
+  )
   if (docs.length > 0) {
+    const tonnageDoc = docs.find(doc => doc.tonnageCertificate !== undefined)
     signUpRequest = Object.assign(
       {},
-      userInfo,
       {
-        mmsi: userInfo.mmsi ? parseInt(userInfo.mmsi) : null,
+        mmsi: user.mmsi ? parseInt(user.mmsi) : null,
       },
-      ...docs.map(file => file)
+      tonnageDoc
     )
   }
 
   try {
     const response = await API.post(
       'signup_requests/create_for_current_user',
-      user
+      signUpRequest
     )
     if (!response.data) {
       throw 'Failed to request signup for user.'
@@ -113,6 +119,19 @@ export const createSignupRequestForCurrentUser = async (user: ExtendedUser) => {
 }
 
 export const getLevelOfNavigationCertificate = async () => {
+  try {
+    const response = await API.get('level_of_navigation_certificates')
+    if (!response.data) {
+      throw 'Failed to get level of navigation certificate data.'
+    }
+    return response.data
+  } catch (error) {
+    console.log('Error: Navigation certificate data:', error)
+    return null
+  }
+}
+
+export const getEntityAdminUser = async () => {
   try {
     const response = await API.get('level_of_navigation_certificates')
     if (!response.data) {

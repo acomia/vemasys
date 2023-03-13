@@ -8,21 +8,24 @@ import DocumentScanner from 'react-native-document-scanner-plugin'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import Icon from 'react-native-vector-icons/Ionicons'
 
-import {useUser} from '@bluecentury/stores'
+import {useAuth, useUser} from '@bluecentury/stores'
 import {Selfie, SignUpFinish, UploadDocs, UploadID} from './components'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 export default function SignUpVerification({navigation, route}: Props) {
   const {signUpInfo}: any = route.params
   const {
-    isLoadingSignupRequest,
+    createSignupRequestForCurrentUser,
+    signupRequestStatus,
     updateUserInfoStatus,
     updateUserInfo,
     entityData,
     getEntityData,
     requestAccessToEntity,
+    requestAccessToEntityStatus,
     reset,
   } = useUser()
+  const {token, logout} = useAuth()
   const [page, setPage] = useState(1)
   const [documentFile, setDocumentFile] = useState<ImageFile | string>('')
   const [signUpDocs, setSignUpDocs] = useState([])
@@ -34,7 +37,7 @@ export default function SignUpVerification({navigation, route}: Props) {
         <Icon name="arrow-back" size={28} onPress={onBackHeaderPress} />
       ),
     })
-  })
+  }, [])
 
   useEffect(() => {
     if (page === 1 && documentFile !== '') {
@@ -79,14 +82,38 @@ export default function SignUpVerification({navigation, route}: Props) {
   }, [documentFile])
 
   useEffect(() => {
+    if (!token) {
+      navigation.navigate('Login')
+    }
     if (updateUserInfoStatus === 'SUCCESS') {
-      getEntityData(signUpInfo.mmsi)
+      reset()
+      getEntityData(Number(signUpInfo.mmsi))
+    }
+    if (requestAccessToEntityStatus === 'SUCCESS') {
+      reset()
+      setPage(4)
+    }
+    if (signupRequestStatus === 'SUCCESS') {
+      setPage(4)
       reset()
     }
-    if (entityData !== null) {
-      console.log('entities:', entityData)
+    if (entityData.length > 0) {
+      // requestAccessToEntity(entityData[0].id.toString())
+      return
+    } else {
+      console.log(page)
+
+      if (page === 2) {
+        setPage(3)
+      }
     }
-  }, [updateUserInfoStatus, entityData])
+  }, [
+    token,
+    updateUserInfoStatus,
+    entityData,
+    requestAccessToEntityStatus,
+    signupRequestStatus,
+  ])
 
   const onBackHeaderPress = () => {
     switch (page) {
@@ -109,20 +136,16 @@ export default function SignUpVerification({navigation, route}: Props) {
   }
   const onUploadIDProceed = () => {
     setDocumentFile('')
-    console.log(signUpInfo)
     updateUserInfo(signUpInfo, signUpDocs)
   }
 
   const onFinishVerification = () => {
-    console.log(signUpDocs)
-
-    // createSignUpRequest(signUpInfo, signUpDocs)
+    createSignupRequestForCurrentUser(signUpInfo, signUpDocs)
   }
 
   const onBackToLogin = () => {
-    setPage(1)
+    logout()
     reset()
-    navigation.navigate('Login')
   }
 
   const renderScreen = () => {
