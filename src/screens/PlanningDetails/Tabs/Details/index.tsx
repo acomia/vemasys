@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react'
-import {RefreshControl} from 'react-native'
+import React, {useCallback, useEffect, useState} from 'react'
+import {RefreshControl, Alert} from 'react-native'
 import {
   Box,
   Button,
@@ -16,6 +16,7 @@ import {ms} from 'react-native-size-matters'
 import DatePicker from 'react-native-date-picker'
 import {
   NavigationProp,
+  useFocusEffect,
   useIsFocused,
   useNavigation,
   useRoute,
@@ -76,8 +77,13 @@ const Details = () => {
     isCreateNavLogActionSuccess,
     reset,
   } = usePlanning()
-  const {selectedEntity, isLoadingEntityUsers, getLinkEntityInfo, linkEntity, commentsWaitingForUpload} =
-    useEntity()
+  const {
+    selectedEntity,
+    isLoadingEntityUsers,
+    getLinkEntityInfo,
+    linkEntity,
+    commentsWaitingForUpload,
+  } = useEntity()
   const {navlog, title}: any = route.params
   const [dates, setDates] = useState<Dates>({
     plannedETA: navigationLogDetails?.plannedEta,
@@ -117,9 +123,62 @@ const Details = () => {
       ? true
       : false
 
+  // useFocusEffect(
+  useEffect(() => {
+    const callback = event => {
+      console.log('event', unsavedChanges.length)
+      if (unsavedChanges.length > 0) {
+        // event.preventDefault()
+        Alert.alert(t('confirmation'), t('unsavedChangesProceedConfirmation'), [
+          {
+            text: t('no'),
+            style: 'cancel',
+            onPress: () => {
+              setLeaveTabModal(false)
+              navigation.navigate('PlanningDetails', {
+                navlog: route?.params?.navlog,
+                title: route?.params?.title,
+              })
+            },
+          },
+          {
+            text: t('yes'),
+            style: 'destructive',
+            onPress: () => {
+              onProceedToNextTab()
+            },
+          },
+        ])
+      }
+    }
+    navigation.addListener('beforeRemove', callback)
+
+    return () => {
+      navigation.removeListener('beforeRemove', callback)
+    }
+  }, [navigation, unsavedChanges])
+  // )
+
   useEffect(() => {
     if (!focused && unsavedChanges.length > 0) {
-      setLeaveTabModal(true)
+      // setLeaveTabModal(true) // this is for the modal
+      Alert.alert(t('confirmation'), t('unsavedChangesProceedConfirmation'), [
+        {
+          text: t('no'),
+          style: 'cancel',
+          onPress: () => {
+            setLeaveTabModal(false)
+            navigation.goBack()
+          },
+        },
+        {
+          text: t('yes'),
+          style: 'destructive',
+          onPress: () => {
+            onProceedToNextTab()
+          },
+        },
+      ])
     }
     /* eslint-disable react-hooks/exhaustive-deps */
   }, [focused])
@@ -795,6 +854,8 @@ const Details = () => {
             </HStack>
           </Modal.Content>
         </Modal>
+        {/* this is not used but can be use in the future */}
+        {/* start */}
         <Modal
           animationPreset="slide"
           isOpen={leaveTabModal}
@@ -832,6 +893,7 @@ const Details = () => {
             </HStack>
           </Modal.Content>
         </Modal>
+        {/* end */}
       </ScrollView>
       {unsavedChanges.length > 0 ? (
         <Box bg={Colors.white} position="relative">
