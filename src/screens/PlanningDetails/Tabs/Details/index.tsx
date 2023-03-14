@@ -872,7 +872,6 @@ const Details = () => {
             </HStack>
           </Modal.Content>
         </Modal>
-        {/* end */}
       </ScrollView>
       {unsavedChanges.length > 0 ? (
         <Box bg={Colors.white} position="relative">
