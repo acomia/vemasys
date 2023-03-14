@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {RefreshControl} from 'react-native'
+import {BackHandler, RefreshControl, TouchableOpacity} from 'react-native'
 import {
   Box,
   Button,
@@ -76,8 +76,13 @@ const Details = () => {
     isCreateNavLogActionSuccess,
     reset,
   } = usePlanning()
-  const {selectedEntity, isLoadingEntityUsers, getLinkEntityInfo, linkEntity, commentsWaitingForUpload} =
-    useEntity()
+  const {
+    selectedEntity,
+    isLoadingEntityUsers,
+    getLinkEntityInfo,
+    linkEntity,
+    commentsWaitingForUpload,
+  } = useEntity()
   const {navlog, title}: any = route.params
   const [dates, setDates] = useState<Dates>({
     plannedETA: navigationLogDetails?.plannedEta,
@@ -103,6 +108,7 @@ const Details = () => {
   const [selectedAction, setSelectedAction] = useState<NavigationLogAction>({})
   const [confirmModal, setConfirmModal] = useState(false)
   const [leaveTabModal, setLeaveTabModal] = useState(false)
+  const [buttonBackLeave, setButtonBackLeave] = useState(false)
   const hasAddCommentPermission = hasSelectedEntityUserPermission(
     selectedEntity,
     ROLE_PERMISSION_NAVIGATION_LOG_ADD_COMMENT
@@ -116,6 +122,47 @@ const Details = () => {
     navigationLogDetails?.link !== null
       ? true
       : false
+
+  useEffect(() => {
+    navigation.getParent()?.setOptions({
+      headerLeft: () => {
+        return (
+          <Box ml={ms(1)} mr={ms(20)}>
+            <TouchableOpacity
+              onPress={() => {
+                if (unsavedChanges.length > 0) {
+                  setButtonBackLeave(true)
+                  setLeaveTabModal(true)
+                } else {
+                  navigation.goBack()
+                }
+              }}
+            >
+              <Ionicons
+                color={Colors.black}
+                name="arrow-back-outline"
+                size={ms(25)}
+              />
+            </TouchableOpacity>
+          </Box>
+        )
+      },
+    })
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        if (unsavedChanges.length > 0) {
+          setButtonBackLeave(true)
+          setLeaveTabModal(true)
+          return true
+        }
+        return false
+      }
+    )
+
+    return () => backHandler.remove()
+  }, [navigation, unsavedChanges])
 
   useEffect(() => {
     if (!focused && unsavedChanges.length > 0) {
@@ -575,6 +622,10 @@ const Details = () => {
       Nor: {didUpdate: false},
       Doc: {didUpdate: false},
     })
+    if (buttonBackLeave) {
+      setButtonBackLeave(false)
+      navigation.goBack()
+    }
   }
 
   const onPullToReload = () => {
@@ -795,6 +846,8 @@ const Details = () => {
             </HStack>
           </Modal.Content>
         </Modal>
+        {/* this is not used but can be use in the future */}
+        {/* start */}
         <Modal
           animationPreset="slide"
           isOpen={leaveTabModal}
@@ -812,7 +865,11 @@ const Details = () => {
                 flex="1"
                 m={ms(12)}
                 onPress={() => {
-                  setLeaveTabModal(false), navigation.goBack()
+                  setLeaveTabModal(false)
+                  if (!buttonBackLeave) {
+                    navigation.goBack()
+                  }
+                  setButtonBackLeave(false)
                 }}
               >
                 <Text color={Colors.disabled} fontWeight="medium">
