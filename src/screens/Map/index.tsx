@@ -607,7 +607,7 @@ export default function Map({navigation}: Props) {
           enabledGestureInteraction={false}
           initialSnap={1}
           renderContent={renderBottomContent}
-          snapPoints={['60%', '30%']}
+          snapPoints={['63%', '30%']}
           onCloseEnd={() => setSnapStatus(0)}
           onOpenEnd={() => setSnapStatus(1)}
         />

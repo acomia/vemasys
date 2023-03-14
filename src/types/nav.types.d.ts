@@ -15,7 +15,7 @@ type RootStackParamList = {
   PlanningDetails: {navlog: any; title?: string}
   AddEditBulkCargo: {cargo?: any; method?: string}
   PlanningNewComment: undefined
-  AddEditComment: {comment?: Comments; method: string; routeFrom?: string}
+  AddEditComment: {comment?: Comments; method: string; routeFrom?: string; navlogId: number}
   AddEditNavlogAction: {
     method: string
     actionType: string

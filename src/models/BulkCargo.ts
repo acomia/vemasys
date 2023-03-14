@@ -5,6 +5,6 @@ export type BulkCargo = {
   id: number
   isLoading: boolean
   log: StringOrNull
-  tonnage: NumberOrNull
+  tonnage: number
   type: BulkType
 }

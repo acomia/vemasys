@@ -12,12 +12,14 @@ interface ICommentCard {
   commentDescription: string
   onCommentPress: () => void
   onCommentImagePress: (file: ImageFile) => void
+  images?: any[]
 }
 const CommentCard = ({
   comment,
   commentDescription,
   onCommentPress,
   onCommentImagePress,
+  images,
 }: ICommentCard) => {
   let imgLinks: string[] = []
   const getAttrFromString = (str: string) => {
@@ -29,7 +31,10 @@ const CommentCard = ({
     }
     imgLinks = res
   }
-  getAttrFromString(comment.description)
+  console.log('IMAGES', images)
+  if (comment && comment.description) {
+    getAttrFromString(comment.description)
+  }
   return (
     <TouchableOpacity activeOpacity={0.6} onPress={onCommentPress}>
       <Box
@@ -86,6 +91,30 @@ const CommentCard = ({
             }}
             // maxH={ms(120)}
             data={imgLinks}
+            keyExtractor={item => item}
+            removeClippedSubviews={true}
+            scrollEventThrottle={16}
+            showsHorizontalScrollIndicator={false}
+          />
+        ) : null}
+        {images && images.length > 0 ? (
+          <FlatList
+            horizontal
+            renderItem={image => {
+              return (
+                <TouchableOpacity>
+                  <Image
+                    alt="file-upload"
+                    h={ms(114)}
+                    mr={ms(10)}
+                    source={{uri: image.item.uri}}
+                    w={ms(136)}
+                  />
+                </TouchableOpacity>
+              )
+            }}
+            // maxH={ms(120)}
+            data={images}
             keyExtractor={item => item}
             removeClippedSubviews={true}
             scrollEventThrottle={16}

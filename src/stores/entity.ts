@@ -3,8 +3,19 @@ import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as API from '@bluecentury/api/vemasys'
 import {ENTITY_TYPE_EXPLOITATION_VESSEL} from '@bluecentury/constants'
-import {Entity, EntityUser, User, Vessel} from '@bluecentury/models'
+import {Comments, Entity, EntityUser, User, Vessel} from '@bluecentury/models'
 import {useSettings} from '@bluecentury/stores/settings'
+
+type CommentWaitingForUpload = {
+  method: string
+  routeFrom: string | undefined
+  description: string
+  imgFile: any[]
+  attachedImgs: any[]
+  showToast: (text: string, res: string) => void
+  commentArg?: Comments
+  navlogId?: number
+}
 
 type EntityState = {
   hasEntityHydrated: boolean
@@ -31,6 +42,7 @@ type EntityState = {
   pendingRoles: Array<any>
   acceptRoleStatus: string
   signUpRequestStatus: string
+  commentsWaitingForUpload: CommentWaitingForUpload[]
 }
 
 type EntityActions = {
@@ -45,6 +57,9 @@ type EntityActions = {
   updatePendingRole: (id: string, accept: boolean) => void
   createSignUpRequest: (userInfo: any, docs: Array<any>) => void
   getLinkEntityInfo: (id: string) => void
+  setCommentsWaitingForUpload: (
+    comment: CommentWaitingForUpload | string
+  ) => void
 }
 
 type EntityStore = EntityState & EntityActions
@@ -74,6 +89,7 @@ const initialEntityState: EntityState = {
   pendingRoles: [],
   acceptRoleStatus: '',
   signUpRequestStatus: '',
+  commentsWaitingForUpload: [],
 }
 
 export const useEntity = create(
@@ -267,6 +283,17 @@ export const useEntity = create(
         } catch (error) {
           set({isLoadingEntityUsers: false})
         }
+      },
+      setCommentsWaitingForUpload: comment => {
+        const comments = get().commentsWaitingForUpload
+        if (comment === 'clear') {
+          set({commentsWaitingForUpload: []})
+          return
+        }
+        if (typeof comment !== 'string') {
+          set({commentsWaitingForUpload: [comment, ...comments]})
+        }
+        console.log('WAITING_FOR_UPLOAD', get().commentsWaitingForUpload)
       },
       reset: () => {
         set({
