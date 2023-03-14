@@ -1,5 +1,5 @@
-import React, {useCallback, useEffect, useState} from 'react'
-import {RefreshControl, Alert} from 'react-native'
+import React, {useEffect, useState} from 'react'
+import {RefreshControl, TouchableOpacity} from 'react-native'
 import {
   Box,
   Button,
@@ -16,7 +16,6 @@ import {ms} from 'react-native-size-matters'
 import DatePicker from 'react-native-date-picker'
 import {
   NavigationProp,
-  useFocusEffect,
   useIsFocused,
   useNavigation,
   useRoute,
@@ -109,6 +108,7 @@ const Details = () => {
   const [selectedAction, setSelectedAction] = useState<NavigationLogAction>({})
   const [confirmModal, setConfirmModal] = useState(false)
   const [leaveTabModal, setLeaveTabModal] = useState(false)
+  const [buttonBackLeave, setButtonBackLeave] = useState(false)
   const hasAddCommentPermission = hasSelectedEntityUserPermission(
     selectedEntity,
     ROLE_PERMISSION_NAVIGATION_LOG_ADD_COMMENT
@@ -123,62 +123,33 @@ const Details = () => {
       ? true
       : false
 
-  // useFocusEffect(
   useEffect(() => {
-    const callback = event => {
-      console.log('event', unsavedChanges.length)
-      if (unsavedChanges.length > 0) {
-        // event.preventDefault()
-        Alert.alert(t('confirmation'), t('unsavedChangesProceedConfirmation'), [
-          {
-            text: t('no'),
-            style: 'cancel',
-            onPress: () => {
-              setLeaveTabModal(false)
-              navigation.navigate('PlanningDetails', {
-                navlog: route?.params?.navlog,
-                title: route?.params?.title,
-              })
-            },
-          },
-          {
-            text: t('yes'),
-            style: 'destructive',
-            onPress: () => {
-              onProceedToNextTab()
-            },
-          },
-        ])
-      }
-    }
-    navigation.addListener('beforeRemove', callback)
-
-    return () => {
-      navigation.removeListener('beforeRemove', callback)
-    }
+    navigation.getParent()?.setOptions({
+      headerLeft: () => {
+        return (
+          <Box ml={ms(1)} mr={ms(20)}>
+            <TouchableOpacity
+              onPress={() =>
+                unsavedChanges.length > 0
+                  ? setButtonBackLeave(true)
+                  : navigation.goBack()
+              }
+            >
+              <Ionicons
+                color={Colors.black}
+                name="arrow-back-outline"
+                size={ms(25)}
+              />
+            </TouchableOpacity>
+          </Box>
+        )
+      },
+    })
   }, [navigation, unsavedChanges])
-  // )
 
   useEffect(() => {
     if (!focused && unsavedChanges.length > 0) {
-      // setLeaveTabModal(true) // this is for the modal
-      Alert.alert(t('confirmation'), t('unsavedChangesProceedConfirmation'), [
-        {
-          text: t('no'),
-          style: 'cancel',
-          onPress: () => {
-            setLeaveTabModal(false)
-            navigation.goBack()
-          },
-        },
-        {
-          text: t('yes'),
-          style: 'destructive',
-          onPress: () => {
-            onProceedToNextTab()
-          },
-        },
-      ])
+      setLeaveTabModal(true)
     }
     /* eslint-disable react-hooks/exhaustive-deps */
   }, [focused])
@@ -634,6 +605,10 @@ const Details = () => {
       Nor: {didUpdate: false},
       Doc: {didUpdate: false},
     })
+    if (buttonBackLeave) {
+      setButtonBackLeave(false)
+      navigation.goBack()
+    }
   }
 
   const onPullToReload = () => {
@@ -858,7 +833,7 @@ const Details = () => {
         {/* start */}
         <Modal
           animationPreset="slide"
-          isOpen={leaveTabModal}
+          isOpen={leaveTabModal || buttonBackLeave}
           px={ms(12)}
           size="full"
         >
@@ -873,7 +848,11 @@ const Details = () => {
                 flex="1"
                 m={ms(12)}
                 onPress={() => {
-                  setLeaveTabModal(false), navigation.goBack()
+                  setLeaveTabModal(false)
+                  if (!buttonBackLeave) {
+                    navigation.goBack()
+                  }
+                  setButtonBackLeave(false)
                 }}
               >
                 <Text color={Colors.disabled} fontWeight="medium">
