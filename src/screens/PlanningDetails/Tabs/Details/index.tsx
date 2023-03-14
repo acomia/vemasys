@@ -129,11 +129,14 @@ const Details = () => {
         return (
           <Box ml={ms(1)} mr={ms(20)}>
             <TouchableOpacity
-              onPress={() =>
-                unsavedChanges.length > 0
-                  ? setButtonBackLeave(true)
-                  : navigation.goBack()
-              }
+              onPress={() => {
+                if (unsavedChanges.length > 0) {
+                  setButtonBackLeave(true)
+                  setLeaveTabModal(true)
+                } else {
+                  navigation.goBack()
+                }
+              }}
             >
               <Ionicons
                 color={Colors.black}
@@ -151,6 +154,7 @@ const Details = () => {
       () => {
         if (unsavedChanges.length > 0) {
           setButtonBackLeave(true)
+          setLeaveTabModal(true)
           return true
         }
         return false
@@ -846,7 +850,7 @@ const Details = () => {
         {/* start */}
         <Modal
           animationPreset="slide"
-          isOpen={leaveTabModal || buttonBackLeave}
+          isOpen={leaveTabModal}
           px={ms(12)}
           size="full"
         >
