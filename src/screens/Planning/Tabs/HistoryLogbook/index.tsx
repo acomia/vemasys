@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react'
+import {RefreshControl, TouchableOpacity} from 'react-native'
 import {Box, Center, HStack, Image, ScrollView, Text} from 'native-base'
 import {ms} from 'react-native-size-matters'
-import moment from 'moment'
+import moment, {Moment} from 'moment'
 import {useNavigation} from '@react-navigation/native'
 import {useTranslation} from 'react-i18next'
 
@@ -13,10 +14,15 @@ import {
   calculateTotalOut,
   formatLocationLabel,
 } from '@bluecentury/constants'
-import {RefreshControl, TouchableOpacity} from 'react-native'
 import {LoadingAnimated, NavigationLogType} from '@bluecentury/components'
+import {BulkCargo, NavigationLog} from '@bluecentury/models'
 
-const HistoryLogbook = ({routeIndex}: any) => {
+interface INavlogCard {
+  navigationLog: NavigationLog | null
+  currentDate: Date | StringOrNull
+  dateChanged: boolean
+}
+const HistoryLogbook = () => {
   const {t} = useTranslation()
   const navigation = useNavigation()
   const {
@@ -42,34 +48,27 @@ const HistoryLogbook = ({routeIndex}: any) => {
   }, [historyNavigationLogs])
 
   historyNavigationLogs.sort(
-    (a: any, b: any) =>
+    (a: NavigationLog, b: NavigationLog) =>
       moment(a.arrivalDatetime || a.plannedEta || a.arrivalZoneTwo).valueOf() -
       moment(b.arrivalDatetime || b.plannedEta || b.arrivalZoneTwo).valueOf()
   )
   historyNavigationLogs.reverse()
 
   const timeframeToLabel = (
-    planned: any,
-    bookedETA: any,
-    start: any,
-    end: any,
-    current: any,
-    cargoType: any,
-    mode: any
+    planned: Moment | null,
+    bookedETA: Moment | null,
+    start: Moment | null,
+    end: Moment | null,
+    current: Moment | null,
+    cargoType: string | undefined
   ) => {
-    planned = planned ? moment(planned) : null
-    bookedETA = bookedETA ? moment(bookedETA) : null
-    start = start ? moment(start) : null
-    end = end ? moment(end) : null
-    current = current ? moment(current) : null
-
     if (start) {
       if (end) {
         if (
           start.isSame(end, 'day') &&
-          start.format('hh:mm ') == end.format('hh:mm A')
+          start.format('hh:mm ') === end.format('hh:mm A')
         ) {
-          if (mode === 1 && current && current.isSame(start, 'day')) {
+          if (current && current.isSame(start, 'day')) {
             return `${start.format('HH:mm')}`
           } else {
             return `${start.format('DD/MM/YYYY HH:mm')}`
@@ -79,11 +78,7 @@ const HistoryLogbook = ({routeIndex}: any) => {
             current &&
             current.isSame(start, 'day') &&
             current.isSame(end, 'day')
-          if (mode === 0 && currentStartAndEndDayAreEqual) {
-            return `${start.format('DD/MM/YYYY HH:mm')} - ${end.format(
-              'HH:mm'
-            )}`
-          } else if (mode === 1 && currentStartAndEndDayAreEqual) {
+          if (currentStartAndEndDayAreEqual) {
             return `${start.format('HH:mm')} - ${end.format('HH:mm')}`
           } else {
             return `${start.format('DD/MM/YYYY HH:mm')} - ${end.format(
@@ -92,7 +87,7 @@ const HistoryLogbook = ({routeIndex}: any) => {
           }
         }
       } else {
-        if (mode === 1 && current && current.isSame(start, 'day')) {
+        if (current && current.isSame(start, 'day')) {
           return `${start.format('HH:mm')} - Present`
         } else {
           return `${start.format('DD/MM/YYYY HH:mm')} - Present`
@@ -109,7 +104,7 @@ const HistoryLogbook = ({routeIndex}: any) => {
     }
 
     if (planned) {
-      if (mode === 1 && current && current.isSame(planned, 'day')) {
+      if (current && current.isSame(planned, 'day')) {
         return `Planned: ${moment(planned).format('DD MMM YYYY | HH:mm')}`
       } else {
         return `Planned: ${moment(planned).format('DD MMM YYYY | HH:mm')}`
@@ -119,24 +114,29 @@ const HistoryLogbook = ({routeIndex}: any) => {
     return 'No date'
   }
 
-  const NavLogCard = ({navigationLog, currentDate, dateChanged}: any) => {
+  const NavLogCard = ({
+    navigationLog,
+    currentDate,
+    dateChanged,
+  }: INavlogCard) => {
     const itemDurationLabel = timeframeToLabel(
-      navigationLog?.plannedEta ? navigationLog?.plannedEta : null,
-      navigationLog?.bookedETA ? navigationLog?.bookedETA : null,
-      navigationLog?.arrivalDatetime ? navigationLog?.arrivalDatetime : null,
-      navigationLog?.departureDatetime
-        ? navigationLog?.departureDatetime
+      navigationLog?.plannedEta ? moment(navigationLog?.plannedEta) : null,
+      navigationLog?.bookedEta ? moment(navigationLog?.bookedEta) : null,
+      navigationLog?.arrivalDatetime
+        ? moment(navigationLog?.arrivalDatetime)
         : null,
-      currentDate,
-      navigationLog?.cargoType,
-      routeIndex
+      navigationLog?.departureDatetime
+        ? moment(navigationLog?.departureDatetime)
+        : null,
+      moment(currentDate),
+      navigationLog?.cargoType
     )
 
     return (
-      <Box key={navigationLog.id}>
+      <Box key={navigationLog?.id}>
         {dateChanged && (
           <Box
-            key={`${navigationLog.id}-date`}
+            key={`${navigationLog?.id}-date`}
             borderBottomColor={Colors.light}
             borderBottomStyle={'solid'}
             borderBottomWidth={1}
@@ -161,20 +161,20 @@ const HistoryLogbook = ({routeIndex}: any) => {
             {/* Navlog Header */}
             <Box
               backgroundColor={
-                navigationLog.isActive ? Colors.secondary : Colors.border
+                navigationLog?.isActive ? Colors.secondary : Colors.border
               }
               px={ms(16)}
               py={ms(10)}
             >
               <Text
                 bold
-                color={navigationLog.isActive ? Colors.white : Colors.text}
+                color={navigationLog?.isActive ? Colors.white : Colors.text}
                 fontSize={ms(15)}
               >
                 {formatLocationLabel(navigationLog?.location)}
               </Text>
               <Text
-                color={navigationLog.isActive ? Colors.white : '#23475C'}
+                color={navigationLog?.isActive ? Colors.white : '#23475C'}
                 fontWeight="medium"
               >
                 {itemDurationLabel}
@@ -197,7 +197,7 @@ const HistoryLogbook = ({routeIndex}: any) => {
                       navigationLog?.bulkCargo.length > 0 && (
                         <Box>
                           {navigationLog?.bulkCargo.map(
-                            (cargo: any, i: number) => {
+                            (cargo: BulkCargo, i: number) => {
                               return (
                                 <Text
                                   key={i}
@@ -302,33 +302,35 @@ const HistoryLogbook = ({routeIndex}: any) => {
             </Center>
           </Box>
         ) : (
-          historyNavigationLogs.map((navigationLog: any, i: number) => {
-            const previousNavigationLog =
-              i > 0 ? historyNavigationLogs[i - 1] : null
-            const previousDate = previousNavigationLog
-              ? moment(
-                  previousNavigationLog.arrivalDatetime ||
-                    previousNavigationLog.plannedEta ||
-                    previousNavigationLog.arrivalZoneTwo
-                )
-              : null
-            const currentDate =
-              navigationLog.arrivalDatetime ||
-              navigationLog.plannedEta ||
-              navigationLog.arrivalZoneTwo
+          historyNavigationLogs.map(
+            (navigationLog: NavigationLog, i: number) => {
+              const previousNavigationLog =
+                i > 0 ? historyNavigationLogs[i - 1] : null
+              const previousDate = previousNavigationLog
+                ? moment(
+                    previousNavigationLog.arrivalDatetime ||
+                      previousNavigationLog.plannedEta ||
+                      previousNavigationLog.arrivalZoneTwo
+                  )
+                : null
+              const currentDate =
+                navigationLog.arrivalDatetime ||
+                navigationLog.plannedEta ||
+                navigationLog.arrivalZoneTwo
 
-            const dateChanged =
-              !previousDate || !previousDate.isSame(currentDate, 'day')
+              const dateChanged =
+                !previousDate || !previousDate.isSame(currentDate, 'day')
 
-            return (
-              <NavLogCard
-                key={i}
-                currentDate={currentDate}
-                dateChanged={dateChanged}
-                navigationLog={navigationLog}
-              />
-            )
-          })
+              return (
+                <NavLogCard
+                  key={i}
+                  currentDate={currentDate}
+                  dateChanged={dateChanged}
+                  navigationLog={navigationLog}
+                />
+              )
+            }
+          )
         )}
       </ScrollView>
       {isPageChange && (

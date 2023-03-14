@@ -14,7 +14,7 @@ export type NavigationLog = {
   bookedEta: StringOrNull
   bulkCargo: BulkCargo[]
   captainDatetimeEta: StringOrNull
-  cargoType: StringOrNull
+  cargoType: string
   charter: {
     id: NumberOrNull
   }
