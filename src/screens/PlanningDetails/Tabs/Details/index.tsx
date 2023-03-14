@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {RefreshControl, TouchableOpacity} from 'react-native'
+import {BackHandler, RefreshControl, TouchableOpacity} from 'react-native'
 import {
   Box,
   Button,
@@ -145,6 +145,19 @@ const Details = () => {
         )
       },
     })
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        if (unsavedChanges.length > 0) {
+          setButtonBackLeave(true)
+          return true
+        }
+        return false
+      }
+    )
+
+    return () => backHandler.remove()
   }, [navigation, unsavedChanges])
 
   useEffect(() => {
