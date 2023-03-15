@@ -7,18 +7,19 @@ import {enableLatestRenderer} from 'react-native-maps'
 import {NativeBaseProvider} from 'native-base'
 import {theme} from '@bluecentury/styles'
 import './constants/localization/i18n'
-import { useAuth, useEntity, useSettings } from "@bluecentury/stores";
+import {useAuth, useEntity, useSettings} from '@bluecentury/stores'
 import i18next from 'i18next'
 import * as RNLocalize from 'react-native-localize'
 import {useNetInfo} from '@react-native-community/netinfo'
-import { uploadComment } from "@bluecentury/utils";
+import {uploadComment} from '@bluecentury/utils'
 
 enableLatestRenderer()
 
-// Sentry.init({
-//   dsn: SENTRY_DSN,
-//   tracesSampleRate: 1.0
-// })
+Sentry.init({
+  dsn: SENTRY_DSN,
+  tracesSampleRate: 1.0,
+  environment: useSettings.getState().env === 'PROD' ? 'production' : 'testing',
+})
 
 const App = () => {
   const token = useAuth().token
@@ -61,14 +62,6 @@ const App = () => {
       setCommentsWaitingForUpload('clear')
     }
   }, [isOnline])
-
-  useEffect(() => {
-    Sentry.init({
-      dsn: SENTRY_DSN,
-      tracesSampleRate: 1.0,
-      environment: env === 'PROD' ? 'production' : 'testing',
-    })
-  }, [env])
 
   useEffect(() => {
     checkConnection()
