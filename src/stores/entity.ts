@@ -3,19 +3,14 @@ import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as API from '@bluecentury/api/vemasys'
 import {ENTITY_TYPE_EXPLOITATION_VESSEL} from '@bluecentury/constants'
-import {Comments, Entity, EntityUser, User, Vessel} from '@bluecentury/models'
+import {
+  CommentWaitingForUpload,
+  Entity,
+  EntityUser,
+  User,
+  Vessel,
+} from '@bluecentury/models'
 import {useSettings} from '@bluecentury/stores/settings'
-
-type CommentWaitingForUpload = {
-  method: string
-  routeFrom: string | undefined
-  description: string
-  imgFile: any[]
-  attachedImgs: any[]
-  showToast: (text: string, res: string) => void
-  commentArg?: Comments
-  navlogId?: number
-}
 
 type EntityState = {
   hasEntityHydrated: boolean
@@ -43,6 +38,9 @@ type EntityState = {
   acceptRoleStatus: string
   signUpRequestStatus: string
   commentsWaitingForUpload: CommentWaitingForUpload[]
+  rejectedComments: CommentWaitingForUpload[]
+  areCommentsUploading: boolean
+  uploadingCommentNumber: number
 }
 
 type EntityActions = {
@@ -60,6 +58,9 @@ type EntityActions = {
   setCommentsWaitingForUpload: (
     comment: CommentWaitingForUpload | string
   ) => void
+  setRejectedComments: (comment: CommentWaitingForUpload | string) => void
+  setAreCommentsUploading: (value: boolean) => void
+  setUploadingCommentNumber: (value: number) => void
 }
 
 type EntityStore = EntityState & EntityActions
@@ -90,6 +91,9 @@ const initialEntityState: EntityState = {
   acceptRoleStatus: '',
   signUpRequestStatus: '',
   commentsWaitingForUpload: [],
+  rejectedComments: [],
+  areCommentsUploading: false,
+  uploadingCommentNumber: 0,
 }
 
 export const useEntity = create(
@@ -294,6 +298,22 @@ export const useEntity = create(
           set({commentsWaitingForUpload: [comment, ...comments]})
         }
         console.log('WAITING_FOR_UPLOAD', get().commentsWaitingForUpload)
+      },
+      setRejectedComments: comment => {
+        const comments = get().rejectedComments
+        if (comment === 'clear') {
+          set({rejectedComments: []})
+          return
+        }
+        if (typeof comment !== 'string') {
+          set({rejectedComments: [comment, ...comments]})
+        }
+      },
+      setAreCommentsUploading: value => {
+        set({areCommentsUploading: value})
+      },
+      setUploadingCommentNumber: value => {
+        set({uploadingCommentNumber: value})
       },
       reset: () => {
         set({
