@@ -4,11 +4,11 @@ import {Box, Text, Image} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import {useNavigation} from '@react-navigation/native'
+import {useTranslation} from 'react-i18next'
 
 import {Animated} from '@bluecentury/assets'
 import {useMap} from '@bluecentury/stores'
 import {formatLocationLabel} from '@bluecentury/constants'
-import {useTranslation} from "react-i18next"
 
 export const CurrentNavLogInfo = () => {
   const {t} = useTranslation()
@@ -16,13 +16,10 @@ export const CurrentNavLogInfo = () => {
   const {currentNavLogs, prevNavLogs, vesselStatus}: any = useMap()
 
   const handleOnPressNavigation = () => {
-    // if (vesselStatus?.speed > 0) {
-    // } else {
     navigation.navigate('PlanningDetails', {
       navlog: currentNavLogs[currentNavLogs?.length - 1],
       title: currentNavLogs[currentNavLogs?.length - 1]?.location?.name,
     })
-    // }
   }
 
   return (
@@ -31,10 +28,16 @@ export const CurrentNavLogInfo = () => {
       onPress={handleOnPressNavigation}
     >
       <Box ml={ms(15)}>
-        {currentNavLogs?.length !== 0 &&
-        currentNavLogs[currentNavLogs?.length - 1]?.arrivalDatetime !== null &&
-        currentNavLogs[currentNavLogs?.length - 1]?.departureDatetime ===
-          null ? (
+        {vesselStatus?.speed > 1 ? (
+          <Text fontWeight="700">
+            {t('navigatingAt')}
+            <Text color="#29B7EF">{vesselStatus?.speed} km/h</Text>
+          </Text>
+        ) : currentNavLogs?.length !== 0 &&
+          currentNavLogs[currentNavLogs?.length - 1]?.arrivalDatetime !==
+            null &&
+          currentNavLogs[currentNavLogs?.length - 1]?.departureDatetime ===
+            null ? (
           <>
             <Text fontWeight="700">
               {formatLocationLabel(
@@ -48,11 +51,6 @@ export const CurrentNavLogInfo = () => {
               ).format('DD MMM YYYY | HH:mm')}
             </Text>
           </>
-        ) : vesselStatus?.speed > 0 ? (
-          <Text fontWeight="700">
-            {t('navigatingAt')}
-            <Text color="#29B7EF">{vesselStatus?.speed} km/h</Text>
-          </Text>
         ) : (
           <>
             <Text fontWeight="700">Unknown Location</Text>
@@ -67,21 +65,21 @@ export const CurrentNavLogInfo = () => {
       </Box>
 
       <Box
-        position="absolute"
-        left={ms(-20)}
-        width={ms(40)}
-        height={ms(40)}
-        borderRadius={ms(20)}
-        backgroundColor="#F0F0F0"
         alignItems="center"
+        backgroundColor="#F0F0F0"
+        borderRadius={ms(20)}
+        height={ms(40)}
         justifyContent="center"
+        left={ms(-20)}
+        position="absolute"
+        width={ms(40)}
       >
         <Image
           alt="current-nav-log-img"
-          source={Animated.nav_navigating}
-          width={ms(30)}
           height={ms(30)}
           resizeMode="contain"
+          source={Animated.nav_navigating}
+          width={ms(30)}
         />
       </Box>
     </TouchableOpacity>

@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react'
-import {StyleSheet, Dimensions} from 'react-native'
+import {StyleSheet, Dimensions, View} from 'react-native'
 import {Box, Text, Button, HStack, Image, Icon, VStack} from 'native-base'
 import MapView, {
   PROVIDER_GOOGLE,
@@ -13,11 +13,13 @@ import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {CommonActions, useIsFocused} from '@react-navigation/native'
+import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5'
+import {useTranslation} from 'react-i18next'
+
 import {
   PreviousNavLogInfo,
   PlannedNavLogInfo,
   CurrentNavLogInfo,
-  LoadingAnimated,
   IconButton,
   FleetHeader,
   MapBottomSheetToggle,
@@ -31,8 +33,6 @@ import {
   ENTITY_TYPE_EXPLOITATION_GROUP,
   formatLocationLabel,
 } from '@bluecentury/constants'
-import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5'
-import {useTranslation} from 'react-i18next'
 
 const {width, height} = Dimensions.get('window')
 const ASPECT_RATIO = width / height
@@ -47,11 +47,6 @@ export default function Map({navigation}: Props) {
   const {vesselId, selectedVessel, entityType, selectFleetVessel, entityUsers} =
     useEntity()
   const {
-    isLoadingVesselStatus,
-    isLoadingCurrentNavLogs,
-    isLoadingPlannedNavLogs,
-    isLoadingPreviousNavLogs,
-    isLoadingVesselTrack,
     getPreviousNavigationLogs,
     getPlannedNavigationLogs,
     getCurrentNavigationLogs,
@@ -350,7 +345,10 @@ export default function Map({navigation}: Props) {
   }
 
   const renderMarkerVessel = () => {
-    const {latitude, longitude, speed}: VesselGeolocation = vesselStatus
+    const {latitude, longitude, speed, heading}: VesselGeolocation =
+      vesselStatus
+    const rotate = heading >= 0 && Number(speed) > 1 ? `${heading}deg` : null
+
     return (
       <Marker
         key={`Vessel-${currentNavLogs[0]?.location?.id}`}
@@ -358,10 +356,25 @@ export default function Map({navigation}: Props) {
           latitude: Number(latitude),
           longitude: Number(longitude),
         }}
-        anchor={{x: 0, y: 0.5}}
-        image={Number(speed) > 0 ? Icons.navigating : Icons.anchor}
+        anchor={{x: 0, y: 0.2}}
         zIndex={1}
-      />
+      >
+        {rotate ? (
+          <Box style={{transform: [{rotate}]}}>
+            <Image
+              alt="map-navigating-arrow-img"
+              resizeMode="contain"
+              source={Icons.navigating}
+            />
+          </Box>
+        ) : (
+          <Image
+            alt="map-anchor-img"
+            resizeMode="contain"
+            source={Icons.anchor}
+          />
+        )}
+      </Marker>
     )
   }
 
