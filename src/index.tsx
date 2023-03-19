@@ -12,10 +12,7 @@ import i18next from 'i18next'
 import * as RNLocalize from 'react-native-localize'
 import {useNetInfo} from '@react-native-community/netinfo'
 import {uploadComment} from '@bluecentury/utils'
-<<<<<<< HEAD
-=======
 import {CommentWaitingForUpload} from '@bluecentury/models'
->>>>>>> development
 
 enableLatestRenderer()
 
