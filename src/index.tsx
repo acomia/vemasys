@@ -12,6 +12,10 @@ import i18next from 'i18next'
 import * as RNLocalize from 'react-native-localize'
 import {useNetInfo} from '@react-native-community/netinfo'
 import {uploadComment} from '@bluecentury/utils'
+<<<<<<< HEAD
+=======
+import {CommentWaitingForUpload} from '@bluecentury/models'
+>>>>>>> development
 
 enableLatestRenderer()
 
@@ -30,36 +34,53 @@ const App = () => {
   const isOnline = useSettings().isOnline
   const commentsWaitingForUpload = useEntity().commentsWaitingForUpload
   const setCommentsWaitingForUpload = useEntity().setCommentsWaitingForUpload
+  const setAreCommentsUploading = useEntity().setAreCommentsUploading
+  const setUploadingCommentNumber = useEntity().setUploadingCommentNumber
 
   const checkConnection = () => {
     if (isConnected === true && isInternetReachable === true) {
-      // console.log('You are online!')
       setIsOnline(true)
     }
     if (isConnected === false && isInternetReachable === false) {
-      // console.log('You are offline!')
       setIsOnline(false)
     }
   }
 
-  console.log('WAITING_COMMENTS', commentsWaitingForUpload)
-
   useEffect(() => {
     isOnline ? console.log('ONLINE') : console.log('OFFLINE')
     if (isOnline && commentsWaitingForUpload.length) {
-      commentsWaitingForUpload.forEach(item => {
-        uploadComment(
-          item.method,
-          item.routeFrom,
-          item.description,
-          item.imgFile,
-          item.attachedImgs,
-          item.showToast,
-          undefined,
-          item.navlogId
-        )
+      setAreCommentsUploading(true)
+
+      let uploadingItemNumber = 0
+
+      const requestsForCommentsUpload = async (
+        array: CommentWaitingForUpload[]
+      ) => {
+        for (const item of array) {
+          setUploadingCommentNumber(uploadingItemNumber + 1)
+          uploadingItemNumber += 1
+          try {
+            await uploadComment(
+              item.method,
+              item.routeFrom,
+              item.description,
+              item.imgFile,
+              item.attachedImgs,
+              item.showToast,
+              undefined,
+              item.navlogId
+            )
+          } catch (e) {
+            console.log(e)
+          }
+        }
+      }
+
+      requestsForCommentsUpload(commentsWaitingForUpload).then(() => {
+        setCommentsWaitingForUpload('clear')
+        setAreCommentsUploading(false)
+        setUploadingCommentNumber(0)
       })
-      setCommentsWaitingForUpload('clear')
     }
   }, [isOnline])
 
