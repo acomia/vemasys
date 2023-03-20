@@ -23,6 +23,7 @@ export const uploadComment = async (
   const user = useEntity.getState().user
   const setCommentsWaitingForUpload =
     useEntity.getState().setCommentsWaitingForUpload
+  const setRejectedComments = useEntity.getState().setRejectedComments
 
   const uploadEndpoint = () => {
     if (currentEnv === 'PROD') {
@@ -33,17 +34,18 @@ export const uploadComment = async (
     }
   }
 
+  const newCommentWaitingForUpload = {
+    method: methodArg,
+    routeFrom: routeFromArg,
+    description: descriptionArg,
+    imgFile: imgFileArg,
+    attachedImgs: attachedImgsArg,
+    showToast: showToast,
+    comment: commentArg,
+    navlogId: navlogId,
+  }
+
   if (!isOnline) {
-    const newCommentWaitingForUpload = {
-      method: methodArg,
-      routeFrom: routeFromArg,
-      description: descriptionArg,
-      imgFile: imgFileArg,
-      attachedImgs: attachedImgsArg,
-      showToast: showToast,
-      comment: commentArg,
-      navlogId: navlogId,
-    }
     setCommentsWaitingForUpload(newCommentWaitingForUpload)
     showToast('Comment added to uploading queue.', 'success')
     return
@@ -103,7 +105,6 @@ export const uploadComment = async (
           })
         )
         const response = await createNavlogComment(
-          //TODO as we have no navigationLogDetails in offline mode we should use plannedNavigationLogs
           navlogId,
           descriptionArg + tempComment,
           user?.id
@@ -113,6 +114,7 @@ export const uploadComment = async (
           getNavigationLogComments(navigationLogDetails?.id)
         } else {
           showToast('New comment failed.', 'failed')
+          setRejectedComments(newCommentWaitingForUpload)
         }
       } else {
         res = await createNavlogComment(
@@ -125,6 +127,7 @@ export const uploadComment = async (
           getNavigationLogComments(navigationLogDetails?.id)
         } else {
           showToast('New comment failed.', 'failed')
+          setRejectedComments(newCommentWaitingForUpload)
         }
       }
     } else if (routeFromArg === 'Technical') {
