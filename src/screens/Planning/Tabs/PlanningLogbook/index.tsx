@@ -120,7 +120,7 @@ const PlanningLogbook = () => {
   const defineColour = (item: NavigationLog) => {
     if (item?.charter?.id) {
       const itemWithColour = arrayWithColours.find(
-        secondaryItem => secondaryItem.charter.id === item.charter.id
+        secondaryItem => secondaryItem?.charter?.id === item?.charter?.id
       )
       return itemWithColour ? itemWithColour.colour : '#000'
     } else {
@@ -140,12 +140,12 @@ const PlanningLogbook = () => {
         ...item,
         firstIndex: plannedNavigationLogs?.findIndex(planned =>
           item?.charter?.id
-            ? planned?.charter?.id === item.charter.id
+            ? planned?.charter?.id === item?.charter?.id
             : planned.id === item.id
         ),
         lastIndex: findLastIndex(plannedNavigationLogs, planned =>
           item?.charter?.id
-            ? planned?.charter?.id === item.charter.id
+            ? planned?.charter?.id === item?.charter?.id
             : planned.id === item.id
         ),
       }

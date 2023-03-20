@@ -41,7 +41,7 @@ export const NavLogCard = (props: {
   let displayRightLine = false
   if (
     currentItemIndex === 0 &&
-    currentItemType?.charter.id &&
+    currentItemType?.charter?.id &&
     key <= currentItemType.lastIndex
   ) {
     displayLeftLine = true
