@@ -28,7 +28,7 @@ import {Shadow} from 'react-native-shadow-2'
 import {ActionCard, CommentCard, DatetimePickerList} from '../../components'
 import {Colors} from '@bluecentury/styles'
 import {Icons} from '@bluecentury/assets'
-import { useEntity, usePlanning, useSettings } from "@bluecentury/stores";
+import {useEntity, usePlanning, useSettings} from '@bluecentury/stores'
 import {
   formatLocationLabel,
   hasSelectedEntityUserPermission,
