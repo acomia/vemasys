@@ -475,20 +475,30 @@ export default function Map({navigation}: Props) {
 
   const centerMapToBeginningTrackLine = () => {
     if (uniqueVesselTracks && uniqueVesselTracks.length) {
-      const {latitude, longitude}: VesselGeolocation =
-        uniqueVesselTracks[uniqueVesselTracks?.length - 1]
-      const camera: Camera = {
-        center: {
-          latitude: Number(latitude),
-          longitude: Number(longitude),
-        },
-        zoom: 14,
-        heading: 0,
-        pitch: 0,
-        altitude: 5,
-      }
-      const duration = 1000 * 3
-      mapRef.current?.animateCamera(camera, {duration: duration})
+      // const {latitude, longitude}: VesselGeolocation =
+      //   uniqueVesselTracks[uniqueVesselTracks?.length - 1]
+      const polyLineCoords = uniqueVesselTracks.map(item => {
+        return {
+          latitude: item.latitude,
+          longitude: item.longitude,
+        }
+      })
+      // const camera: Camera = {
+      //   center: {
+      //     latitude: Number(latitude),
+      //     longitude: Number(longitude),
+      //   },
+      //   zoom: 14,
+      //   heading: 0,
+      //   pitch: 0,
+      //   altitude: 5,
+      // }
+      // const duration = 1000 * 3
+      // mapRef.current?.animateCamera(camera, {duration: duration})
+      mapRef.current?.fitToCoordinates(polyLineCoords, {
+        animated: true,
+        edgePadding: {bottom: height * 0.3, top: 40, left: 35, right: 35},
+      })
     }
   }
 
