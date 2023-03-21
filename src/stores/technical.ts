@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import * as API from '@bluecentury/api/vemasys'
 import moment from 'moment'
+import {PartType} from '@bluecentury/models'
 
 type TechnicalState = {
   isTechnicalLoading: boolean
@@ -21,6 +22,8 @@ type TechnicalState = {
   lastMeasurements: any[]
   inventory: any[]
   consumableTypes: any[]
+  isPartTypeLoading: boolean
+  vesselPartType: PartType | null
 }
 
 type TechnicalActions = {
@@ -51,6 +54,7 @@ type TechnicalActions = {
   getVesselInventory: (vesselId: string) => void
   getConsumableTypes: () => void
   updateVesselInventoryItem: (quantity: number, consumableId: number) => void
+  getVesselPartType: (id: string) => void
 }
 
 type TechnicalStore = TechnicalState & TechnicalActions
@@ -73,6 +77,8 @@ export const useTechnical = create(
       lastMeasurements: [],
       inventory: [],
       consumableTypes: [],
+      isPartTypeLoading: false,
+      vesselPartType: null,
       getVesselBunkering: async (vesselId: string) => {
         set({isTechnicalLoading: true, bunkering: []})
         try {
@@ -474,6 +480,18 @@ export const useTechnical = create(
         } catch (error) {
           set({isTechnicalLoading: false})
         }
+      },
+      getVesselPartType: (partType: string) => {
+        if (!partType) return
+        set({isPartTypeLoading: true, vesselPartType: null})
+
+        return API.reloadVesselPartTypes(partType.substring(4))
+          .then(response => {
+            set({isPartTypeLoading: false, vesselPartType: response})
+          })
+          .catch(error => {
+            set({isPartTypeLoading: false})
+          })
       },
     }),
     {
