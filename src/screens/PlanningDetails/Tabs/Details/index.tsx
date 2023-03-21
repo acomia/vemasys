@@ -28,7 +28,7 @@ import {Shadow} from 'react-native-shadow-2'
 import {ActionCard, CommentCard, DatetimePickerList} from '../../components'
 import {Colors} from '@bluecentury/styles'
 import {Icons} from '@bluecentury/assets'
-import {useEntity, usePlanning} from '@bluecentury/stores'
+import {useEntity, usePlanning, useSettings} from '@bluecentury/stores'
 import {
   formatLocationLabel,
   hasSelectedEntityUserPermission,
@@ -53,6 +53,7 @@ const Details = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>()
   const route = useRoute()
   const focused = useIsFocused()
+  const isOnline = useSettings().isOnline
   const {
     isPlanningLoading,
     isPlanningDetailsLoading,
@@ -780,7 +781,7 @@ const Details = () => {
               )
             })
           : null}
-        {hasAddCommentPermission && (
+        {hasAddCommentPermission && isOnline && (
           <Button
             bg={Colors.primary}
             leftIcon={<Icon as={Ionicons} name="add" size="sm" />}
