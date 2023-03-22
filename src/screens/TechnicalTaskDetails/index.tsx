@@ -1,4 +1,6 @@
-import React, {useEffect} from 'react'
+/* eslint-disable react-native/no-inline-styles */
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, {useEffect, useState} from 'react'
 import {Alert, TouchableOpacity} from 'react-native'
 import {
   Avatar,
@@ -34,35 +36,48 @@ import {
 import {useEntity, useTechnical} from '@bluecentury/stores'
 import {useTranslation} from 'react-i18next'
 
+interface ICommentCard {
+  comment: Comment
+  commentDescription: string
+}
+
 type Props = NativeStackScreenProps<RootStackParamList>
 const TechnicalTaskDetails = ({navigation, route}: Props) => {
   const {t} = useTranslation()
   const {task, category} = route.params
   const {selectedEntity, vesselId} = useEntity()
-  const {isTechnicalLoading, deleteTask, getVesselTasksByCategory} =
-    useTechnical()
+  const {
+    isTechnicalLoading,
+    deleteTask,
+    getVesselTasksByCategory,
+    updateVesselTask,
+    getVesselTasksCategory,
+  } = useTechnical()
   const hasTaskPermission = hasSelectedEntityUserPermission(
     selectedEntity,
     ROLE_PERMISSION_TASK_MANAGE
   )
   const toast = useToast()
-  const options = [
-    {
-      value: 'todo',
-      label: 'Todo',
-    },
-    {value: 'in_progress', label: 'In Progress'},
-    {value: 'done', label: 'Done'},
-    {value: 'cancel', label: 'Cancel'},
-  ]
+  // const options = [
+  //   {
+  //     value: 'todo',
+  //     label: 'Todo',
+  //   },
+  //   {value: 'in_progress', label: 'In Progress'},
+  //   {value: 'done', label: 'Done'},
+  //   {value: 'cancel', label: 'Cancel'},
+  // ]
+  const [flaggedUpdated, setFlaggedUpdated] = useState(false)
 
   useEffect(() => {
+    const flaggedStatus = flaggedUpdated ? !task.flagged : task.flagged
     navigation.setOptions({
       headerRight: () => (
         <HStack>
           {hasTaskPermission ? (
             <>
               <IconButton
+                size={ms(20)}
                 source={Icons.edit}
                 onPress={() =>
                   navigation.navigate('AddEditTechnicalTask', {
@@ -70,20 +85,31 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
                     task: task,
                   })
                 }
-                size={ms(20)}
               />
               <IconButton
-                source={Icons.trash}
-                onPress={onDeleteTask}
                 size={ms(20)}
-                styles={{marginLeft: 20}}
+                source={Icons.trash}
+                styles={{marginLeft: 15}}
+                onPress={onDeleteTask}
+              />
+              <IconButton
+                key={
+                  flaggedStatus
+                    ? `flagged-${Icons.flag_fill}`
+                    : `flagged-${Icons.flag_outline}`
+                }
+                size={ms(20)}
+                source={flaggedStatus ? Icons.flag_fill : Icons.flag_outline}
+                styles={{marginLeft: 15}}
+                tintColor={flaggedStatus ? Colors.danger : Colors.azure}
+                onPress={onFlagTask}
               />
             </>
           ) : null}
         </HStack>
       ),
     })
-  }, [])
+  }, [navigation, flaggedUpdated])
 
   const renderLabels = (label: string) => {
     let title = ''
@@ -109,13 +135,13 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
     return (
       <Text
         bg={color}
-        py={ms(5)}
-        px={ms(20)}
         borderRadius={ms(25)}
-        fontWeight="medium"
-        fontSize={ms(12)}
         color={textColor}
+        fontSize={ms(12)}
+        fontWeight="medium"
         maxW={ms(150)}
+        px={ms(20)}
+        py={ms(5)}
         textAlign="center"
       >
         {title}
@@ -125,15 +151,15 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
 
   const renderTaskSection = () => (
     <Box
+      borderColor={Colors.light}
       borderRadius={ms(5)}
       borderWidth={1}
-      borderColor={Colors.light}
       mt={ms(10)}
       overflow="hidden"
     >
       {/* Title header */}
       <Box backgroundColor={Colors.border} px={ms(16)} py={ms(10)}>
-        <Text color={Colors.azure} bold fontSize={ms(15)}>
+        <Text bold color={Colors.azure} fontSize={ms(15)}>
           {task?.title}
         </Text>
       </Box>
@@ -141,10 +167,10 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
       {/* Content */}
       <Box py={ms(14)}>
         <Box px={ms(14)}>
-          <Text fontWeight="medium" color={Colors.disabled}>
+          <Text color={Colors.disabled} fontWeight="medium">
             {t('taskType')}
           </Text>
-          <Text fontSize={ms(16)} bold color={Colors.text}>
+          <Text bold color={Colors.text} fontSize={ms(16)}>
             {t('technicalTask')}
           </Text>
         </Box>
@@ -152,7 +178,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
         <Box px={ms(14)}>{renderLabels(task?.labels[0]?.title)}</Box>
         <Divider my={ms(12)} />
         <Box px={ms(14)}>
-          <Text fontWeight="medium" color={Colors.disabled}>
+          <Text color={Colors.disabled} fontWeight="medium">
             {t('dateCreated')}
           </Text>
           <Text fontSize={ms(15)}>
@@ -163,7 +189,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
         </Box>
         <Divider my={ms(12)} />
         <Box px={ms(14)}>
-          <Text fontWeight="medium" color={Colors.disabled}>
+          <Text color={Colors.disabled} fontWeight="medium">
             {t('scheduledDate')}
           </Text>
           <Text fontSize={ms(15)}>
@@ -181,10 +207,10 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
         </Box>
         <Divider my={ms(12)} /> */}
         <Box px={ms(14)}>
-          <Text fontWeight="medium" color={Colors.disabled}>
+          <Text color={Colors.disabled} fontWeight="medium">
             {t('assignedTo')}
           </Text>
-          <Text fontSize={ms(15)} bold color={Colors.danger}>
+          <Text bold color={Colors.danger} fontSize={ms(15)}>
             {t('noStaffMemberAssignedToThisTask')}
           </Text>
         </Box>
@@ -194,21 +220,21 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
 
   const renderVesselPartSection = () => (
     <Box
+      borderColor={Colors.light}
       borderRadius={ms(5)}
       borderWidth={1}
-      borderColor={Colors.light}
       mt={ms(10)}
       overflow="hidden"
     >
       {/* Vessel Part header */}
       <Box backgroundColor={Colors.border} px={ms(16)} py={ms(10)}>
-        <Text color={Colors.azure} bold fontSize={ms(15)}>
+        <Text bold color={Colors.azure} fontSize={ms(15)}>
           {task?.vesselPart?.name}
         </Text>
       </Box>
       {/* End of Header */}
       <HStack p={ms(14)}>
-        <Text flex="1" fontWeight="medium" color={Colors.disabled}>
+        <Text color={Colors.disabled} flex="1" fontWeight="medium">
           {t('type')}
         </Text>
         <Text bold color={Colors.text}>
@@ -218,32 +244,32 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
     </Box>
   )
 
-  const CommentCard = ({comment, commentDescription}) => {
+  const CommentCard = ({comment, commentDescription}: ICommentCard) => {
     return (
       <Box
-        borderWidth={1}
+        bg={Colors.white}
         borderColor={Colors.light}
         borderRadius={5}
-        p={ms(16)}
+        borderWidth={1}
         mt={ms(10)}
-        bg={Colors.white}
+        p={ms(16)}
         shadow={2}
       >
         <HStack alignItems="center">
           <Avatar
-            size="48px"
             source={{
               uri: comment?.user?.icon?.path
                 ? `${PROD_URL}/upload/documents/${comment?.user?.icon?.path}`
                 : '',
             }}
+            size="48px"
           />
           <Box ml={ms(10)}>
             <Text bold>
               {comment?.user ? comment?.user?.firstname : ''}{' '}
               {comment?.user ? comment?.user?.lastname : ''}
             </Text>
-            <Text fontWeight="medium" color={Colors.disabled}>
+            <Text color={Colors.disabled} fontWeight="medium">
               {moment(comment?.creationDate).format('DD MMM YYYY')}
             </Text>
           </Box>
@@ -255,43 +281,43 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
     )
   }
 
-  const renderDocumentsSections = (file: any, index: number) => (
+  const renderDocumentsSections = (file: File, index: number) => (
     <TouchableOpacity key={index}>
       <HStack
+        alignItems="center"
         bg={Colors.white}
         borderRadius={5}
-        justifyContent="space-between"
-        alignItems="center"
         height={ms(50)}
-        px={ms(16)}
-        width="100%"
+        justifyContent="space-between"
         mb={ms(15)}
+        px={ms(16)}
         shadow={3}
+        width="100%"
       >
         <Text
-          flex="1"
-          maxW="80%"
-          fontWeight="medium"
-          numberOfLines={1}
           ellipsizeMode="middle"
+          flex="1"
+          fontWeight="medium"
+          maxW="80%"
+          numberOfLines={1}
         >
           {file.path}
         </Text>
         <HStack alignItems="center">
           <IconButton
+            size={ms(22)}
             source={Icons.file_download}
             onPress={() => {}}
-            size={ms(22)}
           />
           <IconButton
+            size={ms(22)}
             source={Icons.eye}
+            styles={{marginLeft: 15}}
             onPress={() =>
               navigation.navigate('PDFView', {
                 path: `${VEMASYS_PRODUCTION_FILE_URL}/${file.path}`,
               })
             }
-            size={ms(22)}
-            styles={{marginLeft: 15}}
           />
         </HStack>
       </HStack>
@@ -313,6 +339,15 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
     )
   }
 
+  const onFlagTask = async () => {
+    const res = await updateVesselTask(task.id, {flagged: !task.flagged})
+    if (typeof res === 'object' && res?.id) {
+      setFlaggedUpdated(true)
+      getVesselTasksCategory(vesselId)
+      getVesselTasksByCategory(vesselId, category)
+    }
+  }
+
   const handleDeleteTask = async () => {
     const res = await deleteTask(task?.id)
     if (res === 204) {
@@ -323,11 +358,11 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
           return (
             <Text
               bg="emerald.500"
+              color={Colors.white}
+              mb={5}
               px="2"
               py="1"
               rounded="sm"
-              mb={5}
-              color={Colors.white}
             >
               Task has been deleted.
             </Text>
@@ -342,7 +377,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
         duration: 2000,
         render: () => {
           return (
-            <Box bg="red.500" px="2" py="1" rounded="sm" mb={5}>
+            <Box bg="red.500" mb={5} px="2" py="1" rounded="sm">
               Delete failed.
             </Box>
           )
@@ -355,10 +390,10 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
 
   return (
     <Box
-      flex="1"
       bg={Colors.white}
       borderTopLeftRadius={ms(15)}
       borderTopRightRadius={ms(15)}
+      flex="1"
     >
       <NoInternetConnectionMessage />
       <ScrollView
@@ -382,32 +417,32 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
         </Select> */}
         {renderTaskSection()}
         {/* Vessel Part Section */}
-        <Text mt={ms(30)} fontSize={ms(16)} bold color={Colors.text}>
+        <Text bold color={Colors.text} fontSize={ms(16)} mt={ms(30)}>
           {t('concernedVesselPart')}
         </Text>
         {task?.vesselPart ? renderVesselPartSection() : null}
         {/* End of Vessel Part Section */}
         {/* Comment Section */}
         <HStack alignItems="center" mt={ms(30)}>
-          <Text fontSize={ms(16)} bold color={Colors.text}>
+          <Text bold color={Colors.text} fontSize={ms(16)}>
             {t('comments')}
           </Text>
           {task?.comments?.length > 0 ? (
             <Text
+              bold
               bg={Colors.azure}
+              borderRadius={ms(20)}
               color={Colors.white}
-              width={ms(22)}
               height={ms(22)}
               ml={ms(10)}
-              borderRadius={ms(20)}
-              bold
               textAlign="center"
+              width={ms(22)}
             >
               {task?.comments?.length}
             </Text>
           ) : null}
         </HStack>
-        {task?.comments?.map((comment: any, index: number) => {
+        {task?.comments?.map((comment: Comment, index: number) => {
           const filteredDescription = comment.description.replace(/(\\)/g, '')
           const descriptionText = filteredDescription.match(/([^<br>]+)/)[0]
           return (
@@ -421,8 +456,8 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
         <Button
           bg={Colors.primary}
           leftIcon={<Icon as={Ionicons} name="add" size="sm" />}
-          mt={ms(20)}
           mb={ms(20)}
+          mt={ms(20)}
           onPress={() =>
             navigation.navigate('TechnicalTaskNewComment', {taskId: task?.id})
           }
@@ -432,39 +467,39 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
         {/* End of Comment Section */}
         {/* Documents Section */}
         <HStack alignItems="center" mt={ms(30)}>
-          <Text fontSize={ms(16)} bold color={Colors.text}>
+          <Text bold color={Colors.text} fontSize={ms(16)}>
             {t('documents')}
           </Text>
           {task?.fileGroup?.files?.length > 0 ? (
             <Text
+              bold
               bg={Colors.azure}
+              borderRadius={ms(20)}
               color={Colors.white}
-              width={ms(22)}
               height={ms(22)}
               ml={ms(10)}
-              borderRadius={ms(20)}
-              bold
               textAlign="center"
+              width={ms(22)}
             >
               {task?.fileGroup?.files?.length}
             </Text>
           ) : null}
         </HStack>
-        <HStack mt={ms(10)} justifyContent="space-between">
-          <Text fontSize={ms(16)} bold color={Colors.text}>
+        <HStack justifyContent="space-between" mt={ms(10)}>
+          <Text bold color={Colors.text} fontSize={ms(16)}>
             {t('file')}
           </Text>
-          <Text fontSize={ms(16)} bold color={Colors.text}>
+          <Text bold color={Colors.text} fontSize={ms(16)}>
             {t('actions')}
           </Text>
         </HStack>
         <Divider mb={ms(10)} mt={ms(5)} />
         {task?.fileGroup?.files?.length > 0 ? (
-          task?.fileGroup?.files?.map((file: any, index: number) =>
+          task?.fileGroup?.files?.map((file: File, index: number) =>
             renderDocumentsSections(file, index)
           )
         ) : (
-          <Text mb={ms(20)} color={Colors.text} fontWeight="medium">
+          <Text color={Colors.text} fontWeight="medium" mb={ms(20)}>
             {t('noUploadedFiles')}
           </Text>
         )}
