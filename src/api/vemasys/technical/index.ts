@@ -336,7 +336,6 @@ const updateVesselInventoryItem = async (
 }
 
 const reloadVesselPartTypes = (partType: string) => {
-  if (!partType) throw new Error('Error: Part type is required')
   return API.get(partType)
     .then(response => {
       if (response?.status === 200) {
