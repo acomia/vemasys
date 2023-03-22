@@ -39,9 +39,10 @@ export const NavLogCard = (props: {
   const previousItemType = defineFirstAndLastIndex[currentItemIndex - 1]
   let displayLeftLine = false
   let displayRightLine = false
+
   if (
     currentItemIndex === 0 &&
-    currentItemType?.charter.id &&
+    currentItemType?.charter?.id &&
     key <= currentItemType.lastIndex
   ) {
     displayLeftLine = true
@@ -217,7 +218,10 @@ export const NavLogCard = (props: {
               <NavigationLogType navigationLog={navigationLog} />
               {navigationLog.actionType === 'Cleaning' ? null : (
                 <Text bold color={Colors.azure} fontSize={ms(15)} mt={ms(5)}>
-                  {Math.ceil(navigationLog?.bulkCargo[0]?.actualTonnage)} MT
+                  {navigationLog?.bulkCargo[0]?.actualTonnage
+                    ? Math.ceil(navigationLog?.bulkCargo[0]?.actualTonnage)
+                    : 0}{' '}
+                  MT
                 </Text>
               )}
             </Box>

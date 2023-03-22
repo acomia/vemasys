@@ -16,10 +16,11 @@ import {CommentWaitingForUpload} from '@bluecentury/models'
 
 enableLatestRenderer()
 
-// Sentry.init({
-//   dsn: SENTRY_DSN,
-//   tracesSampleRate: 1.0
-// })
+Sentry.init({
+  dsn: SENTRY_DSN,
+  tracesSampleRate: 1.0,
+  environment: useSettings.getState().env === 'PROD' ? 'production' : 'testing',
+})
 
 const App = () => {
   const token = useAuth().token
@@ -79,14 +80,6 @@ const App = () => {
       })
     }
   }, [isOnline])
-
-  useEffect(() => {
-    Sentry.init({
-      dsn: SENTRY_DSN,
-      tracesSampleRate: 1.0,
-      environment: env === 'PROD' ? 'production' : 'testing',
-    })
-  }, [env])
 
   useEffect(() => {
     checkConnection()
