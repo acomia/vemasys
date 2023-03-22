@@ -27,20 +27,28 @@ import * as ImagePicker from 'react-native-image-picker'
 import {Colors} from '@bluecentury/styles'
 import {useEntity, useTechnical} from '@bluecentury/stores'
 import moment from 'moment'
-import {IconButton, LoadingAnimated, NoInternetConnectionMessage} from '@bluecentury/components'
+import {
+  IconButton,
+  LoadingAnimated,
+  NoInternetConnectionMessage,
+} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {useTranslation} from 'react-i18next'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const AddEditTechnicalTask = ({navigation, route}: Props) => {
   const {t} = useTranslation()
-  const {method, task} = route.params
+  const {method, task, category} = route.params
   const toast = useToast()
   const {
-    isTechnicalLoading,
+    isUploadingFileLoading,
+    isCreateTaskLoading,
     createVesselTask,
     updateVesselTask,
     uploadFileBySubject,
+    getVesselTasksCategory,
+    getVesselTasksByCategory,
+    deleteTask,
   } = useTechnical()
   const {vesselId} = useEntity()
   const types = [
@@ -87,13 +95,15 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
     }
 
     ImagePicker.launchImageLibrary(options, response => {
-      setImgFile({
-        ...imgFile,
-        id: response.assets[0].id,
-        uri: response.assets[0].uri,
-        fileName: response.assets[0].fileName,
-        type: response.assets[0].type,
-      })
+      if (response?.assets?.length) {
+        setImgFile({
+          ...imgFile,
+          id: response?.assets[0]?.id,
+          uri: response?.assets[0]?.uri,
+          fileName: response?.assets[0]?.fileName,
+          type: response?.assets[0]?.type,
+        })
+      }
     })
   }
 
@@ -114,9 +124,6 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
           </Text>
         )
       },
-      onCloseComplete() {
-        res === 'success' ? navigation.goBack() : null
-      },
     })
   }
 
@@ -127,37 +134,53 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
       })
       const res = await createVesselTask(newTask)
       if (typeof res === 'object' && res?.id) {
-        const upload = await uploadFileBySubject(
-          'Task',
-          imgFile,
-          'shared_within_company',
-          res?.id
-        )
-        if (typeof upload === 'object') {
-          showToast('Task add successfully.', 'success')
-        }
+        uploadFile(res?.id, imgFile, 'add')
       } else {
         showToast('Task add failed.', 'failed')
       }
     } else {
       const res = await updateVesselTask(task?.id, taskData)
       if (typeof res === 'object' && res?.id) {
-        const upload = await uploadFileBySubject(
-          'Task',
-          imgFile,
-          'shared_within_company',
-          res?.id
-        )
-        if (typeof upload === 'object') {
-          showToast('Task update successfully.', 'success')
-        }
+        uploadFile(res?.id, imgFile, 'update')
       } else {
         showToast('Task update failed.', 'failed')
       }
     }
   }
 
-  if (isTechnicalLoading) return <LoadingAnimated />
+  const uploadFile = async (
+    id: number,
+    imageFile: ImageFile,
+    method: string
+  ) => {
+    if (imageFile?.uri) {
+      const upload = await uploadFileBySubject(
+        'Task',
+        imageFile,
+        'shared_within_company',
+        id
+      )
+      if (typeof upload === 'object') {
+        // update data on technical task with categories
+        getVesselTasksCategory(vesselId)
+        // update the list on the tasks
+        getVesselTasksByCategory(vesselId, category)
+        showToast(`Task ${method} successfully.`, 'success')
+        navigation.goBack()
+      }
+    } else {
+      // update data on technical task with categories
+      getVesselTasksCategory(vesselId)
+      // update the list on the tasks
+      getVesselTasksByCategory(vesselId, category)
+      showToast(`Task  ${method} success.`, 'success')
+      navigation.goBack()
+    }
+  }
+
+  if (isCreateTaskLoading || isUploadingFileLoading) {
+    return <LoadingAnimated />
+  }
 
   return (
     <Box
