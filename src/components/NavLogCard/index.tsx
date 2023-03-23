@@ -45,20 +45,117 @@ export const NavLogCard = (props: {
     currentItemType?.charter?.id &&
     key <= currentItemType.lastIndex
   ) {
-    displayLeftLine = true
+    displayLeftLine = navigationLog.type.title !== 'Services'
   }
   if (currentItemIndex !== 0) {
     if (key <= previousItemType.lastIndex) {
       displayLeftLine = true
-      displayRightLine = true
+      displayRightLine = navigationLog.type.title !== 'Services'
     }
     if (key > previousItemType.lastIndex && currentItemIndex % 2 !== 0) {
       displayLeftLine = false
-      displayRightLine = true
+      displayRightLine = navigationLog.type.title !== 'Services'
     }
     if (key >= previousItemType.lastIndex && currentItemIndex % 2 === 0) {
-      displayLeftLine = true
+      displayLeftLine = navigationLog.type.title !== 'Services'
       displayRightLine = false
+    }
+  }
+
+  console.log('NAVLOG_TYPE', currentItemType, key)
+
+  const typeIcon = (type: string) => {
+    switch (type) {
+      case 'Services':
+        return (
+          <Image
+            alt="navlog-type-img"
+            h={ms(40)}
+            resizeMode="contain"
+            source={Icons.services}
+            w={ms(40)}
+          />
+        )
+      case 'Loading/Unloading':
+        return (
+          <Image
+            alt="navlog-type-img"
+            h={ms(40)}
+            resizeMode="contain"
+            source={Icons.loadingUnloading}
+            w={ms(40)}
+          />
+        )
+      case 'Waiting':
+        return (
+          <Image
+            alt="navlog-type-img"
+            h={ms(40)}
+            resizeMode="contain"
+            source={Icons.waitingNavlogItem}
+            w={ms(40)}
+          />
+        )
+      case 'Passed through a Lock':
+        return (
+          <Image
+            alt="navlog-type-img"
+            h={ms(40)}
+            resizeMode="contain"
+            source={Icons.passedThroughLock}
+            w={ms(40)}
+          />
+        )
+      case 'Bunkering':
+        return (
+          <Image
+            alt="navlog-type-img"
+            h={ms(40)}
+            resizeMode="contain"
+            source={Icons.bunkering}
+            w={ms(40)}
+          />
+        )
+      case 'Passed a bridge':
+        return (
+          <Image
+            alt="navlog-type-img"
+            h={ms(40)}
+            resizeMode="contain"
+            source={Icons.passedABridge}
+            w={ms(40)}
+          />
+        )
+      case 'Checkpoint':
+        return (
+          <Image
+            alt="navlog-type-img"
+            h={ms(40)}
+            resizeMode="contain"
+            source={Icons.checkPointNavlogItem}
+            w={ms(40)}
+          />
+        )
+      case 'Waste disposal':
+        return (
+          <Image
+            alt="navlog-type-img"
+            h={ms(40)}
+            resizeMode="contain"
+            source={Icons.wasteDisposal}
+            w={ms(40)}
+          />
+        )
+      case 'Transfer':
+        return (
+          <Image
+            alt="navlog-type-img"
+            h={ms(40)}
+            resizeMode="contain"
+            source={Icons.transfer}
+            w={ms(40)}
+          />
+        )
     }
   }
 
@@ -89,13 +186,15 @@ export const NavLogCard = (props: {
               : currentItemIndex === 0
               ? currentItemType?.colour
               : previousItemType.lastIndex < key
-              ? currentItemType?.colour
+              ? itemColor
               : previousItemType.colour
           }
           mb={
             currentItemType?.lastIndex === key
-              ? ms(-7)
+              ? ms(0)
               : currentItemIndex % 2 !== 0 && previousItemType.lastIndex === key
+              ? 0
+              : currentItemType.lastIndex === currentItemType.firstIndex
               ? 0
               : ms(-7)
           }
@@ -106,6 +205,8 @@ export const NavLogCard = (props: {
                 (currentItemIndex % 2 !== 0 &&
                   previousItemType?.firstIndex < key &&
                   previousItemType.lastIndex > key)
+              ? ms(-7)
+              : currentItemIndex === 0 && key !== 0
               ? ms(-7)
               : 0
           }
@@ -140,14 +241,26 @@ export const NavLogCard = (props: {
         w={'95%'}
       >
         {/* Navlog Header */}
-        <Box backgroundColor={itemColor} px={ms(16)} py={ms(10)}>
-          <Text bold color={Colors.text} fontSize={ms(15)}>
-            {formatLocationLabel(navigationLog?.location)}
-          </Text>
-          <Text color={Colors.azure} fontWeight="medium">
-            {t('planned')}
-            {moment(navigationLog?.plannedEta).format('DD MMM YYYY | HH:mm')}
-          </Text>
+        <Box
+          backgroundColor={itemColor}
+          flex={1}
+          flexDirection="row"
+          justifyContent="space-between"
+          px={ms(16)}
+          py={ms(10)}
+        >
+          <Box w="85%">
+            <Text bold color={Colors.text} fontSize={ms(15)} noOfLines={1}>
+              {formatLocationLabel(navigationLog?.location)}
+            </Text>
+            <Text color={Colors.azure} fontWeight="medium">
+              {t('planned')}
+              {moment(navigationLog?.plannedEta).format('DD MMM YYYY | HH:mm')}
+            </Text>
+          </Box>
+          {navigationLog?.type?.title
+            ? typeIcon(navigationLog.type.title)
+            : null}
         </Box>
         {/* End of Header */}
 
