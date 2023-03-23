@@ -8,6 +8,8 @@ import {PartType} from '@bluecentury/models'
 
 type TechnicalState = {
   isTechnicalLoading: boolean
+  isUploadingFileLoading: boolean
+  isCreateTaskLoading: boolean
   bunkering: any[]
   gasoilReserviors: any[]
   bunkeringSuppliers?: any[]
@@ -63,6 +65,8 @@ export const useTechnical = create(
   persist<TechnicalStore>(
     (set, get) => ({
       isTechnicalLoading: false,
+      isUploadingFileLoading: false,
+      isCreateTaskLoading: false,
       bunkering: [],
       gasoilReserviors: [],
       bunkeringSuppliers: [],
@@ -276,14 +280,13 @@ export const useTechnical = create(
         }
       },
       createVesselTask: async (task: Task) => {
-        set({isTechnicalLoading: true})
+        set({isCreateTaskLoading: true})
         try {
           const response = await API.createVesselTask(task)
-          console.log('createTask', response)
-          set({isTechnicalLoading: false})
+          set({isCreateTaskLoading: false})
           return response
         } catch (error) {
-          set({isTechnicalLoading: false})
+          set({isCreateTaskLoading: false})
         }
       },
       updateVesselTask: async (taskId: string, task: Task) => {
@@ -300,9 +303,9 @@ export const useTechnical = create(
         subject: string,
         file: ImageFile,
         accessLevel: string,
-        id: number
+        id: numberw
       ) => {
-        set({isTechnicalLoading: true})
+        set({isUploadingFileLoading: true})
         try {
           const response = await API.uploadFileBySubject(
             subject,
@@ -310,10 +313,10 @@ export const useTechnical = create(
             accessLevel,
             id
           )
-          set({isTechnicalLoading: false})
+          set({isUploadingFileLoading: false})
           return response
         } catch (error) {
-          set({isTechnicalLoading: false})
+          set({isUploadingFileLoading: false})
         }
       },
       getVesselRoutines: async (vesselId: string) => {

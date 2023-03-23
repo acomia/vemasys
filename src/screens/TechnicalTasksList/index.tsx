@@ -28,10 +28,14 @@ const TechnicalTasksList = ({navigation, route}: Props) => {
         <TouchableOpacity
           style={{flexDirection: 'row', alignItems: 'center'}}
           onPress={() =>
-            navigation.navigate('AddEditTechnicalTask', {method: 'add'})
+            navigation.navigate('AddEditTechnicalTask', {
+              method: 'add',
+              category,
+              vesselId,
+            })
           }
         >
-          <Icon name="add" color={Colors.highlighted_text} size={24} />
+          <Icon color={Colors.highlighted_text} name="add" size={24} />
           <Text bold color={Colors.highlighted_text}>
             {t('addATask')}
           </Text>
@@ -71,12 +75,12 @@ const TechnicalTasksList = ({navigation, route}: Props) => {
     return (
       <Text
         bg={color}
-        py={ms(3)}
-        px={ms(20)}
         borderRadius={ms(25)}
-        fontWeight="medium"
-        fontSize={ms(12)}
         color={textColor}
+        fontSize={ms(12)}
+        fontWeight="medium"
+        px={ms(20)}
+        py={ms(3)}
       >
         {title}
       </Text>
@@ -107,12 +111,12 @@ const TechnicalTasksList = ({navigation, route}: Props) => {
     return (
       <Text
         bg={color}
-        py={ms(3)}
-        px={ms(20)}
         borderRadius={ms(25)}
-        fontWeight="medium"
-        fontSize={ms(12)}
         color={textColor}
+        fontSize={ms(12)}
+        fontWeight="medium"
+        px={ms(20)}
+        py={ms(3)}
       >
         {title}
       </Text>
@@ -127,20 +131,20 @@ const TechnicalTasksList = ({navigation, route}: Props) => {
 
   return (
     <Box
-      flex="1"
       bg={Colors.white}
       borderTopLeftRadius={ms(15)}
       borderTopRightRadius={ms(15)}
+      flex="1"
     >
       <NoInternetConnectionMessage />
       <ScrollView
-        contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
         refreshControl={
           <RefreshControl
-            onRefresh={onPullToReload}
             refreshing={isTechnicalLoading}
+            onRefresh={onPullToReload}
           />
         }
+        contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
         p={ms(12)}
       >
         {tasksByCategory?.length > 0
@@ -157,9 +161,9 @@ const TechnicalTasksList = ({navigation, route}: Props) => {
                   }
                 >
                   <Box
+                    borderColor={Colors.light}
                     borderRadius={ms(5)}
                     borderWidth={1}
-                    borderColor={Colors.light}
                     mt={ms(10)}
                     overflow="hidden"
                   >
@@ -169,7 +173,7 @@ const TechnicalTasksList = ({navigation, route}: Props) => {
                       px={ms(16)}
                       py={ms(10)}
                     >
-                      <Text color={Colors.azure} bold fontSize={ms(15)}>
+                      <Text bold color={Colors.azure} fontSize={ms(15)}>
                         {task?.title}
                       </Text>
                     </Box>
