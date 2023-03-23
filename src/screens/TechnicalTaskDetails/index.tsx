@@ -70,10 +70,9 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
   //   {value: 'done', label: 'Done'},
   //   {value: 'cancel', label: 'Cancel'},
   // ]
-  const [flaggedUpdated, setFlaggedUpdated] = useState(false)
+  const [flaggedUpdated, setFlaggedUpdated] = useState(task.flagged)
 
   useEffect(() => {
-    const flaggedStatus = flaggedUpdated ? !task.flagged : task.flagged
     navigation.setOptions({
       headerRight: () => (
         <HStack>
@@ -96,13 +95,11 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
                 onPress={onDeleteTask}
               />
               <IconButton
-                key={
-                  flaggedStatus
-                    ? `flagged-${Icons.flag_fill}`
-                    : `flagged-${Icons.flag_outline}`
-                }
+                key={`flagged-${
+                  flaggedUpdated ? Icons.flag_fill : Icons.flag_outline
+                }`}
                 size={ms(20)}
-                source={flaggedStatus ? Icons.flag_fill : Icons.flag_outline}
+                source={flaggedUpdated ? Icons.flag_fill : Icons.flag_outline}
                 styles={{marginLeft: 15}}
                 onPress={onFlagTask}
               />
@@ -349,9 +346,9 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
   }
 
   const onFlagTask = async () => {
-    const res = await updateVesselTask(task.id, {flagged: !task.flagged})
+    const res = await updateVesselTask(task.id, {flagged: !flaggedUpdated})
     if (typeof res === 'object' && res?.id) {
-      setFlaggedUpdated(true)
+      setFlaggedUpdated(!flaggedUpdated)
       getVesselTasksCategory(vesselId)
       getVesselTasksByCategory(vesselId, category)
     }
