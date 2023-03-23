@@ -99,4 +99,13 @@ export const Icons = {
   signup_pending: require('./signup-pending.png'),
   flag_fill: require('./flag-fill.png'),
   flag_outline: require('./flag-outline.png'),
+  loadingUnloading: require('./LoadingUnloading.png'),
+  passedThroughLock: require('./PassedThroughLock.png'),
+  bunkering: require('./Bunkering.png'),
+  services: require('./Services.png'),
+  checkPointNavlogItem: require('./CheckpointNavlogItem.png'),
+  wasteDisposal: require('./WasteDisposal.png'),
+  transfer: require('./Transfer.png'),
+  waitingNavlogItem: require('./WaitingNavlogItem.png'),
+  passedABridge: require('./PassedABridge.png'),
 }
