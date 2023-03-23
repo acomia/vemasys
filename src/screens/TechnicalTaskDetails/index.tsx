@@ -1,4 +1,6 @@
-import React, {useEffect} from 'react'
+/* eslint-disable react-native/no-inline-styles */
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, {useEffect, useState} from 'react'
 import {Alert, TouchableOpacity} from 'react-native'
 import {
   Avatar,
@@ -34,6 +36,11 @@ import {
 import {useEntity, useTechnical} from '@bluecentury/stores'
 import {useTranslation} from 'react-i18next'
 
+interface ICommentCard {
+  comment: Comment
+  commentDescription: string
+}
+
 type Props = NativeStackScreenProps<RootStackParamList>
 const TechnicalTaskDetails = ({navigation, route}: Props) => {
   const {t} = useTranslation()
@@ -43,6 +50,8 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
     isTechnicalLoading,
     deleteTask,
     getVesselTasksByCategory,
+    updateVesselTask,
+    getVesselTasksCategory,
     isPartTypeLoading,
     vesselPartType,
     getVesselPartType,
@@ -52,15 +61,16 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
     ROLE_PERMISSION_TASK_MANAGE
   )
   const toast = useToast()
-  const options = [
-    {
-      value: 'todo',
-      label: 'Todo',
-    },
-    {value: 'in_progress', label: 'In Progress'},
-    {value: 'done', label: 'Done'},
-    {value: 'cancel', label: 'Cancel'},
-  ]
+  // const options = [
+  //   {
+  //     value: 'todo',
+  //     label: 'Todo',
+  //   },
+  //   {value: 'in_progress', label: 'In Progress'},
+  //   {value: 'done', label: 'Done'},
+  //   {value: 'cancel', label: 'Cancel'},
+  // ]
+  const [flaggedUpdated, setFlaggedUpdated] = useState(task.flagged)
 
   useEffect(() => {
     navigation.setOptions({
@@ -81,15 +91,24 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
               <IconButton
                 size={ms(20)}
                 source={Icons.trash}
-                styles={{marginLeft: 20}}
+                styles={{marginLeft: 15}}
                 onPress={onDeleteTask}
+              />
+              <IconButton
+                key={`flagged-${
+                  flaggedUpdated ? Icons.flag_fill : Icons.flag_outline
+                }`}
+                size={ms(20)}
+                source={flaggedUpdated ? Icons.flag_fill : Icons.flag_outline}
+                styles={{marginLeft: 15}}
+                onPress={onFlagTask}
               />
             </>
           ) : null}
         </HStack>
       ),
     })
-  }, [])
+  }, [navigation, flaggedUpdated])
 
   useEffect(() => {
     if (task?.vesselPart?.type) {
@@ -231,7 +250,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
     </Box>
   )
 
-  const CommentCard = ({comment, commentDescription}) => {
+  const CommentCard = ({comment, commentDescription}: ICommentCard) => {
     return (
       <Box
         bg={Colors.white}
@@ -268,7 +287,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
     )
   }
 
-  const renderDocumentsSections = (file: any, index: number) => (
+  const renderDocumentsSections = (file: File, index: number) => (
     <TouchableOpacity key={index}>
       <HStack
         alignItems="center"
@@ -324,6 +343,15 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
       ],
       {cancelable: true}
     )
+  }
+
+  const onFlagTask = async () => {
+    const res = await updateVesselTask(task.id, {flagged: !flaggedUpdated})
+    if (typeof res === 'object' && res?.id) {
+      setFlaggedUpdated(!flaggedUpdated)
+      getVesselTasksCategory(vesselId)
+      getVesselTasksByCategory(vesselId, category)
+    }
   }
 
   const handleDeleteTask = async () => {
@@ -420,7 +448,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
             </Text>
           ) : null}
         </HStack>
-        {task?.comments?.map((comment: any, index: number) => {
+        {task?.comments?.map((comment: Comment, index: number) => {
           const filteredDescription = comment.description.replace(/(\\)/g, '')
           const descriptionText = filteredDescription.match(/([^<br>]+)/)[0]
           return (
@@ -473,7 +501,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
         </HStack>
         <Divider mb={ms(10)} mt={ms(5)} />
         {task?.fileGroup?.files?.length > 0 ? (
-          task?.fileGroup?.files?.map((file: any, index: number) =>
+          task?.fileGroup?.files?.map((file: File, index: number) =>
             renderDocumentsSections(file, index)
           )
         ) : (

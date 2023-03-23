@@ -1,7 +1,7 @@
 enum TaskState {
   TASK_STATUS_TODO = 'todo',
   TASK_STATUS_IN_PROGRESS = 'in_progress',
-  TASK_STATUS_DONE = 'done'
+  TASK_STATUS_DONE = 'done',
 }
 
 type Task = {
@@ -26,8 +26,9 @@ type Task = {
   maintenanceRoutine?: MaintenanceRoutine
   parent?: Task
   status?: TaskState
-  title: string
+  title?: string
   vesselPart?: VesselPart
   watchers?: EntityUser[]
   statusCode?: string
+  flagged?: boolean
 }

@@ -97,4 +97,6 @@ export const Icons = {
   ellipsis_marker: require('./elipsis_h_marker.png'),
   books: require('./books.png'),
   signup_pending: require('./signup-pending.png'),
+  flag_fill: require('./flag-fill.png'),
+  flag_outline: require('./flag-outline.png'),
 }
