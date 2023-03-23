@@ -335,6 +335,19 @@ const updateVesselInventoryItem = async (
     .catch(error => console.error('Error: Update consumable stock data', error))
 }
 
+const reloadVesselPartTypes = (partType: string) => {
+  return API.get(partType)
+    .then(response => {
+      if (response?.status === 200) {
+        return response?.data
+      }
+      throw new Error('Part Type failed.')
+    })
+    .catch(error => {
+      console.error('Error: Part Type data', error)
+    })
+}
+
 export {
   reloadVesselBunkering,
   reloadVesselGasoilReservoirs,
@@ -357,6 +370,7 @@ export {
   reloadVesselInventory,
   reloadConsumableTypes,
   updateVesselInventoryItem,
+  reloadVesselPartTypes,
 }
 
 export * from './measurements'

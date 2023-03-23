@@ -52,6 +52,9 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
     getVesselTasksByCategory,
     updateVesselTask,
     getVesselTasksCategory,
+    isPartTypeLoading,
+    vesselPartType,
+    getVesselPartType,
   } = useTechnical()
   const hasTaskPermission = hasSelectedEntityUserPermission(
     selectedEntity,
@@ -101,7 +104,6 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
                 size={ms(20)}
                 source={flaggedStatus ? Icons.flag_fill : Icons.flag_outline}
                 styles={{marginLeft: 15}}
-                tintColor={flaggedStatus ? Colors.danger : Colors.azure}
                 onPress={onFlagTask}
               />
             </>
@@ -110,6 +112,12 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
       ),
     })
   }, [navigation, flaggedUpdated])
+
+  useEffect(() => {
+    if (task?.vesselPart?.type) {
+      getVesselPartType(task?.vesselPart?.type)
+    }
+  }, [task])
 
   const renderLabels = (label: string) => {
     let title = ''
@@ -238,7 +246,8 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
           {t('type')}
         </Text>
         <Text bold color={Colors.text}>
-          {task?.vesselPart?.type}
+          {/* {task?.vesselPart?.type} */}
+          {vesselPartType?.title}
         </Text>
       </HStack>
     </Box>
