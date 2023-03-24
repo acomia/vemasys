@@ -52,10 +52,8 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
     deleteTask,
     getVesselTasksByCategory,
     updateVesselTask,
-    updateVesselTask2,
     getVesselTasksCategory,
     isPartTypeLoading,
-    isUpdatingTaskLoading,
     vesselPartType,
     getVesselPartType,
   } = useTechnical()
@@ -113,8 +111,6 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
       ),
     })
   }, [navigation, flaggedUpdated, isTechnicalLoading])
-
-  console.log('isUpdatingTaskLoading', isUpdatingTaskLoading)
 
   useEffect(() => {
     if (task?.vesselPart?.type) {
