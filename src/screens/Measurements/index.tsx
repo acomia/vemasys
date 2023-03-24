@@ -470,7 +470,6 @@ const Measurements = ({navigation, route}: Props) => {
             onPress={() => {
               setOpen(true)
               inputRef?.current?.focus()
-              console.log('inputRef', inputRef)
             }}
           >
             {t('addAMeasurement')}

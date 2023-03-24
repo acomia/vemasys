@@ -74,7 +74,6 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
   //   {value: 'cancel', label: 'Cancel'},
   // ]
   const [flaggedUpdated, setFlaggedUpdated] = useState(task?.flagged)
-  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     navigation.setOptions({
@@ -354,26 +353,13 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
 
   const onFlagTask = async () => {
     setFlaggedUpdated(!flaggedUpdated)
-    // const res = await updateVesselTask(task.id, {flagged: !flaggedUpdated})
-    // updateVesselTask2(task.id, {flagged: !flaggedUpdated}).then()
-    setIsLoading(true)
-    API.put(`tasks/${task.id}`, task).then(response => {
-      if (response.status === 200) {
-        getVesselTasksCategory(vesselId)
-        getVesselTasksByCategory(vesselId, category)
-        setIsLoading(false)
-      } else {
-        setFlaggedUpdated(!flaggedUpdated)
-        setIsLoading(false)
-      }
-    })
-    // const res = updateVesselTask2(task.id, {flagged: !flaggedUpdated})
-    // if (typeof res === 'object' && res?.id) {
-    //   getVesselTasksCategory(vesselId)
-    //   getVesselTasksByCategory(vesselId, category)
-    // } else {
-    //   setFlaggedUpdated(!flaggedUpdated)
-    // }
+    const res = await updateVesselTask(task.id, {flagged: !flaggedUpdated})
+    if (typeof res === 'object' && res?.id) {
+      getVesselTasksCategory(vesselId)
+      getVesselTasksByCategory(vesselId, category)
+    } else {
+      setFlaggedUpdated(!flaggedUpdated)
+    }
   }
 
   const handleDeleteTask = async () => {
