@@ -35,6 +35,7 @@ import {
 } from '@bluecentury/constants'
 import {useEntity, useTechnical} from '@bluecentury/stores'
 import {useTranslation} from 'react-i18next'
+import {API} from '@bluecentury/api/apiService'
 
 interface ICommentCard {
   comment: Comment
@@ -51,8 +52,10 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
     deleteTask,
     getVesselTasksByCategory,
     updateVesselTask,
+    updateVesselTask2,
     getVesselTasksCategory,
     isPartTypeLoading,
+    isUpdatingTaskLoading,
     vesselPartType,
     getVesselPartType,
   } = useTechnical()
@@ -70,7 +73,8 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
   //   {value: 'done', label: 'Done'},
   //   {value: 'cancel', label: 'Cancel'},
   // ]
-  const [flaggedUpdated, setFlaggedUpdated] = useState(task.flagged)
+  const [flaggedUpdated, setFlaggedUpdated] = useState(task?.flagged)
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     navigation.setOptions({
@@ -98,6 +102,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
                 key={`flagged-${
                   flaggedUpdated ? Icons.flag_fill : Icons.flag_outline
                 }`}
+                disabled={isTechnicalLoading}
                 size={ms(20)}
                 source={flaggedUpdated ? Icons.flag_fill : Icons.flag_outline}
                 styles={{marginLeft: 15}}
@@ -108,7 +113,9 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
         </HStack>
       ),
     })
-  }, [navigation, flaggedUpdated])
+  }, [navigation, flaggedUpdated, isTechnicalLoading])
+
+  console.log('isUpdatingTaskLoading', isUpdatingTaskLoading)
 
   useEffect(() => {
     if (task?.vesselPart?.type) {
@@ -346,12 +353,27 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
   }
 
   const onFlagTask = async () => {
-    const res = await updateVesselTask(task.id, {flagged: !flaggedUpdated})
-    if (typeof res === 'object' && res?.id) {
-      setFlaggedUpdated(!flaggedUpdated)
-      getVesselTasksCategory(vesselId)
-      getVesselTasksByCategory(vesselId, category)
-    }
+    setFlaggedUpdated(!flaggedUpdated)
+    // const res = await updateVesselTask(task.id, {flagged: !flaggedUpdated})
+    // updateVesselTask2(task.id, {flagged: !flaggedUpdated}).then()
+    setIsLoading(true)
+    API.put(`tasks/${task.id}`, task).then(response => {
+      if (response.status === 200) {
+        getVesselTasksCategory(vesselId)
+        getVesselTasksByCategory(vesselId, category)
+        setIsLoading(false)
+      } else {
+        setFlaggedUpdated(!flaggedUpdated)
+        setIsLoading(false)
+      }
+    })
+    // const res = updateVesselTask2(task.id, {flagged: !flaggedUpdated})
+    // if (typeof res === 'object' && res?.id) {
+    //   getVesselTasksCategory(vesselId)
+    //   getVesselTasksByCategory(vesselId, category)
+    // } else {
+    //   setFlaggedUpdated(!flaggedUpdated)
+    // }
   }
 
   const handleDeleteTask = async () => {

@@ -364,7 +364,13 @@ const Measurements = ({navigation, route}: Props) => {
           />
         )}
       </Box>
-      <Modal animationPreset="slide" isOpen={open} px={ms(15)} size="full">
+      <Modal
+        animationPreset="slide"
+        initialFocusRef={inputRef}
+        isOpen={open}
+        px={ms(15)}
+        size="full"
+      >
         <Modal.Content>
           <Modal.Header>
             {routeFrom === 'reservoir'
@@ -463,7 +469,8 @@ const Measurements = ({navigation, route}: Props) => {
             m={ms(16)}
             onPress={() => {
               setOpen(true)
-              inputRef.current.focus()
+              inputRef?.current?.focus()
+              console.log('inputRef', inputRef)
             }}
           >
             {t('addAMeasurement')}
