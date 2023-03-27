@@ -22,8 +22,12 @@ import moment from 'moment'
 
 import {Colors} from '@bluecentury/styles'
 import {useTechnical} from '@bluecentury/stores'
-import {LoadingAnimated, NoInternetConnectionMessage} from '@bluecentury/components'
+import {
+  LoadingAnimated,
+  NoInternetConnectionMessage,
+} from '@bluecentury/components'
 import {useTranslation} from 'react-i18next'
+import {fuelTypes} from '@bluecentury/constants'
 
 export default function NewBunkering() {
   const {t} = useTranslation()
@@ -41,6 +45,7 @@ export default function NewBunkering() {
     bunkeringId: '',
     amount: '',
     description: '',
+    fuelType: '',
   })
   const [isSupplierEmpty, setIsSupplierEmpty] = useState(false)
   const [isAmountEmpty, setIsAmountEmpty] = useState(false)
@@ -49,6 +54,7 @@ export default function NewBunkering() {
   useEffect(() => {
     getVesselBunkeringSuppliers()
   }, [])
+
   const suppliers =
     bunkeringSuppliers?.length > 0
       ? bunkeringSuppliers.map(supplier => {
@@ -84,7 +90,7 @@ export default function NewBunkering() {
         duration: 2000,
         render: () => {
           return (
-            <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
+            <Box bg="emerald.500" mb={5} px="2" py="1" rounded="sm">
               Bunkering added.
             </Box>
           )
@@ -98,7 +104,7 @@ export default function NewBunkering() {
         duration: 2000,
         render: () => {
           return (
-            <Box bg="red.500" px="2" py="1" rounded="sm" mb={5}>
+            <Box bg="red.500" mb={5} px="2" py="1" rounded="sm">
               Bunkering failed.
             </Box>
           )
@@ -113,16 +119,15 @@ export default function NewBunkering() {
     <Box flex="1">
       <NoInternetConnectionMessage />
       <ScrollView
+        bg={Colors.white}
         contentContainerStyle={{flexGrow: 1}}
         px={ms(12)}
         py={ms(20)}
-        bg={Colors.white}
       >
-        <Text mb={ms(5)} color={Colors.disabled} fontWeight="medium">
+        <Text color={Colors.disabled} fontWeight="medium" mb={ms(5)}>
           {t('date')}
         </Text>
         <TouchableOpacity
-          activeOpacity={0.7}
           style={{
             flexDirection: 'row',
             alignItems: 'center',
@@ -132,18 +137,19 @@ export default function NewBunkering() {
             paddingHorizontal: 12,
             marginBottom: 25,
           }}
+          activeOpacity={0.7}
           onPress={() => setOpenDatePicker(true)}
         >
-          <HStack flex="1" alignItems="center">
-            <Ionicons name="calendar-outline" size={20} color={Colors.text} />
-            <Text ml={ms(12)} fontSize={15} fontWeight="medium">
+          <HStack alignItems="center" flex="1">
+            <Ionicons color={Colors.text} name="calendar-outline" size={20} />
+            <Text fontSize={15} fontWeight="medium" ml={ms(12)}>
               {moment(bunkering.date.toLocaleDateString()).format(
                 'DD MMM YYYY'
               )}
             </Text>
           </HStack>
 
-          <Ionicons name="chevron-down" size={22} color={Colors.text} />
+          <Ionicons color={Colors.text} name="chevron-down" size={22} />
         </TouchableOpacity>
 
         <FormControl isRequired isInvalid={isSupplierEmpty}>
@@ -151,13 +157,13 @@ export default function NewBunkering() {
             {t('supplier')}
           </FormControl.Label>
           <Select
-            minWidth="300"
-            height={ms(40)}
+            accessibilityLabel=""
+            bg={'#F7F7F7'}
             fontSize={ms(15)}
             fontWeight="medium"
-            accessibilityLabel=""
+            height={ms(40)}
+            minWidth="300"
             placeholder=""
-            bg={'#F7F7F7'}
             onValueChange={val => {
               setBunkering({...bunkering, bunkeringId: val})
               setIsSupplierEmpty(false)
@@ -175,20 +181,53 @@ export default function NewBunkering() {
             {t('newBunkeringSupplierRequired')}
           </FormControl.ErrorMessage>
         </FormControl>
-        <FormControl isRequired isInvalid={isAmountEmpty} mt={ms(25)}>
-          <FormControl.Label color={Colors.disabled}>{t('amount')}</FormControl.Label>
-          <Input
+
+        <FormControl isRequired isInvalid={isSupplierEmpty}>
+          <FormControl.Label color={Colors.disabled}>
+            {t('fueltype')}
+          </FormControl.Label>
+          <Select
+            accessibilityLabel=""
             bg={'#F7F7F7'}
-            keyboardType="number-pad"
-            height={ms(40)}
             fontSize={ms(15)}
+            fontWeight="medium"
+            height={ms(40)}
+            minWidth="300"
+            placeholder=""
+            onValueChange={val => {
+              setBunkering({...bunkering, fuelType: val})
+              setIsSupplierEmpty(false)
+            }}
+          >
+            {fuelTypes?.map((fuelType, index) => (
+              <Select.Item
+                key={fuelType + ' ' + index}
+                label={fuelType?.label}
+                value={fuelType?.value}
+              />
+            ))}
+          </Select>
+          <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
+            {t('newBunkeringSupplierRequired')}
+          </FormControl.ErrorMessage>
+        </FormControl>
+
+        <FormControl isRequired isInvalid={isAmountEmpty} mt={ms(25)}>
+          <FormControl.Label color={Colors.disabled}>
+            {t('amount')}
+          </FormControl.Label>
+          <Input
             bold
+            bg={'#F7F7F7'}
+            fontSize={ms(15)}
+            height={ms(40)}
+            keyboardType="number-pad"
+            returnKeyType="next"
             value={bunkering.amount}
             onChangeText={e => {
               setBunkering({...bunkering, amount: e})
               setIsAmountEmpty(false)
             }}
-            returnKeyType="next"
           />
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
             {bunkering.bunkeringId === '' && bunkering.amount === ''
@@ -203,52 +242,52 @@ export default function NewBunkering() {
             {t('description')}
           </FormControl.Label>
           <TextArea
-            numberOfLines={6}
+            autoCompleteType={undefined}
             h="200"
+            numberOfLines={6}
             placeholder=""
             style={{backgroundColor: '#F7F7F7'}}
             onChangeText={e => setBunkering({...bunkering, description: e})}
-            autoCompleteType={undefined}
           />
           <FormControl.ErrorMessage
             leftIcon={<WarningOutlineIcon size="xs" />}
-          ></FormControl.ErrorMessage>
+          />
         </FormControl>
         <DatePicker
           modal
-          open={openDatePicker}
           date={bunkering.date}
           mode="date"
+          open={openDatePicker}
+          onCancel={() => {
+            setOpenDatePicker(false)
+          }}
           onConfirm={date => {
             setOpenDatePicker(false)
             setBunkering({...bunkering, date: date})
-          }}
-          onCancel={() => {
-            setOpenDatePicker(false)
           }}
         />
       </ScrollView>
       <Box bg={Colors.white} position="relative">
         <Shadow
-          distance={25}
           viewStyle={{
             width: '100%',
           }}
+          distance={25}
         >
           <HStack>
             <Button
+              colorScheme="muted"
               flex="1"
               m={ms(16)}
               variant="ghost"
-              colorScheme="muted"
               onPress={() => navigation.goBack()}
             >
               {t('cancel')}
             </Button>
             <Button
+              bg={Colors.primary}
               flex="1"
               m={ms(16)}
-              bg={Colors.primary}
               onPress={handleOnCreateBunkering}
             >
               {t('save')}
