@@ -325,6 +325,10 @@ const Measurements = ({navigation, route}: Props) => {
 
   const handleInputChange = (e: string) => {
     let formatted = ''
+    if (e === '') {
+      setNewMeasurement(e)
+      return
+    }
     if (e.includes('.') || e.includes(',')) {
       const re = /,/g
       const tmp = e.replace(re, '.')
