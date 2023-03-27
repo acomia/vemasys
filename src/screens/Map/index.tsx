@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react'
-import {StyleSheet, Dimensions, View} from 'react-native'
+import {StyleSheet, Dimensions} from 'react-native'
 import {Box, Text, Button, HStack, Image, Icon, VStack} from 'native-base'
 import MapView, {
   PROVIDER_GOOGLE,
@@ -33,6 +33,7 @@ import {
   ENTITY_TYPE_EXPLOITATION_GROUP,
   formatLocationLabel,
 } from '@bluecentury/constants'
+import {MainStackParamList} from '@bluecentury/types/nav.types'
 
 const {width, height} = Dimensions.get('window')
 const ASPECT_RATIO = width / height
@@ -126,7 +127,7 @@ export default function Map({navigation}: Props) {
     }
     return () => clearInterval(refreshId.current)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vesselId, focused])
+  }, [vesselId, focused, page])
 
   useEffect(() => {
     if (currentNavLogs && currentNavLogs.length > 0) {
@@ -379,7 +380,7 @@ export default function Map({navigation}: Props) {
   }
 
   const renderTrackLineBeginningMarker = () => {
-    const {latitude, longitude}: VesselGeolocation =
+    const {latitude, longitude} =
       uniqueVesselTracks[uniqueVesselTracks.length - 1]
     return (
       <Marker
@@ -450,8 +451,9 @@ export default function Map({navigation}: Props) {
 
   const fitToAllMarkers = () => {
     mapRef?.current?.fitToCoordinates(uniqueVesselTracks, {
-      edgePadding: DEFAULT_PADDING,
+      // edgePadding: DEFAULT_PADDING,
       animated: true,
+      edgePadding: {bottom: height * 0.3, top: 40, left: 35, right: 35},
     })
   }
 
@@ -475,30 +477,24 @@ export default function Map({navigation}: Props) {
 
   const centerMapToBeginningTrackLine = () => {
     if (uniqueVesselTracks && uniqueVesselTracks.length) {
-      // const {latitude, longitude}: VesselGeolocation =
-      //   uniqueVesselTracks[uniqueVesselTracks?.length - 1]
-      const polyLineCoords = uniqueVesselTracks.map(item => {
-        return {
-          latitude: item.latitude,
-          longitude: item.longitude,
-        }
-      })
-      // const camera: Camera = {
-      //   center: {
-      //     latitude: Number(latitude),
-      //     longitude: Number(longitude),
-      //   },
-      //   zoom: 14,
-      //   heading: 0,
-      //   pitch: 0,
-      //   altitude: 5,
-      // }
-      // const duration = 1000 * 3
-      // mapRef.current?.animateCamera(camera, {duration: duration})
-      mapRef.current?.fitToCoordinates(polyLineCoords, {
-        animated: true,
-        edgePadding: {bottom: height * 0.3, top: 40, left: 35, right: 35},
-      })
+      const {latitude, longitude} =
+        uniqueVesselTracks[uniqueVesselTracks?.length - 1]
+      const camera: Camera = {
+        center: {
+          latitude: Number(latitude),
+          longitude: Number(longitude),
+        },
+        zoom: 14,
+        heading: 0,
+        pitch: 0,
+        altitude: 5,
+      }
+      const duration = 1000 * 3
+      mapRef.current?.animateCamera(camera, {duration: duration})
+      // mapRef.current?.fitToCoordinates(uniqueVesselTracks, {
+      //   animated: true,
+      //   edgePadding: {bottom: height * 0.3, top: 40, left: 35, right: 35},
+      // })
     }
   }
 
@@ -528,6 +524,7 @@ export default function Map({navigation}: Props) {
   const onLoadMoreVesselTrack = () => {
     setPage(page + 1)
     getVesselTrack(vesselId, page + 1)
+    fitToAllMarkers()
   }
 
   return (
@@ -603,8 +600,9 @@ export default function Map({navigation}: Props) {
                 onPress={() => {
                   setTrackViewMode(value => {
                     if (!value) {
-                      if (page > 1) fitToAllMarkers()
-                      else centerMapToBeginningTrackLine()
+                      fitToAllMarkers()
+                      // if (page > 1) fitToAllMarkers()
+                      // else centerMapToBeginningTrackLine()
                     } else {
                       centerMapToCurrentLocation()
                     }

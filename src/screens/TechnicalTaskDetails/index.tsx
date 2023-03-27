@@ -35,6 +35,7 @@ import {
 } from '@bluecentury/constants'
 import {useEntity, useTechnical} from '@bluecentury/stores'
 import {useTranslation} from 'react-i18next'
+import {API} from '@bluecentury/api/apiService'
 
 interface ICommentCard {
   comment: Comment
@@ -70,7 +71,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
   //   {value: 'done', label: 'Done'},
   //   {value: 'cancel', label: 'Cancel'},
   // ]
-  const [flaggedUpdated, setFlaggedUpdated] = useState(task.flagged)
+  const [flaggedUpdated, setFlaggedUpdated] = useState(task?.flagged)
 
   useEffect(() => {
     navigation.setOptions({
@@ -98,6 +99,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
                 key={`flagged-${
                   flaggedUpdated ? Icons.flag_fill : Icons.flag_outline
                 }`}
+                disabled={isTechnicalLoading}
                 size={ms(20)}
                 source={flaggedUpdated ? Icons.flag_fill : Icons.flag_outline}
                 styles={{marginLeft: 15}}
@@ -108,7 +110,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
         </HStack>
       ),
     })
-  }, [navigation, flaggedUpdated])
+  }, [navigation, flaggedUpdated, isTechnicalLoading])
 
   useEffect(() => {
     if (task?.vesselPart?.type) {
@@ -346,11 +348,13 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
   }
 
   const onFlagTask = async () => {
+    setFlaggedUpdated(!flaggedUpdated)
     const res = await updateVesselTask(task.id, {flagged: !flaggedUpdated})
     if (typeof res === 'object' && res?.id) {
-      setFlaggedUpdated(!flaggedUpdated)
       getVesselTasksCategory(vesselId)
       getVesselTasksByCategory(vesselId, category)
+    } else {
+      setFlaggedUpdated(!flaggedUpdated)
     }
   }
 
