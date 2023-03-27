@@ -9,7 +9,7 @@ export function formatLocationLabel(location?: GeographicPoint | Location) {
 }
 
 export function formatBulkTypeLabel(bulkType: any): string {
-  let label = bulkType.nameNl ?? bulkType.nameEn
+  let label = bulkType?.nameNl ?? bulkType?.nameEn
 
   if (bulkType.hscode) {
     label = `${bulkType.hscode} - ${label}`
