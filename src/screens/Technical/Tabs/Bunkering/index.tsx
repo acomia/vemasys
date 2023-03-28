@@ -16,10 +16,8 @@ const Bunkering = () => {
   const navigation = useNavigation()
   const {physicalVesselId, vesselId} = useEntity()
   const {
-    isTechnicalLoading,
     bunkering,
     gasoilReserviors,
-    isBunkeringLoading,
     getVesselBunkering,
     getVesselGasoilReservoirs,
   } = useTechnical()
@@ -70,7 +68,7 @@ const Bunkering = () => {
         >
           {t('bunkering')}
         </Text>
-        <BunkeringList bunkering={bunkering} loading={isBunkeringLoading} />
+        <BunkeringList bunkering={bunkering} />
       </ScrollView>
       {/* Add Bunkering Button */}
       <Box bg={Colors.white} bottom={0} left={0} position="absolute" right={0}>

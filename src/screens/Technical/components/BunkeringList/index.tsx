@@ -8,10 +8,12 @@ import {ms} from 'react-native-size-matters'
 import {formatNumber} from '@bluecentury/constants'
 import {useTranslation} from 'react-i18next'
 import {LoadingAnimated} from '@bluecentury/components'
+import {useTechnical} from '@bluecentury/stores'
 
-const BunkeringList = ({bunkering, loading}: any) => {
+const BunkeringList = ({bunkering}: any) => {
   const {t} = useTranslation()
   const navigation = useNavigation()
+  const {isBunkeringLoading} = useTechnical()
 
   const renderBunkeringList = (bunk: any, index: number) => {
     return (
@@ -45,7 +47,7 @@ const BunkeringList = ({bunkering, loading}: any) => {
     )
   }
 
-  return loading ? (
+  return isBunkeringLoading ? (
     <LoadingAnimated />
   ) : (
     <Box>
