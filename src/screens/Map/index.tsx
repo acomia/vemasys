@@ -173,7 +173,9 @@ export default function Map({navigation}: Props) {
   }, [notifications])
 
   useEffect(() => {
-    fitToAllMarkers()
+    if (vesselTracks.length) {
+      fitToAllMarkers()
+    }
   }, [vesselTracks])
 
   const updateMap = async () => {
@@ -260,7 +262,6 @@ export default function Map({navigation}: Props) {
               as={<FontAwesome5Icon name="check-circle" />}
               color={Colors.secondary}
               size={25}
-              solid={true}
             />
             <Box mx={ms(5)}>
               <Text fontSize={ms(13)} fontWeight="semibold">
