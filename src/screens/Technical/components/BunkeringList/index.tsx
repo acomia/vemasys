@@ -7,8 +7,9 @@ import moment from 'moment'
 import {ms} from 'react-native-size-matters'
 import {formatNumber} from '@bluecentury/constants'
 import {useTranslation} from 'react-i18next'
+import {LoadingAnimated} from '@bluecentury/components'
 
-const BunkeringList = ({bunkering}: any) => {
+const BunkeringList = ({bunkering, loading}: any) => {
   const {t} = useTranslation()
   const navigation = useNavigation()
 
@@ -44,7 +45,9 @@ const BunkeringList = ({bunkering}: any) => {
     )
   }
 
-  return (
+  return loading ? (
+    <LoadingAnimated />
+  ) : (
     <Box>
       <HStack alignItems="center">
         <Text bold color={Colors.text} flex="1" fontSize={ms(16)}>

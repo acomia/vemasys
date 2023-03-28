@@ -26,6 +26,7 @@ type TechnicalState = {
   consumableTypes: any[]
   isPartTypeLoading: boolean
   vesselPartType: PartType | null
+  isBunkeringLoading: boolean
 }
 
 type TechnicalActions = {
@@ -83,23 +84,30 @@ export const useTechnical = create(
       consumableTypes: [],
       isPartTypeLoading: false,
       vesselPartType: null,
+      isBunkeringLoading: false,
       getVesselBunkering: async (vesselId: string) => {
-        set({isTechnicalLoading: true, bunkering: []})
+        set({
+          isTechnicalLoading: true,
+          bunkering: [],
+          isBunkeringLoading: true,
+        })
         try {
           const response = await API.reloadVesselBunkering(vesselId)
           if (Array.isArray(response)) {
             set({
               isTechnicalLoading: false,
               bunkering: response,
+              isBunkeringLoading: false,
             })
           } else {
             set({
               isTechnicalLoading: false,
               bunkering: [],
+              isBunkeringLoading: false,
             })
           }
         } catch (error) {
-          set({isTechnicalLoading: false})
+          set({isTechnicalLoading: false, isBunkeringLoading: false})
         }
       },
       getVesselGasoilReservoirs: async (physicalVesselId: string) => {

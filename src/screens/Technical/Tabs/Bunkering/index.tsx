@@ -19,6 +19,7 @@ const Bunkering = () => {
     isTechnicalLoading,
     bunkering,
     gasoilReserviors,
+    isBunkeringLoading,
     getVesselBunkering,
     getVesselGasoilReservoirs,
   } = useTechnical()
@@ -69,11 +70,7 @@ const Bunkering = () => {
         >
           {t('bunkering')}
         </Text>
-        {bunkering?.length > 0 && !isTechnicalLoading ? (
-          <BunkeringList bunkering={bunkering} />
-        ) : (
-          <LoadingAnimated />
-        )}
+        <BunkeringList bunkering={bunkering} loading={isBunkeringLoading} />
       </ScrollView>
       {/* Add Bunkering Button */}
       <Box bg={Colors.white} bottom={0} left={0} position="absolute" right={0}>
