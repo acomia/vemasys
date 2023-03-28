@@ -28,7 +28,7 @@ type EntityState = {
   entityRole: string
   entityUserId: string | number | undefined
   linkEntity: object | null
-  vesselId: string | undefined
+  vesselId: string
   vesselDetails: Vessel | undefined
   selectedVessel: Entity | null
   selectedEntity: EntityUser | null
@@ -81,7 +81,7 @@ const initialEntityState: EntityState = {
   entityRole: '',
   entityUserId: undefined,
   linkEntity: null,
-  vesselId: undefined,
+  vesselId: '',
   vesselDetails: undefined,
   selectedVessel: null,
   selectedEntity: null,
