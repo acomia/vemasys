@@ -4,23 +4,24 @@ import {TouchableOpacity} from 'react-native'
 import {useEntity} from '@bluecentury/stores'
 import {ms} from 'react-native-size-matters'
 import {Colors} from '@bluecentury/styles'
+import {ExploitationVessel} from '@bluecentury/models'
 
 type Props = {
-  onPress: (index: number, exploitationVessel: any) => void
+  onPress: (index: number, exploitationVessel: ExploitationVessel) => void
 }
 
 export const FleetHeader = ({onPress}: Props) => {
   const {selectedEntity, fleetVessel} = useEntity()
 
   return (
-    <Box p={ms(12)} h={ms(50)} bg={Colors.light}>
+    <Box bg={Colors.light} h={ms(50)} p={ms(12)}>
       <ScrollView
         horizontal
-        showsHorizontalScrollIndicator={false}
         contentContainerStyle={{flexGrow: 1, alignItems: 'center'}}
+        showsHorizontalScrollIndicator={false}
       >
         {selectedEntity?.entity?.exploitationGroup?.exploitationVessels?.map(
-          (exploitationVessel: any, index: number) => {
+          (exploitationVessel: ExploitationVessel, index: number) => {
             return (
               <HStack key={`Vessel-${index}`} alignItems="center">
                 <TouchableOpacity
@@ -40,18 +41,18 @@ export const FleetHeader = ({onPress}: Props) => {
                   {index === fleetVessel && (
                     <Box
                       bg={Colors.azure}
-                      h={ms(3)}
                       borderRadius={ms(3)}
-                      w={ms(70)}
+                      h={ms(3)}
                       mt={ms(2)}
+                      w={ms(70)}
                     />
                   )}
                 </TouchableOpacity>
                 <Box
-                  borderWidth={ms(1)}
                   borderColor="#E0E0E0"
-                  mx={ms(8)}
+                  borderWidth={ms(1)}
                   h={ms(50)}
+                  mx={ms(8)}
                 />
               </HStack>
             )

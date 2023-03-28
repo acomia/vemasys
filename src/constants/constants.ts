@@ -115,3 +115,10 @@ export const crewTabs = [
   {key: 'planning', title: 'Planning'},
 ]
 export const VESSEL_CREW_PLANNING_ONBOARD = 'onboard'
+
+export const fuelTypes = [
+  {label: 'Gasoil', value: 'gasoil'},
+  {label: 'LNG', value: 'lng'},
+  {label: 'Hydrogen', value: 'lng'},
+  {label: 'Urea', value: 'urea'},
+]
