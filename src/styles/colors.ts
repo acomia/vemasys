@@ -28,4 +28,6 @@ export const Colors = {
   blue: '#00A3FF',
   //Offline warning
   offlineWarning: '#F85555',
+  dark_blue: '#397493',
+  light_blue: '#D9EDF7',
 }
