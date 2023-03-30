@@ -60,7 +60,7 @@ const ResetPasswordModal = () => {
     if (!validate()) return
 
     if (user?.id) {
-      resetPassword(user?.id, {password: formData?.password})
+      resetPassword(user?.id, {plainPassword: formData?.password})
     }
   }
 
