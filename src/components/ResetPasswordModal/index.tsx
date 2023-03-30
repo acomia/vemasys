@@ -64,7 +64,7 @@ const ResetPasswordModal = () => {
     setErrors({})
     if (!validate()) return
 
-    if (!errors && user?.id) {
+    if (user?.id) {
       resetPassword(user?.id, {plainPassword: formData?.password})
     }
   }
@@ -172,12 +172,6 @@ const ResetPasswordModal = () => {
         onClose={() => {
           closeModal()
         }}
-        // onLayout={() => {
-        //   setTimeout(() => {
-        //     passwordRef?.current?.blur()
-        //     passwordRef?.current?.focus()
-        //   }, 100)
-        // }}
       >
         <Modal.Content width="full">
           <Modal.Header>
@@ -210,7 +204,7 @@ const ResetPasswordModal = () => {
                 <Input
                   ref={cPasswordRef}
                   backgroundColor={
-                    'password' in errors ? Colors.navLogItemPink : null
+                    'confirmPassword' in errors ? Colors.navLogItemPink : null
                   }
                   returnKeyType="go"
                   type="password"

@@ -29,7 +29,6 @@ export const useUser = create(
 
         API.put(`users/${id}`, data)
           .then(response => {
-            console.log('response', response.status)
             if (response.status === 200) {
               set({isResetPasswordSuccess: true, isResetPasswordLoading: false})
               return
