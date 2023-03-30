@@ -10,15 +10,17 @@ import {
   Button,
   FormControl,
   Spinner,
+  Image,
 } from 'native-base'
 import {useTranslation} from 'react-i18next'
-import IconFA5 from 'react-native-vector-icons/FontAwesome5'
 import {ms} from 'react-native-size-matters'
 import {Colors} from '@bluecentury/styles'
 import {Keyboard} from 'react-native'
 import {Requirements} from './components'
 import {useUser, useEntity} from '@bluecentury/stores'
 import {showToast} from '@bluecentury/hooks'
+import {Icons} from '@bluecentury/assets'
+import IconFA5 from 'react-native-vector-icons/FontAwesome5'
 
 const ResetPasswordModal = () => {
   const {t} = useTranslation()
@@ -43,14 +45,17 @@ const ResetPasswordModal = () => {
     /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/
 
   useEffect(() => {
+    const timeout = setTimeout(() => {
+      passwordRef.current?.blur()
+      passwordRef.current?.focus()
+    }, 100)
+    return () => clearTimeout(timeout)
+  }, [])
+
+  useEffect(() => {
     if (isResetPasswordSuccess) {
-      setOpenModal(false)
+      closeModal()
       showToast(t('changePasswordSuccess'), 'success')
-      setErrors({})
-      setFormdata({
-        password: '',
-        confirmPassword: '',
-      })
       unmountResetPassword()
     }
   }, [isResetPasswordSuccess])
@@ -59,13 +64,12 @@ const ResetPasswordModal = () => {
     setErrors({})
     if (!validate()) return
 
-    if (user?.id) {
+    if (!errors && user?.id) {
       resetPassword(user?.id, {plainPassword: formData?.password})
     }
   }
 
   const validate = () => {
-    setErrors({})
     if (formData.password === '' || formData.password === undefined) {
       setErrors({...errors, password: t('invalidPassword')})
       return false
@@ -73,14 +77,14 @@ const ResetPasswordModal = () => {
 
     if (!passwordRegex.exec(formData.password)) {
       setErrors({...errors, password: 'Password invalid format'})
-      return
+      return false
     }
 
     if (
       formData.confirmPassword === '' ||
       formData.confirmPassword === undefined
     ) {
-      setErrors({...errors, confirmPassword: 'Confirm password is required'})
+      setErrors({...errors, confirmPassword: t('confirmPasswordError')})
       return false
     }
 
@@ -92,6 +96,31 @@ const ResetPasswordModal = () => {
     return true
   }
 
+  const closeModal = () => {
+    setErrors({})
+    setFormdata({
+      password: '',
+      confirmPassword: '',
+    })
+    setOpenModal(false)
+  }
+
+  const renderPasswordError = () => {
+    return (
+      <View>
+        <FormControl.ErrorMessage>
+          <IconFA5 name="exclamation-circle" />{' '}
+          <Text>{t('passwordErrorSub1')}</Text>
+        </FormControl.ErrorMessage>
+
+        <FormControl.ErrorMessage>
+          <IconFA5 name="exclamation-circle" />{' '}
+          <Text>{t('passwordErrorSub2')}</Text>
+        </FormControl.ErrorMessage>
+      </View>
+    )
+  }
+
   return (
     <View>
       <Pressable
@@ -99,7 +128,13 @@ const ResetPasswordModal = () => {
         overflow="hidden"
         pb={ms(12)}
         width="100%"
-        onPress={() => setOpenModal(!isOpenModal)}
+        onPress={() => {
+          setOpenModal(!isOpenModal)
+          setTimeout(() => {
+            passwordRef?.current?.blur()
+            passwordRef?.current?.focus()
+          }, 100)
+        }}
       >
         <HStack
           alignItems="center"
@@ -113,16 +148,14 @@ const ResetPasswordModal = () => {
           shadow="3"
         >
           <HStack alignItems={'center'}>
-            <IconFA5
-              style={{
-                height: ms(17),
-                marginRight: ms(12),
-                marginVertical: ms(20),
-                width: ms(17),
-              }}
-              color={Colors.primary}
-              name="key"
-              size={ms(17)}
+            <Image
+              alt="key-skeleton"
+              h={ms(17)}
+              mr={ms(12)}
+              my={ms(20)}
+              resizeMode="contain"
+              source={Icons.keySkeleton}
+              w={ms(17)}
             />
             <Text fontWeight="500" w="70%">
               {t('changePassword')}
@@ -137,8 +170,14 @@ const ResetPasswordModal = () => {
         isOpen={isOpenModal}
         width="full"
         onClose={() => {
-          setOpenModal(false)
+          closeModal()
         }}
+        // onLayout={() => {
+        //   setTimeout(() => {
+        //     passwordRef?.current?.blur()
+        //     passwordRef?.current?.focus()
+        //   }, 100)
+        // }}
       >
         <Modal.Content width="full">
           <Modal.Header>
@@ -147,11 +186,13 @@ const ResetPasswordModal = () => {
           <Modal.Body>
             <VStack space={5}>
               <Requirements />
-
               <FormControl isRequired isInvalid={'password' in errors}>
+                <FormControl.Label>{t('newPassword')}</FormControl.Label>
                 <Input
                   ref={passwordRef}
-                  placeholder={t('password') || ''}
+                  backgroundColor={
+                    'password' in errors ? Colors.navLogItemPink : null
+                  }
                   returnKeyType="next"
                   type="password"
                   value={formData.password}
@@ -162,16 +203,15 @@ const ResetPasswordModal = () => {
                     cPasswordRef?.current?.focus()
                   }}
                 />
-                {'password' in errors && (
-                  <FormControl.ErrorMessage>
-                    {errors?.password}
-                  </FormControl.ErrorMessage>
-                )}
+                {'password' in errors && renderPasswordError()}
               </FormControl>
               <FormControl isRequired isInvalid={'confirmPassword' in errors}>
+                <FormControl.Label>{t('reTypePassword')}</FormControl.Label>
                 <Input
                   ref={cPasswordRef}
-                  placeholder={t('confirmPassword') || ''}
+                  backgroundColor={
+                    'password' in errors ? Colors.navLogItemPink : null
+                  }
                   returnKeyType="go"
                   type="password"
                   value={formData.confirmPassword}
@@ -184,20 +224,42 @@ const ResetPasswordModal = () => {
                 />
                 {'confirmPassword' in errors && (
                   <FormControl.ErrorMessage>
+                    <IconFA5 name="exclamation-circle" />{' '}
                     {errors?.confirmPassword}
                   </FormControl.ErrorMessage>
                 )}
               </FormControl>
-              <Button
-                disabled={isResetPasswordLoading}
-                onPress={() => onSubmit()}
+              <HStack
+                alignItems="center"
+                flex={1}
+                // justifyContent="space-between"
+                space={ms(13)}
               >
-                {isResetPasswordLoading ? (
-                  <Spinner color={Colors.white} />
-                ) : (
-                  t('submit')
-                )}
-              </Button>
+                <Button
+                  backgroundColor={Colors.grey}
+                  disabled={isResetPasswordLoading}
+                  width="48%"
+                  onPress={() => closeModal()}
+                >
+                  <Text color={Colors.disabled} fontWeight={'bold'}>
+                    {t('cancel')}
+                  </Text>
+                </Button>
+                <Button
+                  backgroundColor={Colors.primary}
+                  disabled={isResetPasswordLoading}
+                  width="48%"
+                  onPress={() => onSubmit()}
+                >
+                  {isResetPasswordLoading ? (
+                    <Spinner color={Colors.white} />
+                  ) : (
+                    <Text color={Colors.white} fontWeight={'bold'}>
+                      {t('save')}
+                    </Text>
+                  )}
+                </Button>
+              </HStack>
             </VStack>
           </Modal.Body>
         </Modal.Content>

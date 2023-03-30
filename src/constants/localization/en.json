@@ -358,5 +358,9 @@
   "requirementSub2": "- it should contain at least 1 number",
   "requirementSub3": "- it should contain at least on of the following characters: '#?!@%^&*-'",
   "submit": "Submit",
-  "changePasswordSuccess": "Changed password successfully"
+  "changePasswordSuccess": "Changed password successfully",
+  "newPassword": "New password ",
+  "reTypePassword": "Re-type new password ",
+  "passwordErrorSub1": "Your password needs to consist of at least 8 characters",
+  "passwordErrorSub2": "Your password needs to contain at least one number and one special character (#?!@$%^&*-])"
 }

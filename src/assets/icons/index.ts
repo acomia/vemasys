@@ -108,4 +108,5 @@ export const Icons = {
   transfer: require('./Transfer.png'),
   waitingNavlogItem: require('./WaitingNavlogItem.png'),
   passedABridge: require('./PassedABridge.png'),
+  keySkeleton: require('./key-skeleton.png'),
 }
