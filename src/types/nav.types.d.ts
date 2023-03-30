@@ -1,4 +1,4 @@
-import {Comments} from '@bluecentury/models'
+import {Comments, NavigationLog} from '@bluecentury/models'
 type RootStackParamList = {
   Splash: undefined
   SelectEnvironment: undefined
@@ -12,7 +12,7 @@ type RootStackParamList = {
   PDFView: {path: string | undefined}
   NewBunkering: undefined
   BunkeringDetails: {bunk: {} | undefined}
-  PlanningDetails: {navlog: any; title?: string}
+  PlanningDetails: {navlog: NavigationLog; title?: StringOrNull}
   AddEditBulkCargo: {cargo?: any; method?: string}
   PlanningNewComment: undefined
   AddEditComment: {
