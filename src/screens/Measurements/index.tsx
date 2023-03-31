@@ -55,7 +55,7 @@ const Measurements = ({navigation, route}: Props) => {
   const [open, setOpen] = useState(false)
   const [openConfirmation, setOpenConfirmation] = useState(false)
   const [inputInvalid, setInputInvalid] = useState(false)
-  const inputRef = useRef<any>()
+  const inputRef = useRef(null)
   const hasTechnicalPermission = hasSelectedEntityUserPermission(
     selectedEntity,
     ROLE_PERMISSION_TECHNICAL
@@ -351,8 +351,8 @@ const Measurements = ({navigation, route}: Props) => {
   const onAddMeasurement = () => {
     setOpen(true)
     setTimeout(() => {
-      inputRef.current?.blur()
-      inputRef.current?.focus()
+      inputRef?.current?.blur()
+      inputRef?.current?.focus()
     }, 100)
   }
   return (
@@ -388,12 +388,12 @@ const Measurements = ({navigation, route}: Props) => {
         isOpen={open}
         px={ms(15)}
         size="full"
-        onLayout={() =>
-          setTimeout(() => {
-            inputRef.current?.blur()
-            inputRef.current?.focus()
-          }, 100)
-        }
+        // onLayout={() =>
+        //   setTimeout(() => {
+        //     inputRef.current?.blur()
+        //     inputRef.current?.focus()
+        //   }, 100)
+        // }
       >
         <Modal.Content>
           <Modal.Header>
