@@ -32,8 +32,8 @@ const ResetPasswordModal = () => {
   } = useUser()
   const {user} = useEntity()
 
-  const passwordRef = useRef(null)
-  const cPasswordRef = useRef(null)
+  const passwordRef = useRef<any>(null)
+  const cPasswordRef = useRef<any>(null)
 
   const [isOpenModal, setOpenModal] = useState(false)
   const [formData, setFormdata] = useState({
@@ -43,14 +43,6 @@ const ResetPasswordModal = () => {
   const [errors, setErrors] = useState({})
   const passwordRegex =
     /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      passwordRef.current?.blur()
-      passwordRef.current?.focus()
-    }, 100)
-    return () => clearTimeout(timeout)
-  }, [])
 
   useEffect(() => {
     if (isResetPasswordSuccess) {
