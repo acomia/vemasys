@@ -55,19 +55,11 @@ const Measurements = ({navigation, route}: Props) => {
   const [open, setOpen] = useState(false)
   const [openConfirmation, setOpenConfirmation] = useState(false)
   const [inputInvalid, setInputInvalid] = useState(false)
-  const inputRef = useRef(null)
+  const inputRef = useRef<any>(null)
   const hasTechnicalPermission = hasSelectedEntityUserPermission(
     selectedEntity,
     ROLE_PERMISSION_TECHNICAL
   )
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      inputRef.current?.blur()
-      inputRef.current?.focus()
-    }, 100)
-    return () => clearTimeout(timeout)
-  }, [])
 
   useEffect(() => {
     getVesselPartLastMeasurements(
@@ -388,12 +380,6 @@ const Measurements = ({navigation, route}: Props) => {
         isOpen={open}
         px={ms(15)}
         size="full"
-        // onLayout={() =>
-        //   setTimeout(() => {
-        //     inputRef.current?.blur()
-        //     inputRef.current?.focus()
-        //   }, 100)
-        // }
       >
         <Modal.Content>
           <Modal.Header>

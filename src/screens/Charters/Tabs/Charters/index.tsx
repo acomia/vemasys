@@ -98,8 +98,6 @@ export default function Charters({navigation, route}: any) {
     }
   }, [path])
 
-  console.log('charters', charters)
-
   const readFile = () => {
     ReactNativeBlobUtil.fs.readFile(path, 'base64').then(contents => {
       setPdfBase64(contents)
