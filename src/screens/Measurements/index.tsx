@@ -56,11 +56,18 @@ const Measurements = ({navigation, route}: Props) => {
   const [openConfirmation, setOpenConfirmation] = useState(false)
   const [inputInvalid, setInputInvalid] = useState(false)
   const inputRef = useRef<any>()
-
   const hasTechnicalPermission = hasSelectedEntityUserPermission(
     selectedEntity,
     ROLE_PERMISSION_TECHNICAL
   )
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      inputRef.current?.blur()
+      inputRef.current?.focus()
+    }, 100)
+    return () => clearTimeout(timeout)
+  }, [])
 
   useEffect(() => {
     getVesselPartLastMeasurements(
@@ -341,6 +348,13 @@ const Measurements = ({navigation, route}: Props) => {
     setNewMeasurement(formatted)
   }
 
+  const onAddMeasurement = () => {
+    setOpen(true)
+    setTimeout(() => {
+      inputRef.current?.blur()
+      inputRef.current?.focus()
+    }, 100)
+  }
   return (
     <Box
       bg={Colors.white}
@@ -374,6 +388,12 @@ const Measurements = ({navigation, route}: Props) => {
         isOpen={open}
         px={ms(15)}
         size="full"
+        onLayout={() =>
+          setTimeout(() => {
+            inputRef.current?.blur()
+            inputRef.current?.focus()
+          }, 100)
+        }
       >
         <Modal.Content>
           <Modal.Header>
@@ -471,10 +491,7 @@ const Measurements = ({navigation, route}: Props) => {
             bg={Colors.primary}
             leftIcon={<Icon as={Ionicons} name="add" size="sm" />}
             m={ms(16)}
-            onPress={() => {
-              setOpen(true)
-              inputRef?.current?.focus()
-            }}
+            onPress={onAddMeasurement}
           >
             {t('addAMeasurement')}
           </Button>

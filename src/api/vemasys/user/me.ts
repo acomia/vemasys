@@ -26,3 +26,16 @@ export const changeUserLanguage = async (id: number, lang: string) => {
     return null
   }
 }
+
+export const updateUserInfo = async (id: number, data: object) => {
+  try {
+    const response = await API.put(`users/${id}`, data)
+    if (!response.data) {
+      throw 'Failed to update user info.'
+    }
+    return response.data
+  } catch (error) {
+    console.log('Error: update user info', JSON.stringify(error))
+    return null
+  }
+}
