@@ -347,5 +347,20 @@
   "nowToday": "Now / Today",
   "failedToLoadRequestedResource": "Échec du chargement de la ressource demandée",
   "refreshing": "Refreshing",
-  "fueltype": "Fuel type"
+  "fueltype": "Fuel type",
+  "changePassword": "Change password",
+  "invalidPassword": "Please check password",
+  "confirmPasswordError": "Password do not match",
+  "password": "Password",
+  "confirmPassword": "Confirm password",
+  "requirementHeader": "Make sure your password meets the following requirements:",
+  "requirementSub1": "- it should consist of at least 8 characters",
+  "requirementSub2": "- it should contain at least 1 number",
+  "requirementSub3": "- it should contain at least on of the following characters: '#?!@%^&*-'",
+  "submit": "Submit",
+  "changePasswordSuccess": "Changed password successfully",
+  "newPassword": "New password",
+  "reTypePassword": "Re-type new password",
+  "passwordErrorSub1": "Your password needs to consist of at least 8 characters",
+  "passwordErrorSub2": "Your password needs to contain at least one number and one special character (#?!@$%^&*-])"
 }
