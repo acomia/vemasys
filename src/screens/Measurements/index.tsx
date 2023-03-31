@@ -345,8 +345,10 @@ const Measurements = ({navigation, route}: Props) => {
     setTimeout(() => {
       inputRef?.current?.blur()
       inputRef?.current?.focus()
-    }, 100)
+      inputRef?.current?._root?.focus()
+    }, 50)
   }
+
   return (
     <Box
       bg={Colors.white}
@@ -390,6 +392,7 @@ const Measurements = ({navigation, route}: Props) => {
           <Modal.Body>
             <Input
               ref={inputRef}
+              autoFocus
               bold
               backgroundColor={Colors.light_grey}
               fontSize={ms(18)}
