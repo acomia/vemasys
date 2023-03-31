@@ -125,6 +125,7 @@ const ResetPasswordModal = () => {
           setTimeout(() => {
             passwordRef?.current?.blur()
             passwordRef?.current?.focus()
+            passwordRef?.current?._root?.focus()
           }, 100)
         }}
       >
@@ -176,6 +177,7 @@ const ResetPasswordModal = () => {
                 <FormControl.Label>{t('newPassword')}</FormControl.Label>
                 <Input
                   ref={passwordRef}
+                  autoFocus
                   backgroundColor={
                     'password' in errors ? Colors.navLogItemPink : null
                   }
