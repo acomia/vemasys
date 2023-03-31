@@ -1,5 +1,5 @@
-import React, {useState, useRef} from 'react'
-import {Text, View, VStack, HStack} from 'native-base'
+import React from 'react'
+import {Text, VStack, HStack} from 'native-base'
 import {useTranslation} from 'react-i18next'
 import IconIon from 'react-native-vector-icons/Ionicons'
 import {ms} from 'react-native-size-matters'

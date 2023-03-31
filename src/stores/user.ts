@@ -2,6 +2,7 @@ import create from 'zustand'
 import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {API} from '@bluecentury/api/apiService'
+import {updateUserInfo} from '@bluecentury/api/vemasys'
 
 type UserState = {
   isResetPasswordLoading: boolean
@@ -24,21 +25,19 @@ export const useUser = create(
   persist<UserStore>(
     set => ({
       ...initialState,
-      resetPassword: (id: number, data: object) => {
+      resetPassword: async (id: number, data: object) => {
         set({isResetPasswordLoading: true})
+        try {
+          const userResponse = await updateUserInfo(id, data)
 
-        API.put(`users/${id}`, data)
-          .then(response => {
-            if (response.status === 200) {
-              set({isResetPasswordSuccess: true, isResetPasswordLoading: false})
-              return
-            }
-            set({isResetPasswordLoading: false, isResetPasswordSuccess: false})
-            return
-          })
-          .catch(error => {
-            set({isResetPasswordLoading: false, isResetPasswordSuccess: false})
-          })
+          if (typeof userResponse === 'object') {
+            set({isResetPasswordSuccess: true, isResetPasswordLoading: false})
+          }
+
+          set({isResetPasswordLoading: false, isResetPasswordSuccess: false})
+        } catch (error) {
+          set({isResetPasswordLoading: false, isResetPasswordSuccess: false})
+        }
       },
       unmountResetPassword: () => {
         set({isResetPasswordLoading: false, isResetPasswordSuccess: false})
