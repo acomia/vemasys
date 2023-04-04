@@ -40,6 +40,20 @@ const viewPdfFile = async (charterId: string) => {
   const token = useAuth.getState().token
   const entityUserId = useEntity.getState().entityUserId
   const API_URL = useSettings.getState().apiUrl
+  const VadimResponse = await API.get(`v3/Charter/${charterId}/files`)
+  console.log('VADIM_RESPONSE', VadimResponse.data)
+  if (VadimResponse && VadimResponse.data.length) {
+    return ReactNativeBlobUtil.config({
+      fileCache: true,
+    }).fetch(
+      'GET',
+      `https://app-uat.vemasys.eu/upload/documents/${VadimResponse.data[VadimResponse.data.length - 1].path}`,
+      {
+        'Jwt-Auth': `Bearer ${token}`,
+        'X-active-entity-user-id': `${entityUserId}`,
+      }
+    )
+  }
   return await ReactNativeBlobUtil.config({
     fileCache: true,
   }).fetch('GET', `${API_URL}charters/${charterId}/pdf`, {
@@ -103,6 +117,33 @@ const updateCharter = (charterId: string, data: any) => {
     })
 }
 
+const linkSignPDFToCharter = (
+  path: string,
+  description: string,
+  charterID: number
+) => {
+  const payload = {
+    path,
+    description,
+    type: {
+      title: 'charter_download',
+      relevance: null,
+    },
+  }
+  return API.post(`v3/Charter/${charterID}/files`, payload)
+    .then(response => {
+      if (response.data) {
+        console.log('API_LINKING_SIGNED_PDF_TO_CHARTER', response.data)
+        return response.data
+      } else {
+        throw new Error('Linking signed PDF to charter failed.')
+      }
+    })
+    .catch(error => {
+      console.error('Error: linking signed PDF to charter', error)
+    })
+}
+
 export {
   reloadVesselCharters,
   viewPdfFile,
@@ -110,4 +151,5 @@ export {
   uploadSignature,
   getSignature,
   updateCharter,
+  linkSignPDFToCharter,
 }

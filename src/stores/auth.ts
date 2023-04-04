@@ -65,6 +65,7 @@ export const useAuth = create(
             })
             return
           }
+          console.log('TOKEN', response.token)
           set({
             token: response.token,
             refreshToken: response.refreshToken,
