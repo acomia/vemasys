@@ -185,7 +185,9 @@ export default function Charters({navigation, route}: any) {
           >
             <VStack maxWidth="72%">
               <Text bold>
-                {item.vesselReference || item.clientReference || t('unknown')}
+                {item?.customerReference ||
+                  item?.supplierReference ||
+                  t('unknown')}
               </Text>
               {item.navigationLogs &&
                 item.navigationLogs.map(

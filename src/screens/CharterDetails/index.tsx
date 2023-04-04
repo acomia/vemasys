@@ -282,7 +282,7 @@ export default function CharterDetails({navigation, route}: Props) {
         <HStack alignItems="center" justifyContent="space-between">
           <VStack maxWidth="73%">
             <Text bold color={Colors.azure} fontSize={ms(22)} textAlign="left">
-              {charter.vesselReference || charter.clientReference}
+              {charter?.customerReference || charter?.supplierReference}
             </Text>
             <Text bold color={Colors.secondary}>
               {moment(charter.startDate).format('DD MMM YYYY')} -
