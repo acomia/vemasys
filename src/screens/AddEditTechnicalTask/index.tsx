@@ -140,8 +140,8 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
         getVesselTasksCategory(vesselId)
         // update the list on the tasks
         getVesselTasksByCategory(vesselId, category)
-        showToast(`Task ${method} successfully.`, 'success')
         uploadFile(res?.id, imgFile)
+        showToast(`Task ${method} successfully.`, 'success')
         navigation.goBack()
       } else {
         showToast(`Task ${method} failed.`, 'failed')
@@ -149,11 +149,11 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
     } else {
       const res = await updateVesselTask(task?.id, taskData)
       if (typeof res === 'object' && res?.id) {
-        showToast(`Task ${method} successfully.`, 'success')
-        uploadFile(res?.id, imgFile)
         getVesselTaskDetails(task?.id)
         // update the list on the tasks
         getVesselTasksByCategory(vesselId, category)
+        uploadFile(res?.id, imgFile)
+        showToast(`Task ${method} successfully.`, 'success')
         navigation.goBack()
       } else {
         showToast(`Task ${method} failed.`, 'failed')
