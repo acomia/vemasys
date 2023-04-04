@@ -2,7 +2,7 @@ import create from 'zustand'
 import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as API from '@bluecentury/api/vemasys'
-import {getSignature} from "@bluecentury/api/vemasys";
+import { getSignature, linkSignPDFToCharter, uploadImgFile } from "@bluecentury/api/vemasys";
 interface IUpdateStatus {
   status?: string
   setContractorStatus?: boolean
@@ -20,6 +20,12 @@ interface SignedDocument {
   path: string
 }
 
+interface SignedPDF {
+  uri: string
+  type: string
+  fileName: string
+}
+
 type ChartersState = {
   charters: [] | undefined
   isCharterLoading: boolean
@@ -28,6 +34,7 @@ type ChartersState = {
   uploadCharterSignatureResponse: StringOrNull
   signatureId: string
   signedDocumentsArray: SignedDocument[]
+  isDocumentSigning: boolean
 }
 
 type ChartersActions = {
@@ -39,6 +46,13 @@ type ChartersActions = {
   setSignatureId: (signatureId: string) => void
   addSignedDocument: (document: SignedDocument[]) => void
   getSignature: (signatureId: string, callback: Function) => void
+  setIsDocumentSigning: (value: boolean) => void
+  uploadSignedPDF: (pdfFile: SignedPDF) => Promise<string>
+  linkSignPDFToCharter: (
+    path: string,
+    description: string,
+    charterID: number
+  ) => Promise<string>
 }
 
 type ChartersStore = ChartersState & ChartersActions
@@ -53,6 +67,7 @@ export const useCharters = create(
       uploadCharterSignatureResponse: null,
       signatureId: '',
       signedDocumentsArray: [],
+      isDocumentSigning: false,
       getCharters: async () => {
         set({isCharterLoading: true, charters: []})
         try {
@@ -136,6 +151,35 @@ export const useCharters = create(
           uploadCharterSignatureResponse: '',
         })
       },
+      setIsDocumentSigning: value => {
+        set({
+          isDocumentSigning: value,
+        })
+      },
+      uploadSignedPDF: async value => {
+        try {
+          const response = await API.uploadImgFile(value)
+          console.log('SIGNED_PDF_UPLOAD_RESPONSE', response)
+          return response
+        } catch (e) {
+          console.error('SIGNED_PDF_UPLOAD_ERROR', e)
+          return 'FAILURE'
+        }
+      },
+      linkSignPDFToCharter: async (path, description, charterID) => {
+        try {
+          const response = await API.linkSignPDFToCharter(
+            path,
+            description,
+            charterID
+          )
+          console.log('LINK_SIGNED_DOCUMENT_TO_CHARTER', response)
+          return 'SUCCESS'
+        } catch (e) {
+          console.error('LINKING_SINGED_DOCUMENT_TO_CHARTER_ERROR', e)
+          return 'FAILURE'
+        }
+      }
     }),
     {
       name: 'charters-storage',

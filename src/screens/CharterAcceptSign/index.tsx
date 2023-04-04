@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react'
+import React, {useRef, useState, useEffect} from 'react'
 import {
   Box,
   Button,
@@ -16,47 +16,57 @@ import Signature, {SignatureViewRef} from 'react-native-signature-canvas'
 import {Shadow} from 'react-native-shadow-2'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {useCharters, useEntity, useSettings} from '@bluecentury/stores'
+import {CHARTER_CONTRACTOR_STATUS_ACCEPTED} from '@bluecentury/constants'
 import {
-  CHARTER_CONTRACTOR_STATUS_ACCEPTED,
-  UPDATE_CHARTER_SUCCESS,
-} from '@bluecentury/constants'
-import {LoadingAnimated, NoInternetConnectionMessage} from '@bluecentury/components'
+  LoadingAnimated,
+  NoInternetConnectionMessage,
+} from '@bluecentury/components'
 import {useTranslation} from 'react-i18next'
+import {RootStackParamList} from '@bluecentury/types/nav.types'
+import Pdf from 'react-native-pdf'
+import {StyleSheet} from 'react-native'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'CharterAcceptSign'>
 const CharterAcceptSign = ({navigation, route}: Props) => {
   const {t} = useTranslation()
-  const {charter, setSignature, onCharterSelected} = route.params
+  const {charter, onCharterSelected, handleSingleTap, path} =
+    route.params
   const ref = useRef<SignatureViewRef>(null)
   const toast = useToast()
   const {
     isCharterLoading,
-    updateCharterStatus,
-    getCharters,
     uploadSignature,
     setSignatureId,
+    setIsDocumentSigning,
+    isDocumentSigning,
   } = useCharters()
 
   const {user} = useEntity()
-  const {isMobileTracking, setIsMobileTracking} = useSettings()
+  const {isMobileTracking} = useSettings()
   const [scrollEnabled, setScrollEnabled] = useState(true)
-  const [mobileTracker, setMobileTracker] = useState(false)
-  const [sign, setSign] = useState<StringOrNull>(null)
+  // const [sign, setSign] = useState<StringOrNull>(null)
+  const [signat, setSignat] = useState('')
+  const [coords, setCoords] = useState({})
+  const [pageWidth, setPageWidth] = useState(0)
+  const [pageHeight, setPageHeight] = useState(0)
+
+  useEffect(() => {
+    console.log('SIGNAT_STATE', signat)
+  }, [signat])
+
+  useEffect(() => {
+    console.log('COORDS', coords)
+  }, [coords])
 
   const handleSignature = async signature => {
+    setIsDocumentSigning(true)
+    console.log('SIGN_HANDLE_ARG', signature)
+    setSignat(signature.replace('data:image/png;base64,', ''))
     const status = {
       status: CHARTER_CONTRACTOR_STATUS_ACCEPTED,
       setContractorStatus: true,
     }
-    setSign(signature)
-    updateCharterStatus(charter?.id, status)
-    const update = await updateCharterStatus(charter?.id, status)
-    if (update === UPDATE_CHARTER_SUCCESS) {
-      getCharters()
-      showToast('Charter accepted sucessfully.', 'success')
-    } else {
-      showToast('Charter accepted failed.', 'failed')
-    }
+    // setSign(signature)
     const signData = {
       user: user?.id,
       signature: signature,
@@ -65,9 +75,18 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
     }
     const sign = await uploadSignature(signData)
     if (typeof sign === 'object') {
-      showToast('Signature upload sucessfully.', 'success')
       setSignatureId(sign.id)
-      setSignature(signature.replace('data:image/png;base64,', ''))
+      onCharterSelected(charter)
+      handleSingleTap(
+        1,
+        coords.x,
+        coords.y,
+        signature.replace('data:image/png;base64,', ''),
+        pageWidth,
+        pageHeight
+      )
+      showToast('Signature upload successfully.', 'success')
+      navigation.goBack()
     } else {
       showToast('Signature upload failed.', 'failed')
     }
@@ -91,7 +110,7 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
 
   const style = `.m-signature-pad--footer {display: none; margin: 0px;}
                 .m-signature-pad {border-radius: 10px; border: 1px solid #E6E6E6;}
-                body {height: 180px;}`
+                body {height: 150px;}`
 
   const showToast = (text: string, res: string) => {
     toast.show({
@@ -100,88 +119,119 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
         return (
           <Text
             bg={res === 'success' ? 'emerald.500' : 'red.500'}
+            color={Colors.white}
+            mb={5}
             px="2"
             py="1"
             rounded="sm"
-            mb={5}
-            color={Colors.white}
           >
             {text}
           </Text>
         )
       },
-      onCloseComplete() {
-        //TODO not just goBack but automatically open modal with pdf in edit mode, pass there a signature
-        res === 'success' ? navigation.goBack() : null
-        onCharterSelected(charter)
-        // res === 'success' ? resetResponses() : null
-      },
+      // onCloseComplete() {
+      //   //TODO not just goBack but automatically open modal with pdf in edit mode, pass there a signature
+      //   res === 'success' ? navigation.goBack() : null
+      // },
     })
   }
 
-  if (isCharterLoading) return <LoadingAnimated />
+  if (isDocumentSigning) {
+    return (
+      <Image
+        style={{
+          width: '100%',
+          height: '100%',
+          alignSelf: 'center',
+        }}
+        alt="Charter-Signature"
+        resizeMode="contain"
+        source={Animated.signature}
+      />
+    )
+  }
+
+  // if (isCharterLoading && !isDocumentSigning) return <LoadingAnimated />
 
   return (
     <Box flex="1">
       <NoInternetConnectionMessage />
+      <Box style={{height: '40%'}}>
+        <Pdf
+          // enablePaging
+          // fitPolicy={0}
+          // singlePage={true}
+          source={{uri: path, cache: true}}
+          style={styles.pdf}
+          trustAllCerts={false}
+          onError={error => {
+            console.log(error)
+          }}
+          onLoadComplete={(numberOfPages, filePath, {width, height}) => {
+            console.log(`Number of pages: ${numberOfPages}`)
+            setPageWidth(width)
+            setPageHeight(height)
+          }}
+          onPageChanged={(page, numberOfPages) => {
+            console.log(`Current page: ${page}`)
+          }}
+          onPageSingleTap={(page, x, y) => {
+            setCoords({x: x, y: y})
+          }}
+          onPressLink={uri => {
+            console.log(`Link pressed: ${uri}`)
+          }}
+        />
+      </Box>
       <ScrollView
-        contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
         backgroundColor={Colors.white}
         borderTopLeftRadius={ms(15)}
         borderTopRightRadius={ms(15)}
+        contentContainerStyle={{flexGrow: 3, paddingBottom: 30}}
+        h="1%"
         p={ms(12)}
         scrollEnabled={scrollEnabled}
       >
-        <Image
-          alt="Charter-Signature"
-          source={Animated.signature}
-          style={{
-            width: 280,
-            height: 280,
-            alignSelf: 'center',
-          }}
-          resizeMode="contain"
-        />
         <Signature
           ref={ref}
-          onOK={handleSignature}
-          onEmpty={handleEmpty}
-          onBegin={() => setScrollEnabled(false)}
-          onEnd={() => setScrollEnabled(true)}
           webStyle={style}
+          onBegin={() => setScrollEnabled(false)}
+          onEmpty={handleEmpty}
+          onEnd={() => setScrollEnabled(true)}
+          onOK={handleSignature}
         />
 
-        <Text fontWeight="medium" color={Colors.disabled} mt={ms(20)}>
+        <Text color={Colors.disabled} fontWeight="medium" mt={ms(5)}>
           {t('signatureDescription')}
         </Text>
       </ScrollView>
 
       <Box bg={Colors.white} position="relative">
         <Shadow
-          distance={25}
           viewStyle={{
             width: '100%',
           }}
+          distance={25}
         >
           <Box>
             <HStack
-              bg={Colors.white}
-              borderRadius={5}
-              justifyContent="space-between"
               alignItems="center"
+              bg={Colors.white}
+              borderColor={Colors.light}
+              borderRadius={5}
+              borderWidth={1}
+              justifyContent="space-between"
+              mt={ms(12)}
+              mx={ms(12)}
               px={ms(12)}
               py={ms(7)}
-              mx={ms(12)}
-              mt={ms(12)}
-              borderWidth={1}
-              borderColor={Colors.light}
             >
               <Image
                 alt="my-location"
-                source={Icons.location_alt}
-                mr={ms(10)}
-                width={ms(20)}
                 height={ms(20)}
+                mr={ms(10)}
+                source={Icons.location_alt}
+                width={ms(20)}
               />
               <Text flex={1} fontWeight="medium">
                 {t('activateTracking')}
@@ -194,18 +244,16 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
             </HStack>
             <HStack p={ms(14)}>
               <Button
-                flex="1"
-                // m={ms(16)}
-                variant="ghost"
                 colorScheme="muted"
+                flex="1"
+                variant="ghost"
                 onPress={handleClear}
               >
                 {t('clear')}
               </Button>
               <Button
-                flex="1"
-                // m={ms(16)}
                 bg={Colors.primary}
+                flex="1"
                 onPress={handleOnAcceptAndSign}
               >
                 {t('acceptAndSign')}
@@ -219,3 +267,15 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
 }
 
 export default CharterAcceptSign
+
+const styles = StyleSheet.create({
+  pdf: {
+    flex: 1,
+    width: '100%',
+    height: 400,
+    backgroundColor: '#23272F',
+    justifyContent: 'center',
+    // paddingHorizontal: 12,
+    // marginBottom: Platform.OS === 'ios' ? 0 : 40,
+  },
+})
