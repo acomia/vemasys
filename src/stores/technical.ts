@@ -59,6 +59,7 @@ type TechnicalActions = {
   getConsumableTypes: () => void
   updateVesselInventoryItem: (quantity: number, consumableId: number) => void
   getVesselPartType: (id: string) => void
+  getVesselTaskDetails: (id: string) => void
 }
 
 type TechnicalStore = TechnicalState & TechnicalActions
@@ -505,6 +506,25 @@ export const useTechnical = create(
           .catch(error => {
             set({isPartTypeLoading: false})
           })
+      },
+      getVesselTaskDetails: async (id: string) => {
+        set({isTechnicalLoading: true})
+        try {
+          const response = await API.reloadTaskDetails(id)
+          if (typeof response === 'object') {
+            set({
+              isTechnicalLoading: false,
+              taskDetails: response,
+            })
+          } else {
+            set({
+              isTechnicalLoading: false,
+              taskDetails: null,
+            })
+          }
+        } catch (error) {
+          set({isTechnicalLoading: false})
+        }
       },
     }),
     {

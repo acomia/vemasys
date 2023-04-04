@@ -348,16 +348,16 @@ const reloadVesselPartTypes = (partType: string) => {
     })
 }
 
-const reloadTaskDetails = (id: string) => {
+const reloadTaskDetails = async (id: string) => {
   return API.get(`tasks/${id}`)
     .then(response => {
       if (response.data) {
         return response.data
       }
-      throw new Error('Part Type failed.')
+      throw new Error('Task details failed.')
     })
     .catch(error => {
-      console.error('Error: Part Type data', error)
+      console.error('Error: Task details data', error)
     })
 }
 

@@ -56,6 +56,8 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
     isPartTypeLoading,
     vesselPartType,
     getVesselPartType,
+    getVesselTaskDetails,
+    taskDetails,
   } = useTechnical()
   const hasTaskPermission = hasSelectedEntityUserPermission(
     selectedEntity,
@@ -84,8 +86,9 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
                 source={Icons.edit}
                 onPress={() =>
                   navigation.navigate('AddEditTechnicalTask', {
-                    method: 'edit',
-                    task: task,
+                    method: 'update',
+                    task: taskDetails,
+                    category: category,
                   })
                 }
               />
@@ -111,6 +114,10 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
       ),
     })
   }, [navigation, flaggedUpdated, isTechnicalLoading])
+
+  useEffect(() => {
+    getVesselTaskDetails(task?.id)
+  }, [])
 
   useEffect(() => {
     if (task?.vesselPart?.type) {
@@ -154,7 +161,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
       {/* Title header */}
       <Box backgroundColor={Colors.border} px={ms(16)} py={ms(10)}>
         <Text bold color={Colors.azure} fontSize={ms(15)}>
-          {task?.title}
+          {taskDetails?.title}
         </Text>
       </Box>
       {/* End of title header */}
@@ -169,15 +176,15 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
           </Text>
         </Box>
         <Divider my={ms(12)} />
-        <Box px={ms(14)}>{renderLabels(task?.labels[0])}</Box>
+        <Box px={ms(14)}>{renderLabels(taskDetails?.labels[0])}</Box>
         <Divider my={ms(12)} />
         <Box px={ms(14)}>
           <Text color={Colors.disabled} fontWeight="medium">
             {t('dateCreated')}
           </Text>
           <Text fontSize={ms(15)}>
-            {task?.deadline
-              ? moment(task?.deadline).format('D MMM YYYY; HH:mm')
+            {taskDetails?.deadline
+              ? moment(taskDetails?.deadline).format('D MMM YYYY; HH:mm')
               : t('notSet')}
           </Text>
         </Box>
@@ -187,8 +194,8 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
             {t('scheduledDate')}
           </Text>
           <Text fontSize={ms(15)}>
-            {task?.deadline
-              ? moment(task?.deadline).format('D MMM YYYY; HH:mm')
+            {taskDetails?.deadline
+              ? moment(taskDetails?.deadline).format('D MMM YYYY; HH:mm')
               : t('notSet')}
           </Text>
         </Box>
@@ -223,7 +230,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
       {/* Vessel Part header */}
       <Box backgroundColor={Colors.border} px={ms(16)} py={ms(10)}>
         <Text bold color={Colors.azure} fontSize={ms(15)}>
-          {task?.vesselPart?.name}
+          {taskDetails?.vesselPart?.name}
         </Text>
       </Box>
       {/* End of Header */}
@@ -417,14 +424,14 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
         <Text bold color={Colors.text} fontSize={ms(16)} mt={ms(30)}>
           {t('concernedVesselPart')}
         </Text>
-        {task?.vesselPart ? renderVesselPartSection() : null}
+        {taskDetails?.vesselPart ? renderVesselPartSection() : null}
         {/* End of Vessel Part Section */}
         {/* Comment Section */}
         <HStack alignItems="center" mt={ms(30)}>
           <Text bold color={Colors.text} fontSize={ms(16)}>
             {t('comments')}
           </Text>
-          {task?.comments?.length > 0 ? (
+          {taskDetails?.comments?.length > 0 ? (
             <Text
               bold
               bg={Colors.azure}
@@ -435,11 +442,11 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
               textAlign="center"
               width={ms(22)}
             >
-              {task?.comments?.length}
+              {taskDetails?.comments?.length}
             </Text>
           ) : null}
         </HStack>
-        {task?.comments?.map((comment: Comment, index: number) => {
+        {taskDetails?.comments?.map((comment: Comment, index: number) => {
           const filteredDescription = comment.description.replace(/(\\)/g, '')
           const descriptionText = filteredDescription.match(/([^<br>]+)/)[0]
           return (
@@ -467,7 +474,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
           <Text bold color={Colors.text} fontSize={ms(16)}>
             {t('documents')}
           </Text>
-          {task?.fileGroup?.files?.length > 0 ? (
+          {taskDetails?.fileGroup?.files?.length > 0 ? (
             <Text
               bold
               bg={Colors.azure}
@@ -478,7 +485,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
               textAlign="center"
               width={ms(22)}
             >
-              {task?.fileGroup?.files?.length}
+              {taskDetails?.fileGroup?.files?.length}
             </Text>
           ) : null}
         </HStack>
@@ -491,8 +498,8 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
           </Text>
         </HStack>
         <Divider mb={ms(10)} mt={ms(5)} />
-        {task?.fileGroup?.files?.length > 0 ? (
-          task?.fileGroup?.files?.map((file: File, index: number) =>
+        {taskDetails?.fileGroup?.files?.length > 0 ? (
+          taskDetails?.fileGroup?.files?.map((file: File, index: number) =>
             renderDocumentsSections(file, index)
           )
         ) : (

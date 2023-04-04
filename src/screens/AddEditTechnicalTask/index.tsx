@@ -44,12 +44,13 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
   const {
     isUploadingFileLoading,
     isCreateTaskLoading,
+    isTechnicalLoading,
     createVesselTask,
     updateVesselTask,
     uploadFileBySubject,
     getVesselTasksCategory,
     getVesselTasksByCategory,
-    deleteTask,
+    getVesselTaskDetails,
   } = useTechnical()
   const {vesselId} = useEntity()
   const types = [
@@ -110,7 +111,7 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
 
   const showToast = (text: string, res: string) => {
     toast.show({
-      duration: 1000,
+      duration: 2000,
       render: () => {
         return (
           <Text
@@ -139,27 +140,28 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
         getVesselTasksCategory(vesselId)
         // update the list on the tasks
         getVesselTasksByCategory(vesselId, category)
-        showToast(`Task ${uploadmethod} successfully.`, 'success')
-        uploadFile(res?.id, imgFile, 'add')
+        showToast(`Task ${method} successfully.`, 'success')
+        uploadFile(res?.id, imgFile)
+        navigation.goBack()
       } else {
-        showToast('Task add failed.', 'failed')
+        showToast(`Task ${method} failed.`, 'failed')
       }
     } else {
       const res = await updateVesselTask(task?.id, taskData)
       if (typeof res === 'object' && res?.id) {
-        uploadFile(res?.id, imgFile, 'update')
+        showToast(`Task ${method} successfully.`, 'success')
+        uploadFile(res?.id, imgFile)
+        getVesselTaskDetails(task?.id)
+        // update the list on the tasks
+        getVesselTasksByCategory(vesselId, category)
         navigation.goBack()
       } else {
-        showToast('Task update failed.', 'failed')
+        showToast(`Task ${method} failed.`, 'failed')
       }
     }
   }
 
-  const uploadFile = async (
-    id: number,
-    imageFile: ImageFile,
-    uploadmethod: string
-  ) => {
+  const uploadFile = async (id: number, imageFile: ImageFile) => {
     if (imageFile?.uri) {
       const upload = await uploadFileBySubject(
         'Task',
@@ -167,21 +169,10 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
         'shared_within_company',
         id
       )
-      console.log('upload', upload)
-
-      if (typeof upload === 'object') {
-      }
-    } else {
-      // update data on technical task with categories
-      getVesselTasksCategory(vesselId)
-      // update the list on the tasks
-      getVesselTasksByCategory(vesselId, category)
-      showToast(`Task  ${uploadmethod} success.`, 'success')
-      navigation.goBack()
     }
   }
 
-  if (isCreateTaskLoading || isUploadingFileLoading) {
+  if (isCreateTaskLoading || isUploadingFileLoading || isTechnicalLoading) {
     return <LoadingAnimated />
   }
 
