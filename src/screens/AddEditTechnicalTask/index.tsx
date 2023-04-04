@@ -34,6 +34,7 @@ import {
 } from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {useTranslation} from 'react-i18next'
+import {Task} from '@bluecentury/models'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const AddEditTechnicalTask = ({navigation, route}: Props) => {
@@ -134,6 +135,11 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
       })
       const res = await createVesselTask(newTask)
       if (typeof res === 'object' && res?.id) {
+        // update data on technical task with categories
+        getVesselTasksCategory(vesselId)
+        // update the list on the tasks
+        getVesselTasksByCategory(vesselId, category)
+        showToast(`Task ${uploadmethod} successfully.`, 'success')
         uploadFile(res?.id, imgFile, 'add')
       } else {
         showToast('Task add failed.', 'failed')
@@ -142,6 +148,7 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
       const res = await updateVesselTask(task?.id, taskData)
       if (typeof res === 'object' && res?.id) {
         uploadFile(res?.id, imgFile, 'update')
+        navigation.goBack()
       } else {
         showToast('Task update failed.', 'failed')
       }
@@ -151,7 +158,7 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
   const uploadFile = async (
     id: number,
     imageFile: ImageFile,
-    method: string
+    uploadmethod: string
   ) => {
     if (imageFile?.uri) {
       const upload = await uploadFileBySubject(
@@ -160,20 +167,16 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
         'shared_within_company',
         id
       )
+      console.log('upload', upload)
+
       if (typeof upload === 'object') {
-        // update data on technical task with categories
-        getVesselTasksCategory(vesselId)
-        // update the list on the tasks
-        getVesselTasksByCategory(vesselId, category)
-        showToast(`Task ${method} successfully.`, 'success')
-        navigation.goBack()
       }
     } else {
       // update data on technical task with categories
       getVesselTasksCategory(vesselId)
       // update the list on the tasks
       getVesselTasksByCategory(vesselId, category)
-      showToast(`Task  ${method} success.`, 'success')
+      showToast(`Task  ${uploadmethod} success.`, 'success')
       navigation.goBack()
     }
   }

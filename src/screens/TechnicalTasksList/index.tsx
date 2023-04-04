@@ -87,39 +87,33 @@ const TechnicalTasksList = ({navigation, route}: Props) => {
     )
   }
 
-  const renderLabels = (label: string) => {
+  const renderLabels = (label: {title: string; color: string}) => {
     let title = ''
-    let color = ''
-    let textColor = ''
-    switch (label?.toLowerCase()) {
+    switch (label?.title?.toLowerCase()) {
       case 'maintenance':
         title = t('maintenance')
-        color = Colors.primary
-        textColor = Colors.white
+        break
+      case 'daily maintenance':
+        title = t('dailyMaintenance')
         break
       case 'check':
         title = t('check')
-        color = Colors.secondary
-        textColor = Colors.white
         break
       case 'incident':
         title = t('incident')
-        color = Colors.warning
-        textColor = Colors.white
         break
     }
     return (
-      <Text
-        bg={color}
-        borderRadius={ms(25)}
-        color={textColor}
-        fontSize={ms(12)}
-        fontWeight="medium"
-        px={ms(20)}
-        py={ms(3)}
-      >
-        {title}
-      </Text>
+      <Box bg={label?.color} borderRadius={ms(25)} px={ms(20)} py={ms(3)}>
+        <Text
+          color={Colors.white}
+          fontSize={ms(12)}
+          fontWeight="medium"
+          textAlign="center"
+        >
+          {title}
+        </Text>
+      </Box>
     )
   }
 
@@ -198,7 +192,7 @@ const TechnicalTasksList = ({navigation, route}: Props) => {
                         <Text flex="1" fontWeight="medium">
                           {t('labels')}
                         </Text>
-                        {renderLabels(task?.labels[0]?.title)}
+                        {renderLabels(task?.labels[0])}
                       </HStack>
                       <Divider my={ms(14)} />
                       <HStack px={ms(14)}>

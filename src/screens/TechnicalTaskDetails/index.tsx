@@ -118,41 +118,28 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
     }
   }, [task])
 
-  const renderLabels = (label: string) => {
+  const renderLabels = (label: {title: string; color: string}) => {
     let title = ''
-    let color = ''
-    let textColor = ''
-    switch (label?.toLowerCase()) {
+    switch (label?.title?.toLowerCase()) {
       case 'maintenance':
         title = t('maintenance')
-        color = Colors.primary
-        textColor = Colors.white
+        break
+      case 'daily maintenance':
+        title = t('dailyMaintenance')
         break
       case 'check':
         title = t('check')
-        color = Colors.secondary
-        textColor = Colors.white
         break
       case 'incident':
         title = t('incident')
-        color = Colors.warning
-        textColor = Colors.white
         break
     }
     return (
-      <Text
-        bg={color}
-        borderRadius={ms(25)}
-        color={textColor}
-        fontSize={ms(12)}
-        fontWeight="medium"
-        maxW={ms(150)}
-        px={ms(20)}
-        py={ms(5)}
-        textAlign="center"
-      >
-        {title}
-      </Text>
+      <Box bg={label?.color} borderRadius={ms(25)} px={ms(20)} py={ms(3)}>
+        <Text color={Colors.white} fontSize={ms(12)} fontWeight="medium">
+          {title}
+        </Text>
+      </Box>
     )
   }
 
@@ -182,7 +169,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
           </Text>
         </Box>
         <Divider my={ms(12)} />
-        <Box px={ms(14)}>{renderLabels(task?.labels[0]?.title)}</Box>
+        <Box px={ms(14)}>{renderLabels(task?.labels[0])}</Box>
         <Divider my={ms(12)} />
         <Box px={ms(14)}>
           <Text color={Colors.disabled} fontWeight="medium">
