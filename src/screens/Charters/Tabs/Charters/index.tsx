@@ -24,12 +24,17 @@ import {
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import IconFA5 from 'react-native-vector-icons/FontAwesome5'
 import Pdf from 'react-native-pdf'
 import {PDFDocument} from 'pdf-lib'
 
 import {useCharters, useEntity} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
-import {CharterStatus, LoadingAnimated} from '@bluecentury/components'
+import {
+  CharterStatus,
+  LoadingAnimated,
+  EditReferenceModal,
+} from '@bluecentury/components'
 import {
   CHARTER_CONTRACTOR_STATUS_ACCEPTED,
   CHARTER_CONTRACTOR_STATUS_ARCHIVED,
@@ -82,6 +87,8 @@ export default function Charters({navigation, route}: any) {
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState(null)
   const [isPdfSigned, setIsPdfSigned] = useState(false)
   const source = {uri: path, cache: true}
+  const [editReferenceOpen, setEditReferenceOpen] = useState(false)
+  const [editCharter, setEditCharter] = useState(0)
 
   useEffect(() => {
     setSignatureId('')
@@ -184,11 +191,7 @@ export default function Charters({navigation, route}: any) {
             py={ms(8)}
           >
             <VStack maxWidth="72%">
-              <Text bold>
-                {item?.customerReference ||
-                  item?.supplierReference ||
-                  t('unknown')}
-              </Text>
+              {renderRefNumber(item)}
               {item.navigationLogs &&
                 item.navigationLogs.map(
                   (navlog: {bulkCargo: any[]}) =>
@@ -232,6 +235,33 @@ export default function Charters({navigation, route}: any) {
           />
         </Box>
       </TouchableOpacity>
+    )
+  }
+
+  const renderRefNumber = (itemData: any) => {
+    if (itemData.customerReference) {
+      return <Text bold>{itemData.customerReference}</Text>
+    }
+
+    if (itemData.supplierReference) {
+      return <Text bold>{itemData.supplierReference}</Text>
+    }
+
+    return (
+      <HStack space={ms(5)}>
+        <Text bold>{itemData.clientReference}</Text>
+
+        {/* // no api yet
+         <TouchableOpacity
+          onPress={() => {
+            console.log(itemData?.id)
+            setEditCharter(itemData)
+            setEditReferenceOpen(true)
+          }}
+        >
+          <IconFA5 name="edit" size={ms(17)} />
+        </TouchableOpacity> */}
+      </HStack>
     )
   }
 
@@ -570,6 +600,11 @@ export default function Charters({navigation, route}: any) {
           </Modal.Footer>
         ) : null}
       </Modal>
+      <EditReferenceModal
+        charter={editCharter}
+        isOpen={editReferenceOpen}
+        setOpen={setEditReferenceOpen}
+      />
     </Box>
   )
 }

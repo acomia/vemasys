@@ -362,5 +362,6 @@
   "newPassword": "New password",
   "reTypePassword": "Re-type new password",
   "passwordErrorSub1": "Your password needs to consist of at least 8 characters",
-  "passwordErrorSub2": "Your password needs to contain at least one number and one special character (#?!@$%^&*-])"
+  "passwordErrorSub2": "Your password needs to contain at least one number and one special character (#?!@$%^&*-])",
+  "editReference": "Edit Reference Number"
 }

@@ -2,7 +2,7 @@ import create from 'zustand'
 import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as API from '@bluecentury/api/vemasys'
-import {getSignature} from "@bluecentury/api/vemasys";
+import {getSignature} from '@bluecentury/api/vemasys'
 interface IUpdateStatus {
   status?: string
   setContractorStatus?: boolean
@@ -28,6 +28,8 @@ type ChartersState = {
   uploadCharterSignatureResponse: StringOrNull
   signatureId: string
   signedDocumentsArray: SignedDocument[]
+  isCharterUpdateLoading: boolean
+  isCharterUpdateSuccess: boolean
 }
 
 type ChartersActions = {
@@ -39,6 +41,7 @@ type ChartersActions = {
   setSignatureId: (signatureId: string) => void
   addSignedDocument: (document: SignedDocument[]) => void
   getSignature: (signatureId: string, callback: Function) => void
+  updateCharter: (charterId: string, data: any) => void
 }
 
 type ChartersStore = ChartersState & ChartersActions
@@ -53,6 +56,8 @@ export const useCharters = create(
       uploadCharterSignatureResponse: null,
       signatureId: '',
       signedDocumentsArray: [],
+      isCharterUpdateLoading: false,
+      isCharterUpdateSuccess: false,
       getCharters: async () => {
         set({isCharterLoading: true, charters: []})
         try {
@@ -135,6 +140,15 @@ export const useCharters = create(
           updateCharterStatusResponse: '',
           uploadCharterSignatureResponse: '',
         })
+      },
+      updateCharter: (charterId: string, data: any) => {
+        set({isCharterUpdateLoading: true, isCharterUpdateSuccess: false})
+        const response: any = API.updateCharter(charterId, data)
+        if (response === 200) {
+          set({isCharterUpdateSuccess: true, isCharterUpdateLoading: false})
+        } else {
+          set({isCharterUpdateSuccess: true, isCharterUpdateLoading: false})
+        }
       },
     }),
     {

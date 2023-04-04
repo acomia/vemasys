@@ -65,8 +65,8 @@ const updateCharterStatus = async (charterId: string, status: UpdateStatus) =>
 
 const uploadSignature = async (signature: Signature) =>
   API.post('signatures', signature)
-    .then(response =>
-      response.data
+    .then(
+      response => response.data
       // ? UPLOAD_CHARTER_SIGNATURE_SUCCESS
       // : UPLOAD_CHARTER_SIGNATURE_FAILED
     )
@@ -89,10 +89,25 @@ const getSignature = async (signatureId: string) => {
     })
 }
 
+const updateCharter = (charterId: string, data: any) => {
+  API.put(`v2/charters/${charterId}`, data)
+    .then(response => {
+      if (response.status === 200) {
+        return response.status
+      }
+
+      throw new Error('Update charter failed')
+    })
+    .catch(error => {
+      console.error('Error: Update charter API ', error)
+    })
+}
+
 export {
   reloadVesselCharters,
   viewPdfFile,
   updateCharterStatus,
   uploadSignature,
   getSignature,
+  updateCharter,
 }
