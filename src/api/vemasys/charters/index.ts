@@ -40,14 +40,15 @@ const viewPdfFile = async (charterId: string) => {
   const token = useAuth.getState().token
   const entityUserId = useEntity.getState().entityUserId
   const API_URL = useSettings.getState().apiUrl
-  const VadimResponse = await API.get(`v3/Charter/${charterId}/files`)
-  console.log('VADIM_RESPONSE', VadimResponse.data)
-  if (VadimResponse && VadimResponse.data.length) {
+  const customDocuments = await API.get(`v3/Charter/${charterId}/files`)
+  if (customDocuments && customDocuments.data.length) {
     return ReactNativeBlobUtil.config({
       fileCache: true,
     }).fetch(
       'GET',
-      `https://app-uat.vemasys.eu/upload/documents/${VadimResponse.data[VadimResponse.data.length - 1].path}`,
+      `https://app-uat.vemasys.eu/upload/documents/${
+        customDocuments.data[customDocuments.data.length - 1].path
+      }`,
       {
         'Jwt-Auth': `Bearer ${token}`,
         'X-active-entity-user-id': `${entityUserId}`,
@@ -133,7 +134,6 @@ const linkSignPDFToCharter = (
   return API.post(`v3/Charter/${charterID}/files`, payload)
     .then(response => {
       if (response.data) {
-        console.log('API_LINKING_SIGNED_PDF_TO_CHARTER', response.data)
         return response.data
       } else {
         throw new Error('Linking signed PDF to charter failed.')

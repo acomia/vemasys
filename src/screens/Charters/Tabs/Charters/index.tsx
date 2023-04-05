@@ -62,7 +62,6 @@ export default function Charters({navigation, route}: any) {
   const {
     isCharterLoading,
     charters,
-    signedDocumentsArray,
     getCharters,
     viewPdf,
     updateCharterStatus,
@@ -90,7 +89,6 @@ export default function Charters({navigation, route}: any) {
   const [selectedCharter, setSelectedCharter] = useState(null)
   const [signature, setSignature] = useState('')
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState<ArrayBuffer | null>(null)
-  //TODO  next vars are for Open/Close modals
   const [isSignaturePlaceChoiceOpen, setIsSignaturePlaceChoiceOpen] =
     useState(false)
   const [isSignatureSampleOpen, setIsSignatureSampleOpen] = useState(false)
@@ -138,14 +136,12 @@ export default function Charters({navigation, route}: any) {
       type: 'application/pdf',
       fileName: 'Signed_agreement',
     })
-    console.log('UPLOAD_RESPONSE', uploadResponse)
     if (uploadResponse) {
-      const linkingResponse = await linkSignPDFToCharter(
+      await linkSignPDFToCharter(
         uploadResponse.path,
         'Signed_document',
         selectedCharter?.id
       )
-      console.log('LINKING_RESPONSE_FROM_CHARTER', linkingResponse)
     }
   }
 
@@ -332,11 +328,9 @@ export default function Charters({navigation, route}: any) {
   }
 
   const onCharterSelected = async (charter: any) => {
-    console.log('ON_CHARTER_SELECTED', charter)
     setSelectedCharter(charter)
     if (charter.contractorStatus === 'new') {
       const pathToFile = await viewPdf(charter.id)
-      console.log('PATH_TO_FILE', pathToFile)
       setPath(pathToFile)
       setIsSignaturePlaceChoiceOpen(true)
     } else {
@@ -360,11 +354,7 @@ export default function Charters({navigation, route}: any) {
 
   const handleOnAcceptAndSign = () => {
     ref.current?.readSignature()
-    // console.log("READ_SIGNATURE", ref.current?.readSignature())
-    // if (ref.current?.readSignature()) {
-    //   setIsSignatureSampleOpen(false)
-    //   setIsSignaturePlaceChoiceOpen(false)
-    // }
+
   }
 
   const handleClear = () => {
@@ -461,7 +451,7 @@ export default function Charters({navigation, route}: any) {
           await uploadSignedDocument(`${path}_signed`)
 
           if (typeof update === 'string') {
-            getCharters()
+            await getCharters()
             showToast('Charter accepted sucessfully.', 'success')
           } else {
             showToast('Charter accepted failed.', 'failed')

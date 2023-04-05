@@ -173,7 +173,6 @@ export const useCharters = create(
       uploadSignedPDF: async value => {
         try {
           const response = await API.uploadImgFile(value)
-          console.log('SIGNED_PDF_UPLOAD_RESPONSE', response)
           return response
         } catch (e) {
           console.error('SIGNED_PDF_UPLOAD_ERROR', e)
@@ -182,12 +181,7 @@ export const useCharters = create(
       },
       linkSignPDFToCharter: async (path, description, charterID) => {
         try {
-          const response = await API.linkSignPDFToCharter(
-            path,
-            description,
-            charterID
-          )
-          console.log('LINK_SIGNED_DOCUMENT_TO_CHARTER', response)
+          await API.linkSignPDFToCharter(path, description, charterID)
           return 'SUCCESS'
         } catch (e) {
           console.error('LINKING_SINGED_DOCUMENT_TO_CHARTER_ERROR', e)
