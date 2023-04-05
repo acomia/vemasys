@@ -41,6 +41,7 @@ const viewPdfFile = async (charterId: string) => {
   const entityUserId = useEntity.getState().entityUserId
   const API_URL = useSettings.getState().apiUrl
   const customDocuments = await API.get(`v3/Charter/${charterId}/files`)
+  console.log('CUSTOM_DOCUMENTS', customDocuments.data)
   if (customDocuments && customDocuments.data.length) {
     return ReactNativeBlobUtil.config({
       fileCache: true,
@@ -118,7 +119,7 @@ const updateCharter = (charterId: string, data: any) => {
     })
 }
 
-const linkSignPDFToCharter = (
+const linkSignPDFToCharter = async (
   path: string,
   description: string,
   charterID: number
@@ -131,9 +132,20 @@ const linkSignPDFToCharter = (
       relevance: null,
     },
   }
+  const customDocuments = await API.get(`v3/Charter/${charterID}/files`)
+  if (customDocuments.data.length) {
+    console.log('SHOULD_REMOVE_LAST_ELEMENT')
+    const removeResponse = await API.delete(
+      `https://app-uat.vemasys.eu/api/v2/files/${
+        customDocuments.data[customDocuments.data.length - 1].id
+      }`
+    )
+    console.log('REMOVE_RESPONSE', removeResponse)
+  }
   return API.post(`v3/Charter/${charterID}/files`, payload)
     .then(response => {
       if (response.data) {
+        console.log('LINKING_SUCCESS', response.data)
         return response.data
       } else {
         throw new Error('Linking signed PDF to charter failed.')

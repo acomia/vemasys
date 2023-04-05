@@ -54,6 +54,7 @@ type SignatureLocation = {
   height?: number
   x?: number
   y?: number
+  page?: number
 }
 
 export default function Charters({navigation, route}: any) {
@@ -395,7 +396,8 @@ export default function Charters({navigation, route}: any) {
       signatureLocation.width &&
       signatureLocation.height &&
       signatureLocation.x &&
-      signatureLocation.y
+      signatureLocation.y &&
+      signatureLocation.page
     ) {
       setIsDocumentSigning(true)
       setIsSignatureSampleOpen(false)
@@ -405,7 +407,7 @@ export default function Charters({navigation, route}: any) {
       )
       const pdfDoc = await PDFDocument.load(pdfArrayBuffer)
       const pages = pdfDoc.getPages()
-      const firstPage = pages[0]
+      const firstPage = pages[signatureLocation.page - 1]
 
       const signatureImage = await pdfDoc.embedPng(signArrBuf)
       if (Platform.OS === 'ios') {
@@ -592,6 +594,7 @@ export default function Charters({navigation, route}: any) {
                 ...signatureLocation,
                 x,
                 y,
+                page,
               })
             }}
             onPressLink={uri => {
