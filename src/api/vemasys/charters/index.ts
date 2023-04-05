@@ -118,7 +118,7 @@ const updateCharter = (charterId: string, data: any) => {
     })
 }
 
-const linkSignPDFToCharter = (
+const linkSignPDFToCharter = async (
   path: string,
   description: string,
   charterID: number
@@ -130,6 +130,12 @@ const linkSignPDFToCharter = (
       title: 'charter_download',
       relevance: null,
     },
+  }
+  const customDocuments = await API.get(`v3/Charter/${charterID}/files`)
+  if (customDocuments.data.length) {
+    await API.delete(
+      `v2/files/${customDocuments.data[customDocuments.data.length - 1].id}`
+    )
   }
   return API.post(`v3/Charter/${charterID}/files`, payload)
     .then(response => {
