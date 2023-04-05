@@ -62,8 +62,6 @@ export const NavLogCard = (props: {
     }
   }
 
-  console.log('NAVLOG_TYPE', currentItemType, key)
-
   const typeIcon = (type: string) => {
     switch (type) {
       case 'Services':
