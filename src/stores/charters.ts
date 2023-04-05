@@ -2,7 +2,7 @@ import create from 'zustand'
 import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as API from '@bluecentury/api/vemasys'
-import {getSignature, linkSignPDFToCharter, uploadImgFile} from '@bluecentury/api/vemasys'
+import { getSignature, linkSignPDFToCharter, uploadImgFile } from '@bluecentury/api/vemasys'
 interface IUpdateStatus {
   status?: string
   setContractorStatus?: boolean
