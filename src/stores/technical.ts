@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import * as API from '@bluecentury/api/vemasys'
 import moment from 'moment'
-import {PartType} from '@bluecentury/models'
+import {PartType, Task, TaskSection} from '@bluecentury/models'
 
 type TechnicalState = {
   isTechnicalLoading: boolean
@@ -15,8 +15,8 @@ type TechnicalState = {
   bunkeringSuppliers?: any[]
   engines: any[]
   reservoirs: any[]
-  tasksCategory: any[]
-  tasksByCategory: any[]
+  tasksCategory: Array<TaskSection>
+  tasksByCategory: Array<Task>
   routinesCategory: any[]
   routinesByCategory: any[]
   routineDetails: any[]
@@ -27,6 +27,7 @@ type TechnicalState = {
   isPartTypeLoading: boolean
   vesselPartType: PartType | null
   isBunkeringLoading: boolean
+  taskDetails: Task | null
 }
 
 type TechnicalActions = {
@@ -58,6 +59,7 @@ type TechnicalActions = {
   getConsumableTypes: () => void
   updateVesselInventoryItem: (quantity: number, consumableId: number) => void
   getVesselPartType: (id: string) => void
+  getVesselTaskDetails: (id: string) => void
 }
 
 type TechnicalStore = TechnicalState & TechnicalActions
@@ -85,6 +87,7 @@ export const useTechnical = create(
       isPartTypeLoading: false,
       vesselPartType: null,
       isBunkeringLoading: false,
+      taskDetails: null,
       getVesselBunkering: async (vesselId: string) => {
         set({
           isTechnicalLoading: true,
@@ -311,7 +314,7 @@ export const useTechnical = create(
         subject: string,
         file: ImageFile,
         accessLevel: string,
-        id: numberw
+        id: number
       ) => {
         set({isUploadingFileLoading: true})
         try {
@@ -503,6 +506,25 @@ export const useTechnical = create(
           .catch(error => {
             set({isPartTypeLoading: false})
           })
+      },
+      getVesselTaskDetails: async (id: string) => {
+        set({isTechnicalLoading: true})
+        try {
+          const response = await API.reloadTaskDetails(id)
+          if (typeof response === 'object') {
+            set({
+              isTechnicalLoading: false,
+              taskDetails: response,
+            })
+          } else {
+            set({
+              isTechnicalLoading: false,
+              taskDetails: null,
+            })
+          }
+        } catch (error) {
+          set({isTechnicalLoading: false})
+        }
       },
     }),
     {
