@@ -3,6 +3,7 @@ import {API} from '../../apiService'
 import {ENTITY_TYPE_SUPPLIER_COMPANY} from '@bluecentury/constants'
 import {useAuth, useEntity} from '@bluecentury/stores'
 import {PROD_URL} from '@vemasys/env'
+import {Task} from '@bluecentury/models'
 
 const reloadVesselBunkering = async (vesselId: string) => {
   return API.get(`consumption_bunkerings?exploitationVessel.id=${vesselId}`)
@@ -197,7 +198,6 @@ const uploadFileBySubject = async (
   }
   formData.append('file', image)
   formData.append('access-level', accessLevel)
-  API.setBaseURL(`${PROD_URL}/api/`)
   return API.post(`v2/files/${subject}/${id}`, formData)
     .then(response => {
       if (response.data) {
@@ -348,6 +348,19 @@ const reloadVesselPartTypes = (partType: string) => {
     })
 }
 
+const reloadTaskDetails = async (id: string) => {
+  return API.get(`tasks/${id}`)
+    .then(response => {
+      if (response.data) {
+        return response.data
+      }
+      throw new Error('Task details failed.')
+    })
+    .catch(error => {
+      console.error('Error: Task details data', error)
+    })
+}
+
 export {
   reloadVesselBunkering,
   reloadVesselGasoilReservoirs,
@@ -371,6 +384,7 @@ export {
   reloadConsumableTypes,
   updateVesselInventoryItem,
   reloadVesselPartTypes,
+  reloadTaskDetails,
 }
 
 export * from './measurements'

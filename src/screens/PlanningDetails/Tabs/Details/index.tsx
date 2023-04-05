@@ -38,6 +38,7 @@ import {
 import {LoadingAnimated} from '@bluecentury/components'
 import {Vemasys} from '@bluecentury/helpers'
 import {RootStackParamList} from '@bluecentury/types/nav.types'
+import {Contacts} from '@bluecentury/models'
 
 type Dates = {
   plannedETA: Date | undefined | StringOrNull
@@ -537,7 +538,7 @@ const Details = () => {
     </Box>
   )
 
-  const renderContactInformation = (contact: any, index: number) => {
+  const renderContactInformation = (contact: Contacts, index: number) => {
     return (
       <HStack
         key={index}
@@ -551,12 +552,19 @@ const Details = () => {
         p={ms(10)}
         shadow={3}
       >
-        <Text bold>{contact.name}</Text>
-        <Image
-          alt="charter-contact"
-          resizeMode="contain"
-          source={Icons.charter_contact}
-        />
+        <HStack alignItems="center">
+          <Image
+            alt="charter-contact"
+            resizeMode="contain"
+            source={Icons.user}
+            tintColor={Colors.azure}
+          />
+          <Box ml={5}>
+            <Text bold>{contact?.name}</Text>
+            {contact?.email ? <Text>{contact?.email}</Text> : null}
+          </Box>
+        </HStack>
+        <Text>{contact?.phoneNumber}</Text>
       </HStack>
     )
   }

@@ -34,6 +34,7 @@ import {
 } from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {useTranslation} from 'react-i18next'
+import {Task} from '@bluecentury/models'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 const AddEditTechnicalTask = ({navigation, route}: Props) => {
@@ -43,12 +44,13 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
   const {
     isUploadingFileLoading,
     isCreateTaskLoading,
+    isTechnicalLoading,
     createVesselTask,
     updateVesselTask,
     uploadFileBySubject,
     getVesselTasksCategory,
     getVesselTasksByCategory,
-    deleteTask,
+    getVesselTaskDetails,
   } = useTechnical()
   const {vesselId} = useEntity()
   const types = [
@@ -109,7 +111,7 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
 
   const showToast = (text: string, res: string) => {
     toast.show({
-      duration: 1000,
+      duration: 2000,
       render: () => {
         return (
           <Text
@@ -134,25 +136,32 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
       })
       const res = await createVesselTask(newTask)
       if (typeof res === 'object' && res?.id) {
-        uploadFile(res?.id, imgFile, 'add')
+        // update data on technical task with categories
+        getVesselTasksCategory(vesselId)
+        // update the list on the tasks
+        getVesselTasksByCategory(vesselId, category)
+        uploadFile(res?.id, imgFile)
+        showToast(`Task ${method} successfully.`, 'success')
+        navigation.goBack()
       } else {
-        showToast('Task add failed.', 'failed')
+        showToast(`Task ${method} failed.`, 'failed')
       }
     } else {
       const res = await updateVesselTask(task?.id, taskData)
       if (typeof res === 'object' && res?.id) {
-        uploadFile(res?.id, imgFile, 'update')
+        getVesselTaskDetails(task?.id)
+        // update the list on the tasks
+        getVesselTasksByCategory(vesselId, category)
+        uploadFile(res?.id, imgFile)
+        showToast(`Task ${method} successfully.`, 'success')
+        navigation.goBack()
       } else {
-        showToast('Task update failed.', 'failed')
+        showToast(`Task ${method} failed.`, 'failed')
       }
     }
   }
 
-  const uploadFile = async (
-    id: number,
-    imageFile: ImageFile,
-    method: string
-  ) => {
+  const uploadFile = async (id: number, imageFile: ImageFile) => {
     if (imageFile?.uri) {
       const upload = await uploadFileBySubject(
         'Task',
@@ -160,25 +169,10 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
         'shared_within_company',
         id
       )
-      if (typeof upload === 'object') {
-        // update data on technical task with categories
-        getVesselTasksCategory(vesselId)
-        // update the list on the tasks
-        getVesselTasksByCategory(vesselId, category)
-        showToast(`Task ${method} successfully.`, 'success')
-        navigation.goBack()
-      }
-    } else {
-      // update data on technical task with categories
-      getVesselTasksCategory(vesselId)
-      // update the list on the tasks
-      getVesselTasksByCategory(vesselId, category)
-      showToast(`Task  ${method} success.`, 'success')
-      navigation.goBack()
     }
   }
 
-  if (isCreateTaskLoading || isUploadingFileLoading) {
+  if (isCreateTaskLoading || isUploadingFileLoading || isTechnicalLoading) {
     return <LoadingAnimated />
   }
 

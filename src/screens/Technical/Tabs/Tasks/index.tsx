@@ -9,6 +9,7 @@ import {useEntity, useTechnical} from '@bluecentury/stores'
 import {LoadingAnimated} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {useTranslation} from 'react-i18next'
+import {TaskSection} from '@bluecentury/models'
 
 const {width} = Dimensions.get('window')
 const Tasks = () => {
@@ -38,26 +39,26 @@ const Tasks = () => {
           flexGrow: 1,
           paddingBottom: 20,
         }}
-        scrollEventThrottle={16}
         refreshControl={
-          <RefreshControl onRefresh={onPullRefresh} refreshing={pullRefresh} />
+          <RefreshControl refreshing={pullRefresh} onRefresh={onPullRefresh} />
         }
-        showsVerticalScrollIndicator={false}
+        bg={Colors.white}
         px={ms(12)}
         py={ms(20)}
-        bg={Colors.white}
+        scrollEventThrottle={16}
+        showsVerticalScrollIndicator={false}
       >
-        <Text fontSize={ms(20)} bold color={Colors.azure} mb={ms(15)}>
+        <Text bold color={Colors.azure} fontSize={ms(20)} mb={ms(15)}>
           {t('overview')}
         </Text>
         <HStack
+          alignItems="center"
           flexWrap="wrap"
           justifyContent="space-evenly"
-          alignItems="center"
         >
           {tasksCategory?.length > 0 ? (
-            tasksCategory?.map((task: any, index) => {
-              let icon = undefined
+            tasksCategory?.map((task: TaskSection, index) => {
+              let icon
               switch (task.icon) {
                 case 'clipboard':
                   icon = Icons.clipboard
@@ -90,20 +91,20 @@ const Tasks = () => {
                   }
                 >
                   <Box
-                    w={width / 2 - 30}
-                    p={30}
                     alignItems="center"
-                    justifyContent="center"
                     bg={Colors.white}
                     borderRadius={ms(5)}
-                    shadow={4}
+                    justifyContent="center"
                     mt={ms(10)}
+                    p={30}
+                    shadow={4}
+                    w={width / 2 - 30}
                   >
-                    <Image alt={`${task.key}-icon`} source={icon} mb={ms(15)} />
-                    <Text fontSize={ms(22)} bold color={Colors.text}>
+                    <Image alt={`${task.key}-icon`} mb={ms(15)} source={icon} />
+                    <Text bold color={Colors.text} fontSize={ms(22)}>
                       {task.count}
                     </Text>
-                    <Text fontWeight="medium" color={Colors.text}>
+                    <Text color={Colors.text} fontWeight="medium">
                       {t(task.label)}
                     </Text>
                   </Box>

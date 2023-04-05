@@ -2,7 +2,7 @@ import create from 'zustand'
 import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as API from '@bluecentury/api/vemasys'
-import {getSignature} from "@bluecentury/api/vemasys";
+import { getSignature, linkSignPDFToCharter, uploadImgFile } from '@bluecentury/api/vemasys'
 interface IUpdateStatus {
   status?: string
   setContractorStatus?: boolean
@@ -20,6 +20,12 @@ interface SignedDocument {
   path: string
 }
 
+interface SignedPDF {
+  uri: string
+  type: string
+  fileName: string
+}
+
 type ChartersState = {
   charters: [] | undefined
   isCharterLoading: boolean
@@ -28,6 +34,9 @@ type ChartersState = {
   uploadCharterSignatureResponse: StringOrNull
   signatureId: string
   signedDocumentsArray: SignedDocument[]
+  isCharterUpdateLoading: boolean
+  isCharterUpdateSuccess: boolean
+  isDocumentSigning: boolean
 }
 
 type ChartersActions = {
@@ -39,6 +48,14 @@ type ChartersActions = {
   setSignatureId: (signatureId: string) => void
   addSignedDocument: (document: SignedDocument[]) => void
   getSignature: (signatureId: string, callback: Function) => void
+  updateCharter: (charterId: string, data: any) => void
+  setIsDocumentSigning: (value: boolean) => void
+  uploadSignedPDF: (pdfFile: SignedPDF) => Promise<string>
+  linkSignPDFToCharter: (
+    path: string,
+    description: string,
+    charterID: number
+  ) => Promise<string>
 }
 
 type ChartersStore = ChartersState & ChartersActions
@@ -53,6 +70,9 @@ export const useCharters = create(
       uploadCharterSignatureResponse: null,
       signatureId: '',
       signedDocumentsArray: [],
+      isCharterUpdateLoading: false,
+      isCharterUpdateSuccess: false,
+      isDocumentSigning: false,
       getCharters: async () => {
         set({isCharterLoading: true, charters: []})
         try {
@@ -136,6 +156,38 @@ export const useCharters = create(
           uploadCharterSignatureResponse: '',
         })
       },
+      updateCharter: (charterId: string, data: any) => {
+        set({isCharterUpdateLoading: true, isCharterUpdateSuccess: false})
+        const response: any = API.updateCharter(charterId, data)
+        if (response === 200) {
+          set({isCharterUpdateSuccess: true, isCharterUpdateLoading: false})
+        } else {
+          set({isCharterUpdateSuccess: true, isCharterUpdateLoading: false})
+        }
+      },
+      setIsDocumentSigning: value => {
+        set({
+          isDocumentSigning: value,
+        })
+      },
+      uploadSignedPDF: async value => {
+        try {
+          const response = await API.uploadImgFile(value)
+          return response
+        } catch (e) {
+          console.error('SIGNED_PDF_UPLOAD_ERROR', e)
+          return 'FAILURE'
+        }
+      },
+      linkSignPDFToCharter: async (path, description, charterID) => {
+        try {
+          await API.linkSignPDFToCharter(path, description, charterID)
+          return 'SUCCESS'
+        } catch (e) {
+          console.error('LINKING_SINGED_DOCUMENT_TO_CHARTER_ERROR', e)
+          return 'FAILURE'
+        }
+      }
     }),
     {
       name: 'charters-storage',

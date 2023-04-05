@@ -29,7 +29,7 @@ type RootStackParamList = {
   TechnicalTasksList: {category: string; title: string}
   TechnicalTaskDetails: {task: Task; category: string}
   TechnicalTaskNewComment: {taskId: string}
-  AddEditTechnicalTask: {method: string; task?: any}
+  AddEditTechnicalTask: {method: string; task?: any; category: string}
   TechnicalCertificateList: {certificates: any; title: string}
   TechnicalCertificateDetails: {certificate: any}
   Measurements: {data: any; routeFrom: string}
