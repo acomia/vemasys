@@ -19,6 +19,7 @@ import {
   Button,
   useToast,
   Image,
+  Switch,
 } from 'native-base'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
@@ -26,9 +27,9 @@ import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import IconFA5 from 'react-native-vector-icons/FontAwesome5'
 import Pdf from 'react-native-pdf'
 import {PDFDocument} from 'pdf-lib'
-import {Animated} from '@bluecentury/assets'
+import {Animated, Icons} from '@bluecentury/assets'
 
-import {useCharters, useEntity} from '@bluecentury/stores'
+import {useCharters, useEntity, useSettings} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
 import {
   CharterStatus,
@@ -47,7 +48,6 @@ import {decode as atob, encode as btoa} from 'base-64'
 import ReactNativeBlobUtil from 'react-native-blob-util'
 import {useTranslation} from 'react-i18next'
 import Signature, {SignatureViewRef} from 'react-native-signature-canvas'
-const RNFS = require('react-native-fs')
 
 type SignatureLocation = {
   width?: number
@@ -75,6 +75,7 @@ export default function Charters({navigation, route}: any) {
     linkSignPDFToCharter,
   } = useCharters()
   const {entityType, vesselId} = useEntity()
+  const {isMobileTracking} = useSettings()
   const [searchedValue, setSearchValue] = useState('')
   const [chartersData, setChartersData] = useState(
     route === 'charters'
@@ -92,10 +93,12 @@ export default function Charters({navigation, route}: any) {
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState<ArrayBuffer | null>(null)
   const [isSignaturePlaceChoiceOpen, setIsSignaturePlaceChoiceOpen] =
     useState(false)
+  const [isCharterAccepted, setIsCharterAccepted] = useState(false)
   const [isSignatureSampleOpen, setIsSignatureSampleOpen] = useState(false)
   const [signatureLocation, setSignatureLocation] = useState<SignatureLocation>(
     {}
   )
+  const [isPdfSigned, setIsPdfSigned] = useState(false)
 
   const source = {uri: path, cache: true}
   const [editReferenceOpen, setEditReferenceOpen] = useState(false)
@@ -104,7 +107,12 @@ export default function Charters({navigation, route}: any) {
 
   const style = `.m-signature-pad--footer {display: none; margin: 0px;}
                 .m-signature-pad {border-radius: 10px; border: 1px solid #E6E6E6;}
-                body {height: 150px;}`
+                body {height: 60%; margin-top: 70%; background: #00000059; padding-left: 12px; padding-right: 12px;}
+               `
+
+  const handleOnValueChange = () => {
+    navigation.navigate('TrackingServiceDialog')
+  }
 
   const handleEmpty = () => {
     showToast('Please sign before accepting.', 'warning')
@@ -355,7 +363,6 @@ export default function Charters({navigation, route}: any) {
 
   const handleOnAcceptAndSign = () => {
     ref.current?.readSignature()
-
   }
 
   const handleClear = () => {
@@ -439,32 +446,53 @@ export default function Charters({navigation, route}: any) {
       const pdfBytes = await pdfDoc.save()
       const pdfBase64 = _uint8ToBase64(pdfBytes)
 
-      const status = {
-        status: CHARTER_CONTRACTOR_STATUS_ACCEPTED,
-        setContractorStatus: true,
-      }
-      const update = await updateCharterStatus(selectedCharter?.id, status)
-
-      ReactNativeBlobUtil.fs
+      await ReactNativeBlobUtil.fs
         .writeFile(`${path}_signed`, pdfBase64, 'base64')
         .then(async success => {
           console.log('SIGNATURE_SUCCESS_NEW_PATH', success)
           setPath(`${path}_signed`)
-          await uploadSignedDocument(`${path}_signed`)
-
-          if (typeof update === 'string') {
-            await getCharters()
-            showToast('Charter accepted sucessfully.', 'success')
-          } else {
-            showToast('Charter accepted failed.', 'failed')
-          }
+          setIsPdfSigned(true)
         })
-        .then(() => setIsDocumentSigning(false))
         .catch(err => {
           console.log(err.message)
         })
       setSignature('')
+      setIsDocumentSigning(false)
     }
+  }
+
+  const resetState = () => {
+    setPath('')
+    setSelectedCharter(null)
+    setSignature('')
+    setPdfArrayBuffer(null)
+    setIsSignaturePlaceChoiceOpen(false)
+    setIsCharterAccepted(false)
+    setIsSignatureSampleOpen(false)
+    setSignatureLocation({})
+    setIsPdfSigned(false)
+  }
+
+  const handleSaveDocument = async () => {
+    setIsPdfSigned(false)
+    const status = {
+      status: CHARTER_CONTRACTOR_STATUS_ACCEPTED,
+      setContractorStatus: true,
+    }
+    const update = await updateCharterStatus(selectedCharter?.id, status)
+    await uploadSignedDocument(path)
+
+    if (typeof update === 'string') {
+      await getCharters()
+      resetState()
+      showToast('Charter accepted sucessfully.', 'success')
+    } else {
+      showToast('Charter accepted failed.', 'failed')
+    }
+  }
+
+  const handleDiscard = () => {
+    resetState()
   }
 
   if (isCharterLoading) return <LoadingAnimated />
@@ -546,7 +574,7 @@ export default function Charters({navigation, route}: any) {
 
       <Modal
         animationPreset="slide"
-        isOpen={isSignaturePlaceChoiceOpen}
+        isOpen={isSignaturePlaceChoiceOpen || isPdfSigned}
         safeAreaTop={true}
         size="full"
         onClose={() => setIsSignaturePlaceChoiceOpen(false)}
@@ -554,7 +582,7 @@ export default function Charters({navigation, route}: any) {
         <Modal.Content bg="#23272F" style={styles.bottom}>
           <Box
             style={{
-              alignItems: 'flex-end',
+              alignItems: 'center',
               backgroundColor: Colors.black,
               paddingHorizontal: ms(16),
               paddingVertical: ms(10),
@@ -564,14 +592,14 @@ export default function Charters({navigation, route}: any) {
               bold
               color={Colors.primary}
               fontSize={ms(12)}
-              textAlign="right"
+              textAlign="center"
             >
-              {t('makeSingleTap')}
+              Document.pdf
             </Text>
           </Box>
           <Pdf
             enablePaging
-            source={source}
+            source={isPdfSigned ? {uri: path, cache: true} : source}
             style={styles.pdf}
             trustAllCerts={false}
             onError={error => {
@@ -590,79 +618,141 @@ export default function Charters({navigation, route}: any) {
             }}
             onPageSingleTap={(page, x, y) => {
               console.log('X:', x, 'Y:', y)
-              setSignatureLocation({
-                ...signatureLocation,
-                x,
-                y,
-                page,
-              })
+              isCharterAccepted
+                ? (setSignatureLocation({
+                    ...signatureLocation,
+                    x,
+                    y,
+                    page,
+                  }),
+                  setIsSignatureSampleOpen(true))
+                : null
             }}
             onPressLink={uri => {
               console.log(`Link pressed: ${uri}`)
             }}
           />
         </Modal.Content>
-        <Modal.Footer bg={Colors.black}>
-          <Box flex="1">
-            <Button
-              colorScheme="dark"
-              mb={ms(8)}
-              style={{borderColor: Colors.danger}}
-              variant="outline"
-              onPress={() => {
-                setIsSignaturePlaceChoiceOpen(false)
-                handleOnDecline()
-              }}
-            >
-              {t('decline')}
-            </Button>
-            <Button
-              bg={Colors.primary}
-              onPress={
-                signatureLocation.x && signatureLocation.y
-                  ? () => setIsSignatureSampleOpen(true)
-                  : () => showToast('Make a tap', 'warning')
-              }
-            >
-              {t('accept')}
-            </Button>
-          </Box>
-        </Modal.Footer>
+        {!isCharterAccepted ? (
+          <Modal.Footer bg={Colors.black}>
+            <Box flex="1">
+              <Button
+                colorScheme="dark"
+                mb={ms(8)}
+                style={{borderColor: Colors.danger}}
+                variant="outline"
+                onPress={() => {
+                  setIsSignaturePlaceChoiceOpen(false)
+                  handleOnDecline()
+                }}
+              >
+                {t('decline')}
+              </Button>
+              <Button
+                bg={Colors.primary}
+                onPress={() => setIsCharterAccepted(true)}
+              >
+                {t('accept')}
+              </Button>
+            </Box>
+          </Modal.Footer>
+        ) : !isPdfSigned ? (
+          <Modal.Footer bg={Colors.black}>
+            <Box alignItems="center" flex="1" h="68" px="34">
+              <Text bold color={Colors.white} fontSize="18" textAlign="center">
+                Tap anywhere on the document to sign
+              </Text>
+            </Box>
+          </Modal.Footer>
+        ) : (
+          <Modal.Footer bg={Colors.black}>
+            <Box flex="1">
+              <Button
+                colorScheme="dark"
+                mb={ms(8)}
+                style={{borderColor: Colors.danger}}
+                variant="outline"
+                onPress={handleDiscard}
+              >
+                Discard
+              </Button>
+              <Button
+                bg={Colors.primary}
+                onPress={handleSaveDocument}
+              >
+                Save
+              </Button>
+            </Box>
+          </Modal.Footer>
+        )}
       </Modal>
       <Modal
         style={{
-          height: '50%',
+          height: '100%',
           alignSelf: 'flex-end',
           backgroundColor: Colors.white,
         }}
         animationPreset="slide"
+        bgColor="#00000059"
         isOpen={isSignatureSampleOpen}
-        safeAreaTop={true}
+        safeAreaTop={false}
+        size="full"
         onClose={() => setIsSignatureSampleOpen(false)}
-        {...styles.bottom}
       >
-        <Signature
-          ref={ref}
-          webStyle={style}
-          onEmpty={handleEmpty}
-          onOK={sign => setSignature(sign)}
-        />
-        <Text color={Colors.disabled} fontWeight="medium" mt={ms(5)}>
-          {t('signatureDescription')}
-        </Text>
-        <HStack p={ms(14)}>
-          <Button
-            colorScheme="muted"
-            flex="1"
-            variant="ghost"
-            onPress={handleClear}
-          >
-            {t('clear')}
-          </Button>
-          <Button bg={Colors.primary} flex="1" onPress={handleOnAcceptAndSign}>
-            {t('acceptAndSign')}
-          </Button>
-        </HStack>
+        <Box bg={Colors.black} h="100%" w="100%">
+          <Signature
+            ref={ref}
+            webStyle={style}
+            onEmpty={handleEmpty}
+            onOK={sign => setSignature(sign)}
+          />
+          <Box bg={Colors.white}>
+            <HStack
+              alignItems="center"
+              borderColor={Colors.light}
+              borderRadius={5}
+              borderWidth={1}
+              justifyContent="space-between"
+              mt={ms(12)}
+              mx={ms(12)}
+              px={ms(12)}
+              py={ms(7)}
+            >
+              <Image
+                alt="my-location"
+                height={ms(20)}
+                mr={ms(10)}
+                source={Icons.location_alt}
+                width={ms(20)}
+              />
+              <Text flex={1} fontWeight="medium">
+                {t('activateTracking')}
+              </Text>
+              <Switch
+                size="sm"
+                value={isMobileTracking}
+                onToggle={handleOnValueChange}
+              />
+            </HStack>
+            <HStack bg={Colors.white} p={ms(14)}>
+              <Button
+                colorScheme="muted"
+                flex="1"
+                variant="ghost"
+                onPress={handleClear}
+              >
+                {t('clear')}
+              </Button>
+              <Button
+                bg={Colors.primary}
+                flex="1"
+                onPress={handleOnAcceptAndSign}
+              >
+                {t('acceptAndSign')}
+              </Button>
+            </HStack>
+          </Box>
+        </Box>
       </Modal>
       <EditReferenceModal
         charter={editCharter}
