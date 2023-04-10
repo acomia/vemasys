@@ -8,7 +8,7 @@ type RootStackParamList = {
   QRScanner: undefined
   Formations: undefined
   GPSTracker: undefined
-  CharterDetails: {charter: {} | undefined}
+  CharterDetails: {charter: any; isCreator: boolean}
   PDFView: {path: string | undefined}
   NewBunkering: undefined
   BunkeringDetails: {bunk: {} | undefined}
