@@ -26,14 +26,15 @@ import {Colors} from '@bluecentury/styles'
 import {useCharters, useEntity} from '@bluecentury/stores'
 import {formatLocationLabel} from '@bluecentury/constants'
 import {useTranslation} from 'react-i18next'
+import {RootStackParamList} from '@bluecentury/types/nav.types'
 
-type Props = NativeStackScreenProps<RootStackParamList>
+type Props = NativeStackScreenProps<RootStackParamList, 'CharterDetails'>
 export default function CharterDetails({navigation, route}: Props) {
   const {t} = useTranslation()
   const {entityType} = useEntity()
   const {viewPdf, signedDocumentsArray, isCharterLoading} = useCharters()
 
-  const {charter} = route.params
+  const {charter, isCreator} = route.params
 
   const computeCargo = (cargo: any[]) => {
     return cargo.reduce(
@@ -295,7 +296,11 @@ export default function CharterDetails({navigation, route}: Props) {
               </Text>
             </Text>
           </VStack>
-          <CharterStatus charter={charter} entityType={entityType} />
+          <CharterStatus
+            charter={charter}
+            entityType={entityType}
+            isCreator={isCreator}
+          />
         </HStack>
         <Divider my={ms(15)} />
         <ScrollView flex="1" showsVerticalScrollIndicator={false}>

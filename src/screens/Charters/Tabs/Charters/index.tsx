@@ -74,7 +74,7 @@ export default function Charters({navigation, route}: any) {
     uploadSignedPDF,
     linkSignPDFToCharter,
   } = useCharters()
-  const {entityType, vesselId} = useEntity()
+  const {entityId, entityType, vesselId} = useEntity()
   const {isMobileTracking} = useSettings()
   const [searchedValue, setSearchValue] = useState('')
   const [chartersData, setChartersData] = useState(
@@ -214,11 +214,16 @@ export default function Charters({navigation, route}: any) {
   }
 
   const renderItem = ({item, index}: any) => {
+    const charterCreator =
+      item.charterContracts[0].contract.contractParties.find(
+        entity => entity.creator
+      )
+    const isCreator = charterCreator.entity.id === entityId
     const status = getStatus(item, entityType)
     return (
       <TouchableOpacity
         activeOpacity={0.7}
-        onPress={() => onCharterSelected(item)}
+        onPress={() => onCharterSelected(item, isCreator)}
       >
         <Box
           key={index}
@@ -271,7 +276,11 @@ export default function Charters({navigation, route}: any) {
                   : 'TBD'}
               </Text>
             </VStack>
-            <CharterStatus charter={item} entityType={entityType} />
+            <CharterStatus
+              charter={item}
+              entityType={entityType}
+              isCreator={isCreator}
+            />
           </HStack>
           <Box
             bg={status === 'completed' ? Colors.secondary : Colors.grey}
@@ -336,14 +345,17 @@ export default function Charters({navigation, route}: any) {
     setChartersData(searchedCharter)
   }
 
-  const onCharterSelected = async (charter: any) => {
+  const onCharterSelected = async (charter: any, isCreator: boolean) => {
     setSelectedCharter(charter)
-    if (charter.contractorStatus === 'new') {
+    if (charter.contractorStatus === 'new' && !isCreator) {
       const pathToFile = await viewPdf(charter.id)
       setPath(pathToFile)
       setIsSignaturePlaceChoiceOpen(true)
     } else {
-      navigation.navigate('CharterDetails', {charter: charter})
+      navigation.navigate('CharterDetails', {
+        charter: charter,
+        isCreator: isCreator,
+      })
     }
   }
 
@@ -480,15 +492,18 @@ export default function Charters({navigation, route}: any) {
       setContractorStatus: true,
     }
     const update = await updateCharterStatus(selectedCharter?.id, status)
-    await uploadSignedDocument(path)
+    const upload = await uploadSignedDocument(path)
 
-    if (typeof update === 'string') {
-      await getCharters()
-      resetState()
-      showToast('Charter accepted sucessfully.', 'success')
-    } else {
-      showToast('Charter accepted failed.', 'failed')
-    }
+    Promise.all([update, upload]).then(async () => {
+      try {
+        await getCharters()
+        resetState()
+        showToast('Charter accepted sucessfully.', 'success')
+      } catch (e) {
+        console.log('HANDLE_SAVE_DOCUMENT_ERROR', e)
+        showToast('Charter accepted failed.', 'failed')
+      }
+    })
   }
 
   const handleDiscard = () => {

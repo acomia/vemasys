@@ -68,15 +68,18 @@ const viewPdfFile = async (charterId: string) => {
 // v3 returns an object and is a PUT method
 // in a sense, for updating, we should use PUT instead of POST
 // propose to update to v3 here instead
-const updateCharterStatus = async (charterId: string, status: UpdateStatus) =>
-  API.post<string>(`v2/charters/${charterId}/update_status`, status)
-    .then(response =>
-      response.data ? UPDATE_CHARTER_SUCCESS : UPDATE_CHARTER_FAILED
-    )
+const updateCharterStatus = async (charterId: string, status: UpdateStatus) => {
+  API.put(`charters/${charterId}/update_order_confirmation_status`, {
+    status: status.status,
+  })
+    .then(response => {
+      return response.data ? UPDATE_CHARTER_SUCCESS : UPDATE_CHARTER_FAILED
+    })
     .catch(error => {
       console.error('Error: Charter update status API', error)
       return UPDATE_CHARTER_FAILED
     })
+}
 
 const uploadSignature = async (signature: Signature) =>
   API.post('signatures', signature)

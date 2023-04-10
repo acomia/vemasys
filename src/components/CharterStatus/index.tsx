@@ -12,7 +12,7 @@ import {
 import {Animated, Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
 
-export const CharterStatus = ({entityType, charter}: any) => {
+export const CharterStatus = ({entityType, charter, isCreator}: any) => {
   const getStatus = (
     charter: {ordererStatus: string; contractorStatus: string},
     selectedEntityType: string
@@ -78,43 +78,54 @@ export const CharterStatus = ({entityType, charter}: any) => {
     }
   }
 
-  const status = getStatus(charter, entityType)
-  return (
-    <Center>
-      {status === 'new' ? (
+  const renderItem = () => {
+    if (status === 'new' && isCreator) {
+      return null
+    }
+    if (status === 'new') {
+      return (
         <HStack alignItems="center" mr={ms(10)}>
           <Image
             alt="charter-status-icon"
-            source={Icons.status_x_alt}
-            width={ms(30)}
             height={ms(30)}
             mr={ms(10)}
             resizeMode="contain"
+            source={Icons.status_x_alt}
+            width={ms(30)}
           />
           <Image
             alt="charter-status-icon"
-            source={Icons.status_check_alt}
-            width={ms(30)}
             height={ms(30)}
             resizeMode="contain"
+            source={Icons.status_check_alt}
+            width={ms(30)}
           />
         </HStack>
-      ) : (
+      )
+    } else {
+      return (
         <Image
           alt="charter-status-icon"
-          source={renderIcon(status)}
-          width={ms(30)}
           height={ms(30)}
           mb={ms(5)}
           resizeMode="contain"
+          source={renderIcon(status)}
+          width={ms(30)}
         />
-      )}
+      )
+    }
+  }
+
+  const status = getStatus(charter, entityType)
+  return (
+    <Center>
+      {renderItem()}
       {status === 'new' ? null : (
         <Badge style={[styles.badge, styles[`${status}Status`]]}>
           <Text
             bold
-            fontSize={ms(12)}
             color={status === 'draft' ? Colors.azure : Colors.white}
+            fontSize={ms(12)}
           >
             {status}
           </Text>
