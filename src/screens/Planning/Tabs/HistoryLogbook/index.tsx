@@ -179,6 +179,11 @@ const HistoryLogbook = () => {
               >
                 {itemDurationLabel}
               </Text>
+              {renderDuration(
+                navigationLog?.departureDatetime,
+                navigationLog?.arrivalDatetime,
+                navigationLog?.isActive
+              )}
             </Box>
             {/* End of Header */}
             {navigationLog.bulkCargo.length < 1 ? null : (
@@ -244,6 +249,31 @@ const HistoryLogbook = () => {
           </Box>
         </TouchableOpacity>
       </Box>
+    )
+  }
+
+  const renderDuration = (
+    startDate: StringOrNull | undefined,
+    endDate: StringOrNull | undefined,
+    isActive: boolean
+  ) => {
+    if (startDate === endDate) return
+    const navigationDuration = moment.duration(
+      moment(startDate).diff(moment(endDate))
+    )
+
+    return (
+      <Text
+        color={isActive ? Colors.white : Colors.dark_green}
+        fontWeight="bold"
+        textAlign="right"
+      >
+        {navigationDuration.days() ? `${navigationDuration.days()}d` : ''}
+        {!navigationDuration.days() && !navigationDuration.hours()
+          ? ''
+          : ` ${navigationDuration.hours()}h`}
+        {` ${navigationDuration.minutes()}m`}
+      </Text>
     )
   }
 
