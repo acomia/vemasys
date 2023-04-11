@@ -271,8 +271,8 @@ const HistoryLogbook = () => {
         {navigationDuration.days() ? `${navigationDuration.days()}d` : ''}
         {!navigationDuration.days() && !navigationDuration.hours()
           ? ''
-          : ` ${navigationDuration.hours()}h`}
-        {` ${navigationDuration.minutes()}m`}
+          : ` ${Math.abs(navigationDuration.hours())}h`}
+        {` ${Math.abs(navigationDuration.minutes())}m`}
       </Text>
     )
   }
