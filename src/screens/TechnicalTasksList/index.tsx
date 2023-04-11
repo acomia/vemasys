@@ -1,9 +1,8 @@
-import React, {useEffect} from 'react'
+import React from 'react'
 import {RefreshControl, TouchableOpacity} from 'react-native'
-import {Box, Divider, HStack, ScrollView, Text} from 'native-base'
+import {Box, Button, Divider, HStack, ScrollView, Text, Icon} from 'native-base'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {ms} from 'react-native-size-matters'
-import Icon from 'react-native-vector-icons/Ionicons'
 import moment from 'moment'
 
 import {Colors} from '@bluecentury/styles'
@@ -13,37 +12,17 @@ import {
   NoInternetConnectionMessage,
 } from '@bluecentury/components'
 import {useTranslation} from 'react-i18next'
+import {Shadow} from 'react-native-shadow-2'
+import Ionicons from 'react-native-vector-icons/Ionicons'
+import {RootStackParamList} from '@bluecentury/types/nav.types'
 
-type Props = NativeStackScreenProps<RootStackParamList>
+type Props = NativeStackScreenProps<RootStackParamList, 'TechnicalTasksList'>
 const TechnicalTasksList = ({navigation, route}: Props) => {
   const {t} = useTranslation()
   const {category} = route.params
   const {isTechnicalLoading, tasksByCategory, getVesselTasksByCategory} =
     useTechnical()
   const {vesselId} = useEntity()
-
-  useEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <TouchableOpacity
-          style={{flexDirection: 'row', alignItems: 'center'}}
-          onPress={() =>
-            navigation.navigate('AddEditTechnicalTask', {
-              method: 'add',
-              category,
-              vesselId,
-            })
-          }
-        >
-          <Icon color={Colors.highlighted_text} name="add" size={24} />
-          <Text bold color={Colors.highlighted_text}>
-            {t('addATask')}
-          </Text>
-        </TouchableOpacity>
-      ),
-    })
-    getVesselTasksByCategory(vesselId, category)
-  }, [])
 
   const renderStatuses = (status: string) => {
     let title = ''
@@ -104,7 +83,14 @@ const TechnicalTasksList = ({navigation, route}: Props) => {
         break
     }
     return (
-      <Box bg={label?.color} borderRadius={ms(25)} px={ms(20)} py={ms(3)}>
+      <Box
+        alignSelf="center"
+        bg={label?.color}
+        borderRadius={ms(25)}
+        h={ms(25)}
+        px={ms(20)}
+        py={ms(3)}
+      >
         <Text
           color={Colors.white}
           fontSize={ms(12)}
@@ -159,52 +145,46 @@ const TechnicalTasksList = ({navigation, route}: Props) => {
                     borderRadius={ms(5)}
                     borderWidth={1}
                     mt={ms(10)}
-                    overflow="hidden"
                   >
                     {/* Title header */}
-                    <Box
+                    <HStack
                       backgroundColor={Colors.border}
+                      justifyContent="space-between"
                       px={ms(16)}
                       py={ms(10)}
                     >
-                      <Text bold color={Colors.azure} fontSize={ms(15)}>
-                        {task?.title}
-                      </Text>
-                    </Box>
+                      <Box w="50%">
+                        <Text bold color={Colors.azure} fontSize={ms(15)}>
+                          {/*{task?.title}*/}
+                          {task?.vesselPart?.name
+                            ? `${task?.vesselPart?.name}`
+                            : task?.title}
+                        </Text>
+                      </Box>
+                      {task?.labels[0] ? renderLabels(task?.labels[0]) : null}
+                    </HStack>
                     {/* End of title header */}
                     {/* Content */}
                     <Box py={ms(14)}>
-                      <HStack px={ms(14)}>
-                        <Text flex="1" fontWeight="medium">
-                          {t('part')}
-                        </Text>
-                        <Text>{task?.vesselPart?.name}</Text>
-                      </HStack>
-                      <Divider my={ms(14)} />
                       <HStack px={ms(14)}>
                         <Text flex="1" fontWeight="medium">
                           {t('status')}
                         </Text>
                         {renderStatuses(task?.statusCode)}
                       </HStack>
-                      <Divider my={ms(14)} />
-                      <HStack px={ms(14)}>
-                        <Text flex="1" fontWeight="medium">
-                          {t('labels')}
-                        </Text>
-                        {renderLabels(task?.labels[0])}
-                      </HStack>
-                      <Divider my={ms(14)} />
-                      <HStack px={ms(14)}>
-                        <Text flex="1" fontWeight="medium">
-                          {t('scheduledDate')}
-                        </Text>
-                        <Text>
-                          {task?.deadline
-                            ? moment(task?.deadline).format('D MMM YYYY')
-                            : t('notSet')}
-                        </Text>
-                      </HStack>
+                      {task?.deadline ? (
+                        <>
+                          <Divider my={ms(14)} />
+                          <HStack px={ms(14)}>
+                            <Text flex="1" fontWeight="medium">
+                              {t('scheduledDate')}
+                            </Text>
+                            <Text>
+                              {moment(task?.deadline).format('D MMM YYYY')}
+                            </Text>
+                          </HStack>
+                        </>
+                      ) : null}
                     </Box>
                   </Box>
                 </TouchableOpacity>
@@ -212,6 +192,28 @@ const TechnicalTasksList = ({navigation, route}: Props) => {
             })
           : null}
       </ScrollView>
+      <Box bg={Colors.white}>
+        <Shadow
+          viewStyle={{
+            width: '100%',
+          }}
+        >
+          <Button
+            bg={Colors.primary}
+            leftIcon={<Icon as={Ionicons} name="add" size="sm" />}
+            m={ms(16)}
+            onPress={() =>
+              navigation.navigate('AddEditTechnicalTask', {
+                method: 'add',
+                category,
+                vesselId,
+              })
+            }
+          >
+            {t('addATask')}
+          </Button>
+        </Shadow>
+      </Box>
     </Box>
   )
 }
