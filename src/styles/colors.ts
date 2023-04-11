@@ -30,4 +30,5 @@ export const Colors = {
   offlineWarning: '#F85555',
   dark_blue: '#397493',
   light_blue: '#D9EDF7',
+  dark_green: '#5B9570',
 }
