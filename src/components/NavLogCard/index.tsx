@@ -24,6 +24,7 @@ export const NavLogCard = (props: {
   navigationLog: NavigationLog
   defineFirstAndLastIndex: any[]
   itemColor: string
+  lastScreen: StringOrNull
 }) => {
   const {t} = useTranslation()
   const navigation =
@@ -261,7 +262,9 @@ export const NavLogCard = (props: {
             : null}
         </Box>
         {/* End of Header */}
-        {navigationLog?.type?.title === 'Loading/Unloading' && (
+
+        {navigationLog?.type?.title === 'Loading/Unloading' &&
+        props?.lastScreen === 'planning' ? (
           <Box
             borderWidth={
               navigationLog.isActive ||
@@ -338,7 +341,7 @@ export const NavLogCard = (props: {
               </Box>
             </HStack>
           </Box>
-        )}
+        ) : null}
       </Box>
     </TouchableOpacity>
   )
