@@ -369,6 +369,7 @@ export default function Map({navigation}: Props) {
           longitude: Number(longitude),
         }}
         anchor={{x: 0, y: 0.2}}
+        tracksViewChanges={false}
         zIndex={1}
       >
         {rotate ? (
