@@ -261,83 +261,84 @@ export const NavLogCard = (props: {
             : null}
         </Box>
         {/* End of Header */}
-
-        <Box
-          borderWidth={
-            navigationLog.isActive ||
-            (!_.isNull(navigationLog.startActionDatetime) &&
-              _.isNull(navigationLog.endActionDate))
-              ? null
-              : 3
-          }
-          borderColor={Colors.border}
-          borderStyle="dashed"
-          // mt={-3}
-          pt={3}
-          px={ms(14)}
-          py={ms(10)}
-        >
-          <HStack alignItems="center" mt={ms(5)}>
-            <Box flex="1">
-              {navigationLog?.bulkCargo.length > 0 &&
-                navigationLog?.bulkCargo.map((cargo: any, i: number) => {
-                  return (
-                    <HStack key={i} alignItems="center" mr={ms(5)}>
-                      <Text bold color={Colors.disabled}>
-                        {`(${Math.ceil(cargo?.tonnage)} MT) `}
-                      </Text>
-                      <Text
-                        bold
-                        color={Colors.highlighted_text}
-                        ellipsizeMode="tail"
-                        flex="1"
-                        numberOfLines={1}
-                      >
-                        {/* ${Math.ceil(cargo.actualTonnage)} MT -  */}
-                        {` ${
-                          cargo?.type?.nameEn !== null ||
-                          cargo?.type?.nameNl !== null
-                            ? cargo?.type?.nameEn || cargo?.type?.nameNl
-                            : t('unknown')
-                        }`}
-                      </Text>
-                      <Image
-                        alt="navlogs-tags"
-                        mx={ms(5)}
-                        resizeMode="contain"
-                        source={Icons.tags}
-                      />
-                    </HStack>
-                  )
-                })}
-              <HStack alignItems="center" mt={ms(5)}>
-                <Text bold color={Colors.highlighted_text}>
-                  {calculateTotalOut(navigationLog)} MT
-                </Text>
-                <Image
-                  alt="triple-arrow-navlogs"
-                  mx={ms(5)}
-                  resizeMode="contain"
-                  source={Icons.triple_arrow}
-                />
-                <Text bold color={Colors.highlighted_text}>
-                  {calculateTotalIn(navigationLog)} MT
-                </Text>
-              </HStack>
-            </Box>
-            <Box alignItems="center">
-              <NavigationLogType navigationLog={navigationLog} />
-              {navigationLog.actionType === 'Cleaning' ? null : (
-                <Text bold color={Colors.azure} fontSize={ms(15)} mt={ms(5)}>
-                  {navigationLog?.bulkCargo[0]?.actualTonnage
-                    ? Math.ceil(navigationLog?.bulkCargo[0]?.actualTonnage)
-                    : 0}{' '}
-                  MT
-                </Text>
-              )}
-            </Box>
-          </HStack>
-        </Box>
+        {navigationLog?.type?.title === 'Loading/Unloading' && (
+          <Box
+            borderWidth={
+              navigationLog.isActive ||
+              (!_.isNull(navigationLog.startActionDatetime) &&
+                _.isNull(navigationLog.endActionDate))
+                ? null
+                : 3
+            }
+            borderColor={Colors.border}
+            borderStyle="dashed"
+            // mt={-3}
+            pt={3}
+            px={ms(14)}
+            py={ms(10)}
+          >
+            <HStack alignItems="center" mt={ms(5)}>
+              <Box flex="1">
+                {navigationLog?.bulkCargo.length > 0 &&
+                  navigationLog?.bulkCargo.map((cargo: any, i: number) => {
+                    return (
+                      <HStack key={i} alignItems="center" mr={ms(5)}>
+                        <Text bold color={Colors.disabled}>
+                          {`(${Math.ceil(cargo?.tonnage)} MT) `}
+                        </Text>
+                        <Text
+                          bold
+                          color={Colors.highlighted_text}
+                          ellipsizeMode="tail"
+                          flex="1"
+                          numberOfLines={1}
+                        >
+                          {/* ${Math.ceil(cargo.actualTonnage)} MT -  */}
+                          {` ${
+                            cargo?.type?.nameEn !== null ||
+                            cargo?.type?.nameNl !== null
+                              ? cargo?.type?.nameEn || cargo?.type?.nameNl
+                              : t('unknown')
+                          }`}
+                        </Text>
+                        <Image
+                          alt="navlogs-tags"
+                          mx={ms(5)}
+                          resizeMode="contain"
+                          source={Icons.tags}
+                        />
+                      </HStack>
+                    )
+                  })}
+                <HStack alignItems="center" mt={ms(5)}>
+                  <Text bold color={Colors.highlighted_text}>
+                    {calculateTotalOut(navigationLog)} MT
+                  </Text>
+                  <Image
+                    alt="triple-arrow-navlogs"
+                    mx={ms(5)}
+                    resizeMode="contain"
+                    source={Icons.triple_arrow}
+                  />
+                  <Text bold color={Colors.highlighted_text}>
+                    {calculateTotalIn(navigationLog)} MT
+                  </Text>
+                </HStack>
+              </Box>
+              <Box alignItems="center">
+                <NavigationLogType navigationLog={navigationLog} />
+                {navigationLog.actionType === 'Cleaning' ? null : (
+                  <Text bold color={Colors.azure} fontSize={ms(15)} mt={ms(5)}>
+                    {navigationLog?.bulkCargo[0]?.actualTonnage
+                      ? Math.ceil(navigationLog?.bulkCargo[0]?.actualTonnage)
+                      : 0}{' '}
+                    MT
+                  </Text>
+                )}
+              </Box>
+            </HStack>
+          </Box>
+        )}
       </Box>
     </TouchableOpacity>
   )
