@@ -1,10 +1,14 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useState} from 'react'
-import {RefreshControl, TouchableOpacity} from 'react-native'
+import {RefreshControl, StyleSheet, TouchableOpacity} from 'react-native'
 import {Box, Center, HStack, Image, ScrollView, Text} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import moment, {Moment} from 'moment'
 import {useNavigation} from '@react-navigation/native'
 import {useTranslation} from 'react-i18next'
+import Svg, {Circle} from 'react-native-svg'
+import _ from 'lodash'
+import {NativeStackNavigationProp} from '@react-navigation/native-stack'
 
 import {Colors} from '@bluecentury/styles'
 import {Icons} from '@bluecentury/assets'
@@ -14,8 +18,13 @@ import {
   calculateTotalOut,
   formatLocationLabel,
 } from '@bluecentury/constants'
-import {LoadingAnimated, NavigationLogType} from '@bluecentury/components'
+import {
+  LoadingAnimated,
+  NavigationLogType,
+  Blink,
+} from '@bluecentury/components'
 import {BulkCargo, NavigationLog} from '@bluecentury/models'
+import {RootStackParamList} from '@bluecentury/types/nav.types'
 
 interface INavlogCard {
   navigationLog: NavigationLog | null
@@ -24,7 +33,8 @@ interface INavlogCard {
 }
 const HistoryLogbook = () => {
   const {t} = useTranslation()
-  const navigation = useNavigation()
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>()
   const {
     isPlanningLoading,
     historyNavigationLogs,
@@ -132,6 +142,11 @@ const HistoryLogbook = () => {
       navigationLog?.cargoType
     )
 
+    const isOngoing =
+      navigationLog?.isActive &&
+      !_.isNull(navigationLog.startActionDatetime) &&
+      _.isNull(navigationLog.endActionDatetime)
+
     return (
       <Box key={navigationLog?.id}>
         {dateChanged && (
@@ -147,9 +162,13 @@ const HistoryLogbook = () => {
             </Text>
           </Box>
         )}
+
         <TouchableOpacity
+          style={{
+            marginBottom: 14,
+            paddingHorizontal: 2,
+          }}
           activeOpacity={0.7}
-          style={{marginBottom: 14}}
           onPress={() =>
             navigation.navigate('PlanningDetails', {
               navlog: navigationLog,
@@ -157,8 +176,13 @@ const HistoryLogbook = () => {
             })
           }
         >
-          <Box borderRadius={ms(5)} overflow="hidden">
+          <Box
+            borderRadius={ms(5)}
+            overflow="hidden"
+            style={isOngoing ? styles.navLogActiveItem : null}
+          >
             {/* Navlog Header */}
+
             <Box
               backgroundColor={
                 navigationLog?.isActive ? Colors.secondary : Colors.border
@@ -166,13 +190,34 @@ const HistoryLogbook = () => {
               px={ms(16)}
               py={ms(10)}
             >
-              <Text
-                bold
-                color={navigationLog?.isActive ? Colors.white : Colors.text}
-                fontSize={ms(15)}
-              >
-                {formatLocationLabel(navigationLog?.location)}
-              </Text>
+              <HStack alignItems="center">
+                <Text
+                  bold
+                  color={navigationLog?.isActive ? Colors.white : Colors.text}
+                  flex="1"
+                  fontSize={ms(15)}
+                >
+                  {formatLocationLabel(navigationLog?.location)}
+                </Text>
+                {isOngoing ? (
+                  <HStack alignItems="center">
+                    <Text color={Colors.secondary} fontSize={ms(12)} mr={1}>
+                      Ongoing
+                    </Text>
+                    <Blink duration={800}>
+                      <Svg height="10" viewBox="0 0 100 100" width="10">
+                        <Circle
+                          cx="50"
+                          cy="50"
+                          fill={Colors.secondary}
+                          fillOpacity="1"
+                          r="50"
+                        />
+                      </Svg>
+                    </Blink>
+                  </HStack>
+                ) : null}
+              </HStack>
               <Text
                 color={navigationLog?.isActive ? Colors.white : '#23475C'}
                 fontWeight="medium"
@@ -185,7 +230,7 @@ const HistoryLogbook = () => {
               <Box
                 borderColor={Colors.border}
                 borderStyle="dashed"
-                borderWidth={3}
+                borderWidth={isOngoing ? null : 3}
                 mt={-3}
                 pt={3}
                 px={ms(16)}
@@ -341,5 +386,13 @@ const HistoryLogbook = () => {
     </Box>
   )
 }
+
+const styles = StyleSheet.create({
+  navLogActiveItem: {
+    borderColor: Colors.secondary,
+    borderWidth: 3,
+    borderRadius: ms(8),
+  },
+})
 
 export default HistoryLogbook
