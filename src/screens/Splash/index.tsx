@@ -4,18 +4,19 @@ import {Box, Center, Image} from 'native-base'
 import {Images} from '@bluecentury/assets'
 import {useAuth, useEntity, useSettings} from '@bluecentury/stores'
 // import {} from '@bluecentury/utils'
-import {
-  CommonActions,
-  NavigationProp,
-  useNavigation,
-} from '@react-navigation/native'
+import {CommonActions, useNavigation} from '@react-navigation/native'
 import {resetAllStates} from '@bluecentury/utils'
+import {RootStackParamList} from '@bluecentury/types/nav.types'
+import {NativeStackNavigationProp} from '@react-navigation/native-stack'
 
 export default function Splash() {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>()
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>()
   const {hasAuthHydrated, token, setUser} = useAuth(state => state)
   const {hasEntityHydrated, entityId} = useEntity(state => state)
-  const {hasSettingsRehydrated, apiUrl, setEnv, isRemainLoggedIn} = useSettings(state => state)
+  const {hasSettingsRehydrated, apiUrl, setEnv, rememberMe} = useSettings(
+    state => state
+  )
   useEffect(() => {
     if (hasSettingsRehydrated) {
       console.log('apiUrl ', apiUrl)
@@ -23,7 +24,7 @@ export default function Splash() {
         console.log('setting default env to PROD')
         setEnv('PROD')
       }
-      if (!isRemainLoggedIn) {
+      if (!rememberMe) {
         setUser({
           token: undefined,
           refreshToken: undefined,
@@ -55,10 +56,16 @@ export default function Splash() {
       )
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasAuthHydrated, hasEntityHydrated, hasSettingsRehydrated, token, entityId])
+  }, [
+    hasAuthHydrated,
+    hasEntityHydrated,
+    hasSettingsRehydrated,
+    token,
+    entityId,
+  ])
 
   return (
-    <Box flex="1" justifyContent="center" safeArea>
+    <Box safeArea flex="1" justifyContent="center">
       <Center>
         <Image alt="Company Logo" source={Images.logo} />
         <ActivityIndicator size="small" />

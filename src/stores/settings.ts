@@ -9,7 +9,7 @@ import {useEntity} from '@bluecentury/stores/entity'
 type TEnv = keyof typeof Environments
 
 type SettingsState = {
-  isRemainLoggedIn: boolean
+  rememberMe: boolean
   env: string | undefined
   apiUrl: string | undefined
   isDarkMode: boolean
@@ -26,7 +26,7 @@ type SettingsActions = {
   setLanguage: (lang: string) => void
   setIsMobileTracking: (val: boolean) => void
   setHasHydrated: (val: boolean) => void
-  setIsRemainLoggedIn: (isRemainLoggedIn: boolean) => void
+  setRememberMe: (rememberMe: boolean) => void
   setIsQrScanner: (val: boolean) => void
   setIsOnline: (val: boolean) => void
 }
@@ -36,7 +36,7 @@ type SettingsStore = SettingsState & SettingsActions
 export const useSettings = create(
   persist<SettingsStore>(
     set => ({
-      isRemainLoggedIn: true,
+      rememberMe: true,
       env: undefined,
       apiUrl: undefined,
       isDarkMode: false,
@@ -70,8 +70,8 @@ export const useSettings = create(
           apiUrl: url,
         })
       },
-      setIsRemainLoggedIn: isRemainLoggedIn => {
-        set({isRemainLoggedIn: isRemainLoggedIn})
+      setRememberMe: rememberMe => {
+        set({rememberMe: rememberMe})
       },
       setHasHydrated: val => {
         set({hasSettingsRehydrated: val})
