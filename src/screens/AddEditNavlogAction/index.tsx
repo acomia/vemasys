@@ -354,7 +354,6 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
     const newArr = navActionDetails.cargoHoldActions
     newArr[0].amount = val.replace(',', '.')
     setNavActionDetails({...navActionDetails, cargoHoldActions: newArr})
-    setDidValueChange(initialDidValueChange)
   }
 
   const onDatesChange = (date: Date) => {
@@ -554,10 +553,9 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
             >
               {t('cancel')}
             </Button>
-
             <Button
               bg={unsavedChanges.length ? Colors.primary : Colors.disabled}
-              disabled={!!unsavedChanges.length}
+              disabled={unsavedChanges.length < 1}
               flex="1"
               m={ms(16)}
               onPress={() => confirmSave()}
