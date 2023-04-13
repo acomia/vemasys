@@ -503,34 +503,34 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
             }}
           />
         </ScrollView>
+        <Box bg={Colors.white}>
+          <Shadow
+            viewStyle={{
+              width: '100%',
+            }}
+          >
+            <HStack>
+              <Button
+                colorScheme="muted"
+                flex="1"
+                m={ms(16)}
+                variant="ghost"
+                onPress={() => navigation.goBack()}
+              >
+                {t('cancel')}
+              </Button>
+              <Button
+                bg={Colors.primary}
+                flex="1"
+                m={ms(16)}
+                onPress={() => confirmSave()}
+              >
+                {t('save')}
+              </Button>
+            </HStack>
+          </Shadow>
+        </Box>
       </KeyboardAvoidingView>
-      <Box bg={Colors.white}>
-        <Shadow
-          viewStyle={{
-            width: '100%',
-          }}
-        >
-          <HStack>
-            <Button
-              colorScheme="muted"
-              flex="1"
-              m={ms(16)}
-              variant="ghost"
-              onPress={() => navigation.goBack()}
-            >
-              {t('cancel')}
-            </Button>
-            <Button
-              bg={Colors.primary}
-              flex="1"
-              m={ms(16)}
-              onPress={() => confirmSave()}
-            >
-              {t('save')}
-            </Button>
-          </HStack>
-        </Shadow>
-      </Box>
       <Modal
         animationPreset="slide"
         isOpen={confirmModal}
