@@ -431,7 +431,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
           lg: 'xs',
         }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={ms(150)}
+        // keyboardVerticalOffset={ms(150)}
       >
         <ScrollView
           automaticallyAdjustKeyboardInsets={true}
