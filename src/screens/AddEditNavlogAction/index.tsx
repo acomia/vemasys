@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {TouchableOpacity} from 'react-native'
+import {TouchableOpacity, Platform} from 'react-native'
 import {
   Box,
   Button,
@@ -425,18 +425,18 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
   return (
     <Box flex="1">
       <NoInternetConnectionMessage />
-      <ScrollView
-        bg={Colors.white}
-        contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
-        px={ms(12)}
-        py={ms(20)}
+      <KeyboardAvoidingView
+        h={{
+          base: '100%',
+          lg: 'auto',
+        }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <KeyboardAvoidingView
-          h={{
-            base: '100%',
-            lg: 'auto',
-          }}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        <ScrollView
+          bg={Colors.white}
+          contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
+          px={ms(12)}
+          py={ms(20)}
         >
           <Text bold color={Colors.azure} fontSize={ms(20)}>
             {actionType} {t('action')}
@@ -502,8 +502,8 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
               onDatesChange(date)
             }}
           />
-        </KeyboardAvoidingView>
-      </ScrollView>
+        </ScrollView>
+      </KeyboardAvoidingView>
       <Box bg={Colors.white}>
         <Shadow
           viewStyle={{
