@@ -12,6 +12,7 @@ import {
   Select,
   Text,
   useToast,
+  KeyboardAvoidingView,
 } from 'native-base'
 import {Shadow} from 'react-native-shadow-2'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
@@ -29,7 +30,11 @@ import DatePicker from 'react-native-date-picker'
 import {Colors} from '@bluecentury/styles'
 import {usePlanning} from '@bluecentury/stores'
 import {formatBulkTypeLabel, titleCase} from '@bluecentury/constants'
-import {IconButton, LoadingAnimated, NoInternetConnectionMessage} from '@bluecentury/components'
+import {
+  IconButton,
+  LoadingAnimated,
+  NoInternetConnectionMessage,
+} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {Vemasys} from '@bluecentury/helpers'
 import {useTranslation} from 'react-i18next'
@@ -426,67 +431,78 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
         px={ms(12)}
         py={ms(20)}
       >
-        <Text bold color={Colors.azure} fontSize={ms(20)}>
-          {actionType} {t('action')}
-        </Text>
-
-        <Divider my={ms(10)} />
-        <Text color={Colors.disabled} fontWeight="medium">
-          {t('action')}
-        </Text>
-        {/* {renderActionsType()} */}
-        {renderActionType()}
-        <Text color={Colors.disabled} fontWeight="medium">
-          {t('startText')}
-        </Text>
-        <DatetimePicker
-          color={Colors.secondary}
-          date={navActionDetails.start}
-          onChangeDate={() => {
-            setSelectedDate('start')
-            setOpenDatePicker(true)
+        <KeyboardAvoidingView
+          h={{
+            base: '100%',
+            lg: 'auto',
           }}
-        />
-        <Animated.View
-          style={[{opacity: dateTimeHeight.value > 0 ? 1 : 0}, reanimatedStyle]}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
+          <Text bold color={Colors.azure} fontSize={ms(20)}>
+            {actionType} {t('action')}
+          </Text>
+
+          <Divider my={ms(10)} />
           <Text color={Colors.disabled} fontWeight="medium">
-            {t('estimatedEnd')}
+            {t('action')}
+          </Text>
+          {/* {renderActionsType()} */}
+          {renderActionType()}
+          <Text color={Colors.disabled} fontWeight="medium">
+            {t('startText')}
           </Text>
           <DatetimePicker
-            color={Colors.azure}
-            date={navActionDetails.estimatedEnd}
+            color={Colors.secondary}
+            date={navActionDetails.start}
             onChangeDate={() => {
-              setSelectedDate('estimated')
+              setSelectedDate('start')
               setOpenDatePicker(true)
             }}
           />
-          <Text color={Colors.disabled} fontWeight="medium">
-            {t('endText')}
-          </Text>
-          <DatetimePicker
-            color={Colors.danger}
-            date={navActionDetails.end}
-            onChangeDate={() => {
-              setSelectedDate('end')
-              setOpenDatePicker(true)
+          <Animated.View
+            style={[
+              {opacity: dateTimeHeight.value > 0 ? 1 : 0},
+              reanimatedStyle,
+            ]}
+          >
+            <Text color={Colors.disabled} fontWeight="medium">
+              {t('estimatedEnd')}
+            </Text>
+            <DatetimePicker
+              color={Colors.azure}
+              date={navActionDetails.estimatedEnd}
+              onChangeDate={() => {
+                setSelectedDate('estimated')
+                setOpenDatePicker(true)
+              }}
+            />
+            <Text color={Colors.disabled} fontWeight="medium">
+              {t('endText')}
+            </Text>
+            <DatetimePicker
+              color={Colors.danger}
+              date={navActionDetails.end}
+              onChangeDate={() => {
+                setSelectedDate('end')
+                setOpenDatePicker(true)
+              }}
+            />
+          </Animated.View>
+          {actionType === 'Cleaning' ? null : renderCargoHoldActions()}
+          <DatePicker
+            modal
+            date={new Date()}
+            mode="datetime"
+            open={openDatePicker}
+            onCancel={() => {
+              setOpenDatePicker(false)
+            }}
+            onConfirm={date => {
+              setOpenDatePicker(false)
+              onDatesChange(date)
             }}
           />
-        </Animated.View>
-        {actionType === 'Cleaning' ? null : renderCargoHoldActions()}
-        <DatePicker
-          modal
-          date={new Date()}
-          mode="datetime"
-          open={openDatePicker}
-          onCancel={() => {
-            setOpenDatePicker(false)
-          }}
-          onConfirm={date => {
-            setOpenDatePicker(false)
-            onDatesChange(date)
-          }}
-        />
+        </KeyboardAvoidingView>
       </ScrollView>
       <Box bg={Colors.white}>
         <Shadow
