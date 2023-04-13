@@ -12,7 +12,6 @@ import {
   Select,
   Text,
   useToast,
-  KeyboardAvoidingView,
 } from 'native-base'
 import {Shadow} from 'react-native-shadow-2'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
@@ -425,112 +424,104 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
   return (
     <Box flex="1">
       <NoInternetConnectionMessage />
-      <KeyboardAvoidingView
-        h={{
-          base: '100%',
-          lg: 'auto',
-        }}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      <ScrollView
+        automaticallyAdjustKeyboardInsets={true}
+        bg={Colors.white}
+        contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
+        px={ms(12)}
+        py={ms(20)}
       >
-        <ScrollView
-          bg={Colors.white}
-          contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
-          px={ms(12)}
-          py={ms(20)}
-        >
-          <Text bold color={Colors.azure} fontSize={ms(20)}>
-            {actionType} {t('action')}
-          </Text>
+        <Text bold color={Colors.azure} fontSize={ms(20)}>
+          {actionType} {t('action')}
+        </Text>
 
-          <Divider my={ms(10)} />
+        <Divider my={ms(10)} />
+        <Text color={Colors.disabled} fontWeight="medium">
+          {t('action')}
+        </Text>
+        {/* {renderActionsType()} */}
+        {renderActionType()}
+        <Text color={Colors.disabled} fontWeight="medium">
+          {t('startText')}
+        </Text>
+        <DatetimePicker
+          color={Colors.secondary}
+          date={navActionDetails.start}
+          onChangeDate={() => {
+            setSelectedDate('start')
+            setOpenDatePicker(true)
+          }}
+        />
+        <Animated.View
+          style={[{opacity: dateTimeHeight.value > 0 ? 1 : 0}, reanimatedStyle]}
+        >
           <Text color={Colors.disabled} fontWeight="medium">
-            {t('action')}
-          </Text>
-          {/* {renderActionsType()} */}
-          {renderActionType()}
-          <Text color={Colors.disabled} fontWeight="medium">
-            {t('startText')}
+            {t('estimatedEnd')}
           </Text>
           <DatetimePicker
-            color={Colors.secondary}
-            date={navActionDetails.start}
+            color={Colors.azure}
+            date={navActionDetails.estimatedEnd}
             onChangeDate={() => {
-              setSelectedDate('start')
+              setSelectedDate('estimated')
               setOpenDatePicker(true)
             }}
           />
-          <Animated.View
-            style={[
-              {opacity: dateTimeHeight.value > 0 ? 1 : 0},
-              reanimatedStyle,
-            ]}
-          >
-            <Text color={Colors.disabled} fontWeight="medium">
-              {t('estimatedEnd')}
-            </Text>
-            <DatetimePicker
-              color={Colors.azure}
-              date={navActionDetails.estimatedEnd}
-              onChangeDate={() => {
-                setSelectedDate('estimated')
-                setOpenDatePicker(true)
-              }}
-            />
-            <Text color={Colors.disabled} fontWeight="medium">
-              {t('endText')}
-            </Text>
-            <DatetimePicker
-              color={Colors.danger}
-              date={navActionDetails.end}
-              onChangeDate={() => {
-                setSelectedDate('end')
-                setOpenDatePicker(true)
-              }}
-            />
-          </Animated.View>
-          {actionType === 'Cleaning' ? null : renderCargoHoldActions()}
-          <DatePicker
-            modal
-            date={new Date()}
-            mode="datetime"
-            open={openDatePicker}
-            onCancel={() => {
-              setOpenDatePicker(false)
-            }}
-            onConfirm={date => {
-              setOpenDatePicker(false)
-              onDatesChange(date)
+          <Text color={Colors.disabled} fontWeight="medium">
+            {t('endText')}
+          </Text>
+          <DatetimePicker
+            color={Colors.danger}
+            date={navActionDetails.end}
+            onChangeDate={() => {
+              setSelectedDate('end')
+              setOpenDatePicker(true)
             }}
           />
-        </ScrollView>
-        <Box bg={Colors.white}>
-          <Shadow
-            viewStyle={{
-              width: '100%',
-            }}
-          >
-            <HStack>
-              <Button
-                colorScheme="muted"
-                flex="1"
-                m={ms(16)}
-                variant="ghost"
-                onPress={() => navigation.goBack()}
-              >
-                {t('cancel')}
-              </Button>
-              <Button
-                bg={Colors.primary}
-                flex="1"
-                m={ms(16)}
-                onPress={() => confirmSave()}
-              >
-                {t('save')}
-              </Button>
-            </HStack>
-          </Shadow>
-        </Box>
-      </KeyboardAvoidingView>
+        </Animated.View>
+        {actionType === 'Cleaning' ? null : renderCargoHoldActions()}
+        <DatePicker
+          modal
+          date={new Date()}
+          mode="datetime"
+          open={openDatePicker}
+          onCancel={() => {
+            setOpenDatePicker(false)
+          }}
+          onConfirm={date => {
+            setOpenDatePicker(false)
+            onDatesChange(date)
+          }}
+        />
+      </ScrollView>
+
+      <Box bg={Colors.white}>
+        <Shadow
+          viewStyle={{
+            width: '100%',
+          }}
+        >
+          <HStack>
+            <Button
+              colorScheme="muted"
+              flex="1"
+              m={ms(16)}
+              variant="ghost"
+              onPress={() => navigation.goBack()}
+            >
+              {t('cancel')}
+            </Button>
+            <Button
+              bg={Colors.primary}
+              flex="1"
+              m={ms(16)}
+              onPress={() => confirmSave()}
+            >
+              {t('save')}
+            </Button>
+          </HStack>
+        </Shadow>
+      </Box>
+
       <Modal
         animationPreset="slide"
         isOpen={confirmModal}
