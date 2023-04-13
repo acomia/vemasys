@@ -411,12 +411,7 @@ export default function Charters({navigation, route}: any) {
 
   const handleSingleTap = async () => {
     if (
-      signature &&
-      signatureLocation.width &&
-      signatureLocation.height &&
-      signatureLocation.x &&
-      signatureLocation.y &&
-      signatureLocation.page
+      signature
     ) {
       setIsDocumentSigning(true)
       setIsSignatureSampleOpen(false)
@@ -426,32 +421,36 @@ export default function Charters({navigation, route}: any) {
       )
       const pdfDoc = await PDFDocument.load(pdfArrayBuffer)
       const pages = pdfDoc.getPages()
-      const firstPage = pages[signatureLocation.page - 1]
+      const firstPage = pages[0]
 
       const signatureImage = await pdfDoc.embedPng(signArrBuf)
       if (Platform.OS === 'ios') {
         firstPage.drawImage(signatureImage, {
-          x:
-            (signatureLocation.width * (signatureLocation.x - 12)) /
-            Dimensions.get('window').width,
-          y:
-            signatureLocation.height -
-            (signatureLocation.height * (signatureLocation.y + 12)) / 540,
+          // x:
+          //   (signatureLocation.width * (signatureLocation.x - 12)) /
+          //   Dimensions.get('window').width,
+          // y:
+          //   signatureLocation.height -
+          //   (signatureLocation.height * (signatureLocation.y + 12)) / 540,
+          x: 20,
+          y: 20,
           width: 100,
           height: 100,
         })
       } else {
         firstPage.drawImage(signatureImage, {
-          x:
-            (firstPage.getWidth() * signatureLocation.x) /
-            signatureLocation.width,
-          y:
-            firstPage.getHeight() -
-            (firstPage.getHeight() * signatureLocation.y) /
-              signatureLocation.height -
-            25,
-          width: 50,
-          height: 50,
+          // x:
+          //   (firstPage.getWidth() * signatureLocation.x) /
+          //   signatureLocation.width,
+          // y:
+          //   firstPage.getHeight() -
+          //   (firstPage.getHeight() * signatureLocation.y) /
+          //     signatureLocation.height -
+          //   25,
+          x: 20,
+          y: 20,
+          width: 100,
+          height: 100,
         })
       }
 
@@ -665,18 +664,14 @@ export default function Charters({navigation, route}: any) {
               </Button>
               <Button
                 bg={Colors.primary}
-                onPress={() => setIsCharterAccepted(true)}
+                // onPress={() => setIsCharterAccepted(true)}
+                onPress={() => {
+                  setIsSignatureSampleOpen(true)
+                  setIsCharterAccepted(true)
+                }}
               >
                 {t('accept')}
               </Button>
-            </Box>
-          </Modal.Footer>
-        ) : !isPdfSigned ? (
-          <Modal.Footer bg={Colors.black}>
-            <Box alignItems="center" flex="1" h="68" px="34">
-              <Text bold color={Colors.white} fontSize="18" textAlign="center">
-                Tap anywhere on the document to sign
-              </Text>
             </Box>
           </Modal.Footer>
         ) : (
