@@ -278,7 +278,7 @@ export default function CharterDetails({navigation, route}: Props) {
     }
 
     return (
-      <VStack space={ms(10)}>
+      <VStack mb={ms(5)}>
         {itemData?.customerReference && (
           <Text bold color={Colors.azure} fontSize={ms(22)} textAlign="left">
             {itemData?.customerReference}
