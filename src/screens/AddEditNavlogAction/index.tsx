@@ -65,6 +65,19 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
   let cargoChoices: any = []
   let earliest: {start: string | number | Date} | null = null
 
+  const initialDidValueChange = {
+    start: {didUpdate: false},
+    estimated: {didUpdate: false},
+    end: {didUpdate: false},
+    amount: {didUpdate: false},
+  }
+
+  const [didValueChange, setDidValueChange] = useState(initialDidValueChange)
+
+  const unsavedChanges = Object.values(didValueChange).filter(
+    value => value.didUpdate === true
+  )
+
   const [navActionDetails, setNavActionDetails] = useState({
     type:
       navlogAction !== undefined ? titleCase(navlogAction.type) : actionType,
@@ -203,6 +216,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
 
   const onSuccess = () => {
     reset()
+    setDidValueChange(initialDidValueChange)
     getNavigationLogDetails(navigationLogDetails?.id)
     getNavigationLogActions(navigationLogDetails?.id)
     navigation.goBack()
@@ -326,7 +340,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
             bg={Colors.light_grey}
             fontSize={ms(15)}
             height={ms(40)}
-            keyboardType="number-pad"
+            keyboardType="decimal-pad"
             onBlur={() => Keyboard.dismiss()}
             onChangeText={val => onChangeAmount(val)}
           />
@@ -336,21 +350,31 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
   }
 
   const onChangeAmount = (val: string) => {
+    setDidValueChange({...didValueChange, amount: {didUpdate: true}})
     const newArr = navActionDetails.cargoHoldActions
     newArr[0].amount = val.replace(',', '.')
     setNavActionDetails({...navActionDetails, cargoHoldActions: newArr})
+    setDidValueChange(initialDidValueChange)
   }
 
   const onDatesChange = (date: Date) => {
     const formattedDate = Vemasys.formatDate(date)
-    if (selectedDate === 'start') {
-      dateTimeHeight.value = withTiming(190, {duration: 800})
-      dateTimeOpacity.value = withTiming(1)
-      setNavActionDetails({...navActionDetails, start: formattedDate})
-    } else if (selectedDate === 'estimated') {
-      setNavActionDetails({...navActionDetails, estimatedEnd: formattedDate})
-    } else {
-      setNavActionDetails({...navActionDetails, end: formattedDate})
+
+    switch (selectedDate) {
+      case 'start':
+        dateTimeHeight.value = withTiming(190, {duration: 800})
+        dateTimeOpacity.value = withTiming(1)
+        setNavActionDetails({...navActionDetails, start: formattedDate})
+        setDidValueChange({...didValueChange, start: {didUpdate: true}})
+        return
+      case 'estimated':
+        setNavActionDetails({...navActionDetails, estimatedEnd: formattedDate})
+        setDidValueChange({...didValueChange, estimated: {didUpdate: true}})
+        return
+      case 'end':
+        setNavActionDetails({...navActionDetails, end: formattedDate})
+        setDidValueChange({...didValueChange, end: {didUpdate: true}})
+        return
     }
   }
 
@@ -530,8 +554,10 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
             >
               {t('cancel')}
             </Button>
+
             <Button
-              bg={Colors.primary}
+              bg={unsavedChanges.length ? Colors.primary : Colors.disabled}
+              disabled={!!unsavedChanges.length}
               flex="1"
               m={ms(16)}
               onPress={() => confirmSave()}
