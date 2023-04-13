@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {TouchableOpacity, Platform} from 'react-native'
+import {TouchableOpacity, Platform, Keyboard} from 'react-native'
 import {
   Box,
   Button,
@@ -327,6 +327,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
             fontSize={ms(15)}
             height={ms(40)}
             keyboardType="number-pad"
+            onBlur={() => Keyboard.dismiss()}
             onChangeText={val => onChangeAmount(val)}
           />
         </Box>
@@ -431,7 +432,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
           lg: 'xs',
         }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        // keyboardVerticalOffset={ms(150)}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : ms(150)}
       >
         <ScrollView
           automaticallyAdjustKeyboardInsets={true}
