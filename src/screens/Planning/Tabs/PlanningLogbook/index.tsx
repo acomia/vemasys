@@ -194,6 +194,7 @@ const PlanningLogbook = () => {
                   defineFirstAndLastIndex={defineFirstAndLastIndex}
                   index={i}
                   itemColor={defineColour(navigationLog)}
+                  lastScreen="planning"
                   navigationLog={navigationLog}
                 />
                 {display && i === display ? <NavLogDivider /> : null}
