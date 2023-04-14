@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {TouchableOpacity, Platform, Keyboard} from 'react-native'
+import {TouchableOpacity, Keyboard} from 'react-native'
 import {
   Box,
   Button,
@@ -12,7 +12,6 @@ import {
   Select,
   Text,
   useToast,
-  KeyboardAvoidingView,
 } from 'native-base'
 import {Shadow} from 'react-native-shadow-2'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
@@ -449,21 +448,12 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
   return (
     <Box flex="1">
       <NoInternetConnectionMessage />
-      <KeyboardAvoidingView
-        h={{
-          base: '100%',
-          lg: 'xs',
-        }}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : ms(150)}
+      <ScrollView
+        automaticallyAdjustKeyboardInsets={true}
+        bg={Colors.white}
+        contentContainerStyle={{flexGrow: 1}}
       >
-        <ScrollView
-          automaticallyAdjustKeyboardInsets={true}
-          bg={Colors.white}
-          contentContainerStyle={{flexGrow: 1, paddingBottom: 70}}
-          px={ms(12)}
-          py={ms(20)}
-        >
+        <Box flex={1} px={ms(12)} py={ms(20)}>
           <Text bold color={Colors.azure} fontSize={ms(20)}>
             {actionType} {t('action')}
           </Text>
@@ -528,43 +518,36 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
               onDatesChange(date)
             }}
           />
-        </ScrollView>
-      </KeyboardAvoidingView>
-      <Box
-        alignItems={'center'}
-        bg={Colors.white}
-        bottom={0}
-        justifyContent={'center'}
-        position={'absolute'}
-        width={'100%'}
-      >
-        <Shadow
-          viewStyle={{
-            width: '100%',
-          }}
-        >
-          <HStack width={'100%'}>
-            <Button
-              colorScheme="muted"
-              flex="1"
-              m={ms(16)}
-              variant="ghost"
-              onPress={() => navigation.goBack()}
-            >
-              {t('cancel')}
-            </Button>
-            <Button
-              bg={unsavedChanges.length ? Colors.primary : Colors.disabled}
-              disabled={unsavedChanges.length < 1}
-              flex="1"
-              m={ms(16)}
-              onPress={() => confirmSave()}
-            >
-              {t('save')}
-            </Button>
-          </HStack>
-        </Shadow>
-      </Box>
+        </Box>
+        <Box bg={Colors.white}>
+          <Shadow
+            viewStyle={{
+              width: '100%',
+            }}
+          >
+            <HStack width={'100%'}>
+              <Button
+                colorScheme="muted"
+                flex="1"
+                m={ms(16)}
+                variant="ghost"
+                onPress={() => navigation.goBack()}
+              >
+                {t('cancel')}
+              </Button>
+              <Button
+                bg={unsavedChanges.length ? Colors.primary : Colors.disabled}
+                disabled={unsavedChanges.length < 1}
+                flex="1"
+                m={ms(16)}
+                onPress={() => confirmSave()}
+              >
+                {t('save')}
+              </Button>
+            </HStack>
+          </Shadow>
+        </Box>
+      </ScrollView>
 
       <Modal
         animationPreset="slide"
