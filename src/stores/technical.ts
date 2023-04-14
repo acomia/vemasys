@@ -258,8 +258,8 @@ export const useTechnical = create(
           )
           if (Array.isArray(response)) {
             set({
-              isTechnicalLoading: false,
               tasksByCategory: response,
+              isTechnicalLoading: false,
             })
           } else {
             set({
