@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {TouchableOpacity, Keyboard} from 'react-native'
+import {TouchableOpacity, Platform, Keyboard} from 'react-native'
 import {
   Box,
   Button,
@@ -12,6 +12,7 @@ import {
   Select,
   Text,
   useToast,
+  KeyboardAvoidingView,
 } from 'native-base'
 import {Shadow} from 'react-native-shadow-2'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
@@ -327,7 +328,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
             </Box>
           )}
         </Box>
-        <Box flex="1">
+        <Box bgColor={'blue'} flex="1">
           <Text color={Colors.disabled} fontWeight="medium" mb={ms(6)}>
             {t('amount')}
           </Text>
@@ -448,78 +449,93 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
   return (
     <Box flex="1">
       <NoInternetConnectionMessage />
-      <ScrollView
-        automaticallyAdjustKeyboardInsets={true}
-        bg={Colors.white}
-        contentContainerStyle={{flexGrow: 1}}
+      <KeyboardAvoidingView
+        h={{
+          base: '100%',
+          lg: 'auto',
+        }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        flex={1}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? ms(80) : ms(70)}
       >
-        <Box flex={1} px={ms(12)} py={ms(20)}>
-          <Text bold color={Colors.azure} fontSize={ms(20)}>
-            {actionType} {t('action')}
-          </Text>
+        <ScrollView
+          automaticallyAdjustKeyboardInsets={true}
+          bg={Colors.white}
+          bounces={false}
+          contentContainerStyle={{flexGrow: 1}}
+          flex={0.5}
+          keyboardShouldPersistTaps="handled"
+        >
+          <Box flex={1} px={ms(12)} py={ms(20)}>
+            <Text bold color={Colors.azure} fontSize={ms(20)}>
+              {actionType} {t('action')}
+            </Text>
 
-          <Divider my={ms(10)} />
-          <Text color={Colors.disabled} fontWeight="medium">
-            {t('action')}
-          </Text>
-          {/* {renderActionsType()} */}
-          {renderActionType()}
-          <Text color={Colors.disabled} fontWeight="medium">
-            {t('startText')}
-          </Text>
-          <DatetimePicker
-            color={Colors.secondary}
-            date={navActionDetails.start}
-            onChangeDate={() => {
-              setSelectedDate('start')
-              setOpenDatePicker(true)
-            }}
-          />
-          <Animated.View
-            style={[
-              {opacity: dateTimeHeight.value > 0 ? 1 : 0},
-              reanimatedStyle,
-            ]}
-          >
+            <Divider my={ms(10)} />
             <Text color={Colors.disabled} fontWeight="medium">
-              {t('estimatedEnd')}
+              {t('action')}
+            </Text>
+            {/* {renderActionsType()} */}
+            {renderActionType()}
+            <Text color={Colors.disabled} fontWeight="medium">
+              {t('startText')}
             </Text>
             <DatetimePicker
-              color={Colors.azure}
-              date={navActionDetails.estimatedEnd}
+              color={Colors.secondary}
+              date={navActionDetails.start}
               onChangeDate={() => {
-                setSelectedDate('estimated')
+                setSelectedDate('start')
                 setOpenDatePicker(true)
               }}
             />
-            <Text color={Colors.disabled} fontWeight="medium">
-              {t('endText')}
-            </Text>
-            <DatetimePicker
-              color={Colors.danger}
-              date={navActionDetails.end}
-              onChangeDate={() => {
-                setSelectedDate('end')
-                setOpenDatePicker(true)
+            <Animated.View
+              style={[
+                {opacity: dateTimeHeight.value > 0 ? 1 : 0},
+                reanimatedStyle,
+              ]}
+            >
+              <Text color={Colors.disabled} fontWeight="medium">
+                {t('estimatedEnd')}
+              </Text>
+              <DatetimePicker
+                color={Colors.azure}
+                date={navActionDetails.estimatedEnd}
+                onChangeDate={() => {
+                  setSelectedDate('estimated')
+                  setOpenDatePicker(true)
+                }}
+              />
+              <Text color={Colors.disabled} fontWeight="medium">
+                {t('endText')}
+              </Text>
+              <DatetimePicker
+                color={Colors.danger}
+                date={navActionDetails.end}
+                onChangeDate={() => {
+                  setSelectedDate('end')
+                  setOpenDatePicker(true)
+                }}
+              />
+            </Animated.View>
+            {actionType === 'Cleaning' ? null : renderCargoHoldActions()}
+            <DatePicker
+              modal
+              date={new Date()}
+              mode="datetime"
+              open={openDatePicker}
+              onCancel={() => {
+                setOpenDatePicker(false)
+              }}
+              onConfirm={date => {
+                setOpenDatePicker(false)
+                onDatesChange(date)
               }}
             />
-          </Animated.View>
-          {actionType === 'Cleaning' ? null : renderCargoHoldActions()}
-          <DatePicker
-            modal
-            date={new Date()}
-            mode="datetime"
-            open={openDatePicker}
-            onCancel={() => {
-              setOpenDatePicker(false)
-            }}
-            onConfirm={date => {
-              setOpenDatePicker(false)
-              onDatesChange(date)
-            }}
-          />
-        </Box>
-        <Box bg={Colors.white}>
+          </Box>
+        </ScrollView>
+
+        {/* <Box bottom={0} position={'absolute'} right={0} width={'100%'}> */}
+        <Box bgColor={Colors.white}>
           <Shadow
             viewStyle={{
               width: '100%',
@@ -547,7 +563,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
             </HStack>
           </Shadow>
         </Box>
-      </ScrollView>
+      </KeyboardAvoidingView>
 
       <Modal
         animationPreset="slide"
