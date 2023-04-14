@@ -43,7 +43,6 @@ import {
   RootStackParamList,
 } from '@bluecentury/types/nav.types'
 import {ExploitationVessel, NavigationLog} from '@bluecentury/models'
-import AnchorIcon from '@bluecentury/assets/icons/anchor.png'
 
 const {width, height} = Dimensions.get('window')
 const ASPECT_RATIO = width / height
