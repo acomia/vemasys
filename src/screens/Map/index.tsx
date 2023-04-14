@@ -43,6 +43,7 @@ import {
   RootStackParamList,
 } from '@bluecentury/types/nav.types'
 import {ExploitationVessel, NavigationLog} from '@bluecentury/models'
+import AnchorIcon from '@bluecentury/assets/icons/anchor.png'
 
 const {width, height} = Dimensions.get('window')
 const ASPECT_RATIO = width / height
@@ -381,11 +382,16 @@ export default function Map({navigation}: Props) {
             />
           </Box>
         ) : (
-          <Image
-            alt="map-anchor-img"
-            resizeMode="contain"
-            source={Icons.anchor}
-          />
+          <Box bgColor={Colors.white} borderRadius={50}>
+            <FontAwesome5Icon
+              style={{
+                padding: 7,
+              }}
+              color={Colors.azure}
+              name="anchor"
+              size={ms(15)}
+            />
+          </Box>
         )}
       </Marker>
     )
@@ -538,6 +544,7 @@ export default function Map({navigation}: Props) {
               (plan: NavigationLog) => plan.plannedEta !== null
             ) !== undefined &&
             renderMarkerFrom()}
+          {console.log('vesselStatus', vesselStatus)}
           {vesselStatus && renderMarkerVessel()}
           {plannedNavLogs?.length > 0 &&
             plannedNavLogs.find(
