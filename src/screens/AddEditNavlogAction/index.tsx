@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {TouchableOpacity} from 'react-native'
+import {TouchableOpacity, Platform, Keyboard} from 'react-native'
 import {
   Box,
   Button,
@@ -12,6 +12,7 @@ import {
   Select,
   Text,
   useToast,
+  KeyboardAvoidingView,
 } from 'native-base'
 import {Shadow} from 'react-native-shadow-2'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
@@ -29,7 +30,11 @@ import DatePicker from 'react-native-date-picker'
 import {Colors} from '@bluecentury/styles'
 import {usePlanning} from '@bluecentury/stores'
 import {formatBulkTypeLabel, titleCase} from '@bluecentury/constants'
-import {IconButton, LoadingAnimated, NoInternetConnectionMessage} from '@bluecentury/components'
+import {
+  IconButton,
+  LoadingAnimated,
+  NoInternetConnectionMessage,
+} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {Vemasys} from '@bluecentury/helpers'
 import {useTranslation} from 'react-i18next'
@@ -59,6 +64,19 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
 
   let cargoChoices: any = []
   let earliest: {start: string | number | Date} | null = null
+
+  const initialDidValueChange = {
+    start: {didUpdate: false},
+    estimated: {didUpdate: false},
+    end: {didUpdate: false},
+    amount: {didUpdate: false},
+  }
+
+  const [didValueChange, setDidValueChange] = useState(initialDidValueChange)
+
+  const unsavedChanges = Object.values(didValueChange).filter(
+    value => value.didUpdate === true
+  )
 
   const [navActionDetails, setNavActionDetails] = useState({
     type:
@@ -198,6 +216,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
 
   const onSuccess = () => {
     reset()
+    setDidValueChange(initialDidValueChange)
     getNavigationLogDetails(navigationLogDetails?.id)
     getNavigationLogActions(navigationLogDetails?.id)
     navigation.goBack()
@@ -321,7 +340,8 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
             bg={Colors.light_grey}
             fontSize={ms(15)}
             height={ms(40)}
-            keyboardType="number-pad"
+            keyboardType="decimal-pad"
+            onBlur={() => Keyboard.dismiss()}
             onChangeText={val => onChangeAmount(val)}
           />
         </Box>
@@ -330,6 +350,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
   }
 
   const onChangeAmount = (val: string) => {
+    setDidValueChange({...didValueChange, amount: {didUpdate: true}})
     const newArr = navActionDetails.cargoHoldActions
     newArr[0].amount = val.replace(',', '.')
     setNavActionDetails({...navActionDetails, cargoHoldActions: newArr})
@@ -337,14 +358,22 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
 
   const onDatesChange = (date: Date) => {
     const formattedDate = Vemasys.formatDate(date)
-    if (selectedDate === 'start') {
-      dateTimeHeight.value = withTiming(190, {duration: 800})
-      dateTimeOpacity.value = withTiming(1)
-      setNavActionDetails({...navActionDetails, start: formattedDate})
-    } else if (selectedDate === 'estimated') {
-      setNavActionDetails({...navActionDetails, estimatedEnd: formattedDate})
-    } else {
-      setNavActionDetails({...navActionDetails, end: formattedDate})
+
+    switch (selectedDate) {
+      case 'start':
+        dateTimeHeight.value = withTiming(190, {duration: 800})
+        dateTimeOpacity.value = withTiming(1)
+        setNavActionDetails({...navActionDetails, start: formattedDate})
+        setDidValueChange({...didValueChange, start: {didUpdate: true}})
+        return
+      case 'estimated':
+        setNavActionDetails({...navActionDetails, estimatedEnd: formattedDate})
+        setDidValueChange({...didValueChange, estimated: {didUpdate: true}})
+        return
+      case 'end':
+        setNavActionDetails({...navActionDetails, end: formattedDate})
+        setDidValueChange({...didValueChange, end: {didUpdate: true}})
+        return
     }
   }
 
@@ -420,81 +449,101 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
   return (
     <Box flex="1">
       <NoInternetConnectionMessage />
-      <ScrollView
-        bg={Colors.white}
-        contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
-        px={ms(12)}
-        py={ms(20)}
+      <KeyboardAvoidingView
+        h={{
+          base: '100%',
+          lg: 'xs',
+        }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : ms(150)}
       >
-        <Text bold color={Colors.azure} fontSize={ms(20)}>
-          {actionType} {t('action')}
-        </Text>
-
-        <Divider my={ms(10)} />
-        <Text color={Colors.disabled} fontWeight="medium">
-          {t('action')}
-        </Text>
-        {/* {renderActionsType()} */}
-        {renderActionType()}
-        <Text color={Colors.disabled} fontWeight="medium">
-          {t('startText')}
-        </Text>
-        <DatetimePicker
-          color={Colors.secondary}
-          date={navActionDetails.start}
-          onChangeDate={() => {
-            setSelectedDate('start')
-            setOpenDatePicker(true)
-          }}
-        />
-        <Animated.View
-          style={[{opacity: dateTimeHeight.value > 0 ? 1 : 0}, reanimatedStyle]}
+        <ScrollView
+          automaticallyAdjustKeyboardInsets={true}
+          bg={Colors.white}
+          contentContainerStyle={{flexGrow: 1, paddingBottom: 70}}
+          px={ms(12)}
+          py={ms(20)}
         >
+          <Text bold color={Colors.azure} fontSize={ms(20)}>
+            {actionType} {t('action')}
+          </Text>
+
+          <Divider my={ms(10)} />
           <Text color={Colors.disabled} fontWeight="medium">
-            {t('estimatedEnd')}
+            {t('action')}
+          </Text>
+          {/* {renderActionsType()} */}
+          {renderActionType()}
+          <Text color={Colors.disabled} fontWeight="medium">
+            {t('startText')}
           </Text>
           <DatetimePicker
-            color={Colors.azure}
-            date={navActionDetails.estimatedEnd}
+            color={Colors.secondary}
+            date={navActionDetails.start}
             onChangeDate={() => {
-              setSelectedDate('estimated')
+              setSelectedDate('start')
               setOpenDatePicker(true)
             }}
           />
-          <Text color={Colors.disabled} fontWeight="medium">
-            {t('endText')}
-          </Text>
-          <DatetimePicker
-            color={Colors.danger}
-            date={navActionDetails.end}
-            onChangeDate={() => {
-              setSelectedDate('end')
-              setOpenDatePicker(true)
+          <Animated.View
+            style={[
+              {opacity: dateTimeHeight.value > 0 ? 1 : 0},
+              reanimatedStyle,
+            ]}
+          >
+            <Text color={Colors.disabled} fontWeight="medium">
+              {t('estimatedEnd')}
+            </Text>
+            <DatetimePicker
+              color={Colors.azure}
+              date={navActionDetails.estimatedEnd}
+              onChangeDate={() => {
+                setSelectedDate('estimated')
+                setOpenDatePicker(true)
+              }}
+            />
+            <Text color={Colors.disabled} fontWeight="medium">
+              {t('endText')}
+            </Text>
+            <DatetimePicker
+              color={Colors.danger}
+              date={navActionDetails.end}
+              onChangeDate={() => {
+                setSelectedDate('end')
+                setOpenDatePicker(true)
+              }}
+            />
+          </Animated.View>
+          {actionType === 'Cleaning' ? null : renderCargoHoldActions()}
+          <DatePicker
+            modal
+            date={new Date()}
+            mode="datetime"
+            open={openDatePicker}
+            onCancel={() => {
+              setOpenDatePicker(false)
+            }}
+            onConfirm={date => {
+              setOpenDatePicker(false)
+              onDatesChange(date)
             }}
           />
-        </Animated.View>
-        {actionType === 'Cleaning' ? null : renderCargoHoldActions()}
-        <DatePicker
-          modal
-          date={new Date()}
-          mode="datetime"
-          open={openDatePicker}
-          onCancel={() => {
-            setOpenDatePicker(false)
-          }}
-          onConfirm={date => {
-            setOpenDatePicker(false)
-            onDatesChange(date)
-          }}
-        />
-      </ScrollView>
-      <Box bg={Colors.white}>
+        </ScrollView>
+      </KeyboardAvoidingView>
+      <Box
+        alignItems={'center'}
+        bg={Colors.white}
+        bottom={0}
+        justifyContent={'center'}
+        position={'absolute'}
+        width={'100%'}
+      >
         <Shadow
           viewStyle={{
             width: '100%',
           }}
         >
-          <HStack>
+          <HStack width={'100%'}>
             <Button
               colorScheme="muted"
               flex="1"
@@ -505,7 +554,8 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
               {t('cancel')}
             </Button>
             <Button
-              bg={Colors.primary}
+              bg={unsavedChanges.length ? Colors.primary : Colors.disabled}
+              disabled={unsavedChanges.length < 1}
               flex="1"
               m={ms(16)}
               onPress={() => confirmSave()}
@@ -515,6 +565,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
           </HStack>
         </Shadow>
       </Box>
+
       <Modal
         animationPreset="slide"
         isOpen={confirmModal}
