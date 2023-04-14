@@ -544,7 +544,6 @@ export default function Map({navigation}: Props) {
               (plan: NavigationLog) => plan.plannedEta !== null
             ) !== undefined &&
             renderMarkerFrom()}
-          {console.log('vesselStatus', vesselStatus)}
           {vesselStatus && renderMarkerVessel()}
           {plannedNavLogs?.length > 0 &&
             plannedNavLogs.find(
