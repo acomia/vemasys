@@ -4,8 +4,14 @@ enum FileType {
 }
 
 type File = {
-  '@id'?: string
-  description?: string
-  id?: string
+  // '@id'?: string
+  // description?: string
+  // id?: string
+  // path: string
+  id: number
   path: string
+  description: string
+  uploadedTime: Date
+  lastModification: Date
+  type: object | null
 }

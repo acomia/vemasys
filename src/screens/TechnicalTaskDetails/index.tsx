@@ -9,8 +9,9 @@ import {
   Divider,
   HStack,
   Icon,
+  Image,
+  Modal,
   ScrollView,
-  Select,
   Text,
   useToast,
 } from 'native-base'
@@ -18,8 +19,6 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import moment from 'moment'
 import {ms} from 'react-native-size-matters'
 import Ionicons from 'react-native-vector-icons/Ionicons'
-import _ from 'lodash'
-
 import {
   IconButton,
   LoadingAnimated,
@@ -31,18 +30,18 @@ import {PROD_URL} from '@vemasys/env'
 import {
   hasSelectedEntityUserPermission,
   ROLE_PERMISSION_TASK_MANAGE,
-  VEMASYS_PRODUCTION_FILE_URL,
 } from '@bluecentury/constants'
 import {useEntity, useTechnical} from '@bluecentury/stores'
 import {useTranslation} from 'react-i18next'
-import {API} from '@bluecentury/api/apiService'
+import * as ImagePicker from 'react-native-image-picker'
+import {RootStackParamList} from '@bluecentury/types/nav.types'
 
 interface ICommentCard {
   comment: Comment
   commentDescription: string
 }
 
-type Props = NativeStackScreenProps<RootStackParamList>
+type Props = NativeStackScreenProps<RootStackParamList, 'TechnicalTaskDetails'>
 const TechnicalTaskDetails = ({navigation, route}: Props) => {
   const {t} = useTranslation()
   const {task, category} = route.params
@@ -53,11 +52,11 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
     getVesselTasksByCategory,
     updateVesselTask,
     getVesselTasksCategory,
-    isPartTypeLoading,
     vesselPartType,
     getVesselPartType,
     getVesselTaskDetails,
     taskDetails,
+    uploadFileBySubject,
   } = useTechnical()
   const hasTaskPermission = hasSelectedEntityUserPermission(
     selectedEntity,
@@ -74,6 +73,19 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
   //   {value: 'cancel', label: 'Cancel'},
   // ]
   const [flaggedUpdated, setFlaggedUpdated] = useState(task?.flagged)
+  const [viewImg, setViewImg] = useState(false)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [imgFile, setImgFile] = useState<ImageFile | null>(null)
+
+  useEffect(() => {
+    const uploadFile = async (id: number, imageFile: ImageFile) => {
+      await uploadFileBySubject('Task', imageFile, 'shared_within_company', id)
+      getVesselTaskDetails(task?.id)
+    }
+    if (imgFile?.uri && taskDetails?.id) {
+      uploadFile(taskDetails.id, imgFile)
+    }
+  }, [imgFile])
 
   useEffect(() => {
     navigation.setOptions({
@@ -125,7 +137,13 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
     }
   }, [task])
 
-  const renderLabels = (label: {title: string; color: string}) => {
+  const renderLabels = (label: {
+    id: number
+    type: string
+    title: string
+    color: string
+    entity: string
+  }) => {
     let title = ''
     switch (label?.title?.toLowerCase()) {
       case 'maintenance':
@@ -176,7 +194,9 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
           </Text>
         </Box>
         <Divider my={ms(12)} />
-        <Box px={ms(14)}>{renderLabels(taskDetails?.labels[0])}</Box>
+        {taskDetails?.labels ? (
+          <Box px={ms(14)}>{renderLabels(taskDetails?.labels[0])}</Box>
+        ) : null}
         <Divider my={ms(12)} />
         <Box px={ms(14)}>
           <Text color={Colors.disabled} fontWeight="medium">
@@ -283,48 +303,44 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
     )
   }
 
-  const renderDocumentsSections = (file: File, index: number) => (
-    <TouchableOpacity key={index}>
-      <HStack
-        alignItems="center"
-        bg={Colors.white}
-        borderRadius={5}
-        height={ms(50)}
-        justifyContent="space-between"
-        mb={ms(15)}
-        px={ms(16)}
-        shadow={3}
-        width="100%"
-      >
-        <Text
-          ellipsizeMode="middle"
-          flex="1"
-          fontWeight="medium"
-          maxW="80%"
-          numberOfLines={1}
+  const renderDocumentsSections = (file: File, index: number) => {
+    return (
+      <TouchableOpacity key={index}>
+        <HStack
+          alignItems="center"
+          bg={Colors.white}
+          borderRadius={5}
+          height={ms(50)}
+          justifyContent="space-between"
+          mb={ms(15)}
+          px={ms(16)}
+          shadow={3}
+          width="100%"
         >
-          {file.path}
-        </Text>
-        <HStack alignItems="center">
-          <IconButton
-            size={ms(22)}
-            source={Icons.file_download}
-            onPress={() => {}}
-          />
-          <IconButton
-            size={ms(22)}
-            source={Icons.eye}
-            styles={{marginLeft: 15}}
-            onPress={() =>
-              navigation.navigate('PDFView', {
-                path: `${VEMASYS_PRODUCTION_FILE_URL}/${file.path}`,
-              })
-            }
-          />
+          <Text
+            ellipsizeMode="middle"
+            flex="1"
+            fontWeight="medium"
+            maxW="80%"
+            numberOfLines={1}
+          >
+            {file.path}
+          </Text>
+          <HStack alignItems="center">
+            <IconButton
+              size={ms(22)}
+              source={Icons.eye}
+              styles={{marginLeft: 15}}
+              onPress={() => {
+                setSelectedFile(file)
+                setViewImg(true)
+              }}
+            />
+          </HStack>
         </HStack>
-      </HStack>
-    </TouchableOpacity>
-  )
+      </TouchableOpacity>
+    )
+  }
   const onDeleteTask = () => {
     Alert.alert(
       t('confirm'),
@@ -390,6 +406,24 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
     }
   }
 
+  const launchImageLibrary = () => {
+    const options: ImagePicker.ImageLibraryOptions = {
+      mediaType: 'photo',
+    }
+
+    ImagePicker.launchImageLibrary(options, response => {
+      if (response?.assets?.length) {
+        setImgFile({
+          ...imgFile,
+          id: response?.assets[0]?.id,
+          uri: response?.assets[0]?.uri,
+          fileName: response?.assets[0]?.fileName,
+          type: response?.assets[0]?.type,
+        })
+      }
+    })
+  }
+
   if (isTechnicalLoading) return <LoadingAnimated />
 
   return (
@@ -431,7 +465,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
           <Text bold color={Colors.text} fontSize={ms(16)}>
             {t('comments')}
           </Text>
-          {taskDetails?.comments?.length > 0 ? (
+          {taskDetails?.comments?.length ? (
             <Text
               bold
               bg={Colors.azure}
@@ -474,7 +508,7 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
           <Text bold color={Colors.text} fontSize={ms(16)}>
             {t('documents')}
           </Text>
-          {taskDetails?.fileGroup?.files?.length > 0 ? (
+          {taskDetails?.fileGroup?.files?.length ? (
             <Text
               bold
               bg={Colors.azure}
@@ -498,8 +532,8 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
           </Text>
         </HStack>
         <Divider mb={ms(10)} mt={ms(5)} />
-        {taskDetails?.fileGroup?.files?.length > 0 ? (
-          taskDetails?.fileGroup?.files?.map((file: File, index: number) =>
+        {taskDetails?.fileGroup?.files?.length ? (
+          taskDetails?.fileGroup?.files?.map((file, index: number) =>
             renderDocumentsSections(file, index)
           )
         ) : (
@@ -507,17 +541,41 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
             {t('noUploadedFiles')}
           </Text>
         )}
-        {/* <Button
+        <Button
           bg={Colors.primary}
           leftIcon={<Icon as={Ionicons} name="add" size="sm" />}
-          mt={ms(20)}
           mb={ms(20)}
-          onPress={() => {}}
+          mt={ms(20)}
+          onPress={launchImageLibrary}
         >
           Add Document
-        </Button> */}
+        </Button>
         {/* End of Documents Section */}
       </ScrollView>
+      <Modal
+        closeOnOverlayClick={true}
+        isOpen={viewImg}
+        size="full"
+        onClose={() => {
+          setViewImg(false)
+          setSelectedFile(null)
+        }}
+      >
+        <Modal.Content>
+          <Modal.CloseButton />
+          {selectedFile ? (
+            <Image
+              source={{
+                uri: `https://app-uat.vemasys.eu/upload/documents/${selectedFile.path}`,
+              }}
+              alt="file-preview"
+              h="100%"
+              resizeMode="contain"
+              w="100%"
+            />
+          ) : null}
+        </Modal.Content>
+      </Modal>
     </Box>
   )
 }
