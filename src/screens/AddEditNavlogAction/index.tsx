@@ -328,7 +328,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
             </Box>
           )}
         </Box>
-        <Box flex="1">
+        <Box bgColor={'blue'} flex="1">
           <Text color={Colors.disabled} fontWeight="medium" mb={ms(6)}>
             {t('amount')}
           </Text>
@@ -452,119 +452,118 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
       <KeyboardAvoidingView
         h={{
           base: '100%',
-          lg: 'xs',
+          lg: 'auto',
         }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : ms(150)}
+        flex={1}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? ms(80) : ms(70)}
       >
         <ScrollView
           automaticallyAdjustKeyboardInsets={true}
           bg={Colors.white}
-          contentContainerStyle={{flexGrow: 1, paddingBottom: 70}}
-          px={ms(12)}
-          py={ms(20)}
+          bounces={false}
+          contentContainerStyle={{flexGrow: 1}}
+          flex={0.5}
+          keyboardShouldPersistTaps="handled"
         >
-          <Text bold color={Colors.azure} fontSize={ms(20)}>
-            {actionType} {t('action')}
-          </Text>
+          <Box flex={1} px={ms(12)} py={ms(20)}>
+            <Text bold color={Colors.azure} fontSize={ms(20)}>
+              {actionType} {t('action')}
+            </Text>
 
-          <Divider my={ms(10)} />
-          <Text color={Colors.disabled} fontWeight="medium">
-            {t('action')}
-          </Text>
-          {/* {renderActionsType()} */}
-          {renderActionType()}
-          <Text color={Colors.disabled} fontWeight="medium">
-            {t('startText')}
-          </Text>
-          <DatetimePicker
-            color={Colors.secondary}
-            date={navActionDetails.start}
-            onChangeDate={() => {
-              setSelectedDate('start')
-              setOpenDatePicker(true)
-            }}
-          />
-          <Animated.View
-            style={[
-              {opacity: dateTimeHeight.value > 0 ? 1 : 0},
-              reanimatedStyle,
-            ]}
-          >
+            <Divider my={ms(10)} />
             <Text color={Colors.disabled} fontWeight="medium">
-              {t('estimatedEnd')}
+              {t('action')}
+            </Text>
+            {/* {renderActionsType()} */}
+            {renderActionType()}
+            <Text color={Colors.disabled} fontWeight="medium">
+              {t('startText')}
             </Text>
             <DatetimePicker
-              color={Colors.azure}
-              date={navActionDetails.estimatedEnd}
+              color={Colors.secondary}
+              date={navActionDetails.start}
               onChangeDate={() => {
-                setSelectedDate('estimated')
+                setSelectedDate('start')
                 setOpenDatePicker(true)
               }}
             />
-            <Text color={Colors.disabled} fontWeight="medium">
-              {t('endText')}
-            </Text>
-            <DatetimePicker
-              color={Colors.danger}
-              date={navActionDetails.end}
-              onChangeDate={() => {
-                setSelectedDate('end')
-                setOpenDatePicker(true)
+            <Animated.View
+              style={[
+                {opacity: dateTimeHeight.value > 0 ? 1 : 0},
+                reanimatedStyle,
+              ]}
+            >
+              <Text color={Colors.disabled} fontWeight="medium">
+                {t('estimatedEnd')}
+              </Text>
+              <DatetimePicker
+                color={Colors.azure}
+                date={navActionDetails.estimatedEnd}
+                onChangeDate={() => {
+                  setSelectedDate('estimated')
+                  setOpenDatePicker(true)
+                }}
+              />
+              <Text color={Colors.disabled} fontWeight="medium">
+                {t('endText')}
+              </Text>
+              <DatetimePicker
+                color={Colors.danger}
+                date={navActionDetails.end}
+                onChangeDate={() => {
+                  setSelectedDate('end')
+                  setOpenDatePicker(true)
+                }}
+              />
+            </Animated.View>
+            {actionType === 'Cleaning' ? null : renderCargoHoldActions()}
+            <DatePicker
+              modal
+              date={new Date()}
+              mode="datetime"
+              open={openDatePicker}
+              onCancel={() => {
+                setOpenDatePicker(false)
+              }}
+              onConfirm={date => {
+                setOpenDatePicker(false)
+                onDatesChange(date)
               }}
             />
-          </Animated.View>
-          {actionType === 'Cleaning' ? null : renderCargoHoldActions()}
-          <DatePicker
-            modal
-            date={new Date()}
-            mode="datetime"
-            open={openDatePicker}
-            onCancel={() => {
-              setOpenDatePicker(false)
-            }}
-            onConfirm={date => {
-              setOpenDatePicker(false)
-              onDatesChange(date)
-            }}
-          />
+          </Box>
         </ScrollView>
+
+        {/* <Box bottom={0} position={'absolute'} right={0} width={'100%'}> */}
+        <Box bgColor={Colors.white}>
+          <Shadow
+            viewStyle={{
+              width: '100%',
+            }}
+          >
+            <HStack width={'100%'}>
+              <Button
+                colorScheme="muted"
+                flex="1"
+                m={ms(16)}
+                variant="ghost"
+                onPress={() => navigation.goBack()}
+              >
+                {t('cancel')}
+              </Button>
+              <Button
+                bg={unsavedChanges.length ? Colors.primary : Colors.disabled}
+                disabled={unsavedChanges.length < 1}
+                flex="1"
+                m={ms(16)}
+                onPress={() => confirmSave()}
+              >
+                {t('save')}
+              </Button>
+            </HStack>
+          </Shadow>
+        </Box>
       </KeyboardAvoidingView>
-      <Box
-        alignItems={'center'}
-        bg={Colors.white}
-        bottom={0}
-        justifyContent={'center'}
-        position={'absolute'}
-        width={'100%'}
-      >
-        <Shadow
-          viewStyle={{
-            width: '100%',
-          }}
-        >
-          <HStack width={'100%'}>
-            <Button
-              colorScheme="muted"
-              flex="1"
-              m={ms(16)}
-              variant="ghost"
-              onPress={() => navigation.goBack()}
-            >
-              {t('cancel')}
-            </Button>
-            <Button
-              bg={unsavedChanges.length ? Colors.primary : Colors.disabled}
-              disabled={unsavedChanges.length < 1}
-              flex="1"
-              m={ms(16)}
-              onPress={() => confirmSave()}
-            >
-              {t('save')}
-            </Button>
-          </HStack>
-        </Shadow>
-      </Box>
 
       <Modal
         animationPreset="slide"
