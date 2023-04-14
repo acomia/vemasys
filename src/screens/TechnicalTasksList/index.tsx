@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import {RefreshControl, TouchableOpacity} from 'react-native'
 import {Box, Button, Divider, HStack, ScrollView, Text, Icon} from 'native-base'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
@@ -23,6 +23,10 @@ const TechnicalTasksList = ({navigation, route}: Props) => {
   const {isTechnicalLoading, tasksByCategory, getVesselTasksByCategory} =
     useTechnical()
   const {vesselId} = useEntity()
+
+  useEffect(() => {
+    getVesselTasksByCategory(vesselId, category)
+  }, [])
 
   const renderStatuses = (status: string) => {
     let title = ''
@@ -127,7 +131,7 @@ const TechnicalTasksList = ({navigation, route}: Props) => {
         contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
         p={ms(12)}
       >
-        {tasksByCategory?.length > 0
+        {tasksByCategory?.length
           ? tasksByCategory?.map((task: any, index: number) => {
               return (
                 <TouchableOpacity
