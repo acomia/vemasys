@@ -12,7 +12,7 @@ type RootStackParamList = {
   PDFView: {path: string | undefined}
   NewBunkering: undefined
   BunkeringDetails: {bunk: {} | undefined}
-  PlanningDetails: {navlog: NavigationLog; title?: StringOrNull}
+  PlanningDetails: {navlog: NavigationLog | null; title?: StringOrNull}
   AddEditBulkCargo: {cargo?: any; method?: string}
   PlanningNewComment: undefined
   AddEditComment: {
