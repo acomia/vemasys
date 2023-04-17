@@ -381,11 +381,16 @@ export default function Map({navigation}: Props) {
             />
           </Box>
         ) : (
-          <Image
-            alt="map-anchor-img"
-            resizeMode="contain"
-            source={Icons.anchor}
-          />
+          <Box bgColor={Colors.white} borderRadius={50}>
+            <FontAwesome5Icon
+              style={{
+                padding: 7,
+              }}
+              color={Colors.azure}
+              name="anchor"
+              size={ms(15)}
+            />
+          </Box>
         )}
       </Marker>
     )
