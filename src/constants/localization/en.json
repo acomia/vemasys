@@ -13,7 +13,7 @@
   "newUserEmail": "Email is required.",
   "newUserRole": "User role is required.",
   "loginHeader": "Login to your Account",
-  "remainLogin": "Remain logged in?",
+  "rememberMe": "Remember me?",
   "wrongCredentials": "Either your username or your password is incorrect",
   "logOut": "Log out",
   "roles": "Roles",
