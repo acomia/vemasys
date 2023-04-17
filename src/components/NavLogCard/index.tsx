@@ -175,8 +175,6 @@ export const NavLogCard = (props: {
     }
   }
 
-  const loadingUnloading = () => {}
-
   return (
     <TouchableOpacity
       key={navigationLog.id}
