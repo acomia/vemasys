@@ -268,6 +268,31 @@ export default function CharterDetails({navigation, route}: Props) {
     })
   }
 
+  const renderRefNumber = (itemData: any) => {
+    if (!itemData?.customerReference && !itemData?.supplierReference) {
+      return (
+        <Text bold color={Colors.azure} fontSize={ms(22)} textAlign="left">
+          {itemData?.clientReference || itemData?.vesselReference}
+        </Text>
+      )
+    }
+
+    return (
+      <VStack mb={ms(5)}>
+        {itemData?.customerReference && (
+          <Text bold color={Colors.azure} fontSize={ms(22)} textAlign="left">
+            {itemData?.customerReference}
+          </Text>
+        )}
+        {itemData?.supplierReference && (
+          <Text bold color={Colors.azure} fontSize={ms(22)} textAlign="left">
+            {itemData?.supplierReference}
+          </Text>
+        )}
+      </VStack>
+    )
+  }
+
   if (isCharterLoading) return <LoadingAnimated />
 
   return (
@@ -282,12 +307,7 @@ export default function CharterDetails({navigation, route}: Props) {
       >
         <HStack alignItems="center" justifyContent="space-between">
           <VStack maxWidth="73%">
-            <Text bold color={Colors.azure} fontSize={ms(22)} textAlign="left">
-              {charter?.customerReference ||
-                charter?.supplierReference ||
-                charter?.clientReference ||
-                charter?.vesselReference}
-            </Text>
+            {renderRefNumber(charter)}
             <Text bold color={Colors.secondary}>
               {moment(charter.startDate).format('DD MMM YYYY')} -
               <Text bold color={Colors.danger}>

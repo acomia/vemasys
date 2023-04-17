@@ -296,28 +296,20 @@ export default function Charters({navigation, route}: any) {
   }
 
   const renderRefNumber = (itemData: any) => {
-    if (itemData.customerReference) {
-      return <Text bold>{itemData.customerReference}</Text>
+    if (!itemData?.customerReference && !itemData?.supplierReference) {
+      return (
+        <Text bold>
+          {itemData?.clientReference || itemData?.vesselReference}
+        </Text>
+      )
     }
-
-    if (itemData.supplierReference) {
-      return <Text bold>{itemData.supplierReference}</Text>
-    }
-
     return (
       <HStack space={ms(5)}>
-        <Text bold>{itemData.clientReference}</Text>
-
-        {/* // no api yet
-         <TouchableOpacity
-          onPress={() => {
-            console.log(itemData?.id)
-            setEditCharter(itemData)
-            setEditReferenceOpen(true)
-          }}
-        >
-          <IconFA5 name="edit" size={ms(17)} />
-        </TouchableOpacity> */}
+        <Text bold>{itemData?.customerReference}</Text>
+        {itemData?.customerReference && itemData?.supplierReference && (
+          <Divider mx={ms(5)} orientation="vertical" />
+        )}
+        <Text bold>{itemData?.supplierReference}</Text>
       </HStack>
     )
   }
@@ -691,10 +683,7 @@ export default function Charters({navigation, route}: any) {
               >
                 Discard
               </Button>
-              <Button
-                bg={Colors.primary}
-                onPress={handleSaveDocument}
-              >
+              <Button bg={Colors.primary} onPress={handleSaveDocument}>
                 Save
               </Button>
             </Box>

@@ -74,4 +74,5 @@ export type NavigationLog = {
       }
     }>
   }
+  isActive: boolean
 }
