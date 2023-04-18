@@ -109,4 +109,6 @@ export const Icons = {
   waitingNavlogItem: require('./WaitingNavlogItem.png'),
   passedABridge: require('./PassedABridge.png'),
   keySkeleton: require('./key-skeleton.png'),
+  navlogLoading: require('./navlog_loading.png'),
+  navlogUnloading: require('./navlog_unloading.png'),
 }

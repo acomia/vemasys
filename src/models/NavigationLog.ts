@@ -75,4 +75,6 @@ export type NavigationLog = {
     }>
   }
   isActive: boolean
+  endActionDate: StringOrNull
+  actionType: string
 }

@@ -76,15 +76,32 @@ export const NavLogCard = (props: {
           />
         )
       case 'Loading/Unloading':
-        return (
+        return navigationLog.actionType === 'Cleaning' ? (
           <Image
             alt="navlog-type-img"
             h={ms(40)}
             resizeMode="contain"
-            source={Icons.loadingUnloading}
+            source={Icons.broom}
+            w={ms(40)}
+          />
+        ) : navigationLog.bulkCargo.some(cargo => cargo.isLoading === false) ? (
+          <Image
+            alt="navlog-type-img"
+            h={ms(40)}
+            resizeMode="contain"
+            source={Icons.navlogUnloading}
+            w={ms(40)}
+          />
+        ) : (
+          <Image
+            alt="navlog-type-img"
+            h={ms(40)}
+            resizeMode="contain"
+            source={Icons.navlogLoading}
             w={ms(40)}
           />
         )
+
       case 'Waiting':
         return (
           <Image

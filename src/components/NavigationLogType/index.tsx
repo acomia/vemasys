@@ -1,11 +1,16 @@
 import React from 'react'
 import {Image} from 'native-base'
-import {Icons, Animated} from '@bluecentury/assets'
 import {ms} from 'react-native-size-matters'
 import _ from 'lodash'
 
-export const NavigationLogType = ({navigationLog}: any) => {
-  const renderType = (navigationLog: any) => {
+import {Icons, Animated} from '@bluecentury/assets'
+import {NavigationLog} from '@bluecentury/models'
+
+interface INavlogType {
+  navigationLog: NavigationLog
+}
+export const NavigationLogType = ({navigationLog}: INavlogType) => {
+  const renderType = (navLog: NavigationLog) => {
     const {
       location,
       isActive,
@@ -16,7 +21,7 @@ export const NavigationLogType = ({navigationLog}: any) => {
       bulkCargo,
       endActionDate,
       actionType,
-    } = navigationLog
+    } = navLog
 
     const animatesIcon =
       (isActive || !_.isNull(startActionDatetime)) && _.isNull(endActionDate)

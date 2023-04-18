@@ -310,7 +310,6 @@ const Details = () => {
         setDates({
           ...dates,
           captainDatetimeETA: formattedDate,
-          arrivalDatetime: formattedDate,
         })
         setDidDateChange({...didDateChange, Eta: {didUpdate: true}})
         return

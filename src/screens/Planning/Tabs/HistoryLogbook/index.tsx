@@ -309,7 +309,7 @@ const HistoryLogbook = () => {
 
     return (
       <Text
-        color={isActive ? Colors.white : Colors.dark_green}
+        color={isActive ? Colors.white : Colors.azure}
         fontWeight="bold"
         textAlign="right"
       >
