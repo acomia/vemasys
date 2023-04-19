@@ -23,7 +23,7 @@ type SettingsState = {
 type SettingsActions = {
   setEnv: (env: TEnv) => void
   setDarkMode: (val: boolean) => void
-  setLanguage: (lang: string) => void
+  setLanguage: (lang: string, shouldUpdateBackEnd?: boolean) => void
   setIsMobileTracking: (val: boolean) => void
   setHasHydrated: (val: boolean) => void
   setRememberMe: (rememberMe: boolean) => void
@@ -50,11 +50,11 @@ export const useSettings = create(
           isDarkMode: darkMode,
         })
       },
-      setLanguage: async lang => {
+      setLanguage: async (lang, shouldUpdateBackEnd) => {
         set({language: lang})
         i18next.changeLanguage(lang)
         const user = useEntity.getState().user
-        if (user) {
+        if (user && shouldUpdateBackEnd) {
           await API.changeUserLanguage(user.id, lang)
         }
       },

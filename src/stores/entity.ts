@@ -123,12 +123,19 @@ export const useEntity = create(
           console.log('getUserInfo')
           const response = await API.getUserInfo()
           const setLanguage = useSettings.getState().setLanguage
+          const currentLanguage = useSettings.getState().language
 
           set({
             user: response,
             isLoadingCurrentUserInfo: false,
           })
-          setLanguage(response.language)
+          if (response && currentLanguage !== response.language) {
+            if (response.language === 'en' || response.language === 'fr') {
+              setLanguage(response.language)
+            } else {
+              setLanguage(currentLanguage ? currentLanguage : 'en')
+            }
+          }
         } catch (error) {
           set({
             hasErrorLoadingCurrentUser: true,
