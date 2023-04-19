@@ -99,6 +99,8 @@ const Details = () => {
     Eta: {didUpdate: false},
     Nor: {didUpdate: false},
     Doc: {didUpdate: false},
+    Arv: {didUpdate: false},
+    Dep: {didUpdate: false},
   })
 
   const [viewImg, setViewImg] = useState(false)
@@ -442,8 +444,24 @@ const Details = () => {
 
         <DatetimePickerList
           date={dates.arrivalDatetime}
-          readOnly={true}
+          locked={isUnknownLocation ? true : navigationLogDetails?.locked}
           title="Arrival"
+          onChangeDate={() => {
+            setSelectedType('ARV')
+            setOpenDatePicker(true)
+          }}
+          onClearDate={() => {
+            setDidDateChange({
+              ...didDateChange,
+              Arv: {
+                didUpdate: _.isNull(dates.arrivalDatetime) ? false : true,
+              },
+            })
+            setDates({
+              ...dates,
+              arrivalDatetime: null,
+            })
+          }}
         />
       </Box>
     )
@@ -477,8 +495,24 @@ const Details = () => {
 
       <DatetimePickerList
         date={dates.departureDatetime}
-        readOnly={true}
+        locked={isUnknownLocation ? true : navigationLogDetails?.locked}
         title="Departure"
+        onChangeDate={() => {
+          setSelectedType('DEP')
+          setOpenDatePicker(true)
+        }}
+        onClearDate={() => {
+          setDidDateChange({
+            ...didDateChange,
+            Dep: {
+              didUpdate: _.isNull(dates.departureDatetime) ? false : true,
+            },
+          })
+          setDates({
+            ...dates,
+            departureDatetime: null,
+          })
+        }}
       />
     </Box>
   )
