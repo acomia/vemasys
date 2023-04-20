@@ -15,6 +15,7 @@ export const Colors = {
 
   // border color
   border: '#BEE3F8',
+  dark_border: '#8fb4c9',
   // text color
   text: '#23272F',
   highlighted_text: '#29B7EF',

@@ -185,7 +185,12 @@ const HistoryLogbook = () => {
 
             <Box
               backgroundColor={
-                navigationLog?.isActive ? Colors.secondary : Colors.border
+                navigationLog?.isActive
+                  ? Colors.secondary
+                  : navigationLog?.departureDatetime ===
+                    navigationLog?.arrivalDatetime
+                  ? Colors.dark_border
+                  : Colors.border
               }
               px={ms(16)}
               py={ms(10)}
@@ -219,7 +224,7 @@ const HistoryLogbook = () => {
                 ) : null}
               </HStack>
               <Text
-                color={navigationLog?.isActive ? Colors.white : '#23475C'}
+                color={navigationLog?.isActive ? Colors.white : Colors.azure}
                 fontWeight="medium"
               >
                 {itemDurationLabel}
@@ -235,9 +240,8 @@ const HistoryLogbook = () => {
               <Box
                 borderColor={Colors.border}
                 borderStyle="dashed"
+                borderTopWidth={0}
                 borderWidth={isOngoing ? null : 3}
-                mt={-3}
-                pt={3}
                 px={ms(16)}
                 py={ms(5)}
               >
