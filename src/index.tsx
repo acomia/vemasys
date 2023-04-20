@@ -34,6 +34,25 @@ const App = () => {
   const setAreCommentsUploading = useEntity().setAreCommentsUploading
   const setUploadingCommentNumber = useEntity().setUploadingCommentNumber
 
+  useEffect(() => {
+    if (languageFromStore) {
+      i18next.changeLanguage(languageFromStore)
+    } else {
+      i18next.changeLanguage(preferredLanguage())
+    }
+  }, [])
+
+  const originalWarn = console.warn
+  console.warn = function (...args) {
+    if (
+      typeof args[0] === 'string' &&
+      args[0].startsWith('When server rendering')
+    ) {
+      return
+    }
+    originalWarn.apply(console, args)
+  }
+
   const checkConnection = () => {
     if (isConnected === true && isInternetReachable === true) {
       setIsOnline(true)
