@@ -50,7 +50,7 @@ type PlanningActions = {
   createBulkCargo: (cargo: any, navLogId: string) => void
   deleteBulkCargo: (id: string) => void
   updateComment: (id: string, description: string) => void
-  uploadImgFile: (file: ImageFile) => void
+  uploadImgFile: (file: ImageFile) => any
   deleteComment: (id: string) => void
   uploadVesselNavigationLogFile: (navLogId: string, body: any) => void
   createNavigationLogAction: (
