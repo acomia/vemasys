@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react'
 import {useWindowDimensions} from 'react-native'
-import {Box, Text} from 'native-base'
+import {Box, HStack, Text} from 'native-base'
 
 import {Details, CargoList, CargoHolds, Documents, Map, Actions} from './Tabs'
 import {Colors} from '@bluecentury/styles'
@@ -28,7 +28,12 @@ export default function PlanningDetails({route}: Props) {
     {title: t('Map'), screen: Map},
   ]
   const {navlog, title} = route.params
-  const {navigationLogDetails} = usePlanning()
+  const {
+    navigationLogDetails,
+    navigationLogCargoHolds,
+    navigationLogActions,
+    navigationLogDocuments,
+  } = usePlanning()
   const [routes, setRoutes] = useState(tabs)
   const isUnknownLocation = title === 'Unknown Location' ? true : false
   const screenWidth = useWindowDimensions().width
@@ -54,6 +59,44 @@ export default function PlanningDetails({route}: Props) {
       setRoutes(newRoutes)
     }
   }, [navigationLogDetails])
+
+  const renderTabBadge = (tab: string) => {
+    switch (tab) {
+      case 'Actions':
+        return navigationLogActions?.length ? (
+          <Box bg={Colors.azure} borderRadius={12} px={3}>
+            <Text color={Colors.white} fontSize={ms(12)}>
+              {navigationLogActions?.length}
+            </Text>
+          </Box>
+        ) : null
+
+      case 'Cargo List':
+        return navigationLogDetails?.bulkCargo?.length ? (
+          <Box bg={Colors.azure} borderRadius={12} px={3}>
+            <Text color={Colors.white} fontSize={ms(12)}>
+              {navigationLogDetails?.bulkCargo?.length}
+            </Text>
+          </Box>
+        ) : null
+      case 'Cargo Holds':
+        return navigationLogCargoHolds?.length ? (
+          <Box bg={Colors.azure} borderRadius={12} h={ms(5)} px={3}>
+            <Text color={Colors.white} fontSize={ms(12)}>
+              {navigationLogDetails?.bulkCargo?.length}
+            </Text>
+          </Box>
+        ) : null
+      case 'Documents':
+        return navigationLogDocuments?.length ? (
+          <Box bg={Colors.azure} borderRadius={12} px={3}>
+            <Text color={Colors.white} fontSize={ms(12)}>
+              {navigationLogDetails?.bulkCargo?.length}
+            </Text>
+          </Box>
+        ) : null
+    }
+  }
 
   return (
     <Box flex="1">
@@ -88,9 +131,16 @@ export default function PlanningDetails({route}: Props) {
             key={index}
             options={({route}) => ({
               tabBarLabel: ({focused}) => (
-                <Text bold color={focused ? Colors.white : Colors.light}>
-                  {route.name}
-                </Text>
+                <HStack alignItems="center">
+                  <Text
+                    bold
+                    color={focused ? Colors.white : Colors.light}
+                    mr={1}
+                  >
+                    {route.name}
+                  </Text>
+                  {renderTabBadge(route.name)}
+                </HStack>
               ),
             })}
             component={route.screen}

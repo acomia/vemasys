@@ -69,6 +69,7 @@ const Details = () => {
     getNavigationLogActions,
     getNavigationLogComments,
     getNavigationLogRoutes,
+    getNavigationLogDocuments,
     updateNavlogDates,
     updateNavlogDatesSuccess,
     updateNavlogDatesFailed,
@@ -180,6 +181,7 @@ const Details = () => {
     getNavigationLogActions(navlog?.id)
     getNavigationLogComments(navlog?.id)
     getNavigationLogRoutes(navlog?.id)
+    getNavigationLogDocuments(navlog?.id)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -674,6 +676,8 @@ const Details = () => {
     getNavigationLogDetails(navlog.id)
     getNavigationLogActions(navlog?.id)
     getNavigationLogComments(navlog.id)
+    getNavigationLogRoutes(navlog?.id)
+    getNavigationLogDocuments(navlog?.id)
   }
 
   if (
