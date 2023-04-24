@@ -64,34 +64,34 @@ export default function PlanningDetails({route}: Props) {
     switch (tab) {
       case 'Actions':
         return navigationLogActions?.length ? (
-          <Box bg={Colors.azure} borderRadius={12} px={3}>
-            <Text color={Colors.white} fontSize={ms(12)}>
-              {navigationLogActions?.length}
+          <Box bg={'#3E96A8'} borderRadius={12} px={2}>
+            <Text color={Colors.white} fontSize={ms(12)} fontWeight="medium">
+              ({navigationLogActions?.length})
             </Text>
           </Box>
         ) : null
 
       case 'Cargo List':
         return navigationLogDetails?.bulkCargo?.length ? (
-          <Box bg={Colors.azure} borderRadius={12} px={3}>
-            <Text color={Colors.white} fontSize={ms(12)}>
-              {navigationLogDetails?.bulkCargo?.length}
+          <Box bg={'#3E96A8'} borderRadius={12} px={2}>
+            <Text color={Colors.white} fontSize={ms(12)} fontWeight="medium">
+              ({navigationLogDetails?.bulkCargo?.length})
             </Text>
           </Box>
         ) : null
       case 'Cargo Holds':
         return navigationLogCargoHolds?.length ? (
-          <Box bg={Colors.azure} borderRadius={12} h={ms(5)} px={3}>
-            <Text color={Colors.white} fontSize={ms(12)}>
-              {navigationLogDetails?.bulkCargo?.length}
+          <Box bg={'#3E96A8'} borderRadius={12} h={ms(5)} px={2}>
+            <Text color={Colors.white} fontSize={ms(12)} fontWeight="medium">
+              ({navigationLogDetails?.bulkCargo?.length})
             </Text>
           </Box>
         ) : null
       case 'Documents':
         return navigationLogDocuments?.length ? (
-          <Box bg={Colors.azure} borderRadius={12} px={3}>
-            <Text color={Colors.white} fontSize={ms(12)}>
-              {navigationLogDetails?.bulkCargo?.length}
+          <Box bg={'#3E96A8'} borderRadius={12} px={2}>
+            <Text color={Colors.white} fontSize={ms(12)} fontWeight="medium">
+              ({navigationLogDetails?.bulkCargo?.length})
             </Text>
           </Box>
         ) : null
