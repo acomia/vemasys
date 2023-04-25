@@ -108,7 +108,7 @@ const Details = () => {
   })
 
   const [viewImg, setViewImg] = useState(false)
-  const [selectedImg, setSelectedImg] = useState<ImageFile>({})
+  const [selectedImg, setSelectedImg] = useState<ImageFile | any>({})
   const [selectedType, setSelectedType] = useState('')
   const [openDatePicker, setOpenDatePicker] = useState(false)
   const [activeActions, setActiveActions] = useState([])
@@ -833,7 +833,7 @@ const Details = () => {
               )
             })
           : null}
-        {hasAddCommentPermission && isOnline && (
+        {hasAddCommentPermission && (
           <Button
             bg={Colors.primary}
             leftIcon={<Icon as={Ionicons} name="add" size="sm" />}
