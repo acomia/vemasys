@@ -833,7 +833,8 @@ const Details = () => {
               )
             })
           : null}
-        {hasAddCommentPermission && isOnline && (
+        {/* {hasAddCommentPermission && isOnline && ( */}
+        {hasAddCommentPermission && (
           <Button
             bg={Colors.primary}
             leftIcon={<Icon as={Ionicons} name="add" size="sm" />}

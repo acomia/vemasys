@@ -1,6 +1,13 @@
 import React from 'react'
-import {FlatList, TouchableOpacity} from 'react-native'
-import {Avatar, Box, HStack, Image, Text} from 'native-base'
+import {FlatList, TouchableOpacity, Image} from 'react-native'
+import {
+  Avatar,
+  Box,
+  HStack,
+  // Image,
+  Text,
+} from 'native-base'
+
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 
@@ -79,12 +86,24 @@ const CommentCard = ({
               }
               return (
                 <TouchableOpacity onPress={() => onCommentImagePress(file)}>
-                  <Image
+                  {/* <Image
                     alt="file-upload"
                     h={ms(114)}
                     mr={ms(10)}
                     source={{uri: image.item}}
                     w={ms(136)}
+                  /> */}
+                  <Image
+                    style={{
+                      height: ms(114),
+                      width: ms(136),
+                      marginRight: ms(10),
+                    }}
+                    // h={ms(114)}
+                    // mr={ms(10)}
+                    alt="file-upload"
+                    source={{uri: image.item}}
+                    // w={ms(136)}
                   />
                 </TouchableOpacity>
               )
