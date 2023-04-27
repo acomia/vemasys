@@ -2,7 +2,15 @@ import React, {useEffect, useRef, useState} from 'react'
 import {useWindowDimensions} from 'react-native'
 import {Box, HStack, Text} from 'native-base'
 
-import {Details, CargoList, CargoHolds, Documents, Map, Actions} from './Tabs'
+import {
+  Details,
+  CargoList,
+  CargoHolds,
+  Documents,
+  Map,
+  Actions,
+  DraughtCalculator,
+} from './Tabs'
 import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
 import {usePlanning} from '@bluecentury/stores'
@@ -26,6 +34,7 @@ export default function PlanningDetails({route}: Props) {
     {title: t('Cargo Holds'), screen: CargoHolds},
     {title: t('Documents'), screen: Documents},
     {title: t('Map'), screen: Map},
+    {title: t('draughtCalculator'), screen: DraughtCalculator},
   ]
   const {navlog, title} = route.params
   const {
@@ -126,28 +135,30 @@ export default function PlanningDetails({route}: Props) {
         })}
         backBehavior="firstRoute"
       >
-        {routes.map((route, index) => (
-          <Tab.Screen
-            key={index}
-            options={({route}) => ({
-              tabBarLabel: ({focused}) => (
-                <HStack alignItems="center">
-                  <Text
-                    bold
-                    color={focused ? Colors.white : Colors.light}
-                    mr={1}
-                  >
-                    {route.name}
-                  </Text>
-                  {renderTabBadge(route.name)}
-                </HStack>
-              ),
-            })}
-            component={route.screen}
-            initialParams={{navlog, title}}
-            name={route.title}
-          />
-        ))}
+        {routes.map((route, index) => {
+          return (
+            <Tab.Screen
+              key={index}
+              options={({route}) => ({
+                tabBarLabel: ({focused}) => (
+                  <HStack alignItems="center">
+                    <Text
+                      bold
+                      color={focused ? Colors.white : Colors.light}
+                      mr={1}
+                    >
+                      {route.name}
+                    </Text>
+                    {renderTabBadge(route.name)}
+                  </HStack>
+                ),
+              })}
+              component={route.screen}
+              initialParams={{navlog, title}}
+              name={route.title}
+            />
+          )
+        })}
       </Tab.Navigator>
     </Box>
   )

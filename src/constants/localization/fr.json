@@ -366,5 +366,8 @@
   "editReference": "Edit Reference Number",
   "warning": "Warning",
   "overrideWarning": "Are you sure you to manually set the Arrival/departure for location",
-  "overRideWarningSub2": "This will disable the automatic tracking location. Once you leave, you have to set departure date manually"
+  "overRideWarningSub2": "This will disable the automatic tracking location. Once you leave, you have to set departure date manually",
+  "draughtCalculator": "Draught",
+  "draughtMeasurement": "Draught Measurement",
+  "freeboardMeasuremetn": "Freeboard Measurement"
 }
