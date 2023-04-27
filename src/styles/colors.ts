@@ -15,6 +15,7 @@ export const Colors = {
 
   // border color
   border: '#BEE3F8',
+  dark_border: '#8fb4c9',
   // text color
   text: '#23272F',
   highlighted_text: '#29B7EF',
@@ -31,4 +32,5 @@ export const Colors = {
   dark_blue: '#397493',
   light_blue: '#D9EDF7',
   dark_green: '#5B9570',
+  light_red: '#ffe2e2',
 }

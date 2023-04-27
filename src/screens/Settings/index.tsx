@@ -54,7 +54,7 @@ const Settings = (props: DrawerContentComponentProps) => {
       />
         */}
       <SettingsItem
-        callback={(lang: string) => setLanguage(lang)}
+        callback={(lang: string) => setLanguage(lang, true)}
         iconSource={Icons.location}
         language={language}
         type="select"

@@ -363,5 +363,8 @@
   "reTypePassword": "Re-type new password ",
   "passwordErrorSub1": "Your password needs to consist of at least 8 characters",
   "passwordErrorSub2": "Your password needs to contain at least one number and one special character (#?!@$%^&*-])",
-  "editReference": "Edit Reference Number"
+  "editReference": "Edit Reference Number",
+  "warning": "Warning",
+  "overrideWarning": "Are you sure you to manually set the Arrival/departure for location",
+  "overRideWarningSub2": "This will disable the automatic tracking location. Once you leave, you have to set departure date manually."
 }

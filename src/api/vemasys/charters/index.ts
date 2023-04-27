@@ -41,12 +41,16 @@ const viewPdfFile = async (charterId: string) => {
   const entityUserId = useEntity.getState().entityUserId
   const API_URL = useSettings.getState().apiUrl
   const customDocuments = await API.get(`v3/Charter/${charterId}/files`)
+  const url =
+    API_URL === 'https://app.vemasys.eu/api/'
+      ? 'https://app.vemasys.eu/'
+      : 'https://app-uat.vemasys.eu/'
   if (customDocuments && customDocuments.data.length) {
     return ReactNativeBlobUtil.config({
       fileCache: true,
     }).fetch(
       'GET',
-      `https://app-uat.vemasys.eu/upload/documents/${
+      `${url}upload/documents/${
         customDocuments.data[customDocuments.data.length - 1].path
       }`,
       {

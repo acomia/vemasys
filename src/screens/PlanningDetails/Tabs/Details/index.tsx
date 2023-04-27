@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState, useRef} from 'react'
 import {BackHandler, RefreshControl, TouchableOpacity} from 'react-native'
 import {
   Box,
@@ -10,6 +10,7 @@ import {
   Modal,
   ScrollView,
   Text,
+  VStack,
   useToast,
 } from 'native-base'
 import {ms} from 'react-native-size-matters'
@@ -35,10 +36,11 @@ import {
   ROLE_PERMISSION_NAVIGATION_LOG_ADD_COMMENT,
   titleCase,
 } from '@bluecentury/constants'
-import {LoadingAnimated} from '@bluecentury/components'
+import {LoadingAnimated, WarningAlert} from '@bluecentury/components'
 import {Vemasys} from '@bluecentury/helpers'
 import {RootStackParamList} from '@bluecentury/types/nav.types'
 import {Contacts} from '@bluecentury/models'
+import {CustomAlert} from '@bluecentury/components/custom-alert'
 
 type Dates = {
   plannedETA: Date | undefined | StringOrNull
@@ -69,6 +71,7 @@ const Details = () => {
     getNavigationLogActions,
     getNavigationLogComments,
     getNavigationLogRoutes,
+    getNavigationLogDocuments,
     updateNavlogDates,
     updateNavlogDatesSuccess,
     updateNavlogDatesFailed,
@@ -86,6 +89,7 @@ const Details = () => {
     commentsWaitingForUpload,
   } = useEntity()
   const {navlog, title}: any = route.params
+
   const [dates, setDates] = useState<Dates>({
     plannedETA: navigationLogDetails?.plannedEta,
     captainDatetimeETA: navigationLogDetails?.captainDatetimeEta,
@@ -99,10 +103,12 @@ const Details = () => {
     Eta: {didUpdate: false},
     Nor: {didUpdate: false},
     Doc: {didUpdate: false},
+    Arr: {didUpdate: false},
+    Dep: {didUpdate: false},
   })
 
   const [viewImg, setViewImg] = useState(false)
-  const [selectedImg, setSelectedImg] = useState<ImageFile>({})
+  const [selectedImg, setSelectedImg] = useState<ImageFile | any>({})
   const [selectedType, setSelectedType] = useState('')
   const [openDatePicker, setOpenDatePicker] = useState(false)
   const [activeActions, setActiveActions] = useState([])
@@ -111,6 +117,7 @@ const Details = () => {
   const [confirmModal, setConfirmModal] = useState(false)
   const [leaveTabModal, setLeaveTabModal] = useState(false)
   const [buttonBackLeave, setButtonBackLeave] = useState(false)
+  const [isOpenWarning, setIsOpenWarning] = useState(false)
   const hasAddCommentPermission = hasSelectedEntityUserPermission(
     selectedEntity,
     ROLE_PERMISSION_NAVIGATION_LOG_ADD_COMMENT
@@ -124,6 +131,7 @@ const Details = () => {
     navigationLogDetails?.link !== null
       ? true
       : false
+  const warningRef = useRef<any>(null)
 
   useEffect(() => {
     navigation.getParent()?.setOptions({
@@ -178,6 +186,7 @@ const Details = () => {
     getNavigationLogActions(navlog?.id)
     getNavigationLogComments(navlog?.id)
     getNavigationLogRoutes(navlog?.id)
+    getNavigationLogDocuments(navlog?.id)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -390,6 +399,8 @@ const Details = () => {
           })
           setDates({...dates, plannedETA: null})
         }}
+        readOnly={true}
+        locked={true}
       />
       <DatetimePickerList
         date={dates.captainDatetimeETA}
@@ -442,8 +453,25 @@ const Details = () => {
 
         <DatetimePickerList
           date={dates.arrivalDatetime}
-          readOnly={true}
+          locked={isUnknownLocation ? true : navigationLogDetails?.locked}
           title="Arrival"
+          onChangeDate={() => {
+            setSelectedType('ARR')
+            setIsOpenWarning(true)
+            // setOpenDatePicker(true)
+          }}
+          onClearDate={() => {
+            setDidDateChange({
+              ...didDateChange,
+              Arr: {
+                didUpdate: _.isNull(dates.arrivalDatetime) ? false : true,
+              },
+            })
+            setDates({
+              ...dates,
+              arrivalDatetime: null,
+            })
+          }}
         />
       </Box>
     )
@@ -477,8 +505,25 @@ const Details = () => {
 
       <DatetimePickerList
         date={dates.departureDatetime}
-        readOnly={true}
+        locked={isUnknownLocation ? true : navigationLogDetails?.locked}
         title="Departure"
+        onChangeDate={() => {
+          setSelectedType('DEP')
+          setIsOpenWarning(true)
+          // setOpenDatePicker(true)
+        }}
+        onClearDate={() => {
+          setDidDateChange({
+            ...didDateChange,
+            Dep: {
+              didUpdate: _.isNull(dates.departureDatetime) ? false : true,
+            },
+          })
+          setDates({
+            ...dates,
+            departureDatetime: null,
+          })
+        }}
       />
     </Box>
   )
@@ -640,6 +685,8 @@ const Details = () => {
     getNavigationLogDetails(navlog.id)
     getNavigationLogActions(navlog?.id)
     getNavigationLogComments(navlog.id)
+    getNavigationLogRoutes(navlog?.id)
+    getNavigationLogDocuments(navlog?.id)
   }
 
   if (
@@ -788,7 +835,7 @@ const Details = () => {
               )
             })
           : null}
-        {hasAddCommentPermission && isOnline && (
+        {hasAddCommentPermission && (
           <Button
             bg={Colors.primary}
             leftIcon={<Icon as={Ionicons} name="add" size="sm" />}
@@ -940,6 +987,58 @@ const Details = () => {
           />
         </Modal.Content>
       </Modal>
+      <WarningAlert
+        alert={{
+          leastDestructiveRef: warningRef,
+          isOpen: isOpenWarning,
+          onClose: () => setIsOpenWarning(false),
+        }}
+        buttons={[
+          {
+            variant: 'link',
+            _text: {
+              color: Colors.disabled,
+              fontWeight: 'bold',
+            },
+            children: t('cancel'),
+            onPress: () => setIsOpenWarning(false),
+          },
+          {
+            _text: {
+              fontWeight: 'bold',
+            },
+            backgroundColor: Colors.offlineWarning,
+            children: t('yes'),
+            onPress: () => {
+              setIsOpenWarning(false)
+              setOpenDatePicker(true)
+            },
+          },
+        ]}
+        content={
+          <VStack space={ms(10)}>
+            <Text>
+              {t('overrideWarning')}:{' '}
+              <Text color={Colors.azure} fontSize={'md'}>
+                {title}
+              </Text>
+            </Text>
+            <HStack>
+              <Box bgColor={Colors.danger} height={'100%'} width={ms(10)} />
+              <Box bgColor={Colors.light_red} px={ms(5)} py={ms(5)}>
+                <Text color={Colors.dangerDarker}>
+                  {t('overRideWarningSub2')}
+                </Text>
+              </Box>
+            </HStack>
+          </VStack>
+        }
+        title={
+          <Text color={Colors.danger} fontSize="xl" fontWeight={'bold'}>
+            {t('warning') as string}
+          </Text>
+        }
+      />
     </Box>
   )
 }
