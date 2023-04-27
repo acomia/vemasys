@@ -399,6 +399,8 @@ const Details = () => {
           })
           setDates({...dates, plannedETA: null})
         }}
+        readOnly={true}
+        locked={true}
       />
       <DatetimePickerList
         date={dates.captainDatetimeETA}
