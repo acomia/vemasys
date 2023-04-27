@@ -2,6 +2,7 @@ import React from 'react'
 import {RefreshControl} from 'react-native'
 import {Box, ScrollView} from 'native-base'
 import {ms} from 'react-native-size-matters'
+import {Colors} from '@bluecentury/styles'
 
 interface Props {
   children: Element
@@ -19,6 +20,7 @@ export default (props: Props) => {
             onRefresh={props.onPullToReload}
           />
         }
+        bg={Colors.white}
         contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
         px={ms(12)}
         py={ms(10)}

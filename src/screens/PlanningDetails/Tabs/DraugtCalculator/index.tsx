@@ -1,12 +1,10 @@
 import React, {useState} from 'react'
-import {Image} from 'react-native'
-import {Box, Text, Divider, Select} from 'native-base'
+import {Box, Text, Divider, Select, HStack, Button} from 'native-base'
 import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
-import {BeforeAfterComponent} from './component'
+import {BeforeAfterComponent, Ship} from './component'
 import {useTranslation} from 'react-i18next'
 import {PageScroll} from '@bluecentury/components'
-import {Images} from '@bluecentury/assets'
 
 interface Props {
   navLog: any[]
@@ -31,6 +29,10 @@ export default (props: Props) => {
       <Divider bg={Colors.light} h={ms(2)} my={ms(8)} />
       <BeforeAfterComponent active={statusActive} setActive={setStatusActive} />
       <Box py={ms(10)}>
+        <HStack>
+          <Text color={Colors.disabled}>Select measurement </Text>
+          <Text color={Colors.danger}>*</Text>
+        </HStack>
         <Select
           accessibilityLabel=""
           bg={Colors.light_grey}
@@ -50,13 +52,17 @@ export default (props: Props) => {
           })}
         </Select>
       </Box>
-      <Box backgroundColor={Colors.black} height={ms(500)} width={'100%'}>
-        <Image
-          resizeMode="contain"
-          source={Images.ship}
-          style={{width: '100%', height: '100%'}}
-        />
+      <Box>
+        <Ship />
       </Box>
+      <HStack mt={ms(10)} space={ms(5)}>
+        <Button colorScheme={'white'} flex={1}>
+          <Text color={Colors.disabled}>End loading</Text>
+        </Button>
+        <Button flex={1}>
+          <Text>Save</Text>
+        </Button>
+      </HStack>
     </PageScroll>
   )
 }
