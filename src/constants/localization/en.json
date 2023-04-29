@@ -366,5 +366,12 @@
   "editReference": "Edit Reference Number",
   "warning": "Warning",
   "overrideWarning": "Are you sure you to manually set the Arrival/departure for location",
-  "overRideWarningSub2": "This will disable the automatic tracking location. Once you leave, you have to set departure date manually."
+  "overRideWarningSub2": "This will disable the automatic tracking location. Once you leave, you have to set departure date manually.",
+  "measurementTable": "Measurement Table",
+  "tonnageCertification": "Tonnage Certification",
+  "draughtCmMin": "Draught (cm)(min)",
+  "draughtCmMax": "Draught (cm)(max)",
+  "tonnageTMin": "Tonnage (T)(min)",
+  "tonnageTMax": "Tonnage (T)(max)",
+  "enterNumber": "Enter number"
 }
