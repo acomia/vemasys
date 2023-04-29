@@ -18,5 +18,6 @@ export enum Screens {
   ChangeRole = 'ChangeRole',
   QRScanner = 'QRScanner',
   Formations = 'Formations',
-  PDFView = 'PDFView'
+  PDFView = 'PDFView',
+  MeasurementTable = 'MeasurementTable',
 }

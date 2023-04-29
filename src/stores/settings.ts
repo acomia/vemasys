@@ -8,6 +8,11 @@ import {useEntity} from '@bluecentury/stores/entity'
 
 type TEnv = keyof typeof Environments
 
+type TableItem = {
+  draught: number
+  tonnage: number
+}
+
 type SettingsState = {
   rememberMe: boolean
   env: string | undefined
@@ -18,6 +23,7 @@ type SettingsState = {
   hasSettingsRehydrated: boolean
   isQrScanner: boolean
   isOnline: boolean
+  draughtTable: TableItem[]
 }
 
 type SettingsActions = {
@@ -29,6 +35,7 @@ type SettingsActions = {
   setRememberMe: (rememberMe: boolean) => void
   setIsQrScanner: (val: boolean) => void
   setIsOnline: (val: boolean) => void
+  setDraughtTable: (val: TableItem[]) => void
 }
 
 type SettingsStore = SettingsState & SettingsActions
@@ -45,6 +52,7 @@ export const useSettings = create(
       hasSettingsRehydrated: false,
       isQrScanner: true,
       isOnline: true,
+      draughtTable: [],
       setDarkMode: async darkMode => {
         set({
           isDarkMode: darkMode,
@@ -81,6 +89,9 @@ export const useSettings = create(
       },
       setIsOnline: val => {
         set({isOnline: val})
+      },
+      setDraughtTable: val => {
+        set({draughtTable: val})
       },
     }),
     {

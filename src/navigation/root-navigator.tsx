@@ -36,6 +36,7 @@ import {
   TrackingServiceDialog,
   SignUp,
   SignUpVerification,
+  MeasurementTable,
 } from '@bluecentury/screens'
 import {Colors} from '@bluecentury/styles'
 import {useTranslation} from 'react-i18next'
@@ -300,6 +301,14 @@ export default function RootNavigator() {
           }}
           component={SignUpVerification}
           name={'SignUpVerification'}
+        />
+        <Screen
+          component={MeasurementTable}
+          name={'MeasurementTable'}
+          options={({route}) => ({
+            headerShown: true,
+            title: t('measurementTable'),
+          })}
         />
       </Group>
       <Group
