@@ -19,6 +19,11 @@ export const ROLE_PERMISSION_USER_MANAGE = 'ROLE_PERMISSION_USER_MANAGE'
 export const EXTERNAL_PEGEL_IMAGE_URL =
   'https://www.elwis.de/DE/dynamisch/gewaesserkunde/wasserstaende'
 
+export const accessLevel = [
+  {label: 'Shared within the company', value: 'shared_within_company'},
+  {label: 'Shared with all stakeholders', value: 'shared_with_stakeholders'},
+]
+
 // Map constants
 export const DEFAULT_LATITUDE = 50.503887
 export const DEFAULT_LONGITUDE = 4.469936
