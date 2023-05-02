@@ -386,7 +386,9 @@ const Details = () => {
     <Box>
       <DatetimePickerList
         date={dates.plannedETA}
-        locked={isUnknownLocation ? true : navigationLogDetails?.locked}
+        // locked={isUnknownLocation ? true : navigationLogDetails?.locked}
+        locked={true}
+        readOnly={true}
         title="Planned"
         onChangeDate={() => {
           setSelectedType('PLN')
@@ -399,8 +401,6 @@ const Details = () => {
           })
           setDates({...dates, plannedETA: null})
         }}
-        readOnly={true}
-        locked={true}
       />
       <DatetimePickerList
         date={dates.captainDatetimeETA}

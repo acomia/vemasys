@@ -70,7 +70,7 @@ const DatetimePickerList = ({
               startColor={Colors.grey}
             >
               <Text
-                color={date && !locked ? Colors.text : Colors.disabled}
+                color={date && !locked ? Colors.text : Colors.black}
                 fontSize="md"
                 fontWeight="medium"
               >
