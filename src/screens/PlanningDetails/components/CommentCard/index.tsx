@@ -1,13 +1,6 @@
 import React from 'react'
-import {FlatList, TouchableOpacity, Image} from 'react-native'
-import {
-  Avatar,
-  Box,
-  HStack,
-  // Image,
-  Text,
-} from 'native-base'
-
+import {FlatList, TouchableOpacity, Image, StyleSheet} from 'react-native'
+import {Avatar, Box, HStack, Text} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 
@@ -38,7 +31,6 @@ const CommentCard = ({
     }
     imgLinks = res
   }
-  console.log('IMAGES', images)
   if (comment && comment.description) {
     getAttrFromString(comment.description)
   }
@@ -88,27 +80,17 @@ const CommentCard = ({
                 <TouchableOpacity onPress={() => onCommentImagePress(file)}>
                   {/* <Image
                     alt="file-upload"
-                    h={ms(114)}
-                    mr={ms(10)}
                     source={{uri: image.item}}
                     w={ms(136)}
                   /> */}
                   <Image
-                    style={{
-                      height: ms(114),
-                      width: ms(136),
-                      marginRight: ms(10),
-                    }}
-                    // h={ms(114)}
-                    // mr={ms(10)}
-                    alt="file-upload"
+                    // alt="file-upload"
                     source={{uri: image.item}}
-                    // w={ms(136)}
+                    style={styles.image}
                   />
                 </TouchableOpacity>
               )
             }}
-            // maxH={ms(120)}
             data={imgLinks}
             keyExtractor={item => item}
             removeClippedSubviews={true}
@@ -123,11 +105,9 @@ const CommentCard = ({
               return (
                 <TouchableOpacity>
                   <Image
-                    alt="file-upload"
-                    h={ms(114)}
-                    mr={ms(10)}
+                    // alt="file-upload"
                     source={{uri: image.item.uri}}
-                    w={ms(136)}
+                    style={styles.image}
                   />
                 </TouchableOpacity>
               )
@@ -146,3 +126,11 @@ const CommentCard = ({
 }
 
 export default CommentCard
+
+const styles = StyleSheet.create({
+  image: {
+    height: ms(114),
+    width: ms(136),
+    marginRight: ms(10),
+  },
+})

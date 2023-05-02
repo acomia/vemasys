@@ -50,7 +50,7 @@ type PlanningActions = {
   createBulkCargo: (cargo: any, navLogId: string) => void
   deleteBulkCargo: (id: string) => void
   updateComment: (id: string, description: string) => void
-  uploadImgFile: (file: ImageFile) => any
+  uploadImgFile: (file: ImageFile, accessLevel: string) => any
   deleteComment: (id: string) => void
   uploadVesselNavigationLogFile: (navLogId: string, body: any) => void
   createNavigationLogAction: (
@@ -400,10 +400,10 @@ export const usePlanning = create(
           set({isPlanningLoading: false})
         }
       },
-      uploadImgFile: async (file: ImageFile) => {
+      uploadImgFile: async (file: ImageFile, accessLevel: string) => {
         set({isPlanningLoading: true})
         try {
-          const response = await API.uploadImgFile(file)
+          const response = await API.uploadImgFile(file, accessLevel)
           set({isPlanningLoading: false})
           return response
         } catch (error) {

@@ -233,7 +233,7 @@ const updateComment = async (id: string, description: string) => {
     })
 }
 
-const uploadImgFile = async (file: ImageFile) => {
+const uploadImgFile = async (file: ImageFile, accessLevel: string) => {
   const formData = new FormData()
   const image = {
     uri: Platform.OS === 'android' ? `file://${file.uri}` : file.uri,
@@ -242,6 +242,7 @@ const uploadImgFile = async (file: ImageFile) => {
   }
 
   formData.append('file', image)
+  formData.append('access-level', accessLevel)
 
   const token = useAuth.getState().token
   const entityUserId = useEntity.getState().entityUserId

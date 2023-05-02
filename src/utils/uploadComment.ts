@@ -10,7 +10,8 @@ export const uploadComment = async (
   attachedImgsArg: string[],
   showToast: (text: string, res: string) => void,
   commentArg?: Comments,
-  navlogId?: number
+  navlogId?: number,
+  accessLevel: string
 ) => {
   const navigationLogDetails = usePlanning.getState().navigationLogDetails
   const uploadImgFile = usePlanning.getState().uploadImgFile
@@ -62,7 +63,7 @@ export const uploadComment = async (
       if (imgFileArg.length > 0) {
         await Promise.all(
           imgFileArg.map(async (file: any) => {
-            const upload = await uploadImgFile(file)
+            const upload = await uploadImgFile(file, accessLevel)
             if (typeof upload === 'object') {
               tempComment =
                 tempComment +
@@ -92,7 +93,7 @@ export const uploadComment = async (
       if (imgFileArg.length > 0) {
         await Promise.all(
           imgFileArg.map(async (file: any) => {
-            const upload = await uploadImgFile(file)
+            const upload = await uploadImgFile(file, accessLevel)
             if (typeof upload === 'object') {
               tempComment =
                 tempComment +
@@ -117,11 +118,7 @@ export const uploadComment = async (
           setRejectedComments(newCommentWaitingForUpload)
         }
       } else {
-        res = await createNavlogComment(
-          navlogId,
-          descriptionArg,
-          user?.id
-        )
+        res = await createNavlogComment(navlogId, descriptionArg, user?.id)
         if (typeof res === 'object') {
           showToast('New comment added.', 'success')
           getNavigationLogComments(navigationLogDetails?.id)
