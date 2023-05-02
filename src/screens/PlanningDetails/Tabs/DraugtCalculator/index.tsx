@@ -1,10 +1,20 @@
 import React, {useState} from 'react'
-import {Box, Text, Divider, Select, HStack, Button} from 'native-base'
+import {
+  Box,
+  Text,
+  Divider,
+  Select,
+  HStack,
+  Button,
+  Modal,
+  Input,
+} from 'native-base'
 import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
 import {BeforeAfterComponent, Ship} from './component'
 import {useTranslation} from 'react-i18next'
 import {PageScroll} from '@bluecentury/components'
+import {useEntity} from '@bluecentury/stores'
 
 interface Props {
   navLog: any[]
@@ -12,16 +22,25 @@ interface Props {
 
 export default (props: Props) => {
   const {t} = useTranslation()
-  const [statusActive, setStatusActive] = useState(1)
+  const [statusActive, setStatusActive] = useState(0)
   const [refreshing, setRefreshing] = useState(false)
+  const [selectedButton, setSelectedButton] = useState('')
+  const [isOpenInput, setIsOpenInput] = useState(false)
+  const [measurement, setMeasurement] = useState('')
 
   const measurements = [
     {value: 'freeboard', label: t('freeboardMeasurement')},
     {value: 'draught', label: t('draughtMeasurement')},
   ]
 
+  const {vesselDetails} = useEntity()
+
+  const buttonSelected = (selected: string) => {
+    setSelectedButton(selected)
+    setIsOpenInput(true)
+  }
+
   return (
-    // <Box flex={1} px={ms(12)}>
     <PageScroll refreshing={refreshing}>
       <Text bold color={Colors.azure} fontSize={ms(20)}>
         Draught Calculator
@@ -53,7 +72,10 @@ export default (props: Props) => {
         </Select>
       </Box>
       <Box>
-        <Ship />
+        <Ship
+          buttonSelected={buttonSelected}
+          draught={vesselDetails?.physicalVessel?.draught}
+        />
       </Box>
       <HStack mt={ms(10)} space={ms(5)}>
         <Button colorScheme={'white'} flex={1}>
@@ -63,6 +85,37 @@ export default (props: Props) => {
           <Text>Save</Text>
         </Button>
       </HStack>
+      <Modal
+        backgroundColor="blue"
+        isOpen={isOpenInput}
+        width={'full'}
+        onClose={() => setIsOpenInput(false)}
+      >
+        <Modal.Content width={'full'}>
+          <Modal.Header>{`Enter Measurement (${selectedButton})`}</Modal.Header>
+          <Modal.Body>
+            <Input
+              placeholder={vesselDetails?.physicalVessel?.draught}
+              value={measurement}
+              onChangeText={value => setMeasurement(value)}
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <HStack mt={ms(10)} space={ms(5)} width="100%">
+              <Button
+                colorScheme={'white'}
+                flex={1}
+                onPress={() => setIsOpenInput(false)}
+              >
+                <Text color={Colors.disabled}>{t('close')}</Text>
+              </Button>
+              <Button flex={1}>
+                <Text>{t('save')}</Text>
+              </Button>
+            </HStack>
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal>
     </PageScroll>
   )
 }

@@ -180,12 +180,12 @@ export const NavLogCard = (props: {
       key={navigationLog.id}
       activeOpacity={0.7}
       style={styles.navLogItemWrapper}
-      onPress={() =>
+      onPress={() => {
         navigation.navigate('PlanningDetails', {
           navlog: navigationLog,
           title: formatLocationLabel(navigationLog?.location) as string,
         })
-      }
+      }}
     >
       <Box
         flex={1}
