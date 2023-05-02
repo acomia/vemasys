@@ -3,12 +3,13 @@ import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import * as API from '@bluecentury/api/vemasys'
+import {Invoice, InvoiceStatistic} from '@bluecentury/models'
 
 type FinancialState = {
   isFinancialLoading: boolean
-  invoiceStatistics: [] | undefined
-  incomingInvoices: any[] | undefined
-  outgoingInvoices: any[] | undefined
+  invoiceStatistics: Array<InvoiceStatistic>
+  incomingInvoices: Array<Invoice>
+  outgoingInvoices: Array<Invoice>
   invoiceDetails: any[] | undefined
 }
 
