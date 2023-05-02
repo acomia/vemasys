@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useState} from 'react'
 import {
   Box,
@@ -24,12 +26,22 @@ import {useFinancial} from '@bluecentury/stores'
 import {ms} from 'react-native-size-matters'
 import {useTranslation} from 'react-i18next'
 import {NoInternetConnectionMessage} from '@bluecentury/components'
+import {InvoiceStatus} from '@bluecentury/models'
+import {RootStackParamList} from '@bluecentury/types/nav.types'
 
-type Props = NativeStackScreenProps<RootStackParamList>
-const FinancialInvoiceDetails = ({navigation, route}: Props) => {
+interface IInvoiceCardTotal {
+  label: string
+  value: string
+}
+
+type Props = NativeStackScreenProps<
+  RootStackParamList,
+  'FinancialInvoiceDetails'
+>
+const FinancialInvoiceDetails = ({route}: Props) => {
   const {t} = useTranslation()
   const toast = useToast()
-  const {id, routeFrom}: any = route.params
+  const {id, routeFrom} = route.params
   const {
     isFinancialLoading,
     invoiceDetails,
@@ -54,12 +66,12 @@ const FinancialInvoiceDetails = ({navigation, route}: Props) => {
   }
   const source = {uri: filePath, cache: true, expiration: 3600 * 24 * 30}
 
-  const statusBgColor = (status: string) => {
+  const statusBgColor = (status: InvoiceStatus | string) => {
     switch (status) {
       case 'paid':
         return Colors.secondary
       case 'draft':
-        return Colors.secondary
+        return Colors.primary
       case 'read':
         return Colors.disabled
       case 'accepted':
@@ -81,80 +93,57 @@ const FinancialInvoiceDetails = ({navigation, route}: Props) => {
     }
   }
 
-  const statusLabel = (status: string) => {
-    // switch (status) {
-    //   case 'paid':
-    //     return 'Paid'
-    //   case 'draft':
-    //     return 'Draft'
-    //   case 'read':
-    //     return 'Read'
-    //   case 'accepted':
-    //     return 'Accepted'
-    //   case 'stored':
-    //     return 'Stored'
-    //   case 'pending':
-    //     return 'Pending'
-    //   case 'sent':
-    //     return 'Sent'
-    //   case 'unpaid':
-    //     return 'Unpaid'
-    //   case 'new':
-    //     return 'New'
-    //   case 'payment_confirmed':
-    //     return 'Payment confirmed'
-    //   default:
-    //     return ' '
-    // }
-    return t(status)
+  const statusLabel = (status: InvoiceStatus | string) => {
+    if (typeof status === 'object') return t(status?.code)
+    else return t(status)
   }
 
-  const CardContent = ({label, value}: any) => {
+  const CardContent = ({label, value}: IInvoiceCardTotal) => {
     return (
       <HStack
-        overflow="hidden"
-        justifyContent="space-between"
         alignItems="center"
         bg={Colors.white}
+        borderColor="#E6E6E6"
         borderRadius={ms(5)}
         borderWidth={1}
-        borderColor="#E6E6E6"
         h={ms(55)}
+        justifyContent="space-between"
         mb={ms(10)}
-        shadow={1}
+        overflow="hidden"
         px={ms(15)}
+        shadow={1}
       >
-        <Text flex="1" fontWeight="medium" color={Colors.text}>
+        <Text color={Colors.text} flex="1" fontWeight="medium">
           {label}
         </Text>
         <Box
-          flex="1"
-          borderLeftWidth={ms(1)}
           borderColor="#E6E6E6"
+          borderLeftWidth={ms(1)}
+          flex="1"
           height="100%"
           justifyContent="center"
         >
           <Skeleton
             h="25"
+            isLoaded={!isFinancialLoading}
             ml={ms(10)}
             rounded="md"
             startColor={Colors.light}
-            isLoaded={!isFinancialLoading}
           >
             {label === 'Status' ? (
               <TouchableOpacity onPress={() => setStatusModal(true)}>
                 <Box
-                  borderRadius={ms(15)}
-                  px={ms(10)}
-                  py={ms(3)}
                   alignItems="center"
                   bg={statusBgColor(value)}
+                  borderRadius={ms(15)}
                   ml={ms(15)}
+                  px={ms(10)}
+                  py={ms(3)}
                 >
                   <Text
+                    color={Colors.white}
                     fontWeight="medium"
                     textAlign="center"
-                    color={Colors.white}
                   >
                     {statusLabel(value)}
                   </Text>
@@ -162,10 +151,10 @@ const FinancialInvoiceDetails = ({navigation, route}: Props) => {
               </TouchableOpacity>
             ) : (
               <Text
-                fontWeight="medium"
-                textAlign="left"
                 color={Colors.azure}
+                fontWeight="medium"
                 ml={ms(15)}
+                textAlign="left"
               >
                 {value}
               </Text>
@@ -176,44 +165,44 @@ const FinancialInvoiceDetails = ({navigation, route}: Props) => {
     )
   }
 
-  const CardTotal = ({label, value}) => {
+  const CardTotal = ({label, value}: IInvoiceCardTotal) => {
     return (
       <HStack
-        overflow="hidden"
-        justifyContent="space-between"
         alignItems="center"
         bg={Colors.highlighted_text}
+        borderColor="#E6E6E6"
         borderRadius={ms(5)}
         borderWidth={1}
-        borderColor="#E6E6E6"
         h={ms(60)}
+        justifyContent="space-between"
         mb={ms(10)}
-        shadow={1}
+        overflow="hidden"
         px={ms(15)}
+        shadow={1}
       >
-        <Text flex="1" fontWeight="medium" color={Colors.white}>
+        <Text color={Colors.white} flex="1" fontWeight="medium">
           {label}
         </Text>
         <Box
-          flex="1"
-          borderLeftWidth={ms(1)}
           borderColor="#E6E6E6"
+          borderLeftWidth={ms(1)}
+          flex="1"
           height="100%"
           justifyContent="center"
         >
           <Skeleton
             h="25"
+            isLoaded={!isFinancialLoading}
             ml={ms(10)}
             rounded="md"
             startColor={Colors.light}
-            isLoaded={!isFinancialLoading}
           >
             <Text
-              fontSize={ms(18)}
               bold
-              textAlign="left"
               color={Colors.white}
+              fontSize={ms(18)}
               ml={ms(15)}
+              textAlign="left"
             >
               €{' '}
               {Platform.OS === 'ios'
@@ -238,11 +227,11 @@ const FinancialInvoiceDetails = ({navigation, route}: Props) => {
         return (
           <Text
             bg={res === 'success' ? 'emerald.500' : 'red.500'}
+            color={Colors.white}
+            mb={5}
             px="2"
             py="1"
             rounded="sm"
-            mb={5}
-            color={Colors.white}
           >
             {text}
           </Text>
@@ -254,16 +243,17 @@ const FinancialInvoiceDetails = ({navigation, route}: Props) => {
   const onUpdateInvoiceStatus = async (status: string) => {
     setStatusModal(false)
     let res
+
     if (routeFrom === 'costs') {
       res = await updateInvoiceStatus(
-        invoiceDetails?.id,
+        invoiceDetails?.id.toString(),
         status,
         invoiceDetails?.outgoingStatus
       )
     } else {
       res = await updateInvoiceStatus(
-        invoiceDetails?.id,
-        invoiceDetails?.status,
+        invoiceDetails?.id.toString(),
+        invoiceDetails?.status.code,
         status
       )
     }
@@ -278,21 +268,21 @@ const FinancialInvoiceDetails = ({navigation, route}: Props) => {
 
   return (
     <Box
-      flex="1"
+      bg={Colors.white}
       borderTopLeftRadius={ms(15)}
       borderTopRightRadius={ms(15)}
-      bg={Colors.white}
+      flex="1"
     >
       <NoInternetConnectionMessage />
       <ScrollView contentContainerStyle={{flexGrow: 1}}>
         <Box px={ms(14)} py={ms(20)}>
           <CardContent
-            label={t('invoiceNumber')}
             value={
               routeFrom === 'costs'
                 ? invoiceDetails?.receiverReference
                 : invoiceDetails?.senderReference
             }
+            label={t('invoiceNumber')}
           />
           <CardContent
             label={t('receiver')}
@@ -303,31 +293,31 @@ const FinancialInvoiceDetails = ({navigation, route}: Props) => {
             value={invoiceDetails?.senderReference}
           />
           <CardContent
-            label={t('status')}
             value={
               routeFrom === 'costs'
-                ? invoiceDetails?.status
+                ? invoiceDetails?.status?.code
                 : invoiceDetails?.outgoingStatus
             }
+            label={t('status')}
           />
           <TouchableOpacity onPress={() => setdateToggled(!dateToggled)}>
             {dateToggled && (
               <CardContent
-                label={t('sentOn')}
                 value={
                   invoiceDetails?.sentAt === null
                     ? ''
                     : moment(invoiceDetails?.sentAt).format('DD MMM YYYY')
                 }
+                label={t('sentOn')}
               />
             )}
             <CardContent
-              label={t('dueDate')}
               value={
                 invoiceDetails?.dueDate === null
                   ? ''
                   : moment(invoiceDetails?.dueDate).format('DD MMM YYYY')
               }
+              label={t('dueDate')}
             />
           </TouchableOpacity>
           <CardTotal
@@ -338,17 +328,17 @@ const FinancialInvoiceDetails = ({navigation, route}: Props) => {
         {filePath !== '' ? (
           <Pdf
             enablePaging
-            source={source}
             style={{
               marginTop: -50,
               backgroundColor: 'transparent',
               width: Dimensions.get('window').width,
               height: Dimensions.get('window').height,
             }}
+            source={source}
             trustAllCerts={false}
           />
         ) : (
-          <Box flex="1" alignItems="center">
+          <Box alignItems="center" flex="1">
             <Text
               style={{fontSize: 16, fontWeight: '700', color: Colors.azure}}
             >
@@ -359,12 +349,12 @@ const FinancialInvoiceDetails = ({navigation, route}: Props) => {
       </ScrollView>
 
       <Modal
-        isOpen={statusModal}
         animationPreset="slide"
+        isOpen={statusModal}
         size="full"
         onClose={() => setStatusModal(false)}
       >
-        <Modal.Content px={ms(10)} mb={0} mt="auto">
+        <Modal.Content mb={0} mt="auto" px={ms(10)}>
           <Modal.CloseButton />
           <Modal.Header>{t('updateStatus')}</Modal.Header>
           <Modal.Body>
@@ -373,7 +363,7 @@ const FinancialInvoiceDetails = ({navigation, route}: Props) => {
                 key={index}
                 onPress={() => onUpdateInvoiceStatus(status.value)}
               >
-                <Text fontSize={ms(15)} fontWeight="medium" color={Colors.text}>
+                <Text color={Colors.text} fontSize={ms(15)} fontWeight="medium">
                   {t(status.label)}
                 </Text>
                 <Divider my={ms(10)} />
