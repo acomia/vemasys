@@ -3,7 +3,13 @@ import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as API from '@bluecentury/api/vemasys'
 import {ENTITY_TYPE_EXPLOITATION_VESSEL} from '@bluecentury/constants'
-import {Entity, EntityUser, User, Vessel} from '@bluecentury/models'
+import {
+  CommentWaitingForUpload,
+  Entity,
+  EntityUser,
+  User,
+  Vessel,
+} from '@bluecentury/models'
 import {useSettings} from '@bluecentury/stores/settings'
 
 type EntityState = {
@@ -21,7 +27,7 @@ type EntityState = {
   entityRole: string
   entityUserId: string | number | undefined
   linkEntity: object | null
-  vesselId: string | undefined
+  vesselId: string
   vesselDetails: Vessel | undefined
   selectedVessel: Entity | null
   selectedEntity: EntityUser | null
@@ -42,6 +48,12 @@ type EntityActions = {
   getRoleForAccept: () => void
   updatePendingRole: (id: string, accept: boolean) => void
   getLinkEntityInfo: (id: string) => void
+  setCommentsWaitingForUpload: (
+    comment: CommentWaitingForUpload | string
+  ) => void
+  setRejectedComments: (comment: CommentWaitingForUpload | string) => void
+  setAreCommentsUploading: (value: boolean) => void
+  setUploadingCommentNumber: (value: number) => void
 }
 
 type EntityStore = EntityState & EntityActions
@@ -61,7 +73,7 @@ const initialEntityState: EntityState = {
   entityRole: '',
   entityUserId: undefined,
   linkEntity: null,
-  vesselId: undefined,
+  vesselId: '',
   vesselDetails: undefined,
   selectedVessel: null,
   selectedEntity: null,
@@ -98,12 +110,19 @@ export const useEntity = create(
           console.log('getUserInfo')
           const response = await API.getUserInfo()
           const setLanguage = useSettings.getState().setLanguage
+          const currentLanguage = useSettings.getState().language
 
           set({
             user: response,
             isLoadingCurrentUserInfo: false,
           })
-          setLanguage(response.language)
+          if (response && currentLanguage !== response.language) {
+            if (response.language === 'en' || response.language === 'fr') {
+              setLanguage(response.language)
+            } else {
+              setLanguage(currentLanguage ? currentLanguage : 'en')
+            }
+          }
         } catch (error) {
           set({
             hasErrorLoadingCurrentUser: true,
@@ -253,6 +272,33 @@ export const useEntity = create(
         } catch (error) {
           set({isLoadingEntityUsers: false})
         }
+      },
+      setCommentsWaitingForUpload: comment => {
+        const comments = get().commentsWaitingForUpload
+        if (comment === 'clear') {
+          set({commentsWaitingForUpload: []})
+          return
+        }
+        if (typeof comment !== 'string') {
+          set({commentsWaitingForUpload: [comment, ...comments]})
+        }
+        console.log('WAITING_FOR_UPLOAD', get().commentsWaitingForUpload)
+      },
+      setRejectedComments: comment => {
+        const comments = get().rejectedComments
+        if (comment === 'clear') {
+          set({rejectedComments: []})
+          return
+        }
+        if (typeof comment !== 'string') {
+          set({rejectedComments: [comment, ...comments]})
+        }
+      },
+      setAreCommentsUploading: value => {
+        set({areCommentsUploading: value})
+      },
+      setUploadingCommentNumber: value => {
+        set({uploadingCommentNumber: value})
       },
       reset: () => {
         set({

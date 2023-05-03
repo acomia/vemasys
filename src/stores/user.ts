@@ -11,6 +11,7 @@ import {
   LevelNavigationCertificate,
 } from '@bluecentury/models'
 import {useEntity} from './entity'
+import {updateUserInfo} from '@bluecentury/api/vemasys'
 
 type UserState = {
   isLoadingRegistration: boolean
@@ -23,11 +24,13 @@ type UserState = {
   requestAccessToEntityStatus: string
   signupRequestStatus: string
   levelNavigationCertificate: Array<LevelNavigationCertificate>
+  isResetPasswordLoading: boolean
+  isResetPasswordSuccess: boolean
 }
 
 type UserActions = {
   registerNewUser: (user: UserRegistration) => void
-  updateUserInfo: (user: ExtendedUser, signupDocs: Array<SignupDocs>) => void
+  updateUserData: (user: ExtendedUser, signupDocs: Array<SignupDocs>) => void
   getEntityData: (mmsi: number) => void
   requestAccessToEntity: (entityID: string) => void
   createSignupRequestForCurrentUser: (
@@ -37,6 +40,8 @@ type UserActions = {
   getLevelOfNavigationCertificate: () => void
   getEntityAdminUser: () => void
   reset: () => void
+  resetPassword: (id: number, data: object) => void
+  unmountResetPassword: () => void
 }
 
 type UserStore = UserState & UserActions
@@ -52,6 +57,8 @@ const initialUserState: UserState = {
   requestAccessToEntityStatus: '',
   signupRequestStatus: '',
   levelNavigationCertificate: [],
+  isResetPasswordLoading: false,
+  isResetPasswordSuccess: false,
 }
 
 export const useUser = create(
@@ -75,13 +82,13 @@ export const useUser = create(
           set({registrationStatus: 'FAILED', isLoadingRegistration: false})
         }
       },
-      updateUserInfo: async (
+      updateUserData: async (
         user: ExtendedUser,
         signupDocs: Array<SignupDocs>
       ) => {
         set({isLoadingUpdateUserInfo: true})
         try {
-          const response = await API.updateUserInfo(user, signupDocs)
+          const response = await API.updateUserData(user, signupDocs)
           if (response.id) {
             set({
               updateUserInfoStatus: 'SUCCESS',
@@ -195,6 +202,23 @@ export const useUser = create(
           requestAccessToEntityStatus: '',
           signupRequestStatus: '',
         })
+      },
+      resetPassword: async (id: number, data: object) => {
+        set({isResetPasswordLoading: true})
+        try {
+          const userResponse = await updateUserInfo(id, data)
+
+          if (typeof userResponse === 'object') {
+            set({isResetPasswordSuccess: true, isResetPasswordLoading: false})
+          }
+
+          set({isResetPasswordLoading: false, isResetPasswordSuccess: false})
+        } catch (error) {
+          set({isResetPasswordLoading: false, isResetPasswordSuccess: false})
+        }
+      },
+      unmountResetPassword: () => {
+        set({isResetPasswordLoading: false, isResetPasswordSuccess: false})
       },
     }),
     {

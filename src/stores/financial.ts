@@ -3,13 +3,14 @@ import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import * as API from '@bluecentury/api/vemasys'
+import {Invoice, InvoiceStatistic} from '@bluecentury/models'
 
 type FinancialState = {
   isFinancialLoading: boolean
-  invoiceStatistics: [] | undefined
-  incomingInvoices: any[] | undefined
-  outgoingInvoices: any[] | undefined
-  invoiceDetails: any[] | undefined
+  invoiceStatistics: Array<InvoiceStatistic>
+  incomingInvoices: Array<Invoice>
+  outgoingInvoices: Array<Invoice>
+  invoiceDetails: Invoice | Record<string, never>
 }
 
 type FinancialActions = {
@@ -34,7 +35,7 @@ export const useFinancial = create(
       invoiceStatistics: [],
       incomingInvoices: [],
       outgoingInvoices: [],
-      invoiceDetails: [],
+      invoiceDetails: {},
       getInvoiceStatistics: async (year: string) => {
         set({
           isFinancialLoading: true,
@@ -98,7 +99,7 @@ export const useFinancial = create(
       getInvoiceDetails: async (id: string) => {
         set({
           isFinancialLoading: true,
-          invoiceDetails: [],
+          invoiceDetails: {},
         })
         try {
           const response = await API.getInvoiceDetails(id)
@@ -110,7 +111,7 @@ export const useFinancial = create(
           } else {
             set({
               isFinancialLoading: false,
-              invoiceDetails: [],
+              invoiceDetails: {},
             })
           }
         } catch (error) {
@@ -126,7 +127,7 @@ export const useFinancial = create(
       ) => {
         set({
           isFinancialLoading: true,
-          invoiceDetails: [],
+          invoiceDetails: {},
         })
         try {
           const response = await API.updateInvoiceStatus(

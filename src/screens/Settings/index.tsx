@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import {Box, Center, HStack} from 'native-base'
 import SettingsItem from '@bluecentury/components/SettingsItem'
 import {Colors} from '@bluecentury/styles'
@@ -8,7 +8,10 @@ import {DrawerContentComponentProps} from '@react-navigation/drawer'
 import {useSettings} from '@bluecentury/stores'
 import {VersionBuildLabel} from '@bluecentury/components/version-build-label'
 import {useTranslation} from 'react-i18next'
-import {NoInternetConnectionMessage} from '@bluecentury/components'
+import {
+  NoInternetConnectionMessage,
+  ResetPasswordModal,
+} from '@bluecentury/components'
 
 const Settings = (props: DrawerContentComponentProps) => {
   const {t} = useTranslation()
@@ -27,11 +30,11 @@ const Settings = (props: DrawerContentComponentProps) => {
   }
   return (
     <Box
-      flex="1"
-      px="13"
-      pt="29"
       backgroundColor={Colors.white}
       borderRadius="15"
+      flex="1"
+      pt="29"
+      px="13"
     >
       <NoInternetConnectionMessage />
       {/* <SettingsItem type="navigation"
@@ -51,25 +54,25 @@ const Settings = (props: DrawerContentComponentProps) => {
       />
         */}
       <SettingsItem
-        type="select"
-        value="Third line text"
+        callback={(lang: string) => setLanguage(lang, true)}
         iconSource={Icons.location}
         language={language}
-        callback={(lang: string) => setLanguage(lang)}
+        type="select"
+        value="Third line text"
       />
       <SettingsItem
-        type="switch"
-        value={t('deviceGps')}
+        callback={handleOnValueChange}
         iconSource={Icons.location}
         switchState={isMobileTracking}
-        callback={handleOnValueChange}
+        type="switch"
+        value={t('deviceGps')}
       />
       <SettingsItem
-        type="switch"
-        value={t('showQRScannerOnTop')}
+        callback={setIsQrScanner}
         iconSource={Icons.qr}
         switchState={isQrScanner}
-        callback={setIsQrScanner}
+        type="switch"
+        value={t('showQRScannerOnTop')}
       />
       {/*
       <SettingsItem
@@ -79,6 +82,7 @@ const Settings = (props: DrawerContentComponentProps) => {
         switchState={isDarkMode}
         callback={setDarkMode}
       />*/}
+      <ResetPasswordModal />
       <HStack justifyContent="center">
         <Center>
           <VersionBuildLabel />

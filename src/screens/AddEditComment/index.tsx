@@ -13,6 +13,7 @@ import {
   Modal,
   Divider,
   Icon,
+  Select,
 } from 'native-base'
 import {Shadow} from 'react-native-shadow-2'
 import {ms} from 'react-native-size-matters'
@@ -23,19 +24,25 @@ import {StyleSheet} from 'react-native'
 
 import {Colors} from '@bluecentury/styles'
 import {useEntity, usePlanning, useSettings} from '@bluecentury/stores'
-import {IconButton, LoadingAnimated, NoInternetConnectionMessage} from '@bluecentury/components'
+import {
+  IconButton,
+  LoadingAnimated,
+  NoInternetConnectionMessage,
+} from '@bluecentury/components'
 import {Alert, TouchableOpacity} from 'react-native'
 import {Icons} from '@bluecentury/assets'
 import {PROD_URL, UAT_URL} from '@vemasys/env'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import {useTranslation} from 'react-i18next'
 import {RootStackParamList} from '@bluecentury/types/nav.types'
+import {uploadComment} from '@bluecentury/utils'
+import {accessLevel} from '@bluecentury/constants'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'AddEditComment'>
 
 const AddEditComment = ({navigation, route}: Props) => {
   const {t} = useTranslation()
-  const {comment, method, routeFrom} = route.params
+  const {comment, method, routeFrom, navlogId} = route.params
   const currentEnv = useSettings.getState().env
   const uploadEndpoint = () => {
     if (currentEnv === 'PROD') {
@@ -48,14 +55,10 @@ const AddEditComment = ({navigation, route}: Props) => {
   const toast = useToast()
   const {
     isPlanningLoading,
-    createNavlogComment,
-    updateComment,
     getNavigationLogComments,
     navigationLogDetails,
     deleteComment,
-    uploadImgFile,
   }: any = usePlanning()
-  const {user} = useEntity()
   const descriptionText = comment?.description.match(/^[^-<]*/)
   const [description, setDescription] = useState<string>(
     descriptionText ? descriptionText[0] : ''
@@ -67,6 +70,7 @@ const AddEditComment = ({navigation, route}: Props) => {
   const [imgModal, setImgModal] = useState(false)
   const [viewImg, setViewImg] = useState(false)
   const [isCameraOpen, setIsCameraOpen] = useState(false)
+  const [levelOfAccess, setLevelOfAccess] = useState(accessLevel[0].value)
 
   const cameraRef = useRef<any>()
 
@@ -125,84 +129,18 @@ const AddEditComment = ({navigation, route}: Props) => {
       setIsCommentEmpty(true)
       return
     }
-    let res
-    let tempComment = ''
-    if (method === 'edit') {
-      if (routeFrom === 'Planning') {
-        if (attachedImages.length > 0) {
-          attachedImages.forEach(item => {
-            tempComment = tempComment + '-' + '\n' + `<img src='${item}' />`
-          })
-        }
-        if (imgFile.length > 0) {
-          await Promise.all(
-            imgFile.map(async (file: any) => {
-              const upload = await uploadImgFile(file)
-              if (typeof upload === 'object') {
-                tempComment =
-                  tempComment +
-                  '-' +
-                  '\n' +
-                  `<img src='${uploadEndpoint()}upload/documents/${
-                    upload.path
-                  }' />`
-              }
-            })
-          )
-        }
-        res = await updateComment(comment?.id, description + tempComment)
-        if (typeof res === 'object') {
-          showToast('Comment updated.', 'success')
-          getNavigationLogComments(navigationLogDetails?.id)
-        } else {
-          showToast('Comment update failed.', 'failed')
-        }
-      } else if (routeFrom === 'Technical') {
-      }
-    } else {
-      if (routeFrom === 'Planning') {
-        if (imgFile.length > 0) {
-          await Promise.all(
-            imgFile.map(async (file: any) => {
-              const upload = await uploadImgFile(file)
-              if (typeof upload === 'object') {
-                tempComment =
-                  tempComment +
-                  '-' +
-                  '\n' +
-                  `<img src='${uploadEndpoint()}upload/documents/${
-                    upload.path
-                  }' />`
-              }
-            })
-          )
-          const response = await createNavlogComment(
-            navigationLogDetails?.id,
-            description + tempComment,
-            user?.id
-          )
-          if (typeof response === 'object') {
-            showToast('New comment added.', 'success')
-            getNavigationLogComments(navigationLogDetails?.id)
-          } else {
-            showToast('New comment failed.', 'failed')
-          }
-        } else {
-          res = await createNavlogComment(
-            navigationLogDetails?.id,
-            description,
-            user?.id
-          )
-          if (typeof res === 'object') {
-            showToast('New comment added.', 'success')
-            getNavigationLogComments(navigationLogDetails?.id)
-          } else {
-            showToast('New comment failed.', 'failed')
-          }
-        }
-      } else if (routeFrom === 'Technical') {
-      }
-    }
+
+    await uploadComment(
+      method,
+      routeFrom,
+      description,
+      imgFile,
+      attachedImages,
+      showToast,
+      comment,
+      navlogId,
+      levelOfAccess
+    )
   }
 
   const deleteCommentConfirmation = () => {
@@ -333,7 +271,7 @@ const AddEditComment = ({navigation, route}: Props) => {
           {method === 'edit' ? t('editAComment') : t('addAComment')}
         </Text>
 
-        <FormControl isRequired isInvalid={isCommentEmpty} my={ms(25)}>
+        <FormControl isRequired isInvalid={isCommentEmpty} mt={ms(25)}>
           <FormControl.Label color={Colors.disabled}>
             {t('description')}
           </FormControl.Label>
@@ -351,6 +289,28 @@ const AddEditComment = ({navigation, route}: Props) => {
           />
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
             {t('fillTheDescription')}
+          </FormControl.ErrorMessage>
+        </FormControl>
+        <FormControl isRequired isInvalid={isCommentEmpty} my={ms(15)}>
+          <FormControl.Label color={Colors.disabled}>
+            {t('accessLevel')}
+          </FormControl.Label>
+          <Select
+            bg={Colors.light_grey}
+            defaultValue={levelOfAccess}
+            selectedValue={levelOfAccess}
+            onValueChange={value => setLevelOfAccess(value)}
+          >
+            {accessLevel.map((access, idx) => (
+              <Select.Item
+                key={`AccessLevel-${idx}`}
+                label={access.label}
+                value={access.value}
+              />
+            ))}
+          </Select>
+          <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
+            {t('selectAccessLevel')}
           </FormControl.ErrorMessage>
         </FormControl>
         <ScrollView

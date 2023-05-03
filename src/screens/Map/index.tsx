@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useRef, useState} from 'react'
 import {StyleSheet, Dimensions} from 'react-native'
 import {Box, Text, Button, HStack, Image, Icon, VStack} from 'native-base'
@@ -12,12 +13,18 @@ import BottomSheet from 'reanimated-bottom-sheet'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
-import {CommonActions, useIsFocused} from '@react-navigation/native'
+import {
+  CommonActions,
+  CompositeScreenProps,
+  useIsFocused,
+} from '@react-navigation/native'
+import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5'
+import {useTranslation} from 'react-i18next'
+
 import {
   PreviousNavLogInfo,
   PlannedNavLogInfo,
   CurrentNavLogInfo,
-  LoadingAnimated,
   IconButton,
   FleetHeader,
   MapBottomSheetToggle,
@@ -31,27 +38,27 @@ import {
   ENTITY_TYPE_EXPLOITATION_GROUP,
   formatLocationLabel,
 } from '@bluecentury/constants'
-import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5'
-import {useTranslation} from 'react-i18next'
+import {
+  MainStackParamList,
+  RootStackParamList,
+} from '@bluecentury/types/nav.types'
+import {ExploitationVessel, NavigationLog} from '@bluecentury/models'
 
 const {width, height} = Dimensions.get('window')
 const ASPECT_RATIO = width / height
 const LATITUDE_DELTA = 0.0922
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO
-const DEFAULT_PADDING = {top: 80, right: 80, bottom: 80, left: 80}
 
-type Props = NativeStackScreenProps<MainStackParamList>
+type Props = CompositeScreenProps<
+  NativeStackScreenProps<MainStackParamList>,
+  NativeStackScreenProps<RootStackParamList>
+>
 export default function Map({navigation}: Props) {
   const {t} = useTranslation()
   const focused = useIsFocused()
   const {vesselId, selectedVessel, entityType, selectFleetVessel, entityUsers} =
     useEntity()
   const {
-    isLoadingVesselStatus,
-    isLoadingCurrentNavLogs,
-    isLoadingPlannedNavLogs,
-    isLoadingPreviousNavLogs,
-    isLoadingVesselTrack,
     getPreviousNavigationLogs,
     getPlannedNavigationLogs,
     getCurrentNavigationLogs,
@@ -64,6 +71,8 @@ export default function Map({navigation}: Props) {
     lastCompleteNavLogs,
     vesselStatus,
     vesselTracks,
+    trackViewMode,
+    setTrackViewMode,
   } = useMap()
   const {notifications, getAllNotifications, calculateBadge} = useNotif()
 
@@ -81,11 +90,11 @@ export default function Map({navigation}: Props) {
     longitudeDelta: LONGITUDE_DELTA,
   })
   const [zoomLevel, setZoomLevel] = useState<number | null>(null)
-  const [trackViewMode, setTrackViewMode] = useState(false)
+  // const [trackViewMode, setTrackViewMode] = useState(false)
   const [page, setPage] = useState(1)
   const [vesselUpdated, setVesselUpdated] = useState(false)
-  const uniqueTracks: any[] = []
-  const uniqueVesselTracks: {latitude: any; longitude: any}[] = []
+  const uniqueTracks: Array<VesselGeolocation> = []
+  const uniqueVesselTracks: {latitude: number; longitude: number}[] = []
   const [isLoadingMap, setLoadingMap] = useState(false)
 
   const uniqueVesselTrack = vesselTracks?.filter(element => {
@@ -129,7 +138,6 @@ export default function Map({navigation}: Props) {
       }, 30000)
     }
     return () => clearInterval(refreshId.current)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vesselId, focused])
 
   useEffect(() => {
@@ -140,7 +148,6 @@ export default function Map({navigation}: Props) {
         longitude: currentNavLogs[0]?.location?.longitude,
       })
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentNavLogs])
 
   useEffect(() => {
@@ -159,28 +166,19 @@ export default function Map({navigation}: Props) {
       const duration = 1000 * 3
       mapRef.current?.animateCamera(camera, {duration: duration})
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vesselStatus])
-
-  useEffect(() => {
-    if (trackViewMode && vesselId) {
-      getVesselTrack(vesselId, page)
-    }
-    centerMapToCurrentLocation()
-  }, [trackViewMode])
-
-  useEffect(() => {
-    if (trackViewMode) {
-      if (page > 1) fitToAllMarkers()
-      else centerMapToBeginningTrackLine()
-    }
-  }, [vesselTracks])
 
   useEffect(() => {
     if (notifications) {
       calculateBadge()
     }
   }, [notifications])
+
+  useEffect(() => {
+    if (vesselTracks.length) {
+      fitToAllMarkers()
+    }
+  }, [vesselTracks])
 
   const updateMap = async () => {
     if (vesselId) {
@@ -215,8 +213,10 @@ export default function Map({navigation}: Props) {
         >
           {selectedVessel?.alias || null}
         </Text>
-        {snapStatus === 1 && <PreviousNavLogInfo logs={prevNavLogs} />}
-        <CurrentNavLogInfo />
+        {snapStatus === 1 && (
+          <PreviousNavLogInfo logs={prevNavLogs} tracking={trackViewMode} />
+        )}
+        <CurrentNavLogInfo tracking={trackViewMode} />
         {snapStatus === 1 && <PlannedNavLogInfo logs={plannedNavLogs} />}
         {snapStatus === 1 && (
           <Button
@@ -232,7 +232,7 @@ export default function Map({navigation}: Props) {
 
   const renderMarkerFrom = () => {
     const previousLocation = prevNavLogs?.find(
-      (prev: any) => prev.plannedEta !== null
+      (prev: NavigationLog) => prev.plannedEta !== null
     )
     if (zoomLevel && zoomLevel > 12) {
       markerRef?.current?.showCallout()
@@ -266,7 +266,6 @@ export default function Map({navigation}: Props) {
               as={<FontAwesome5Icon name="check-circle" />}
               color={Colors.secondary}
               size={25}
-              solid={true}
             />
             <Box mx={ms(5)}>
               <Text fontSize={ms(13)} fontWeight="semibold">
@@ -296,7 +295,7 @@ export default function Map({navigation}: Props) {
 
   const renderMarkerTo = () => {
     const nextLocation = plannedNavLogs?.find(
-      (plan: any) => plan.plannedEta !== null
+      (plan: NavigationLog) => plan.plannedEta !== null
     )
     if (zoomLevel && zoomLevel > 12) {
       markerRef?.current?.showCallout()
@@ -362,7 +361,10 @@ export default function Map({navigation}: Props) {
   }
 
   const renderMarkerVessel = () => {
-    const {latitude, longitude, speed}: VesselGeolocation = vesselStatus
+    const {latitude, longitude, speed, heading}: VesselGeolocation =
+      vesselStatus
+    const rotate = heading >= 0 && Number(speed) > 1 ? `${heading}deg` : null
+
     return (
       <Marker
         key={`Vessel-${currentNavLogs[0]?.location?.id}`}
@@ -370,15 +372,36 @@ export default function Map({navigation}: Props) {
           latitude: Number(latitude),
           longitude: Number(longitude),
         }}
-        anchor={{x: 0, y: 0.5}}
-        image={Number(speed) > 0 ? Icons.navigating : Icons.anchor}
+        anchor={{x: 0, y: 0.2}}
+        tracksViewChanges={false}
         zIndex={1}
-      />
+      >
+        {rotate ? (
+          <Box style={{transform: [{rotate}]}}>
+            <Image
+              alt="map-navigating-arrow-img"
+              resizeMode="contain"
+              source={Icons.navigating}
+            />
+          </Box>
+        ) : (
+          <Box bgColor={Colors.white} borderRadius={50}>
+            <FontAwesome5Icon
+              style={{
+                padding: 7,
+              }}
+              color={Colors.azure}
+              name="anchor"
+              size={ms(15)}
+            />
+          </Box>
+        )}
+      </Marker>
     )
   }
 
   const renderTrackLineBeginningMarker = () => {
-    const {latitude, longitude}: VesselGeolocation =
+    const {latitude, longitude} =
       uniqueVesselTracks[uniqueVesselTracks.length - 1]
     return (
       <Marker
@@ -399,7 +422,7 @@ export default function Map({navigation}: Props) {
     )
   }
 
-  const renderLastCompleteNavLogs = (log: any, index: number) => {
+  const renderLastCompleteNavLogs = (log: NavigationLog, index: number) => {
     if (!log?.plannedEta && !log?.arrivalDatetime) {
       return null
     }
@@ -449,8 +472,8 @@ export default function Map({navigation}: Props) {
 
   const fitToAllMarkers = () => {
     mapRef?.current?.fitToCoordinates(uniqueVesselTracks, {
-      edgePadding: DEFAULT_PADDING,
       animated: true,
+      edgePadding: {bottom: height * 0.3, top: 40, left: 50, right: 80},
     })
   }
 
@@ -472,25 +495,6 @@ export default function Map({navigation}: Props) {
     }
   }
 
-  const centerMapToBeginningTrackLine = () => {
-    if (uniqueVesselTracks) {
-      const {latitude, longitude}: VesselGeolocation =
-        uniqueVesselTracks[uniqueVesselTracks?.length - 1]
-      const camera: Camera = {
-        center: {
-          latitude: Number(latitude),
-          longitude: Number(longitude),
-        },
-        zoom: 14,
-        heading: 0,
-        pitch: 0,
-        altitude: 5,
-      }
-      const duration = 1000 * 3
-      mapRef.current?.animateCamera(camera, {duration: duration})
-    }
-  }
-
   const handleRegionChange = (reg: {
     latitude: number
     longitude: number
@@ -501,7 +505,7 @@ export default function Map({navigation}: Props) {
     setZoomLevel(zoom)
   }
 
-  const onReloadFleetNavLogs = (index: number, vessel: any) => {
+  const onReloadFleetNavLogs = (index: number, vessel: ExploitationVessel) => {
     const selectedEntityVessel = entityUsers.find(
       e => e?.entity?.exploitationVessel?.id === vessel?.id
     )
@@ -523,7 +527,7 @@ export default function Map({navigation}: Props) {
     <Box bg={Colors.light} flex="1">
       {entityType === ENTITY_TYPE_EXPLOITATION_GROUP && (
         <FleetHeader
-          onPress={(index: number, vessel: any) =>
+          onPress={(index: number, vessel: ExploitationVessel) =>
             onReloadFleetNavLogs(index, vessel)
           }
         />
@@ -539,16 +543,18 @@ export default function Map({navigation}: Props) {
           onRegionChange={regionItem => handleRegionChange(regionItem)}
         >
           {prevNavLogs?.length > 0 &&
-            prevNavLogs.find((plan: any) => plan.plannedEta !== null) !==
-              undefined &&
+            prevNavLogs.find(
+              (plan: NavigationLog) => plan.plannedEta !== null
+            ) !== undefined &&
             renderMarkerFrom()}
           {vesselStatus && renderMarkerVessel()}
           {plannedNavLogs?.length > 0 &&
-            plannedNavLogs.find((plan: any) => plan.plannedEta !== null) !==
-              undefined &&
+            plannedNavLogs.find(
+              (plan: NavigationLog) => plan.plannedEta !== null
+            ) !== undefined &&
             renderMarkerTo()}
           {lastCompleteNavLogs.length > 0 &&
-            lastCompleteNavLogs?.map((log: any, index: number) =>
+            lastCompleteNavLogs?.map((log: NavigationLog, index: number) =>
               renderLastCompleteNavLogs(log, index)
             )}
           {trackViewMode && uniqueVesselTracks.length > 0 && (
@@ -589,7 +595,14 @@ export default function Map({navigation}: Props) {
               <IconButton
                 size={ms(30)}
                 source={Icons.navigating_route}
-                onPress={() => setTrackViewMode(!trackViewMode)}
+                onPress={() => {
+                  if (trackViewMode) {
+                    centerMapToCurrentLocation()
+                  } else {
+                    getVesselTrack(vesselId, page)
+                  }
+                  setTrackViewMode(!trackViewMode)
+                }}
               />
             </Box>
           </VStack>
@@ -609,7 +622,7 @@ export default function Map({navigation}: Props) {
           enabledGestureInteraction={false}
           initialSnap={1}
           renderContent={renderBottomContent}
-          snapPoints={['60%', '30%']}
+          snapPoints={['63%', '30%']}
           onCloseEnd={() => setSnapStatus(0)}
           onOpenEnd={() => setSnapStatus(1)}
         />

@@ -2,6 +2,7 @@ import React from 'react'
 import {HStack, Text, Pressable, VStack, Skeleton} from 'native-base'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import ArrowDownIcon from 'react-native-vector-icons/MaterialIcons'
+import IconFA5 from 'react-native-vector-icons/FontAwesome5'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import _ from 'lodash'
@@ -19,47 +20,66 @@ const DatetimePickerList = ({
   onChangeDate,
   onClearDate,
   readOnly = false,
+  iconName,
 }: any) => {
   const {t} = useTranslation()
   const {isPlanningDetailsLoading} = usePlanning()
+  const icon = () => {
+    return date ? (
+      <IconButton size={ms(22)} source={Icons.close} onPress={onClearDate} />
+    ) : (
+      !readOnly && (
+        <ArrowDownIcon
+          color={Colors.azure}
+          name="keyboard-arrow-down"
+          size={ms(22)}
+        />
+      )
+    )
+  }
   return (
     <VStack mb={ms(10)}>
-      <Text fontWeight="medium" color={Colors.disabled}>
-        {title}
-      </Text>
+      <HStack alignItems="center" justifyItems={'center'} space={ms(5)}>
+        {iconName && (
+          <IconFA5 color={Colors.warning} name={iconName} size={ms(15)} />
+        )}
+        <Text color={Colors.disabled} fontWeight="medium">
+          {title}
+        </Text>
+      </HStack>
       <HStack
-        flex="1"
-        p="2"
-        my={ms(5)}
+        alignItems="center"
         bg={readOnly ? Colors.white : '#F7F7F7'}
         borderRadius={ms(5)}
-        alignItems="center"
+        flex="1"
+        my={ms(5)}
+        p="2"
       >
         <Pressable
-          flex="1"
           _pressed={{
             opacity: locked ? 0 : 0.7,
           }}
-          onPress={onChangeDate}
           disabled={locked || readOnly}
+          flex="1"
+          onPress={onChangeDate}
         >
-          <HStack space="2" alignItems="center">
+          <HStack alignItems="center" space="2">
             <Icon
+              color={locked || readOnly ? Colors.azure : Colors.disabled}
               name="calendar-month-outline"
               size={ms(22)}
-              color={locked || readOnly ? Colors.azure : Colors.disabled}
             />
             <Skeleton
               h="25"
+              isLoaded={!isPlanningDetailsLoading}
               ml={ms(10)}
               rounded="md"
-              isLoaded={!isPlanningDetailsLoading}
               startColor={Colors.grey}
             >
               <Text
+                color={date && !locked ? Colors.text : Colors.black}
                 fontSize="md"
                 fontWeight="medium"
-                color={date ? Colors.text : Colors.disabled}
               >
                 {date
                   ? moment(date).format('D MMM YYYY | HH:mm')
@@ -68,21 +88,7 @@ const DatetimePickerList = ({
             </Skeleton>
           </HStack>
         </Pressable>
-        {date ? (
-          <IconButton
-            source={Icons.close}
-            onPress={onClearDate}
-            size={ms(22)}
-          />
-        ) : (
-          !readOnly && (
-            <ArrowDownIcon
-              name="keyboard-arrow-down"
-              size={ms(22)}
-              color={Colors.azure}
-            />
-          )
-        )}
+        {!locked ? icon() : null}
       </HStack>
     </VStack>
   )

@@ -1,6 +1,6 @@
 type Comment = {
   '@id'?: string
-  description?: string
+  description: string
   id?: string
   comment?: string
   creationDate?: Date

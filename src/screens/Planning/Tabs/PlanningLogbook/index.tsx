@@ -1,10 +1,10 @@
-import React, {useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import {RefreshControl} from 'react-native'
 import {Box, Center, ScrollView, Text, View} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import {Colors} from '@bluecentury/styles'
-import {useEntity, usePlanning} from '@bluecentury/stores'
+import {useEntity, usePlanning, useSettings} from '@bluecentury/stores'
 import {LoadingAnimated} from '@bluecentury/components'
 import {useTranslation} from 'react-i18next'
 import {NavLogCard, NavLogDivider} from '@bluecentury/components'
@@ -23,9 +23,13 @@ const PlanningLogbook = () => {
     isCreateNavLogActionSuccess,
   } = usePlanning()
   const {vesselId} = useEntity()
+  const [display, setDisplay] = useState(null)
+  const {isOnline} = useSettings()
 
   useEffect(() => {
-    getVesselPlannedNavLogs(vesselId as string)
+    if (isOnline) {
+      getVesselPlannedNavLogs(vesselId as string)
+    }
     /* eslint-disable react-hooks/exhaustive-deps */
     /* eslint-disable react-native/no-inline-styles */
   }, [
@@ -40,6 +44,30 @@ const PlanningLogbook = () => {
       moment(a.arrivalDatetime || a.plannedEta || a.arrivalZoneTwo).valueOf() -
       moment(b.arrivalDatetime || b.plannedEta || b.arrivalZoneTwo).valueOf()
   )
+
+  useEffect(() => {
+    if (plannedNavigationLogs) {
+      let tempIndex = null // used the temp to prevent the updating in useState
+      // used the map function to get the index of the first condition
+      // to display divider
+      plannedNavigationLogs.map((navigationLog, index: number) => {
+        const plannedEta = moment(navigationLog.plannedEta).format('YYYY-MM-DD')
+        const dateToday = moment().format('YYYY-MM-DD')
+        const forwardDate = moment(
+          plannedNavigationLogs[index + 1]?.plannedEta
+        ).format('YYYY-MM-DD')
+
+        if (
+          forwardDate >= dateToday &&
+          plannedEta < dateToday &&
+          tempIndex === null
+        ) {
+          tempIndex = index
+        }
+      })
+      setDisplay(tempIndex)
+    }
+  }, [plannedNavigationLogs])
 
   const onPullRefresh = () => {
     getVesselPlannedNavLogs(vesselId as string)
@@ -92,7 +120,7 @@ const PlanningLogbook = () => {
   const defineColour = (item: NavigationLog) => {
     if (item?.charter?.id) {
       const itemWithColour = arrayWithColours.find(
-        secondaryItem => secondaryItem.charter.id === item.charter.id
+        secondaryItem => secondaryItem?.charter?.id === item?.charter?.id
       )
       return itemWithColour ? itemWithColour.colour : '#000'
     } else {
@@ -112,12 +140,12 @@ const PlanningLogbook = () => {
         ...item,
         firstIndex: plannedNavigationLogs?.findIndex(planned =>
           item?.charter?.id
-            ? planned?.charter?.id === item.charter.id
+            ? planned?.charter?.id === item?.charter?.id
             : planned.id === item.id
         ),
         lastIndex: findLastIndex(plannedNavigationLogs, planned =>
           item?.charter?.id
-            ? planned?.charter?.id === item.charter.id
+            ? planned?.charter?.id === item?.charter?.id
             : planned.id === item.id
         ),
       }
@@ -159,14 +187,6 @@ const PlanningLogbook = () => {
           </Box>
         ) : (
           plannedNavigationLogs?.map((navigationLog, i: number) => {
-            const plannedEta = moment(navigationLog.plannedEta).format(
-              'YYYY-MM-DD'
-            )
-            const dateToday = moment().format('YYYY-MM-DD')
-            const forwardDate = moment(
-              plannedNavigationLogs[i + 1]?.plannedEta
-            ).format('YYYY-MM-DD')
-
             return (
               <View key={i}>
                 <NavLogCard
@@ -174,11 +194,10 @@ const PlanningLogbook = () => {
                   defineFirstAndLastIndex={defineFirstAndLastIndex}
                   index={i}
                   itemColor={defineColour(navigationLog)}
+                  lastScreen="planning"
                   navigationLog={navigationLog}
                 />
-                {forwardDate >= dateToday && plannedEta < dateToday ? (
-                  <NavLogDivider />
-                ) : null}
+                {display && i === display ? <NavLogDivider /> : null}
               </View>
             )
           })

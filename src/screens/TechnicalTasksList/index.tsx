@@ -1,9 +1,8 @@
 import React, {useEffect} from 'react'
 import {RefreshControl, TouchableOpacity} from 'react-native'
-import {Box, Divider, HStack, ScrollView, Text} from 'native-base'
+import {Box, Button, Divider, HStack, ScrollView, Text, Icon} from 'native-base'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {ms} from 'react-native-size-matters'
-import Icon from 'react-native-vector-icons/Ionicons'
 import moment from 'moment'
 
 import {Colors} from '@bluecentury/styles'
@@ -13,8 +12,11 @@ import {
   NoInternetConnectionMessage,
 } from '@bluecentury/components'
 import {useTranslation} from 'react-i18next'
+import {Shadow} from 'react-native-shadow-2'
+import Ionicons from 'react-native-vector-icons/Ionicons'
+import {RootStackParamList} from '@bluecentury/types/nav.types'
 
-type Props = NativeStackScreenProps<RootStackParamList>
+type Props = NativeStackScreenProps<RootStackParamList, 'TechnicalTasksList'>
 const TechnicalTasksList = ({navigation, route}: Props) => {
   const {t} = useTranslation()
   const {category} = route.params
@@ -23,21 +25,6 @@ const TechnicalTasksList = ({navigation, route}: Props) => {
   const {vesselId} = useEntity()
 
   useEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <TouchableOpacity
-          style={{flexDirection: 'row', alignItems: 'center'}}
-          onPress={() =>
-            navigation.navigate('AddEditTechnicalTask', {method: 'add'})
-          }
-        >
-          <Icon name="add" color={Colors.highlighted_text} size={24} />
-          <Text bold color={Colors.highlighted_text}>
-            {t('addATask')}
-          </Text>
-        </TouchableOpacity>
-      ),
-    })
     getVesselTasksByCategory(vesselId, category)
   }, [])
 
@@ -71,51 +58,52 @@ const TechnicalTasksList = ({navigation, route}: Props) => {
     return (
       <Text
         bg={color}
-        py={ms(3)}
-        px={ms(20)}
         borderRadius={ms(25)}
-        fontWeight="medium"
-        fontSize={ms(12)}
         color={textColor}
+        fontSize={ms(12)}
+        fontWeight="medium"
+        px={ms(20)}
+        py={ms(3)}
       >
         {title}
       </Text>
     )
   }
 
-  const renderLabels = (label: string) => {
+  const renderLabels = (label: {title: string; color: string}) => {
     let title = ''
-    let color = ''
-    let textColor = ''
-    switch (label?.toLowerCase()) {
+    switch (label?.title?.toLowerCase()) {
       case 'maintenance':
         title = t('maintenance')
-        color = Colors.primary
-        textColor = Colors.white
+        break
+      case 'daily maintenance':
+        title = t('dailyMaintenance')
         break
       case 'check':
         title = t('check')
-        color = Colors.secondary
-        textColor = Colors.white
         break
       case 'incident':
         title = t('incident')
-        color = Colors.warning
-        textColor = Colors.white
         break
     }
     return (
-      <Text
-        bg={color}
-        py={ms(3)}
-        px={ms(20)}
+      <Box
+        alignSelf="center"
+        bg={label?.color}
         borderRadius={ms(25)}
-        fontWeight="medium"
-        fontSize={ms(12)}
-        color={textColor}
+        h={ms(25)}
+        px={ms(20)}
+        py={ms(3)}
       >
-        {title}
-      </Text>
+        <Text
+          color={Colors.white}
+          fontSize={ms(12)}
+          fontWeight="medium"
+          textAlign="center"
+        >
+          {title}
+        </Text>
+      </Box>
     )
   }
 
@@ -127,23 +115,23 @@ const TechnicalTasksList = ({navigation, route}: Props) => {
 
   return (
     <Box
-      flex="1"
       bg={Colors.white}
       borderTopLeftRadius={ms(15)}
       borderTopRightRadius={ms(15)}
+      flex="1"
     >
       <NoInternetConnectionMessage />
       <ScrollView
-        contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
         refreshControl={
           <RefreshControl
-            onRefresh={onPullToReload}
             refreshing={isTechnicalLoading}
+            onRefresh={onPullToReload}
           />
         }
+        contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
         p={ms(12)}
       >
-        {tasksByCategory?.length > 0
+        {tasksByCategory?.length
           ? tasksByCategory?.map((task: any, index: number) => {
               return (
                 <TouchableOpacity
@@ -157,56 +145,50 @@ const TechnicalTasksList = ({navigation, route}: Props) => {
                   }
                 >
                   <Box
+                    borderColor={Colors.light}
                     borderRadius={ms(5)}
                     borderWidth={1}
-                    borderColor={Colors.light}
                     mt={ms(10)}
-                    overflow="hidden"
                   >
                     {/* Title header */}
-                    <Box
+                    <HStack
                       backgroundColor={Colors.border}
+                      justifyContent="space-between"
                       px={ms(16)}
                       py={ms(10)}
                     >
-                      <Text color={Colors.azure} bold fontSize={ms(15)}>
-                        {task?.title}
-                      </Text>
-                    </Box>
+                      <Box w="50%">
+                        <Text bold color={Colors.azure} fontSize={ms(15)}>
+                          {/*{task?.title}*/}
+                          {task?.vesselPart?.name
+                            ? `${task?.vesselPart?.name}`
+                            : task?.title}
+                        </Text>
+                      </Box>
+                      {task?.labels[0] ? renderLabels(task?.labels[0]) : null}
+                    </HStack>
                     {/* End of title header */}
                     {/* Content */}
                     <Box py={ms(14)}>
-                      <HStack px={ms(14)}>
-                        <Text flex="1" fontWeight="medium">
-                          {t('part')}
-                        </Text>
-                        <Text>{task?.vesselPart?.name}</Text>
-                      </HStack>
-                      <Divider my={ms(14)} />
                       <HStack px={ms(14)}>
                         <Text flex="1" fontWeight="medium">
                           {t('status')}
                         </Text>
                         {renderStatuses(task?.statusCode)}
                       </HStack>
-                      <Divider my={ms(14)} />
-                      <HStack px={ms(14)}>
-                        <Text flex="1" fontWeight="medium">
-                          {t('labels')}
-                        </Text>
-                        {renderLabels(task?.labels[0]?.title)}
-                      </HStack>
-                      <Divider my={ms(14)} />
-                      <HStack px={ms(14)}>
-                        <Text flex="1" fontWeight="medium">
-                          {t('scheduledDate')}
-                        </Text>
-                        <Text>
-                          {task?.deadline
-                            ? moment(task?.deadline).format('D MMM YYYY')
-                            : t('notSet')}
-                        </Text>
-                      </HStack>
+                      {task?.deadline ? (
+                        <>
+                          <Divider my={ms(14)} />
+                          <HStack px={ms(14)}>
+                            <Text flex="1" fontWeight="medium">
+                              {t('scheduledDate')}
+                            </Text>
+                            <Text>
+                              {moment(task?.deadline).format('D MMM YYYY')}
+                            </Text>
+                          </HStack>
+                        </>
+                      ) : null}
                     </Box>
                   </Box>
                 </TouchableOpacity>
@@ -214,6 +196,28 @@ const TechnicalTasksList = ({navigation, route}: Props) => {
             })
           : null}
       </ScrollView>
+      <Box bg={Colors.white}>
+        <Shadow
+          viewStyle={{
+            width: '100%',
+          }}
+        >
+          <Button
+            bg={Colors.primary}
+            leftIcon={<Icon as={Ionicons} name="add" size="sm" />}
+            m={ms(16)}
+            onPress={() =>
+              navigation.navigate('AddEditTechnicalTask', {
+                method: 'add',
+                category,
+                vesselId,
+              })
+            }
+          >
+            {t('addATask')}
+          </Button>
+        </Shadow>
+      </Box>
     </Box>
   )
 }

@@ -1,6 +1,6 @@
 import React from 'react'
-import {FlatList, TouchableOpacity} from 'react-native'
-import {Avatar, Box, HStack, Image, Text} from 'native-base'
+import {FlatList, TouchableOpacity, Image, StyleSheet} from 'react-native'
+import {Avatar, Box, HStack, Text} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 
@@ -12,12 +12,14 @@ interface ICommentCard {
   commentDescription: string
   onCommentPress: () => void
   onCommentImagePress: (file: ImageFile) => void
+  images?: any[]
 }
 const CommentCard = ({
   comment,
   commentDescription,
   onCommentPress,
   onCommentImagePress,
+  images,
 }: ICommentCard) => {
   let imgLinks: string[] = []
   const getAttrFromString = (str: string) => {
@@ -29,7 +31,9 @@ const CommentCard = ({
     }
     imgLinks = res
   }
-  getAttrFromString(comment.description)
+  if (comment && comment.description) {
+    getAttrFromString(comment.description)
+  }
   return (
     <TouchableOpacity activeOpacity={0.6} onPress={onCommentPress}>
       <Box
@@ -74,18 +78,42 @@ const CommentCard = ({
               }
               return (
                 <TouchableOpacity onPress={() => onCommentImagePress(file)}>
-                  <Image
+                  {/* <Image
                     alt="file-upload"
-                    h={ms(114)}
-                    mr={ms(10)}
                     source={{uri: image.item}}
                     w={ms(136)}
+                  /> */}
+                  <Image
+                    // alt="file-upload"
+                    source={{uri: image.item}}
+                    style={styles.image}
+                  />
+                </TouchableOpacity>
+              )
+            }}
+            data={imgLinks}
+            keyExtractor={item => item}
+            removeClippedSubviews={true}
+            scrollEventThrottle={16}
+            showsHorizontalScrollIndicator={false}
+          />
+        ) : null}
+        {images && images.length > 0 ? (
+          <FlatList
+            horizontal
+            renderItem={image => {
+              return (
+                <TouchableOpacity>
+                  <Image
+                    // alt="file-upload"
+                    source={{uri: image.item.uri}}
+                    style={styles.image}
                   />
                 </TouchableOpacity>
               )
             }}
             // maxH={ms(120)}
-            data={imgLinks}
+            data={images}
             keyExtractor={item => item}
             removeClippedSubviews={true}
             scrollEventThrottle={16}
@@ -98,3 +126,11 @@ const CommentCard = ({
 }
 
 export default CommentCard
+
+const styles = StyleSheet.create({
+  image: {
+    height: ms(114),
+    width: ms(136),
+    marginRight: ms(10),
+  },
+})

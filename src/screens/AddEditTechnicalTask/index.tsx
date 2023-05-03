@@ -27,20 +27,31 @@ import * as ImagePicker from 'react-native-image-picker'
 import {Colors} from '@bluecentury/styles'
 import {useEntity, useTechnical} from '@bluecentury/stores'
 import moment from 'moment'
-import {IconButton, LoadingAnimated, NoInternetConnectionMessage} from '@bluecentury/components'
+import {
+  IconButton,
+  LoadingAnimated,
+  NoInternetConnectionMessage,
+} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {useTranslation} from 'react-i18next'
+import {Task} from '@bluecentury/models'
+import {RootStackParamList} from '@bluecentury/types/nav.types'
 
-type Props = NativeStackScreenProps<RootStackParamList>
+type Props = NativeStackScreenProps<RootStackParamList, 'AddEditTechnicalTask'>
 const AddEditTechnicalTask = ({navigation, route}: Props) => {
   const {t} = useTranslation()
-  const {method, task} = route.params
+  const {method, task, category} = route.params
   const toast = useToast()
   const {
+    isUploadingFileLoading,
+    isCreateTaskLoading,
     isTechnicalLoading,
     createVesselTask,
     updateVesselTask,
     uploadFileBySubject,
+    getVesselTasksCategory,
+    getVesselTasksByCategory,
+    getVesselTaskDetails,
   } = useTechnical()
   const {vesselId} = useEntity()
   const types = [
@@ -87,19 +98,21 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
     }
 
     ImagePicker.launchImageLibrary(options, response => {
-      setImgFile({
-        ...imgFile,
-        id: response.assets[0].id,
-        uri: response.assets[0].uri,
-        fileName: response.assets[0].fileName,
-        type: response.assets[0].type,
-      })
+      if (response?.assets?.length) {
+        setImgFile({
+          ...imgFile,
+          id: response?.assets[0]?.id,
+          uri: response?.assets[0]?.uri,
+          fileName: response?.assets[0]?.fileName,
+          type: response?.assets[0]?.type ? response?.assets[0]?.type : null,
+        })
+      }
     })
   }
 
   const showToast = (text: string, res: string) => {
     toast.show({
-      duration: 1000,
+      duration: 2000,
       render: () => {
         return (
           <Text
@@ -114,9 +127,6 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
           </Text>
         )
       },
-      onCloseComplete() {
-        res === 'success' ? navigation.goBack() : null
-      },
     })
   }
 
@@ -125,39 +135,42 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
       const newTask = Object.assign({}, taskData, {
         exploitationVessel: {id: vesselId},
       })
-      const res = await createVesselTask(newTask)
+      const res: any = await createVesselTask(newTask)
       if (typeof res === 'object' && res?.id) {
-        const upload = await uploadFileBySubject(
-          'Task',
-          imgFile,
-          'shared_within_company',
-          res?.id
-        )
-        if (typeof upload === 'object') {
-          showToast('Task add successfully.', 'success')
-        }
+        // update data on technical task with categories
+        getVesselTasksCategory(vesselId)
+        // update the list on the tasks
+        getVesselTasksByCategory(vesselId, category)
+        await uploadFile(res?.id, imgFile)
+        showToast(`Task ${method} successfully.`, 'success')
+        navigation.goBack()
       } else {
-        showToast('Task add failed.', 'failed')
+        showToast(`Task ${method} failed.`, 'failed')
       }
     } else {
-      const res = await updateVesselTask(task?.id, taskData)
+      const res: any = await updateVesselTask(task?.id, taskData)
       if (typeof res === 'object' && res?.id) {
-        const upload = await uploadFileBySubject(
-          'Task',
-          imgFile,
-          'shared_within_company',
-          res?.id
-        )
-        if (typeof upload === 'object') {
-          showToast('Task update successfully.', 'success')
-        }
+        getVesselTaskDetails(task?.id)
+        // update the list on the tasks
+        getVesselTasksByCategory(vesselId, category)
+        await uploadFile(res?.id, imgFile)
+        showToast(`Task ${method} successfully.`, 'success')
+        navigation.goBack()
       } else {
-        showToast('Task update failed.', 'failed')
+        showToast(`Task ${method} failed.`, 'failed')
       }
     }
   }
 
-  if (isTechnicalLoading) return <LoadingAnimated />
+  const uploadFile = async (id: number, imageFile: ImageFile) => {
+    if (imageFile?.uri) {
+      await uploadFileBySubject('Task', imageFile, 'shared_within_company', id)
+    }
+  }
+
+  if (isCreateTaskLoading || isUploadingFileLoading || isTechnicalLoading) {
+    return <LoadingAnimated />
+  }
 
   return (
     <Box
@@ -177,6 +190,8 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
           </FormControl.Label>
           <Input
             bg={'#F7F7F7'}
+            fontSize={ms(16)}
+            fontWeight="medium"
             returnKeyType="next"
             type="text"
             value={taskData.title}
@@ -193,6 +208,8 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
           <Select
             accessibilityLabel=""
             bg={Colors.light_grey}
+            fontSize={ms(16)}
+            fontWeight="medium"
             minWidth="300"
             placeholder=""
           >
@@ -254,6 +271,8 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
           </FormControl.Label>
           <TextArea
             autoCompleteType={undefined}
+            fontSize={ms(16)}
+            fontWeight="medium"
             h="100"
             numberOfLines={4}
             placeholder=""
@@ -271,6 +290,8 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
           </FormControl.Label>
           <TextArea
             autoCompleteType={undefined}
+            fontSize={ms(16)}
+            fontWeight="medium"
             h="100"
             numberOfLines={4}
             placeholder=""
@@ -326,7 +347,8 @@ const AddEditTechnicalTask = ({navigation, route}: Props) => {
           mode="datetime"
           open={openDatePicker}
           onConfirm={date => {
-            setOpenDatePicker(false), setTaskData({...taskData, deadline: date})
+            setOpenDatePicker(false)
+            setTaskData({...taskData, deadline: date})
           }}
           onCancel={() => setOpenDatePicker(false)}
         />

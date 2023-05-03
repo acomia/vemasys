@@ -24,6 +24,7 @@ export const NavLogCard = (props: {
   navigationLog: NavigationLog
   defineFirstAndLastIndex: any[]
   itemColor: string
+  lastScreen: StringOrNull
 }) => {
   const {t} = useTranslation()
   const navigation =
@@ -39,25 +40,138 @@ export const NavLogCard = (props: {
   const previousItemType = defineFirstAndLastIndex[currentItemIndex - 1]
   let displayLeftLine = false
   let displayRightLine = false
+
   if (
     currentItemIndex === 0 &&
-    currentItemType?.charter.id &&
+    currentItemType?.charter?.id &&
     key <= currentItemType.lastIndex
   ) {
-    displayLeftLine = true
+    displayLeftLine = navigationLog.type.title !== 'Services'
   }
   if (currentItemIndex !== 0) {
     if (key <= previousItemType.lastIndex) {
       displayLeftLine = true
-      displayRightLine = true
+      displayRightLine = navigationLog.type.title !== 'Services'
     }
     if (key > previousItemType.lastIndex && currentItemIndex % 2 !== 0) {
       displayLeftLine = false
-      displayRightLine = true
+      displayRightLine = navigationLog.type.title !== 'Services'
     }
     if (key >= previousItemType.lastIndex && currentItemIndex % 2 === 0) {
-      displayLeftLine = true
+      displayLeftLine = navigationLog.type.title !== 'Services'
       displayRightLine = false
+    }
+  }
+
+  const typeIcon = (type: string) => {
+    switch (type) {
+      case 'Services':
+        return (
+          <Image
+            alt="navlog-type-img"
+            h={ms(40)}
+            resizeMode="contain"
+            source={Icons.services}
+            w={ms(40)}
+          />
+        )
+      case 'Loading/Unloading':
+        return navigationLog.actionType === 'Cleaning' ? (
+          <Image
+            alt="navlog-type-img"
+            h={ms(40)}
+            resizeMode="contain"
+            source={Icons.broom}
+            w={ms(40)}
+          />
+        ) : navigationLog.bulkCargo.some(cargo => cargo.isLoading === false) ? (
+          <Image
+            alt="navlog-type-img"
+            h={ms(40)}
+            resizeMode="contain"
+            source={Icons.navlogUnloading}
+            w={ms(40)}
+          />
+        ) : (
+          <Image
+            alt="navlog-type-img"
+            h={ms(40)}
+            resizeMode="contain"
+            source={Icons.navlogLoading}
+            w={ms(40)}
+          />
+        )
+
+      case 'Waiting':
+        return (
+          <Image
+            alt="navlog-type-img"
+            h={ms(40)}
+            resizeMode="contain"
+            source={Icons.waitingNavlogItem}
+            w={ms(40)}
+          />
+        )
+      case 'Passed through a Lock':
+        return (
+          <Image
+            alt="navlog-type-img"
+            h={ms(40)}
+            resizeMode="contain"
+            source={Icons.passedThroughLock}
+            w={ms(40)}
+          />
+        )
+      case 'Bunkering':
+        return (
+          <Image
+            alt="navlog-type-img"
+            h={ms(40)}
+            resizeMode="contain"
+            source={Icons.bunkering}
+            w={ms(40)}
+          />
+        )
+      case 'Passed a bridge':
+        return (
+          <Image
+            alt="navlog-type-img"
+            h={ms(40)}
+            resizeMode="contain"
+            source={Icons.passedABridge}
+            w={ms(40)}
+          />
+        )
+      case 'Checkpoint':
+        return (
+          <Image
+            alt="navlog-type-img"
+            h={ms(40)}
+            resizeMode="contain"
+            source={Icons.checkPointNavlogItem}
+            w={ms(40)}
+          />
+        )
+      case 'Waste disposal':
+        return (
+          <Image
+            alt="navlog-type-img"
+            h={ms(40)}
+            resizeMode="contain"
+            source={Icons.wasteDisposal}
+            w={ms(40)}
+          />
+        )
+      case 'Transfer':
+        return (
+          <Image
+            alt="navlog-type-img"
+            h={ms(40)}
+            resizeMode="contain"
+            source={Icons.transfer}
+            w={ms(40)}
+          />
+        )
     }
   }
 
@@ -88,13 +202,15 @@ export const NavLogCard = (props: {
               : currentItemIndex === 0
               ? currentItemType?.colour
               : previousItemType.lastIndex < key
-              ? currentItemType?.colour
+              ? itemColor
               : previousItemType.colour
           }
           mb={
             currentItemType?.lastIndex === key
-              ? ms(-7)
+              ? ms(0)
               : currentItemIndex % 2 !== 0 && previousItemType.lastIndex === key
+              ? 0
+              : currentItemType.lastIndex === currentItemType.firstIndex
               ? 0
               : ms(-7)
           }
@@ -105,6 +221,8 @@ export const NavLogCard = (props: {
                 (currentItemIndex % 2 !== 0 &&
                   previousItemType?.firstIndex < key &&
                   previousItemType.lastIndex > key)
+              ? ms(-7)
+              : currentItemIndex === 0 && key !== 0
               ? ms(-7)
               : 0
           }
@@ -139,90 +257,108 @@ export const NavLogCard = (props: {
         w={'95%'}
       >
         {/* Navlog Header */}
-        <Box backgroundColor={itemColor} px={ms(16)} py={ms(10)}>
-          <Text bold color={Colors.text} fontSize={ms(15)}>
-            {formatLocationLabel(navigationLog?.location)}
-          </Text>
-          <Text color={Colors.azure} fontWeight="medium">
-            {t('planned')}
-            {moment(navigationLog?.plannedEta).format('DD MMM YYYY | HH:mm')}
-          </Text>
+        <Box
+          backgroundColor={itemColor}
+          flex={1}
+          flexDirection="row"
+          justifyContent="space-between"
+          px={ms(16)}
+          py={ms(10)}
+        >
+          <Box w="85%">
+            <Text bold color={Colors.text} fontSize={ms(15)} noOfLines={1}>
+              {formatLocationLabel(navigationLog?.location)}
+            </Text>
+            <Text color={Colors.azure} fontWeight="medium">
+              {t('planned')}
+              {moment(navigationLog?.plannedEta).format('DD MMM YYYY | HH:mm')}
+            </Text>
+          </Box>
+          {navigationLog?.type?.title
+            ? typeIcon(navigationLog.type.title)
+            : null}
         </Box>
         {/* End of Header */}
 
-        <Box
-          borderWidth={
-            navigationLog.isActive ||
-            (!_.isNull(navigationLog.startActionDatetime) &&
-              _.isNull(navigationLog.endActionDate))
-              ? null
-              : 3
-          }
-          borderColor={Colors.border}
-          borderStyle="dashed"
-          // mt={-3}
-          pt={3}
-          px={ms(14)}
-          py={ms(10)}
-        >
-          <HStack alignItems="center" mt={ms(5)}>
-            <Box flex="1">
-              {navigationLog?.bulkCargo.length > 0 &&
-                navigationLog?.bulkCargo.map((cargo: any, i: number) => {
-                  return (
-                    <HStack key={i} alignItems="center" mr={ms(5)}>
-                      <Text bold color={Colors.disabled}>
-                        {`(${Math.ceil(cargo.tonnage)} MT) `}
-                      </Text>
-                      <Text
-                        bold
-                        color={Colors.highlighted_text}
-                        ellipsizeMode="tail"
-                        flex="1"
-                        numberOfLines={1}
-                      >
-                        {/* ${Math.ceil(cargo.actualTonnage)} MT -  */}
-                        {` ${
-                          cargo.type.nameEn !== null ||
-                          cargo.type.nameNl !== null
-                            ? cargo.type.nameEn || cargo.type.nameNl
-                            : t('unknown')
-                        }`}
-                      </Text>
-                      <Image
-                        alt="navlogs-tags"
-                        mx={ms(5)}
-                        resizeMode="contain"
-                        source={Icons.tags}
-                      />
-                    </HStack>
-                  )
-                })}
-              <HStack alignItems="center" mt={ms(5)}>
-                <Text bold color={Colors.highlighted_text}>
-                  {calculateTotalOut(navigationLog)} MT
-                </Text>
-                <Image
-                  alt="triple-arrow-navlogs"
-                  mx={ms(5)}
-                  resizeMode="contain"
-                  source={Icons.triple_arrow}
-                />
-                <Text bold color={Colors.highlighted_text}>
-                  {calculateTotalIn(navigationLog)} MT
-                </Text>
-              </HStack>
-            </Box>
-            <Box alignItems="center">
-              <NavigationLogType navigationLog={navigationLog} />
-              {navigationLog.actionType === 'Cleaning' ? null : (
-                <Text bold color={Colors.azure} fontSize={ms(15)} mt={ms(5)}>
-                  {Math.ceil(navigationLog?.bulkCargo[0]?.actualTonnage)} MT
-                </Text>
-              )}
-            </Box>
-          </HStack>
-        </Box>
+        {navigationLog?.type?.title === 'Loading/Unloading' &&
+        props?.lastScreen === 'planning' ? (
+          <Box
+            borderWidth={
+              navigationLog.isActive ||
+              (!_.isNull(navigationLog.startActionDatetime) &&
+                _.isNull(navigationLog.endActionDate))
+                ? null
+                : 3
+            }
+            borderColor={Colors.border}
+            borderStyle="dashed"
+            // mt={-3}
+            pt={3}
+            px={ms(14)}
+            py={ms(10)}
+          >
+            <HStack alignItems="center" mt={ms(5)}>
+              <Box flex="1">
+                {navigationLog?.bulkCargo.length > 0 &&
+                  navigationLog?.bulkCargo.map((cargo: any, i: number) => {
+                    return (
+                      <HStack key={i} alignItems="center" mr={ms(5)}>
+                        <Text bold color={Colors.disabled}>
+                          {`(${Math.ceil(cargo?.tonnage)} MT) `}
+                        </Text>
+                        <Text
+                          bold
+                          color={Colors.highlighted_text}
+                          ellipsizeMode="tail"
+                          flex="1"
+                          numberOfLines={1}
+                        >
+                          {/* ${Math.ceil(cargo.actualTonnage)} MT -  */}
+                          {` ${
+                            cargo?.type?.nameEn !== null ||
+                            cargo?.type?.nameNl !== null
+                              ? cargo?.type?.nameEn || cargo?.type?.nameNl
+                              : t('unknown')
+                          }`}
+                        </Text>
+                        <Image
+                          alt="navlogs-tags"
+                          mx={ms(5)}
+                          resizeMode="contain"
+                          source={Icons.tags}
+                        />
+                      </HStack>
+                    )
+                  })}
+                <HStack alignItems="center" mt={ms(5)}>
+                  <Text bold color={Colors.highlighted_text}>
+                    {calculateTotalOut(navigationLog)} MT
+                  </Text>
+                  <Image
+                    alt="triple-arrow-navlogs"
+                    mx={ms(5)}
+                    resizeMode="contain"
+                    source={Icons.triple_arrow}
+                  />
+                  <Text bold color={Colors.highlighted_text}>
+                    {calculateTotalIn(navigationLog)} MT
+                  </Text>
+                </HStack>
+              </Box>
+              <Box alignItems="center">
+                <NavigationLogType navigationLog={navigationLog} />
+                {navigationLog.actionType === 'Cleaning' ? null : (
+                  <Text bold color={Colors.azure} fontSize={ms(15)} mt={ms(5)}>
+                    {navigationLog?.bulkCargo[0]?.actualTonnage
+                      ? Math.ceil(navigationLog?.bulkCargo[0]?.actualTonnage)
+                      : 0}{' '}
+                    MT
+                  </Text>
+                )}
+              </Box>
+            </HStack>
+          </Box>
+        ) : null}
       </Box>
     </TouchableOpacity>
   )

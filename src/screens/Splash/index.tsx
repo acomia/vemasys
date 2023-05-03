@@ -6,18 +6,20 @@ import {useAuth, useEntity, useSettings} from '@bluecentury/stores'
 // import {} from '@bluecentury/utils'
 import {
   CommonActions,
-  NavigationProp,
   useIsFocused,
   useNavigation,
 } from '@react-navigation/native'
 import {resetAllStates} from '@bluecentury/utils'
+import {RootStackParamList} from '@bluecentury/types/nav.types'
+import {NativeStackNavigationProp} from '@react-navigation/native-stack'
 
 export default function Splash() {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>()
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>()
   const isFocused = useIsFocused()
   const {hasAuthHydrated, token, setUser} = useAuth(state => state)
   const {hasEntityHydrated, entityId} = useEntity(state => state)
-  const {hasSettingsRehydrated, apiUrl, setEnv, isRemainLoggedIn} = useSettings(
+  const {hasSettingsRehydrated, apiUrl, setEnv, rememberMe} = useSettings(
     state => state
   )
   useEffect(() => {
@@ -27,7 +29,7 @@ export default function Splash() {
         console.log('setting default env to PROD')
         setEnv('PROD')
       }
-      if (!isRemainLoggedIn) {
+      if (!rememberMe) {
         setUser({
           token: undefined,
           refreshToken: undefined,

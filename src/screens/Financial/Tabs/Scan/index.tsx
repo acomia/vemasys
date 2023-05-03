@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState} from 'react'
+import React from 'react'
 import {PermissionsAndroid, Platform} from 'react-native'
-import {Box, Button, Image, Text, useDisclose, useToast} from 'native-base'
+import {Box, Button, Image, Text, useToast} from 'native-base'
 import {Animated} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
@@ -9,16 +9,14 @@ import DocumentScanner from 'react-native-document-scanner-plugin'
 import {useFinancial, usePlanning} from '@bluecentury/stores'
 import {LoadingAnimated} from '@bluecentury/components'
 import {convertToPdfAndUpload} from '@bluecentury/utils'
-import DocumentPicker, {isInProgress, types} from 'react-native-document-picker'
 import {useTranslation} from 'react-i18next'
+import * as ImagePicker from 'react-native-image-picker'
 
 const Scan = () => {
   const {t} = useTranslation()
   const {uploadImgFile, isPlanningLoading} = usePlanning()
   const {isFinancialLoading} = useFinancial()
-  const {onClose} = useDisclose()
   const toast = useToast()
-  const [result, setResult] = useState<ImageFile | null>(null)
 
   const requestCameraPermission = async () => {
     try {
@@ -66,43 +64,35 @@ const Scan = () => {
     }
   }
 
-  const handleError = (err: unknown) => {
-    if (DocumentPicker.isCancel(err)) {
-      console.warn('cancelled')
-      // User cancelled the picker, exit any dialogs or menus and move on
-    } else if (isInProgress(err)) {
-      console.warn(
-        'multiple pickers were opened, only the last will be considered'
-      )
-    } else {
-      throw err
-    }
-  }
-
   const onSelectDocument = async () => {
-    try {
-      const pickerResult = await DocumentPicker.pickSingle({
-        presentationStyle: 'fullScreen',
-        copyTo: 'cachesDirectory',
-        type: [types.images],
-      })
-      onClose()
-      setResult({
-        uri: pickerResult.uri,
-        fileName: pickerResult.name,
-        type: pickerResult.type,
-      })
-      const upload = await uploadImgFile({
-        uri: pickerResult.uri,
-        fileName: pickerResult.name,
-        type: pickerResult.type,
-      })
-      if (typeof upload === 'object') {
-        showToast('File upload successfully', 'success')
-      }
-    } catch (e) {
-      handleError(e)
+    const options: ImagePicker.ImageLibraryOptions = {
+      mediaType: 'photo',
+      selectionLimit: 0,
+      presentationStyle: 'fullScreen',
     }
+
+    await ImagePicker.launchImageLibrary(options, async response => {
+      if (response.assets) {
+        try {
+          console.log('IMAGE_PICKER_RESPONSE', response)
+          Promise.all(
+            response?.assets?.map(async item => {
+              return await uploadImgFile({
+                uri: item.uri,
+                fileName: item.fileName,
+                type: item.type ? item.type : null,
+              })
+            })
+          ).then(values => {
+            console.log('PROMISE_ALL_VALUES', values)
+            showToast('File upload successfully', 'success')
+          })
+        } catch (e) {
+          showToast('File upload failed', 'failure')
+          console.log('ERROR', JSON.stringify(e))
+        }
+      }
+    })
   }
 
   if (isFinancialLoading || isPlanningLoading) return <LoadingAnimated />

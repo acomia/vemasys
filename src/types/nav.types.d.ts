@@ -1,4 +1,4 @@
-import {Comments, ExtendedUser} from '@bluecentury/models'
+import {Comments, NavigationLog} from '@bluecentury/models'
 type RootStackParamList = {
   Splash: undefined
   SelectEnvironment: undefined
@@ -8,23 +8,28 @@ type RootStackParamList = {
   QRScanner: undefined
   Formations: undefined
   GPSTracker: undefined
-  CharterDetails: {charter: {} | undefined}
+  CharterDetails: {charter: any; isCreator: boolean}
   PDFView: {path: string | undefined}
   NewBunkering: undefined
   BunkeringDetails: {bunk: {} | undefined}
-  PlanningDetails: {navlog: any; title?: string}
+  PlanningDetails: {navlog: NavigationLog | null; title?: StringOrNull}
   AddEditBulkCargo: {cargo?: any; method?: string}
   PlanningNewComment: undefined
-  AddEditComment: {comment?: Comments; method: string; routeFrom?: string}
+  AddEditComment: {
+    comment?: Comments
+    method: string
+    routeFrom?: string
+    navlogId: number
+  }
   AddEditNavlogAction: {
     method: string
     actionType: string
     navlogAction?: {} | undefined
   }
   TechnicalTasksList: {category: string; title: string}
-  TechnicalTaskDetails: {task: any; category: string}
+  TechnicalTaskDetails: {task: Task; category: string}
   TechnicalTaskNewComment: {taskId: string}
-  AddEditTechnicalTask: {method: string; task?: any}
+  AddEditTechnicalTask: {method: string; task?: any; category: string}
   TechnicalCertificateList: {certificates: any; title: string}
   TechnicalCertificateDetails: {certificate: any}
   Measurements: {data: any; routeFrom: string}

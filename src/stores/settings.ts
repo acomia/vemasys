@@ -9,7 +9,7 @@ import {useEntity} from '@bluecentury/stores/entity'
 type TEnv = keyof typeof Environments
 
 type SettingsState = {
-  isRemainLoggedIn: boolean
+  rememberMe: boolean
   env: string | undefined
   apiUrl: string | undefined
   isDarkMode: boolean
@@ -23,10 +23,10 @@ type SettingsState = {
 type SettingsActions = {
   setEnv: (env: TEnv) => void
   setDarkMode: (val: boolean) => void
-  setLanguage: (lang: string) => void
+  setLanguage: (lang: string, shouldUpdateBackEnd?: boolean) => void
   setIsMobileTracking: (val: boolean) => void
   setHasHydrated: (val: boolean) => void
-  setIsRemainLoggedIn: (isRemainLoggedIn: boolean) => void
+  setRememberMe: (rememberMe: boolean) => void
   setIsQrScanner: (val: boolean) => void
   setIsOnline: (val: boolean) => void
 }
@@ -36,7 +36,7 @@ type SettingsStore = SettingsState & SettingsActions
 export const useSettings = create(
   persist<SettingsStore>(
     set => ({
-      isRemainLoggedIn: true,
+      rememberMe: true,
       env: undefined,
       apiUrl: undefined,
       isDarkMode: false,
@@ -50,11 +50,11 @@ export const useSettings = create(
           isDarkMode: darkMode,
         })
       },
-      setLanguage: async lang => {
+      setLanguage: async (lang, shouldUpdateBackEnd) => {
         set({language: lang})
         i18next.changeLanguage(lang)
         const user = useEntity.getState().user
-        if (user) {
+        if (user && shouldUpdateBackEnd) {
           await API.changeUserLanguage(user.id, lang)
         }
       },
@@ -70,8 +70,8 @@ export const useSettings = create(
           apiUrl: url,
         })
       },
-      setIsRemainLoggedIn: isRemainLoggedIn => {
-        set({isRemainLoggedIn: isRemainLoggedIn})
+      setRememberMe: rememberMe => {
+        set({rememberMe: rememberMe})
       },
       setHasHydrated: val => {
         set({hasSettingsRehydrated: val})

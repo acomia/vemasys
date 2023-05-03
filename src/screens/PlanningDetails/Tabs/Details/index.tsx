@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react'
-import {RefreshControl} from 'react-native'
+import React, {useEffect, useState, useRef} from 'react'
+import {BackHandler, RefreshControl, TouchableOpacity} from 'react-native'
 import {
   Box,
   Button,
@@ -10,6 +10,7 @@ import {
   Modal,
   ScrollView,
   Text,
+  VStack,
   useToast,
 } from 'native-base'
 import {ms} from 'react-native-size-matters'
@@ -28,15 +29,18 @@ import {Shadow} from 'react-native-shadow-2'
 import {ActionCard, CommentCard, DatetimePickerList} from '../../components'
 import {Colors} from '@bluecentury/styles'
 import {Icons} from '@bluecentury/assets'
-import {useEntity, usePlanning} from '@bluecentury/stores'
+import {useEntity, usePlanning, useSettings, useMap} from '@bluecentury/stores'
 import {
   formatLocationLabel,
   hasSelectedEntityUserPermission,
   ROLE_PERMISSION_NAVIGATION_LOG_ADD_COMMENT,
   titleCase,
 } from '@bluecentury/constants'
-import {LoadingAnimated} from '@bluecentury/components'
+import {LoadingAnimated, WarningAlert} from '@bluecentury/components'
 import {Vemasys} from '@bluecentury/helpers'
+import {RootStackParamList} from '@bluecentury/types/nav.types'
+import {Contacts} from '@bluecentury/models'
+import {CustomAlert} from '@bluecentury/components/custom-alert'
 
 type Dates = {
   plannedETA: Date | undefined | StringOrNull
@@ -52,6 +56,7 @@ const Details = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>()
   const route = useRoute()
   const focused = useIsFocused()
+  const isOnline = useSettings().isOnline
   const {
     isPlanningLoading,
     isPlanningDetailsLoading,
@@ -66,6 +71,7 @@ const Details = () => {
     getNavigationLogActions,
     getNavigationLogComments,
     getNavigationLogRoutes,
+    getNavigationLogDocuments,
     updateNavlogDates,
     updateNavlogDatesSuccess,
     updateNavlogDatesFailed,
@@ -75,26 +81,35 @@ const Details = () => {
     isCreateNavLogActionSuccess,
     reset,
   } = usePlanning()
-  const {selectedEntity, isLoadingEntityUsers, getLinkEntityInfo, linkEntity} =
-    useEntity()
+  const {
+    selectedEntity,
+    isLoadingEntityUsers,
+    getLinkEntityInfo,
+    linkEntity,
+    commentsWaitingForUpload,
+  } = useEntity()
+  const {trackViewMode} = useMap()
   const {navlog, title}: any = route.params
+
   const [dates, setDates] = useState<Dates>({
-    plannedETA: navlog?.plannedEta,
-    captainDatetimeETA: navlog?.captainDatetimeEta,
-    announcedDatetime: navlog?.announcedDatetime,
-    arrivalDatetime: navlog?.arrivalDatetime,
-    terminalApprovedDeparture: navlog?.terminalApprovedDeparture,
-    departureDatetime: navlog?.departureDatetime,
+    plannedETA: navigationLogDetails?.plannedEta,
+    captainDatetimeETA: navigationLogDetails?.captainDatetimeEta,
+    announcedDatetime: navigationLogDetails?.announcedDatetime,
+    arrivalDatetime: navigationLogDetails?.arrivalDatetime,
+    terminalApprovedDeparture: navigationLogDetails?.terminalApprovedDeparture,
+    departureDatetime: navigationLogDetails?.departureDatetime,
   })
   const [didDateChange, setDidDateChange] = useState({
     Pln: {didUpdate: false},
     Eta: {didUpdate: false},
     Nor: {didUpdate: false},
     Doc: {didUpdate: false},
+    Arr: {didUpdate: false},
+    Dep: {didUpdate: false},
   })
 
   const [viewImg, setViewImg] = useState(false)
-  const [selectedImg, setSelectedImg] = useState<ImageFile>({})
+  const [selectedImg, setSelectedImg] = useState<ImageFile | any>({})
   const [selectedType, setSelectedType] = useState('')
   const [openDatePicker, setOpenDatePicker] = useState(false)
   const [activeActions, setActiveActions] = useState([])
@@ -102,6 +117,8 @@ const Details = () => {
   const [selectedAction, setSelectedAction] = useState<NavigationLogAction>({})
   const [confirmModal, setConfirmModal] = useState(false)
   const [leaveTabModal, setLeaveTabModal] = useState(false)
+  const [buttonBackLeave, setButtonBackLeave] = useState(false)
+  const [isOpenWarning, setIsOpenWarning] = useState(false)
   const hasAddCommentPermission = hasSelectedEntityUserPermission(
     selectedEntity,
     ROLE_PERMISSION_NAVIGATION_LOG_ADD_COMMENT
@@ -115,6 +132,48 @@ const Details = () => {
     navigationLogDetails?.link !== null
       ? true
       : false
+  const warningRef = useRef<any>(null)
+
+  useEffect(() => {
+    navigation.getParent()?.setOptions({
+      headerLeft: () => {
+        return (
+          <Box ml={ms(1)} mr={ms(20)}>
+            <TouchableOpacity
+              onPress={() => {
+                if (unsavedChanges.length > 0) {
+                  setButtonBackLeave(true)
+                  setLeaveTabModal(true)
+                } else {
+                  navigation.goBack()
+                }
+              }}
+            >
+              <Ionicons
+                color={Colors.black}
+                name="arrow-back-outline"
+                size={ms(25)}
+              />
+            </TouchableOpacity>
+          </Box>
+        )
+      },
+    })
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        if (unsavedChanges.length > 0) {
+          setButtonBackLeave(true)
+          setLeaveTabModal(true)
+          return true
+        }
+        return false
+      }
+    )
+
+    return () => backHandler.remove()
+  }, [navigation, unsavedChanges])
 
   useEffect(() => {
     if (!focused && unsavedChanges.length > 0) {
@@ -128,6 +187,7 @@ const Details = () => {
     getNavigationLogActions(navlog?.id)
     getNavigationLogComments(navlog?.id)
     getNavigationLogRoutes(navlog?.id)
+    getNavigationLogDocuments(navlog?.id)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -135,7 +195,7 @@ const Details = () => {
     const active = navigationLogActions?.filter(action => _.isNull(action?.end))
     setActiveActions(active)
 
-    setDates({
+    const updatedDates = {
       ...dates,
       plannedETA: navigationLogDetails?.plannedEta,
       captainDatetimeETA: navigationLogDetails?.captainDatetimeEta,
@@ -146,7 +206,19 @@ const Details = () => {
       terminalApprovedDeparture:
         navigationLogDetails?.terminalApprovedDeparture,
       departureDatetime: navigationLogDetails?.departureDatetime,
-    })
+    }
+
+    if (navigationLogRoutes) {
+      updatedDates.arrivalDatetime =
+        navigationLogDetails?.announcedDatetime &&
+        navigationLogDetails?.captainDatetimeEta
+          ? navigationLogDetails?.captainDatetimeEta
+          : navigationLogRoutes[navigationLogRoutes.length - 1]
+              ?.estimatedArrival
+    }
+
+    setDates(updatedDates)
+
     if (
       navigationLogDetails?.bulkCargo?.some(cargo => cargo.isLoading === false)
     ) {
@@ -155,17 +227,6 @@ const Details = () => {
       setButtonActionLabel('Loading')
     }
 
-    if (navigationLogRoutes) {
-      setDates({
-        ...dates,
-        arrivalDatetime:
-          navigationLogDetails?.announcedDatetime &&
-          navigationLogDetails?.captainDatetimeEta
-            ? navigationLogDetails?.captainDatetimeEta
-            : navigationLogRoutes[navigationLogRoutes.length - 1]
-                ?.estimatedArrival,
-      })
-    }
     if (
       navigationLogDetails?.link !== undefined &&
       navigationLogDetails?.link !== null
@@ -239,6 +300,8 @@ const Details = () => {
       Eta: {didUpdate: false},
       Nor: {didUpdate: false},
       Doc: {didUpdate: false},
+      Arr: {didUpdate: false},
+      Dep: {didUpdate: false},
     })
     onPullToReload()
     reset()
@@ -259,7 +322,6 @@ const Details = () => {
         setDates({
           ...dates,
           captainDatetimeETA: formattedDate,
-          arrivalDatetime: formattedDate,
         })
         setDidDateChange({...didDateChange, Eta: {didUpdate: true}})
         return
@@ -269,6 +331,7 @@ const Details = () => {
         return
       case 'ARR':
         setDates({...dates, arrivalDatetime: formattedDate})
+        setDidDateChange({...didDateChange, Arr: {didUpdate: true}})
         return
       case 'DOC':
         setDates({...dates, terminalApprovedDeparture: formattedDate})
@@ -276,6 +339,7 @@ const Details = () => {
         return
       case 'DEP':
         setDates({...dates, departureDatetime: formattedDate})
+        setDidDateChange({...didDateChange, Dep: {didUpdate: true}})
         return
     }
   }
@@ -327,7 +391,9 @@ const Details = () => {
     <Box>
       <DatetimePickerList
         date={dates.plannedETA}
-        locked={isUnknownLocation ? true : navigationLogDetails?.locked}
+        // locked={isUnknownLocation ? true : navigationLogDetails?.locked}
+        locked={true}
+        readOnly={true}
         title="Planned"
         onChangeDate={() => {
           setSelectedType('PLN')
@@ -392,8 +458,26 @@ const Details = () => {
 
         <DatetimePickerList
           date={dates.arrivalDatetime}
-          readOnly={true}
+          iconName={trackViewMode ? 'info-circle' : null}
+          locked={isUnknownLocation ? true : navigationLogDetails?.locked}
           title="Arrival"
+          onChangeDate={() => {
+            setSelectedType('ARR')
+            setIsOpenWarning(true)
+            // setOpenDatePicker(true)
+          }}
+          onClearDate={() => {
+            setDidDateChange({
+              ...didDateChange,
+              Arr: {
+                didUpdate: _.isNull(dates.arrivalDatetime) ? false : true,
+              },
+            })
+            setDates({
+              ...dates,
+              arrivalDatetime: null,
+            })
+          }}
         />
       </Box>
     )
@@ -427,8 +511,26 @@ const Details = () => {
 
       <DatetimePickerList
         date={dates.departureDatetime}
-        readOnly={true}
+        iconName={trackViewMode ? 'info-circle' : null}
+        locked={isUnknownLocation ? true : navigationLogDetails?.locked}
         title="Departure"
+        onChangeDate={() => {
+          setSelectedType('DEP')
+          setIsOpenWarning(true)
+          // setOpenDatePicker(true)
+        }}
+        onClearDate={() => {
+          setDidDateChange({
+            ...didDateChange,
+            Dep: {
+              didUpdate: _.isNull(dates.departureDatetime) ? false : true,
+            },
+          })
+          setDates({
+            ...dates,
+            departureDatetime: null,
+          })
+        }}
       />
     </Box>
   )
@@ -487,7 +589,7 @@ const Details = () => {
     </Box>
   )
 
-  const renderContactInformation = (contact: any, index: number) => {
+  const renderContactInformation = (contact: Contacts, index: number) => {
     return (
       <HStack
         key={index}
@@ -501,12 +603,19 @@ const Details = () => {
         p={ms(10)}
         shadow={3}
       >
-        <Text bold>{contact.name}</Text>
-        <Image
-          alt="charter-contact"
-          resizeMode="contain"
-          source={Icons.charter_contact}
-        />
+        <HStack alignItems="center">
+          <Image
+            alt="charter-contact"
+            resizeMode="contain"
+            source={Icons.user}
+            tintColor={Colors.azure}
+          />
+          <Box ml={5}>
+            <Text bold>{contact?.name}</Text>
+            {contact?.email ? <Text>{contact?.email}</Text> : null}
+          </Box>
+        </HStack>
+        <Text>{contact?.phoneNumber}</Text>
       </HStack>
     )
   }
@@ -546,6 +655,10 @@ const Details = () => {
       announcedDatetime: navigationLogDetails?.announcedDatetime,
       terminalApprovedDeparture:
         navigationLogDetails?.terminalApprovedDeparture,
+      arrivalDatetime:
+        navigationLogDetails?.arrivalDatetime ||
+        navigationLogDetails?.captainDatetimeEta,
+      departureDatetime: navigationLogDetails?.departureDatetime,
     })
     setDidDateChange({
       ...didDateChange,
@@ -553,6 +666,8 @@ const Details = () => {
       Eta: {didUpdate: false},
       Nor: {didUpdate: false},
       Doc: {didUpdate: false},
+      Arr: {didUpdate: false},
+      Dep: {didUpdate: false},
     })
   }
 
@@ -565,6 +680,11 @@ const Details = () => {
       announcedDatetime: navigationLogDetails?.announcedDatetime,
       terminalApprovedDeparture:
         navigationLogDetails?.terminalApprovedDeparture,
+      arrivalDatetime:
+        navigationLogDetails?.arrivalDatetime ||
+        navigationLogDetails?.captainDatetimeEta,
+
+      departureDatetime: navigationLogDetails?.departureDatetime,
     })
     setDidDateChange({
       ...didDateChange,
@@ -572,13 +692,21 @@ const Details = () => {
       Eta: {didUpdate: false},
       Nor: {didUpdate: false},
       Doc: {didUpdate: false},
+      Arr: {didUpdate: false},
+      Dep: {didUpdate: false},
     })
+    if (buttonBackLeave) {
+      setButtonBackLeave(false)
+      navigation.goBack()
+    }
   }
 
   const onPullToReload = () => {
     getNavigationLogDetails(navlog.id)
     getNavigationLogActions(navlog?.id)
     getNavigationLogComments(navlog.id)
+    getNavigationLogRoutes(navlog?.id)
+    getNavigationLogDocuments(navlog?.id)
   }
 
   if (
@@ -654,7 +782,7 @@ const Details = () => {
             </Text>
             <Box my={ms(15)}>
               {navigationLogDetails?.contacts?.length > 0 ? (
-                navigationLogDetails?.contacts.map(
+                navigationLogDetails?.contacts?.map(
                   (contact: any, index: number) =>
                     renderContactInformation(contact, index)
                 )
@@ -713,6 +841,20 @@ const Details = () => {
             />
           )
         })}
+        {commentsWaitingForUpload.length
+          ? commentsWaitingForUpload.map((comment, index) => {
+              return (
+                <CommentCard
+                  key={index}
+                  comment={comment.commentArg}
+                  commentDescription={comment.description}
+                  images={comment.imgFile}
+                  onCommentImagePress={() => {}}
+                  onCommentPress={() => {}}
+                />
+              )
+            })
+          : null}
         {hasAddCommentPermission && (
           <Button
             bg={Colors.primary}
@@ -723,6 +865,7 @@ const Details = () => {
               navigation.navigate('AddEditComment', {
                 method: 'add',
                 routeFrom: 'Planning',
+                navlogId: navlog.id,
               })
             }
           >
@@ -778,6 +921,8 @@ const Details = () => {
             </HStack>
           </Modal.Content>
         </Modal>
+        {/* this is not used but can be use in the future */}
+        {/* start */}
         <Modal
           animationPreset="slide"
           isOpen={leaveTabModal}
@@ -795,7 +940,11 @@ const Details = () => {
                 flex="1"
                 m={ms(12)}
                 onPress={() => {
-                  setLeaveTabModal(false), navigation.goBack()
+                  setLeaveTabModal(false)
+                  if (!buttonBackLeave) {
+                    navigation.goBack()
+                  }
+                  setButtonBackLeave(false)
                 }}
               >
                 <Text color={Colors.disabled} fontWeight="medium">
@@ -858,6 +1007,58 @@ const Details = () => {
           />
         </Modal.Content>
       </Modal>
+      <WarningAlert
+        alert={{
+          leastDestructiveRef: warningRef,
+          isOpen: isOpenWarning,
+          onClose: () => setIsOpenWarning(false),
+        }}
+        buttons={[
+          {
+            variant: 'link',
+            _text: {
+              color: Colors.disabled,
+              fontWeight: 'bold',
+            },
+            children: t('cancel'),
+            onPress: () => setIsOpenWarning(false),
+          },
+          {
+            _text: {
+              fontWeight: 'bold',
+            },
+            backgroundColor: Colors.offlineWarning,
+            children: t('yes'),
+            onPress: () => {
+              setIsOpenWarning(false)
+              setOpenDatePicker(true)
+            },
+          },
+        ]}
+        content={
+          <VStack space={ms(10)}>
+            <Text>
+              {t('overrideWarning')}:{' '}
+              <Text color={Colors.azure} fontSize={'md'}>
+                {title}
+              </Text>
+            </Text>
+            <HStack>
+              <Box bgColor={Colors.danger} height={'100%'} width={ms(10)} />
+              <Box bgColor={Colors.light_red} px={ms(5)} py={ms(5)}>
+                <Text color={Colors.dangerDarker}>
+                  {t('overRideWarningSub2')}
+                </Text>
+              </Box>
+            </HStack>
+          </VStack>
+        }
+        title={
+          <Text color={Colors.danger} fontSize="xl" fontWeight={'bold'}>
+            {t('warning') as string}
+          </Text>
+        }
+      />
     </Box>
   )
 }

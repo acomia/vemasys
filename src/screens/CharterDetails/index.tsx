@@ -26,14 +26,15 @@ import {Colors} from '@bluecentury/styles'
 import {useCharters, useEntity} from '@bluecentury/stores'
 import {formatLocationLabel} from '@bluecentury/constants'
 import {useTranslation} from 'react-i18next'
+import {RootStackParamList} from '@bluecentury/types/nav.types'
 
-type Props = NativeStackScreenProps<RootStackParamList>
+type Props = NativeStackScreenProps<RootStackParamList, 'CharterDetails'>
 export default function CharterDetails({navigation, route}: Props) {
   const {t} = useTranslation()
   const {entityType} = useEntity()
   const {viewPdf, signedDocumentsArray, isCharterLoading} = useCharters()
 
-  const {charter} = route.params
+  const {charter, isCreator} = route.params
 
   const computeCargo = (cargo: any[]) => {
     return cargo.reduce(
@@ -54,13 +55,13 @@ export default function CharterDetails({navigation, route}: Props) {
         mb={ms(6)}
       >
         <Text color="#29B7EF" fontWeight="semibold" mx={ms(10)} my={ms(10)}>
-          {cargo.type.nameEn || cargo.type.nameNl}
+          {cargo?.type?.nameEn || cargo?.type?.nameNl}
         </Text>
         <HStack borderColor={Colors.light} borderTopWidth={1}>
           <HStack alignItems="center" flex="1" my={ms(10)}>
             <Text ml={ms(10)}>{t('booked')}</Text>
             <Text bold color={Colors.disabled} ml={ms(10)}>
-              {parseInt(cargo.amount) || 0} MT
+              {parseInt(cargo?.amount) || 0} MT
             </Text>
           </HStack>
           <HStack
@@ -71,7 +72,7 @@ export default function CharterDetails({navigation, route}: Props) {
           >
             <Text ml={ms(10)}>{t('actual')}</Text>
             <Text bold color="#29B7EF" ml={ms(10)}>
-              {parseInt(cargo.actualAmount) || 0} MT
+              {parseInt(cargo?.actualAmount) || 0} MT
             </Text>
           </HStack>
         </HStack>
@@ -267,6 +268,31 @@ export default function CharterDetails({navigation, route}: Props) {
     })
   }
 
+  const renderRefNumber = (itemData: any) => {
+    if (!itemData?.customerReference && !itemData?.supplierReference) {
+      return (
+        <Text bold color={Colors.azure} fontSize={ms(22)} textAlign="left">
+          {itemData?.clientReference || itemData?.vesselReference}
+        </Text>
+      )
+    }
+
+    return (
+      <VStack mb={ms(5)}>
+        {itemData?.customerReference && (
+          <Text bold color={Colors.azure} fontSize={ms(22)} textAlign="left">
+            {itemData?.customerReference}
+          </Text>
+        )}
+        {itemData?.supplierReference && (
+          <Text bold color={Colors.azure} fontSize={ms(22)} textAlign="left">
+            {itemData?.supplierReference}
+          </Text>
+        )}
+      </VStack>
+    )
+  }
+
   if (isCharterLoading) return <LoadingAnimated />
 
   return (
@@ -281,9 +307,7 @@ export default function CharterDetails({navigation, route}: Props) {
       >
         <HStack alignItems="center" justifyContent="space-between">
           <VStack maxWidth="73%">
-            <Text bold color={Colors.azure} fontSize={ms(22)} textAlign="left">
-              {charter.vesselReference || charter.clientReference}
-            </Text>
+            {renderRefNumber(charter)}
             <Text bold color={Colors.secondary}>
               {moment(charter.startDate).format('DD MMM YYYY')} -
               <Text bold color={Colors.danger}>
@@ -292,7 +316,11 @@ export default function CharterDetails({navigation, route}: Props) {
               </Text>
             </Text>
           </VStack>
-          <CharterStatus charter={charter} entityType={entityType} />
+          <CharterStatus
+            charter={charter}
+            entityType={entityType}
+            isCreator={isCreator}
+          />
         </HStack>
         <Divider my={ms(15)} />
         <ScrollView flex="1" showsVerticalScrollIndicator={false}>

@@ -1,7 +1,8 @@
-import { API } from '../../apiService'
-import { VESSEL_PART_CARGO_TYPE } from '@bluecentury/constants'
+import {API} from '../../apiService'
+import {VESSEL_PART_CARGO_TYPE} from '@bluecentury/constants'
 import axios from 'axios'
-import { useAuth, useEntity, useSettings } from '@bluecentury/stores'
+import {useAuth, useEntity, useSettings} from '@bluecentury/stores'
+import {Platform} from 'react-native'
 
 const reloadNavigationLogDetails = async (navLogId: string) => {
   return API.get(`navigation_logs/${navLogId}`)
@@ -110,7 +111,7 @@ const updateNavigationLogDatetimeFields = async (
       throw new Error('Update navlog datetime failed.')
     }
     return res?.data?.id ? 'SUCCESS' : 'Update failed.'
-  } catch (error) {
+  } catch (error: any) {
     return error?.response?.data
       ? error?.response?.data?.violations[0]?.message
       : 'Update failed.'
@@ -161,7 +162,7 @@ const reloadBulkTypes = async (query: string) => {
 
 const updateBulkCargoEntry = async (cargo: any) => {
   return API.put(`navigation_bulks/${cargo.id}`, {
-    type: { id: parseInt(cargo.typeId) },
+    type: {id: parseInt(cargo.typeId)},
     amount: cargo.amount.toString(),
     actualAmount: cargo.actualAmount.toString(),
     isLoading: cargo.isLoading === '1',
@@ -185,7 +186,7 @@ const createNewBulkCargoEntry = async (cargo: any, navLogId: string) => {
       log: {
         id: navLogId,
       },
-      type: { id: parseInt(cargo.typeId) },
+      type: {id: parseInt(cargo.typeId)},
       amount: cargo.amount,
       actualAmount: cargo.actualAmount,
       isLoading: cargo.isLoading === '1',
@@ -219,7 +220,7 @@ const deleteBulkCargoEntry = async (id: string) => {
 }
 
 const updateComment = async (id: string, description: string) => {
-  return API.put(`comments/${id}`, { description })
+  return API.put(`comments/${id}`, {description})
     .then(response => {
       if (response.data) {
         return response.data
@@ -232,15 +233,16 @@ const updateComment = async (id: string, description: string) => {
     })
 }
 
-const uploadImgFile = async (file: ImageFile) => {
+const uploadImgFile = async (file: ImageFile, accessLevel: string) => {
   const formData = new FormData()
   const image = {
-    uri: file.uri,
+    uri: Platform.OS === 'android' ? `file://${file.uri}` : file.uri,
     type: file.type,
     name: file.fileName || `IMG_${Date.now()}`,
   }
 
   formData.append('file', image)
+  formData.append('access-level', accessLevel)
 
   const token = useAuth.getState().token
   const entityUserId = useEntity.getState().entityUserId
@@ -255,8 +257,11 @@ const uploadImgFile = async (file: ImageFile) => {
       },
     })
     return res.data
-  } catch (error) {
-    console.error('Error: Upload image file data', error)
+  } catch (error: any) {
+    console.error(
+      'Error: Upload image file data',
+      JSON.stringify(error.response)
+    )
   }
 }
 

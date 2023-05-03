@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState, useRef} from 'react'
 import {
   Box,
   Button,
@@ -55,7 +55,7 @@ const Measurements = ({navigation, route}: Props) => {
   const [open, setOpen] = useState(false)
   const [openConfirmation, setOpenConfirmation] = useState(false)
   const [inputInvalid, setInputInvalid] = useState(false)
-
+  const inputRef = useRef<any>(null)
   const hasTechnicalPermission = hasSelectedEntityUserPermission(
     selectedEntity,
     ROLE_PERMISSION_TECHNICAL
@@ -252,15 +252,18 @@ const Measurements = ({navigation, route}: Props) => {
   }
 
   const onAddNewConsumptionMeasure = async (newMeasurementValue: string) => {
-    setNewMeasurement(value => (value = convertCommaToPeriod(value)))
-    if (newMeasurementValue === '') {
+    const re = / /g
+    const measurementVal = convertCommaToPeriod(
+      newMeasurementValue.replace(re, '')
+    )
+    if (measurementVal === '') {
       return showWarningToast('Measurement is required.')
     }
     if (
       hasTechnicalPermission &&
       routeFrom !== 'reservoir' &&
       lastMeasurements.length &&
-      newMeasurement < lastMeasurements[0]?.value
+      measurementVal < lastMeasurements[0]?.value
     ) {
       setOpenConfirmation(true)
       setOpen(false)
@@ -269,23 +272,19 @@ const Measurements = ({navigation, route}: Props) => {
     if (
       routeFrom !== 'reservoir' &&
       lastMeasurements.length &&
-      newMeasurementValue < lastMeasurements[0]?.value
+      measurementVal < lastMeasurements[0]?.value
     ) {
       setInputInvalid(true)
       return
     }
-
+    setOpen(false)
     const selectedId = routeFrom === 'reservoir' ? data?.id : data?.data[0]?.id
-    const res = await createNewConsumptionMeasure(
-      selectedId,
-      newMeasurementValue
-    )
+    const res = await createNewConsumptionMeasure(selectedId, measurementVal)
     if (res === null) {
       showToast('New Measurement failed.', 'failed')
       return
     }
     setNewMeasurement('')
-    setOpen(false)
     if (routeFrom === 'reservoir') {
       getVesselGasoilReservoirs(physicalVesselId)
       getVesselReservoirs(physicalVesselId)
@@ -297,15 +296,17 @@ const Measurements = ({navigation, route}: Props) => {
   }
 
   const onForceAddMeasurement = async () => {
+    const re = / /g
+    const measurementVal = convertCommaToPeriod(newMeasurement.replace(re, ''))
+    setOpenConfirmation(false)
+    setOpen(false)
     const selectedId = routeFrom === 'reservoir' ? data?.id : data?.data[0]?.id
-    const res = await createNewConsumptionMeasure(selectedId, newMeasurement)
+    const res = await createNewConsumptionMeasure(selectedId, measurementVal)
     if (res === null) {
       showToast('New Measurement failed.', 'failed')
       return
     }
     setNewMeasurement('')
-    setOpenConfirmation(false)
-    setOpen(false)
     if (routeFrom === 'reservoir') {
       getVesselGasoilReservoirs(physicalVesselId)
       getVesselReservoirs(physicalVesselId)
@@ -319,6 +320,33 @@ const Measurements = ({navigation, route}: Props) => {
   const clearNewmeasurements = () => {
     setInputInvalid(false)
     setNewMeasurement('')
+  }
+
+  const handleInputChange = (e: string) => {
+    let formatted = ''
+    if (e === '') {
+      setNewMeasurement(e)
+      return
+    }
+    if (e.includes('.') || e.includes(',')) {
+      const re = /,/g
+      const tmp = e.replace(re, '.')
+      formatted = convertPeriodToComma(tmp)
+    } else {
+      const re = / /g
+      const tmp = e.replace(re, '')
+      formatted = formatNumber(tmp, 0, ' ')
+    }
+    setNewMeasurement(formatted)
+  }
+
+  const onAddMeasurement = () => {
+    setOpen(true)
+    setTimeout(() => {
+      inputRef?.current?.blur()
+      inputRef?.current?.focus()
+      inputRef?.current?._root?.focus()
+    }, 50)
   }
 
   return (
@@ -348,7 +376,13 @@ const Measurements = ({navigation, route}: Props) => {
           />
         )}
       </Box>
-      <Modal animationPreset="slide" isOpen={open} px={ms(15)} size="full">
+      <Modal
+        animationPreset="slide"
+        initialFocusRef={inputRef}
+        isOpen={open}
+        px={ms(15)}
+        size="full"
+      >
         <Modal.Content>
           <Modal.Header>
             {routeFrom === 'reservoir'
@@ -357,15 +391,17 @@ const Measurements = ({navigation, route}: Props) => {
           </Modal.Header>
           <Modal.Body>
             <Input
+              ref={inputRef}
+              autoFocus
               bold
               backgroundColor={Colors.light_grey}
-              fontSize={ms(15)}
+              fontSize={ms(18)}
               height={ms(40)}
               isInvalid={inputInvalid}
               keyboardType="number-pad"
               value={newMeasurement}
               variant="filled"
-              onChangeText={e => setNewMeasurement(convertPeriodToComma(e))}
+              onChangeText={e => handleInputChange(e)}
             />
             {inputInvalid && (
               <Text color={Colors.danger} textAlign="center">
@@ -390,7 +426,7 @@ const Measurements = ({navigation, route}: Props) => {
               flex="1"
               m={ms(5)}
               onPress={() => {
-                onAddNewConsumptionMeasure(convertCommaToPeriod(newMeasurement))
+                onAddNewConsumptionMeasure(newMeasurement)
               }}
             >
               {t('save')}
@@ -444,7 +480,7 @@ const Measurements = ({navigation, route}: Props) => {
             bg={Colors.primary}
             leftIcon={<Icon as={Ionicons} name="add" size="sm" />}
             m={ms(16)}
-            onPress={() => setOpen(true)}
+            onPress={onAddMeasurement}
           >
             {t('addAMeasurement')}
           </Button>

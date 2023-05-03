@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react'
 import {useWindowDimensions} from 'react-native'
-import {Text} from 'native-base'
+import {Box, HStack, Text} from 'native-base'
 
 import {Details, CargoList, CargoHolds, Documents, Map, Actions} from './Tabs'
 import {Colors} from '@bluecentury/styles'
@@ -11,6 +11,8 @@ import {
   createMaterialTopTabNavigator,
   MaterialTopTabScreenProps,
 } from '@react-navigation/material-top-tabs'
+
+import {NoInternetConnectionMessage} from '@bluecentury/components'
 
 const Tab = createMaterialTopTabNavigator()
 
@@ -26,11 +28,16 @@ export default function PlanningDetails({route}: Props) {
     {title: t('Map'), screen: Map},
   ]
   const {navlog, title} = route.params
-  const {navigationLogDetails} = usePlanning()
+  const {
+    navigationLogDetails,
+    navigationLogCargoHolds,
+    navigationLogActions,
+    navigationLogDocuments,
+  } = usePlanning()
   const [routes, setRoutes] = useState(tabs)
   const isUnknownLocation = title === 'Unknown Location' ? true : false
   const screenWidth = useWindowDimensions().width
- 
+
   useEffect(() => {
     if (
       navigationLogDetails?.cargoType !== 'liquid_bulk' &&
@@ -52,48 +59,96 @@ export default function PlanningDetails({route}: Props) {
       setRoutes(newRoutes)
     }
   }, [navigationLogDetails])
-  
+
+  const renderTabBadge = (tab: string) => {
+    switch (tab) {
+      case 'Actions':
+        return navigationLogActions?.length ? (
+          <Box bg={'#3E96A8'} borderRadius={12} px={2}>
+            <Text color={Colors.white} fontSize={ms(12)} fontWeight="medium">
+              ({navigationLogActions?.length})
+            </Text>
+          </Box>
+        ) : null
+
+      case 'Cargo List':
+        return navigationLogDetails?.bulkCargo?.length ? (
+          <Box bg={'#3E96A8'} borderRadius={12} px={2}>
+            <Text color={Colors.white} fontSize={ms(12)} fontWeight="medium">
+              ({navigationLogDetails?.bulkCargo?.length})
+            </Text>
+          </Box>
+        ) : null
+      case 'Cargo Holds':
+        return navigationLogCargoHolds?.length ? (
+          <Box bg={'#3E96A8'} borderRadius={12} h={ms(5)} px={2}>
+            <Text color={Colors.white} fontSize={ms(12)} fontWeight="medium">
+              ({navigationLogCargoHolds?.length})
+            </Text>
+          </Box>
+        ) : null
+      case 'Documents':
+        return navigationLogDocuments?.length ? (
+          <Box bg={'#3E96A8'} borderRadius={12} px={2}>
+            <Text color={Colors.white} fontSize={ms(12)} fontWeight="medium">
+              ({navigationLogDocuments?.length})
+            </Text>
+          </Box>
+        ) : null
+    }
+  }
+
   return (
-    <Tab.Navigator
-      screenOptions={({route}) => ({
-        tabBarStyle: {backgroundColor: Colors.primary},
-        tabBarIndicatorStyle: {
-          backgroundColor: Colors.azure,
-          height: 3,
-          borderRadius: 3,
-          width: ms(45),
-          marginLeft: screenWidth > 500 ? ms(68) : ms(25),
-        },
-        tabBarItemStyle: {
-          width: screenWidth > 500 ? ms(180) : ms(100),
-          height: screenWidth > 500 ? ms(60) : ms(45),
-          paddingHorizontal: ms(5)
-        },
-        tabBarScrollEnabled: true,
-        lazy: true,
-        lazyPlaceholder: () => (
-          <Text bold color={Colors.azure}>
-            {t('loading')} {route.name}...
-          </Text>
-        ),
-      })}
-      backBehavior="firstRoute"
-    >
-      {routes.map((route, index) => (
-        <Tab.Screen
-          key={index}
-          name={route.title}
-          component={route.screen}
-          initialParams={{navlog, title}}
-          options={({route}) => ({
-            tabBarLabel: ({focused}) => (
-              <Text bold color={focused ? Colors.white : Colors.light}>
-                {route.name}
-              </Text>
-            ),
-          })}
-        />
-      ))}
-    </Tab.Navigator>
+    <Box flex="1">
+      <NoInternetConnectionMessage />
+      <Tab.Navigator
+        screenOptions={({route}) => ({
+          tabBarStyle: {backgroundColor: Colors.primary},
+          tabBarIndicatorStyle: {
+            backgroundColor: Colors.azure,
+            height: 3,
+            borderRadius: 3,
+            width: ms(45),
+            marginLeft: screenWidth > 500 ? ms(68) : ms(25),
+          },
+          tabBarItemStyle: {
+            width: screenWidth > 500 ? ms(180) : ms(100),
+            height: screenWidth > 500 ? ms(60) : ms(45),
+            paddingHorizontal: ms(5),
+          },
+          tabBarScrollEnabled: true,
+          lazy: true,
+          lazyPlaceholder: () => (
+            <Text bold color={Colors.azure}>
+              {t('loading')} {route.name}...
+            </Text>
+          ),
+        })}
+        backBehavior="firstRoute"
+      >
+        {routes.map((route, index) => (
+          <Tab.Screen
+            key={index}
+            options={({route}) => ({
+              tabBarLabel: ({focused}) => (
+                <HStack alignItems="center">
+                  <Text
+                    bold
+                    color={focused ? Colors.white : Colors.light}
+                    mr={1}
+                  >
+                    {route.name}
+                  </Text>
+                  {renderTabBadge(route.name)}
+                </HStack>
+              ),
+            })}
+            component={route.screen}
+            initialParams={{navlog, title}}
+            name={route.title}
+          />
+        ))}
+      </Tab.Navigator>
+    </Box>
   )
 }

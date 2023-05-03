@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {
   RefreshControl,
   StyleSheet,
@@ -15,21 +15,27 @@ import {
   Input,
   Icon,
   Divider,
-  Center,
-  Image,
   Modal,
   Button,
   useToast,
+  Image,
+  Switch,
 } from 'native-base'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import IconFA5 from 'react-native-vector-icons/FontAwesome5'
 import Pdf from 'react-native-pdf'
 import {PDFDocument} from 'pdf-lib'
+import {Animated, Icons} from '@bluecentury/assets'
 
-import {useCharters, useEntity} from '@bluecentury/stores'
+import {useCharters, useEntity, useSettings} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
-import {CharterStatus, LoadingAnimated} from '@bluecentury/components'
+import {
+  CharterStatus,
+  LoadingAnimated,
+  EditReferenceModal,
+} from '@bluecentury/components'
 import {
   CHARTER_CONTRACTOR_STATUS_ACCEPTED,
   CHARTER_CONTRACTOR_STATUS_ARCHIVED,
@@ -41,7 +47,15 @@ import {
 import {decode as atob, encode as btoa} from 'base-64'
 import ReactNativeBlobUtil from 'react-native-blob-util'
 import {useTranslation} from 'react-i18next'
-const RNFS = require('react-native-fs')
+import Signature, {SignatureViewRef} from 'react-native-signature-canvas'
+
+type SignatureLocation = {
+  width?: number
+  height?: number
+  x?: number
+  y?: number
+  page?: number
+}
 
 export default function Charters({navigation, route}: any) {
   const {t} = useTranslation()
@@ -49,39 +63,60 @@ export default function Charters({navigation, route}: any) {
   const {
     isCharterLoading,
     charters,
-    signedDocumentsArray,
     getCharters,
     viewPdf,
     updateCharterStatus,
     addSignedDocument,
-    signatureId,
-    getSignature,
     setSignatureId,
     updateCharterStatusResponse,
+    setIsDocumentSigning,
+    isDocumentSigning,
+    uploadSignedPDF,
+    linkSignPDFToCharter,
   } = useCharters()
-  const {entityType, vesselId} = useEntity()
+  const {entityId, entityType, vesselId} = useEntity()
+  const {isMobileTracking} = useSettings()
   const [searchedValue, setSearchValue] = useState('')
   const [chartersData, setChartersData] = useState(
     route === 'charters'
-      ? charters.filter(c => c.children && c.children.length === 0)
-      : charters.filter(
+      ? charters?.filter(c => c.children && c.children.length === 0)
+      : charters?.filter(
           c =>
             (c.children && c.children.length > 0) ||
             (!c.parent && !c.navigationLogs) ||
             c.navigationLogs.length === 0
         )
   )
-  const [reviewPDF, setReviewPDF] = useState(false)
-  const [path, setPath] = useState('')
+  const [path, setPath] = useState<string>('')
   const [selectedCharter, setSelectedCharter] = useState(null)
   const [signature, setSignature] = useState('')
-  const [signatureArrayBuffer, setSignatureArrayBuffer] = useState(null)
-  const [pageWidth, setPageWidth] = useState(0)
-  const [pageHeight, setPageHeight] = useState(0)
-  const [pdfBase64, setPdfBase64] = useState(null)
-  const [pdfArrayBuffer, setPdfArrayBuffer] = useState(null)
+  const [pdfArrayBuffer, setPdfArrayBuffer] = useState<ArrayBuffer | null>(null)
+  const [isSignaturePlaceChoiceOpen, setIsSignaturePlaceChoiceOpen] =
+    useState(false)
+  const [isCharterAccepted, setIsCharterAccepted] = useState(false)
+  const [isSignatureSampleOpen, setIsSignatureSampleOpen] = useState(false)
+  const [signatureLocation, setSignatureLocation] = useState<SignatureLocation>(
+    {}
+  )
   const [isPdfSigned, setIsPdfSigned] = useState(false)
+
   const source = {uri: path, cache: true}
+  const [editReferenceOpen, setEditReferenceOpen] = useState(false)
+  const [editCharter, setEditCharter] = useState(0)
+  const ref = useRef<SignatureViewRef>(null)
+
+  const style = `.m-signature-pad--footer {display: none; margin: 0px;}
+                .m-signature-pad {border-radius: 10px; border: 1px solid #E6E6E6;}
+                body {height: 60%; margin-top: 70%; background: #00000059; padding-left: 12px; padding-right: 12px;}
+               `
+
+  const handleOnValueChange = () => {
+    navigation.navigate('TrackingServiceDialog')
+  }
+
+  const handleEmpty = () => {
+    showToast('Please sign before accepting.', 'warning')
+  }
 
   useEffect(() => {
     setSignatureId('')
@@ -98,9 +133,29 @@ export default function Charters({navigation, route}: any) {
     }
   }, [path])
 
+  useEffect(() => {
+    if (signature) {
+      handleSingleTap()
+    }
+  }, [signature])
+
+  const uploadSignedDocument = async (pathToSignedFile: string) => {
+    const uploadResponse = await uploadSignedPDF({
+      uri: pathToSignedFile,
+      type: 'application/pdf',
+      fileName: 'Signed_agreement',
+    })
+    if (uploadResponse) {
+      await linkSignPDFToCharter(
+        uploadResponse.path,
+        'Signed_document',
+        selectedCharter?.id
+      )
+    }
+  }
+
   const readFile = () => {
     ReactNativeBlobUtil.fs.readFile(path, 'base64').then(contents => {
-      setPdfBase64(contents)
       setPdfArrayBuffer(_base64ToArrayBuffer(contents))
     })
   }
@@ -159,11 +214,16 @@ export default function Charters({navigation, route}: any) {
   }
 
   const renderItem = ({item, index}: any) => {
+    const charterCreator =
+      item.charterContracts[0].contract.contractParties.find(
+        entity => entity.creator
+      )
+    const isCreator = charterCreator.entity.id === entityId
     const status = getStatus(item, entityType)
     return (
       <TouchableOpacity
         activeOpacity={0.7}
-        onPress={() => onCharterSelected(item)}
+        onPress={() => onCharterSelected(item, isCreator)}
       >
         <Box
           key={index}
@@ -184,9 +244,7 @@ export default function Charters({navigation, route}: any) {
             py={ms(8)}
           >
             <VStack maxWidth="72%">
-              <Text bold>
-                {item.vesselReference || item.clientReference || t('unknown')}
-              </Text>
+              {renderRefNumber(item)}
               {item.navigationLogs &&
                 item.navigationLogs.map(
                   (navlog: {bulkCargo: any[]}) =>
@@ -195,9 +253,9 @@ export default function Charters({navigation, route}: any) {
                       if (cargo.isLoading) {
                         return (
                           <Text
-                            key={cargo.id}
+                            key={cargo?.id}
                             color={
-                              item.isActive || isLoaded(item.cargo)
+                              item?.isActive || isLoaded(item?.cargo)
                                 ? '#29B7EF'
                                 : Colors.disabled
                             }
@@ -205,7 +263,7 @@ export default function Charters({navigation, route}: any) {
                           >
                             {parseInt(cargo.amount) || 0} MT -{' '}
                             {cargo.type
-                              ? cargo.type.nameEn || cargo.type.nameNl
+                              ? cargo?.type?.nameEn || cargo?.type?.nameNl
                               : null}
                           </Text>
                         )
@@ -218,7 +276,11 @@ export default function Charters({navigation, route}: any) {
                   : 'TBD'}
               </Text>
             </VStack>
-            <CharterStatus charter={item} entityType={entityType} />
+            <CharterStatus
+              charter={item}
+              entityType={entityType}
+              isCreator={isCreator}
+            />
           </HStack>
           <Box
             bg={status === 'completed' ? Colors.secondary : Colors.grey}
@@ -233,12 +295,31 @@ export default function Charters({navigation, route}: any) {
     )
   }
 
+  const renderRefNumber = (itemData: any) => {
+    if (!itemData?.customerReference && !itemData?.supplierReference) {
+      return (
+        <Text bold>
+          {itemData?.clientReference || itemData?.vesselReference}
+        </Text>
+      )
+    }
+    return (
+      <HStack space={ms(5)}>
+        <Text bold>{itemData?.customerReference}</Text>
+        {itemData?.customerReference && itemData?.supplierReference && (
+          <Divider mx={ms(5)} orientation="vertical" />
+        )}
+        <Text bold>{itemData?.supplierReference}</Text>
+      </HStack>
+    )
+  }
+
   const onSearchCharter = (value: string) => {
     setSearchValue(value)
     const chartersTemp =
       route === 'charters'
-        ? charters.filter(c => c.children && c.children.length === 0)
-        : charters.filter(
+        ? charters?.filter(c => c.children && c.children.length === 0)
+        : charters?.filter(
             c =>
               (c.children && c.children.length > 0) ||
               (!c.parent && !c.navigationLogs) ||
@@ -256,19 +337,21 @@ export default function Charters({navigation, route}: any) {
     setChartersData(searchedCharter)
   }
 
-  const onCharterSelected = async (charter: any) => {
+  const onCharterSelected = async (charter: any, isCreator: boolean) => {
     setSelectedCharter(charter)
-    if (charter.contractorStatus === 'new' || signature) {
-      const path = await viewPdf(charter.id)
-      setPath(path)
-      setReviewPDF(true)
+    if (charter.contractorStatus === 'new' && !isCreator) {
+      const pathToFile = await viewPdf(charter.id)
+      setPath(pathToFile)
+      setIsSignaturePlaceChoiceOpen(true)
     } else {
-      navigation.navigate('CharterDetails', {charter: charter})
+      navigation.navigate('CharterDetails', {
+        charter: charter,
+        isCreator: isCreator,
+      })
     }
   }
 
   const handleOnDecline = async () => {
-    setReviewPDF(false)
     const status = {
       status: CHARTER_CONTRACTOR_STATUS_REFUSED,
       setContractorStatus: false,
@@ -282,36 +365,19 @@ export default function Charters({navigation, route}: any) {
     }
   }
 
-  const handleOnAccept = async () => {
-    setReviewPDF(false)
-    const navigateToGetSignatureScreen = () => {
-      navigation.navigate('CharterAcceptSign', {
-        charter: selectedCharter,
-        setSignature: setSignature,
-        onCharterSelected: onCharterSelected,
-      })
-    }
-    if (!signatureId) {
-      navigateToGetSignatureScreen()
-    } else {
-      const response = await getSignature(
-        signatureId,
-        navigateToGetSignatureScreen
-      )
-      if (response.signature) {
-        setSignature(response.signature.replace('data:image/png;base64,', ''))
-        onCharterSelected(selectedCharter)
-      } else {
-        navigateToGetSignatureScreen()
-      }
-    }
+  const handleOnAcceptAndSign = () => {
+    ref.current?.readSignature()
+  }
+
+  const handleClear = () => {
+    ref.current?.clearSignature()
   }
 
   const onPullToReload = () => {
     getCharters()
   }
 
-  const _base64ToArrayBuffer = base64 => {
+  const _base64ToArrayBuffer = (base64: string) => {
     const binary_string = atob(base64)
     const len = binary_string.length
     const bytes = new Uint8Array(len)
@@ -335,70 +401,122 @@ export default function Charters({navigation, route}: any) {
     return btoa(result)
   }
 
-  const handleSingleTap = async (page, x, y) => {
-    if (signature) {
-      const signArrBuf = _base64ToArrayBuffer(signature)
+  const handleSingleTap = async () => {
+    if (
+      signature
+    ) {
+      setIsDocumentSigning(true)
+      setIsSignatureSampleOpen(false)
+      setIsSignaturePlaceChoiceOpen(false)
+      const signArrBuf = _base64ToArrayBuffer(
+        signature.replace('data:image/png;base64,', '')
+      )
       const pdfDoc = await PDFDocument.load(pdfArrayBuffer)
       const pages = pdfDoc.getPages()
-      const firstPage = pages[page - 1]
+      const firstPage = pages[0]
 
       const signatureImage = await pdfDoc.embedPng(signArrBuf)
-      if (Platform.OS == 'ios') {
+      if (Platform.OS === 'ios') {
         firstPage.drawImage(signatureImage, {
-          x: (pageWidth * (x - 12)) / Dimensions.get('window').width,
-          y: pageHeight - (pageHeight * (y + 12)) / 540,
+          // x:
+          //   (signatureLocation.width * (signatureLocation.x - 12)) /
+          //   Dimensions.get('window').width,
+          // y:
+          //   signatureLocation.height -
+          //   (signatureLocation.height * (signatureLocation.y + 12)) / 540,
+          x: 20,
+          y: 20,
           width: 100,
           height: 100,
         })
       } else {
         firstPage.drawImage(signatureImage, {
-          x: (firstPage.getWidth() * x) / pageWidth,
-          y:
-            firstPage.getHeight() -
-            (firstPage.getHeight() * y) / pageHeight -
-            25,
-          width: 50,
-          height: 50,
+          // x:
+          //   (firstPage.getWidth() * signatureLocation.x) /
+          //   signatureLocation.width,
+          // y:
+          //   firstPage.getHeight() -
+          //   (firstPage.getHeight() * signatureLocation.y) /
+          //     signatureLocation.height -
+          //   25,
+          x: 20,
+          y: 20,
+          width: 100,
+          height: 100,
         })
       }
 
       const pdfBytes = await pdfDoc.save()
       const pdfBase64 = _uint8ToBase64(pdfBytes)
 
-      const status = {
-        status: CHARTER_CONTRACTOR_STATUS_ACCEPTED,
-        setContractorStatus: true,
-      }
-      const update = await updateCharterStatus(selectedCharter?.id, status)
-
-      ReactNativeBlobUtil.fs
+      await ReactNativeBlobUtil.fs
         .writeFile(`${path}_signed`, pdfBase64, 'base64')
-        .then(success => {
+        .then(async success => {
           console.log('SIGNATURE_SUCCESS_NEW_PATH', success)
-          setSignature('')
           setPath(`${path}_signed`)
-          setPdfBase64(pdfBase64)
           setIsPdfSigned(true)
-          const newSignedDocument = {
-            charter_id: selectedCharter.id,
-            path: `${path}_signed`,
-          }
-          addSignedDocument([...signedDocumentsArray, newSignedDocument])
-
-          if (typeof update === 'string') {
-            getCharters()
-            showToast('Charter accepted sucessfully.', 'success')
-          } else {
-            showToast('Charter accepted failed.', 'failed')
-          }
         })
         .catch(err => {
           console.log(err.message)
         })
+      setSignature('')
+      setIsDocumentSigning(false)
     }
   }
 
+  const resetState = () => {
+    setPath('')
+    setSelectedCharter(null)
+    setSignature('')
+    setPdfArrayBuffer(null)
+    setIsSignaturePlaceChoiceOpen(false)
+    setIsCharterAccepted(false)
+    setIsSignatureSampleOpen(false)
+    setSignatureLocation({})
+    setIsPdfSigned(false)
+  }
+
+  const handleSaveDocument = async () => {
+    setIsPdfSigned(false)
+    const status = {
+      status: CHARTER_CONTRACTOR_STATUS_ACCEPTED,
+      setContractorStatus: true,
+    }
+    const update = await updateCharterStatus(selectedCharter?.id, status)
+    const upload = await uploadSignedDocument(path)
+
+    Promise.all([update, upload]).then(async () => {
+      try {
+        await getCharters()
+        resetState()
+        showToast('Charter accepted sucessfully.', 'success')
+      } catch (e) {
+        console.log('HANDLE_SAVE_DOCUMENT_ERROR', e)
+        showToast('Charter accepted failed.', 'failed')
+      }
+    })
+  }
+
+  const handleDiscard = () => {
+    resetState()
+  }
+
   if (isCharterLoading) return <LoadingAnimated />
+
+  if (isDocumentSigning) {
+    return (
+      <Image
+        style={{
+          width: '100%',
+          height: '100%',
+          alignSelf: 'center',
+        }}
+        alt="Charter-Signature"
+        resizeMode="cover"
+        source={Animated.signature}
+      />
+    )
+  }
 
   return (
     <Box safeArea backgroundColor={Colors.white} flex="1" p={ms(12)}>
@@ -462,94 +580,66 @@ export default function Charters({navigation, route}: any) {
 
       <Modal
         animationPreset="slide"
-        isOpen={reviewPDF}
+        isOpen={isSignaturePlaceChoiceOpen || isPdfSigned}
         safeAreaTop={true}
         size="full"
-        onClose={() => setReviewPDF(false)}
+        onClose={() => setIsSignaturePlaceChoiceOpen(false)}
       >
         <Modal.Content bg="#23272F" style={styles.bottom}>
-          {/* <HStack bg={Colors.black} py={ms(10)} px={ms(16)}>
+          <Box
+            style={{
+              alignItems: 'center',
+              backgroundColor: Colors.black,
+              paddingHorizontal: ms(16),
+              paddingVertical: ms(10),
+            }}
+          >
             <Text
-              flex="1"
-              textAlign="center"
-              color={Colors.white}
-              fontSize={ms(12)}
               bold
+              color={Colors.primary}
+              fontSize={ms(12)}
+              textAlign="center"
             >
-              {path?.replace(
-                '/data/user/0/com.vemasysreactnativeapp/files/ReactNativeBlobUtilTmp_',
-                ''
-              )}
-              .pdf
-            </Text> */}
-          {!signature ? (
-            <TouchableOpacity
-              style={{
-                alignItems: 'flex-end',
-                backgroundColor: Colors.black,
-                paddingHorizontal: ms(16),
-                paddingVertical: ms(10),
-              }}
-              onPress={() => {
-                setReviewPDF(false)
-                setIsPdfSigned(false)
-              }}
-            >
-              <Text
-                bold
-                color={Colors.primary}
-                fontSize={ms(12)}
-                textAlign="right"
-              >
-                {t('done')}
-              </Text>
-            </TouchableOpacity>
-          ) : (
-            <Box
-              style={{
-                alignItems: 'flex-end',
-                backgroundColor: Colors.black,
-                paddingHorizontal: ms(16),
-                paddingVertical: ms(10),
-              }}
-            >
-              <Text
-                bold
-                color={Colors.primary}
-                fontSize={ms(12)}
-                textAlign="right"
-              >
-                {t('makeSingleTap')}
-              </Text>
-            </Box>
-          )}
-          {/* </HStack> */}
-
+              Document.pdf
+            </Text>
+          </Box>
           <Pdf
             enablePaging
-            source={source}
+            source={isPdfSigned ? {uri: path, cache: true} : source}
             style={styles.pdf}
             trustAllCerts={false}
             onError={error => {
               console.log(error)
             }}
             onLoadComplete={(numberOfPages, filePath, {width, height}) => {
-              console.log(`Number of pages: ${numberOfPages}`)
-              setPageWidth(width)
-              setPageHeight(height)
+              console.log(`HEIGHT: ${height}`, `WIDTH: ${width}`)
+              setSignatureLocation({
+                ...signatureLocation,
+                height,
+                width,
+              })
             }}
             onPageChanged={(page, numberOfPages) => {
               console.log(`Current page: ${page}`)
             }}
             onPageSingleTap={(page, x, y) => {
-              handleSingleTap(page, x, y)
+              console.log('X:', x, 'Y:', y)
+              isCharterAccepted
+                ? (setSignatureLocation({
+                    ...signatureLocation,
+                    x,
+                    y,
+                    page,
+                  }),
+                  setIsSignatureSampleOpen(true))
+                : null
             }}
             onPressLink={uri => {
               console.log(`Link pressed: ${uri}`)
             }}
           />
         </Modal.Content>
-        {!signature && !isPdfSigned ? (
+        {!isCharterAccepted ? (
           <Modal.Footer bg={Colors.black}>
             <Box flex="1">
               <Button
@@ -557,17 +647,117 @@ export default function Charters({navigation, route}: any) {
                 mb={ms(8)}
                 style={{borderColor: Colors.danger}}
                 variant="outline"
-                onPress={handleOnDecline}
+                onPress={() => {
+                  setIsSignaturePlaceChoiceOpen(false)
+                  handleOnDecline()
+                }}
               >
                 {t('decline')}
               </Button>
-              <Button bg={Colors.primary} onPress={handleOnAccept}>
+              <Button
+                bg={Colors.primary}
+                // onPress={() => setIsCharterAccepted(true)}
+                onPress={() => {
+                  setIsSignatureSampleOpen(true)
+                  setIsCharterAccepted(true)
+                }}
+              >
                 {t('accept')}
               </Button>
             </Box>
           </Modal.Footer>
-        ) : null}
+        ) : (
+          <Modal.Footer bg={Colors.black}>
+            <Box flex="1">
+              <Button
+                colorScheme="dark"
+                mb={ms(8)}
+                style={{borderColor: Colors.danger}}
+                variant="outline"
+                onPress={handleDiscard}
+              >
+                Discard
+              </Button>
+              <Button bg={Colors.primary} onPress={handleSaveDocument}>
+                Save
+              </Button>
+            </Box>
+          </Modal.Footer>
+        )}
       </Modal>
+      <Modal
+        style={{
+          height: '100%',
+          alignSelf: 'flex-end',
+          backgroundColor: Colors.white,
+        }}
+        animationPreset="slide"
+        bgColor="#00000059"
+        isOpen={isSignatureSampleOpen}
+        safeAreaTop={false}
+        size="full"
+        onClose={() => setIsSignatureSampleOpen(false)}
+      >
+        <Box bg={Colors.black} h="100%" w="100%">
+          <Signature
+            ref={ref}
+            webStyle={style}
+            onEmpty={handleEmpty}
+            onOK={sign => setSignature(sign)}
+          />
+          <Box bg={Colors.white}>
+            <HStack
+              alignItems="center"
+              borderColor={Colors.light}
+              borderRadius={5}
+              borderWidth={1}
+              justifyContent="space-between"
+              mt={ms(12)}
+              mx={ms(12)}
+              px={ms(12)}
+              py={ms(7)}
+            >
+              <Image
+                alt="my-location"
+                height={ms(20)}
+                mr={ms(10)}
+                source={Icons.location_alt}
+                width={ms(20)}
+              />
+              <Text flex={1} fontWeight="medium">
+                {t('activateTracking')}
+              </Text>
+              <Switch
+                size="sm"
+                value={isMobileTracking}
+                onToggle={handleOnValueChange}
+              />
+            </HStack>
+            <HStack bg={Colors.white} p={ms(14)}>
+              <Button
+                colorScheme="muted"
+                flex="1"
+                variant="ghost"
+                onPress={handleClear}
+              >
+                {t('clear')}
+              </Button>
+              <Button
+                bg={Colors.primary}
+                flex="1"
+                onPress={handleOnAcceptAndSign}
+              >
+                {t('acceptAndSign')}
+              </Button>
+            </HStack>
+          </Box>
+        </Box>
+      </Modal>
+      <EditReferenceModal
+        charter={editCharter}
+        isOpen={editReferenceOpen}
+        setOpen={setEditReferenceOpen}
+      />
     </Box>
   )
 }
