@@ -10,7 +10,7 @@ type FinancialState = {
   invoiceStatistics: Array<InvoiceStatistic>
   incomingInvoices: Array<Invoice>
   outgoingInvoices: Array<Invoice>
-  invoiceDetails: any[] | undefined
+  invoiceDetails: Invoice | Record<string, never>
 }
 
 type FinancialActions = {
@@ -35,7 +35,7 @@ export const useFinancial = create(
       invoiceStatistics: [],
       incomingInvoices: [],
       outgoingInvoices: [],
-      invoiceDetails: [],
+      invoiceDetails: {},
       getInvoiceStatistics: async (year: string) => {
         set({
           isFinancialLoading: true,
@@ -99,7 +99,7 @@ export const useFinancial = create(
       getInvoiceDetails: async (id: string) => {
         set({
           isFinancialLoading: true,
-          invoiceDetails: [],
+          invoiceDetails: {},
         })
         try {
           const response = await API.getInvoiceDetails(id)
@@ -111,7 +111,7 @@ export const useFinancial = create(
           } else {
             set({
               isFinancialLoading: false,
-              invoiceDetails: [],
+              invoiceDetails: {},
             })
           }
         } catch (error) {
@@ -127,7 +127,7 @@ export const useFinancial = create(
       ) => {
         set({
           isFinancialLoading: true,
-          invoiceDetails: [],
+          invoiceDetails: {},
         })
         try {
           const response = await API.updateInvoiceStatus(
