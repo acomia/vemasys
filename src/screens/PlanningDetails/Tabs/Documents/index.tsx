@@ -20,7 +20,7 @@ import {usePlanning, useSettings} from '@bluecentury/stores'
 import {IconButton, LoadingAnimated} from '@bluecentury/components'
 import DocumentPicker, {isInProgress, types} from 'react-native-document-picker'
 import {Icons} from '@bluecentury/assets'
-import {RefreshControl} from 'react-native'
+import {RefreshControl, Platform, PermissionsAndroid} from 'react-native'
 import moment from 'moment'
 import DocumentScanner from 'react-native-document-scanner-plugin'
 import {convertToPdfAndUpload} from '@bluecentury/utils'
@@ -60,13 +60,15 @@ const Documents = () => {
   const scanDocument = async () => {
     // start the document scanner
     const {scannedImages} = await DocumentScanner.scanDocument()
-    await convertToPdfAndUpload(
-      scannedImages,
-      showToast,
-      true,
-      navlog,
-      setScannedImage
-    )
+    if (scannedImages) {
+      await convertToPdfAndUpload(
+        scannedImages,
+        showToast,
+        true,
+        navlog,
+        setScannedImage
+      )
+    }
   }
 
   const handleError = (err: unknown) => {
@@ -89,11 +91,11 @@ const Documents = () => {
         return (
           <Text
             bg={res === 'success' ? 'emerald.500' : 'red.500'}
+            color={Colors.white}
+            mb={5}
             px="2"
             py="1"
             rounded="sm"
-            mb={5}
-            color={Colors.white}
           >
             {text}
           </Text>
@@ -102,8 +104,23 @@ const Documents = () => {
     })
   }
 
-  const onScanDocument = () => {
-    scanDocument()
+  const requestCameraPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA
+      )
+      return granted === PermissionsAndroid.RESULTS.GRANTED
+    } catch (err) {
+      console.warn(err)
+    }
+  }
+
+  const onScanDocument = async () => {
+    if (Platform.OS === 'android') {
+      const permissionCamera = await requestCameraPermission()
+
+      if (permissionCamera) scanDocument()
+    }
     onClose()
   }
 
@@ -130,7 +147,7 @@ const Documents = () => {
           path: upload.path,
           description: moment().format('YYYY-MM-DD HH:mm:ss'),
         }
-        let body = {
+        const body = {
           fileGroup: {
             files:
               navigationLogDocuments?.length > 0
@@ -228,18 +245,18 @@ const Documents = () => {
   return (
     <Box flex="1">
       <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={isPlanningDocumentsLoading}
+            onRefresh={onPullToReload}
+          />
+        }
         contentContainerStyle={{flexGrow: 1}}
         px={ms(12)}
         py={ms(8)}
         scrollEventThrottle={16}
-        refreshControl={
-          <RefreshControl
-            onRefresh={onPullToReload}
-            refreshing={isPlanningDocumentsLoading}
-          />
-        }
       >
-        <Text fontSize={ms(20)} bold color={Colors.azure} mb={ms(20)}>
+        <Text bold color={Colors.azure} fontSize={ms(20)} mb={ms(20)}>
           {t('additionalDocuments')}
         </Text>
         {navigationLogDocuments?.map((document: Document, index: number) => {
@@ -251,24 +268,24 @@ const Documents = () => {
                   ? Colors.white
                   : 'rgba(85,189,55,0.73)'
               }
+              alignItems="center"
               borderRadius={5}
               justifyContent="space-between"
-              alignItems="center"
-              py={ms(10)}
-              px={ms(16)}
               mb={ms(10)}
+              px={ms(16)}
+              py={ms(10)}
               shadow={1}
             >
-              <Text flex="1" mr={ms(5)} fontWeight="medium">
+              <Text flex="1" fontWeight="medium" mr={ms(5)}>
                 {document.description
                   ? document.description
                   : '...' + document.path.substr(-20)}
               </Text>
               <IconButton
-                source={Icons.eye}
-                onPress={() => handleOnPressUpload(document)}
-                //   onPress={() => {console.log('PRESSED')}}
                 size={ms(22)}
+                source={Icons.eye}
+                //   onPress={() => {console.log('PRESSED')}}
+                onPress={() => handleOnPressUpload(document)}
               />
             </HStack>
           )
@@ -277,8 +294,8 @@ const Documents = () => {
       <Button
         bg={Colors.primary}
         leftIcon={<Icon as={Ionicons} name="add" size="sm" />}
-        mt={ms(20)}
         mb={ms(20)}
+        mt={ms(20)}
         mx={ms(12)}
         onPress={onOpen}
       >
@@ -300,10 +317,10 @@ const Documents = () => {
         <Modal.Content>
           <Image
             alt="file-preview"
-            source={{uri: selectedImg.uri}}
-            resizeMode="contain"
-            w="100%"
             h="100%"
+            resizeMode="contain"
+            source={{uri: selectedImg.uri}}
+            w="100%"
           />
         </Modal.Content>
       </Modal>

@@ -387,7 +387,11 @@ const Details = () => {
     <Box>
       <DatetimePickerList
         date={dates.plannedETA}
+<<<<<<< HEAD
         locked={isUnknownLocation ? true : navigationLogDetails?.locked}
+=======
+        // locked={isUnknownLocation ? true : navigationLogDetails?.locked}
+>>>>>>> development
         locked={true}
         readOnly={true}
         title="Planned"
