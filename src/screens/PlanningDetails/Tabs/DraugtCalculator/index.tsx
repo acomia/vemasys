@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import {
   Box,
   Text,
@@ -15,9 +15,11 @@ import {BeforeAfterComponent, Ship} from './component'
 import {useTranslation} from 'react-i18next'
 import {PageScroll} from '@bluecentury/components'
 import {useEntity} from '@bluecentury/stores'
+import {usePlanning} from '@bluecentury/stores'
+import {NavigationLog} from '@bluecentury/models'
 
 interface Props {
-  navLog: any[]
+  navLog: NavigationLog
 }
 
 export default (props: Props) => {
@@ -27,7 +29,21 @@ export default (props: Props) => {
   const [selectedButton, setSelectedButton] = useState('')
   const [isOpenInput, setIsOpenInput] = useState(false)
   const [measurement, setMeasurement] = useState('')
+  const [draughtValues, setDraughtValues] = useState({
+    BBV: 0,
+    BBM: 0,
+    BBA: 0,
+    SBV: 0,
+    SBM: 0,
+    SBA: 0,
+  })
 
+  const {
+    maxDraught,
+    navigationLogDetails,
+    tonnageCertificates,
+    getTonnageCertifications,
+  } = usePlanning()
   const measurements = [
     {value: 'freeboard', label: t('freeboardMeasurement')},
     {value: 'draught', label: t('draughtMeasurement')},
@@ -39,6 +55,10 @@ export default (props: Props) => {
     setSelectedButton(selected)
     setIsOpenInput(true)
   }
+
+  useEffect(() => {
+    getTonnageCertifications(navigationLogDetails?.exploitationVessel?.id)
+  }, [])
 
   return (
     <PageScroll refreshing={refreshing}>
@@ -74,7 +94,8 @@ export default (props: Props) => {
       <Box>
         <Ship
           buttonSelected={buttonSelected}
-          draught={vesselDetails?.physicalVessel?.draught}
+          draughtValues={draughtValues}
+          maxDraught={maxDraught}
         />
       </Box>
       <HStack mt={ms(10)} space={ms(5)}>
@@ -97,7 +118,9 @@ export default (props: Props) => {
             <Input
               placeholder={vesselDetails?.physicalVessel?.draught}
               value={measurement}
-              onChangeText={value => setMeasurement(value)}
+              onChangeText={value => {
+                setMeasurement(value)
+              }}
             />
           </Modal.Body>
           <Modal.Footer>
@@ -109,7 +132,16 @@ export default (props: Props) => {
               >
                 <Text color={Colors.disabled}>{t('close')}</Text>
               </Button>
-              <Button flex={1}>
+              <Button
+                flex={1}
+                onPress={() => {
+                  setDraughtValues({
+                    ...draughtValues,
+                    [selectedButton]: measurement,
+                  })
+                  setIsOpenInput(false)
+                }}
+              >
                 <Text>{t('save')}</Text>
               </Button>
             </HStack>

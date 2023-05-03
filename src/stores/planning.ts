@@ -2,7 +2,11 @@ import create from 'zustand'
 import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as API from '@bluecentury/api/vemasys'
-import {NavigationLog, NavigationLogRoutes} from '@bluecentury/models'
+import {
+  NavigationLog,
+  NavigationLogRoutes,
+  TonnageCertifications,
+} from '@bluecentury/models'
 
 type PlanningState = {
   isPlanningLoading: boolean
@@ -28,6 +32,9 @@ type PlanningState = {
   updateNavlogDatesSuccess: string
   updateNavlogDatesFailed: string
   updateNavlogDatesMessage: string
+  isTonnageCertificateLoading: boolean
+  tonnageCertificates: TonnageCertifications[] | undefined
+  maxDraught: string | number | null
 }
 
 type PlanningActions = {
@@ -64,6 +71,8 @@ type PlanningActions = {
   ) => void
   deleteNavLogAction?: (id: string) => void
   reset?: () => void
+  getTonnageCertifications: (id: string | number) => void
+  setMaxDraught: (draught: string | number) => void
 }
 
 export type PlanningStore = PlanningState & PlanningActions
@@ -89,6 +98,9 @@ const initialState: PlanningState = {
   navigationLogCargoHolds: [],
   navigationLogComments: [],
   navigationLogDocuments: [],
+  isTonnageCertificateLoading: false,
+  tonnageCertificates: [],
+  maxDraught: null,
 }
 
 export const usePlanning = create(
@@ -529,6 +541,24 @@ export const usePlanning = create(
           updateNavlogDatesFailed: '',
           updateNavlogDatesMessage: '',
         })
+      },
+      getTonnageCertifications: (id: string | number) => {
+        set({isTonnageCertificateLoading: true})
+
+        API.getTonnageCertifications(id).then(response => {
+          if (response?.status === 200) {
+            get().setMaxDraught(
+              Math.max(...response?.data?.map(item => item.draught))
+            )
+            set({
+              isTonnageCertificateLoading: false,
+              tonnageCertificates: response?.data,
+            })
+          }
+        })
+      },
+      setMaxDraught: (maxDraught: string | number) => {
+        set({maxDraught: maxDraught})
       },
     }),
     {
