@@ -458,7 +458,7 @@ const Details = () => {
 
         <DatetimePickerList
           date={dates.arrivalDatetime}
-          iconName={trackViewMode ? 'info-circle' : null}
+          // iconName={trackViewMode ? 'info-circle' : null}
           locked={isUnknownLocation ? true : navigationLogDetails?.locked}
           title="Arrival"
           onChangeDate={() => {
@@ -511,7 +511,7 @@ const Details = () => {
 
       <DatetimePickerList
         date={dates.departureDatetime}
-        iconName={trackViewMode ? 'info-circle' : null}
+        // iconName={trackViewMode ? 'info-circle' : null}
         locked={isUnknownLocation ? true : navigationLogDetails?.locked}
         title="Departure"
         onChangeDate={() => {

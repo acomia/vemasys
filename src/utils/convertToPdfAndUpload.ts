@@ -60,7 +60,8 @@ export const convertToPdfAndUpload = async (
         path: upload.path,
         description,
       }
-      const body = {
+      // eslint-disable-next-line let-convert-to-const
+      let body = {
         fileGroup: {
           files:
             navigationLogDocuments?.length > 0
