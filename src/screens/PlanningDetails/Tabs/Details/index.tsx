@@ -208,7 +208,7 @@ const Details = () => {
       departureDatetime: navigationLogDetails?.departureDatetime,
     }
 
-    if (navigationLogRoutes) {
+    if (navigationLogRoutes && !navigationLogDetails?.arrivalDatetime) {
       updatedDates.arrivalDatetime =
         navigationLogDetails?.announcedDatetime &&
         navigationLogDetails?.captainDatetimeEta
