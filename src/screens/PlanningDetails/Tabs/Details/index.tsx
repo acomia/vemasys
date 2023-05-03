@@ -300,6 +300,8 @@ const Details = () => {
       Eta: {didUpdate: false},
       Nor: {didUpdate: false},
       Doc: {didUpdate: false},
+      Arr: {didUpdate: false},
+      Dep: {didUpdate: false},
     })
     onPullToReload()
     reset()
@@ -329,6 +331,7 @@ const Details = () => {
         return
       case 'ARR':
         setDates({...dates, arrivalDatetime: formattedDate})
+        setDidDateChange({...didDateChange, Arr: {didUpdate: true}})
         return
       case 'DOC':
         setDates({...dates, terminalApprovedDeparture: formattedDate})
@@ -336,6 +339,7 @@ const Details = () => {
         return
       case 'DEP':
         setDates({...dates, departureDatetime: formattedDate})
+        setDidDateChange({...didDateChange, Dep: {didUpdate: true}})
         return
     }
   }
@@ -651,6 +655,10 @@ const Details = () => {
       announcedDatetime: navigationLogDetails?.announcedDatetime,
       terminalApprovedDeparture:
         navigationLogDetails?.terminalApprovedDeparture,
+      arrivalDatetime:
+        navigationLogDetails?.arrivalDatetime ||
+        navigationLogDetails?.captainDatetimeEta,
+      departureDatetime: navigationLogDetails?.departureDatetime,
     })
     setDidDateChange({
       ...didDateChange,
@@ -658,6 +666,8 @@ const Details = () => {
       Eta: {didUpdate: false},
       Nor: {didUpdate: false},
       Doc: {didUpdate: false},
+      Arr: {didUpdate: false},
+      Dep: {didUpdate: false},
     })
   }
 
@@ -670,6 +680,11 @@ const Details = () => {
       announcedDatetime: navigationLogDetails?.announcedDatetime,
       terminalApprovedDeparture:
         navigationLogDetails?.terminalApprovedDeparture,
+      arrivalDatetime:
+        navigationLogDetails?.arrivalDatetime ||
+        navigationLogDetails?.captainDatetimeEta,
+
+      departureDatetime: navigationLogDetails?.departureDatetime,
     })
     setDidDateChange({
       ...didDateChange,
@@ -677,6 +692,8 @@ const Details = () => {
       Eta: {didUpdate: false},
       Nor: {didUpdate: false},
       Doc: {didUpdate: false},
+      Arr: {didUpdate: false},
+      Dep: {didUpdate: false},
     })
     if (buttonBackLeave) {
       setButtonBackLeave(false)
