@@ -83,7 +83,7 @@ export default function PlanningDetails({route}: Props) {
         return navigationLogCargoHolds?.length ? (
           <Box bg={'#3E96A8'} borderRadius={12} h={ms(5)} px={2}>
             <Text color={Colors.white} fontSize={ms(12)} fontWeight="medium">
-              ({navigationLogDetails?.bulkCargo?.length})
+              ({navigationLogCargoHolds?.length})
             </Text>
           </Box>
         ) : null
@@ -91,7 +91,7 @@ export default function PlanningDetails({route}: Props) {
         return navigationLogDocuments?.length ? (
           <Box bg={'#3E96A8'} borderRadius={12} px={2}>
             <Text color={Colors.white} fontSize={ms(12)} fontWeight="medium">
-              ({navigationLogDetails?.bulkCargo?.length})
+              ({navigationLogDocuments?.length})
             </Text>
           </Box>
         ) : null

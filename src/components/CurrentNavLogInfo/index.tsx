@@ -1,6 +1,6 @@
 import React from 'react'
 import {StyleSheet, TouchableOpacity} from 'react-native'
-import {Box, Text, Image} from 'native-base'
+import {Box, Text, Image, HStack} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import {useNavigation} from '@react-navigation/native'
@@ -9,8 +9,14 @@ import {useTranslation} from 'react-i18next'
 import {Animated} from '@bluecentury/assets'
 import {useMap} from '@bluecentury/stores'
 import {formatLocationLabel} from '@bluecentury/constants'
+import IconFA5 from 'react-native-vector-icons/FontAwesome5'
+import {Colors} from '@bluecentury/styles'
 
-export const CurrentNavLogInfo = () => {
+interface Props {
+  tracking: boolean
+}
+
+export const CurrentNavLogInfo = ({tracking}: Props) => {
   const {t} = useTranslation()
   const navigation = useNavigation()
   const {currentNavLogs, prevNavLogs, vesselStatus}: any = useMap()
@@ -44,12 +50,28 @@ export const CurrentNavLogInfo = () => {
                 currentNavLogs[currentNavLogs?.length - 1]?.location
               )}
             </Text>
-            <Text color="#ADADAD">
-              {t('arrival')}
-              {moment(
-                currentNavLogs[currentNavLogs?.length - 1]?.arrivalDatetime
-              ).format('DD MMM YYYY | HH:mm')}
-            </Text>
+            {tracking ? (
+              <HStack alignItems="center" justifyItems={'center'} space={ms(5)}>
+                <IconFA5
+                  color={Colors.warning}
+                  name="info-circle"
+                  size={ms(15)}
+                />
+                <Text color="#ADADAD">
+                  {t('arrival')}
+                  {moment(
+                    currentNavLogs[currentNavLogs?.length - 1]?.arrivalDatetime
+                  ).format('DD MMM YYYY | HH:mm')}
+                </Text>
+              </HStack>
+            ) : (
+              <Text color="#ADADAD">
+                {t('arrival')}
+                {moment(
+                  currentNavLogs[currentNavLogs?.length - 1]?.arrivalDatetime
+                ).format('DD MMM YYYY | HH:mm')}
+              </Text>
+            )}
           </>
         ) : (
           <>
