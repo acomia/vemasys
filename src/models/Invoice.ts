@@ -15,6 +15,15 @@ export type Invoice = {
   senderReference: string
   receiverReference: string
   paidDate: Date
+  file: {
+    id: number
+    path: string
+    description: string
+    uploadedTime: Date
+    lastModification: Date
+    uploader: string
+    type: object
+  }
   charters: [StringOrNull]
   contracts: [StringOrNull]
   incomingStatus: string
@@ -170,6 +179,26 @@ export type Invoice = {
             width: string
           }
           lastGeolocation: string
+        }
+      ]
+    }
+  ]
+  pricingAdjustments: [
+    {
+      id: number
+      value: string
+      description: string
+      type: string
+      target: string
+      costTypes: [
+        {
+          id: number
+          title: string
+          remark: string
+          viewPoint: number
+          costForSemiBruto: boolean
+          externalId: string
+          externallyManaged: boolean
         }
       ]
     }
