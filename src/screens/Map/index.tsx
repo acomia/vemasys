@@ -71,6 +71,8 @@ export default function Map({navigation}: Props) {
     lastCompleteNavLogs,
     vesselStatus,
     vesselTracks,
+    trackViewMode,
+    setTrackViewMode,
   } = useMap()
   const {notifications, getAllNotifications, calculateBadge} = useNotif()
 
@@ -88,7 +90,7 @@ export default function Map({navigation}: Props) {
     longitudeDelta: LONGITUDE_DELTA,
   })
   const [zoomLevel, setZoomLevel] = useState<number | null>(null)
-  const [trackViewMode, setTrackViewMode] = useState(false)
+  // const [trackViewMode, setTrackViewMode] = useState(false)
   const [page, setPage] = useState(1)
   const [vesselUpdated, setVesselUpdated] = useState(false)
   const uniqueTracks: Array<VesselGeolocation> = []
@@ -211,8 +213,10 @@ export default function Map({navigation}: Props) {
         >
           {selectedVessel?.alias || null}
         </Text>
-        {snapStatus === 1 && <PreviousNavLogInfo logs={prevNavLogs} />}
-        <CurrentNavLogInfo />
+        {snapStatus === 1 && (
+          <PreviousNavLogInfo logs={prevNavLogs} tracking={trackViewMode} />
+        )}
+        <CurrentNavLogInfo tracking={trackViewMode} />
         {snapStatus === 1 && <PlannedNavLogInfo logs={plannedNavLogs} />}
         {snapStatus === 1 && (
           <Button
@@ -592,14 +596,12 @@ export default function Map({navigation}: Props) {
                 size={ms(30)}
                 source={Icons.navigating_route}
                 onPress={() => {
-                  setTrackViewMode(value => {
-                    if (value) {
-                      centerMapToCurrentLocation()
-                    } else {
-                      getVesselTrack(vesselId, page)
-                    }
-                    return (value = !value)
-                  })
+                  if (trackViewMode) {
+                    centerMapToCurrentLocation()
+                  } else {
+                    getVesselTrack(vesselId, page)
+                  }
+                  setTrackViewMode(!trackViewMode)
                 }}
               />
             </Box>

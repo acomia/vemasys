@@ -29,7 +29,7 @@ import {Shadow} from 'react-native-shadow-2'
 import {ActionCard, CommentCard, DatetimePickerList} from '../../components'
 import {Colors} from '@bluecentury/styles'
 import {Icons} from '@bluecentury/assets'
-import {useEntity, usePlanning, useSettings} from '@bluecentury/stores'
+import {useEntity, usePlanning, useSettings, useMap} from '@bluecentury/stores'
 import {
   formatLocationLabel,
   hasSelectedEntityUserPermission,
@@ -88,6 +88,7 @@ const Details = () => {
     linkEntity,
     commentsWaitingForUpload,
   } = useEntity()
+  const {trackViewMode} = useMap()
   const {navlog, title}: any = route.params
 
   const [dates, setDates] = useState<Dates>({
@@ -453,6 +454,7 @@ const Details = () => {
 
         <DatetimePickerList
           date={dates.arrivalDatetime}
+          iconName={trackViewMode ? 'info-circle' : null}
           locked={isUnknownLocation ? true : navigationLogDetails?.locked}
           title="Arrival"
           onChangeDate={() => {
@@ -505,6 +507,7 @@ const Details = () => {
 
       <DatetimePickerList
         date={dates.departureDatetime}
+        iconName={trackViewMode ? 'info-circle' : null}
         locked={isUnknownLocation ? true : navigationLogDetails?.locked}
         title="Departure"
         onChangeDate={() => {
