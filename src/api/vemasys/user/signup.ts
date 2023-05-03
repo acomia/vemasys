@@ -14,7 +14,7 @@ export const registerNewUser = async (user: UserRegistration) => {
   }
 }
 
-export const updateUserInfo = async (
+export const updateUserData = async (
   user: ExtendedUser,
   docs: Array<SignupDocs>
 ) => {

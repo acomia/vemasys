@@ -35,6 +35,10 @@ type EntityState = {
   fleetVessel: number
   pendingRoles: Array<any>
   acceptRoleStatus: string
+  commentsWaitingForUpload: CommentWaitingForUpload[]
+  rejectedComments: CommentWaitingForUpload[]
+  areCommentsUploading: boolean
+  uploadingCommentNumber: number
 }
 
 type EntityActions = {
@@ -81,6 +85,10 @@ const initialEntityState: EntityState = {
   fleetVessel: 0,
   pendingRoles: [],
   acceptRoleStatus: '',
+  commentsWaitingForUpload: [],
+  rejectedComments: [],
+  areCommentsUploading: false,
+  uploadingCommentNumber: 0,
 }
 
 export const useEntity = create(
