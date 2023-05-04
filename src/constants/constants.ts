@@ -21,7 +21,7 @@ export const EXTERNAL_PEGEL_IMAGE_URL =
 
 export const accessLevel = [
   {label: 'Shared within the company', value: 'shared_within_company'},
-  {label: 'Shared with all stakeholders', value: 'shared_with_stakeholders'},
+  {label: 'Shared with all stakeholders', value: 'shared'},
 ]
 
 // Map constants

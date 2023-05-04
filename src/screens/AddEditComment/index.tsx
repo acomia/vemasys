@@ -70,7 +70,7 @@ const AddEditComment = ({navigation, route}: Props) => {
   const [imgModal, setImgModal] = useState(false)
   const [viewImg, setViewImg] = useState(false)
   const [isCameraOpen, setIsCameraOpen] = useState(false)
-  const [levelOfAccess, setLevelOfAccess] = useState(accessLevel[0].value)
+  const [levelOfAccess, setLevelOfAccess] = useState(comment?.accessLevel)
 
   const cameraRef = useRef<any>()
 
