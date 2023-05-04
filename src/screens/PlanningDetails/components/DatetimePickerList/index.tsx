@@ -2,6 +2,7 @@ import React from 'react'
 import {HStack, Text, Pressable, VStack, Skeleton} from 'native-base'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import ArrowDownIcon from 'react-native-vector-icons/MaterialIcons'
+import IconFA5 from 'react-native-vector-icons/FontAwesome5'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import _ from 'lodash'
@@ -19,6 +20,7 @@ const DatetimePickerList = ({
   onChangeDate,
   onClearDate,
   readOnly = false,
+  iconName,
 }: any) => {
   const {t} = useTranslation()
   const {isPlanningDetailsLoading} = usePlanning()
@@ -37,9 +39,14 @@ const DatetimePickerList = ({
   }
   return (
     <VStack mb={ms(10)}>
-      <Text color={Colors.disabled} fontWeight="medium">
-        {title}
-      </Text>
+      <HStack alignItems="center" justifyItems={'center'} space={ms(5)}>
+        {iconName && (
+          <IconFA5 color={Colors.warning} name={iconName} size={ms(15)} />
+        )}
+        <Text color={Colors.disabled} fontWeight="medium">
+          {title}
+        </Text>
+      </HStack>
       <HStack
         alignItems="center"
         bg={readOnly ? Colors.white : '#F7F7F7'}
@@ -70,7 +77,7 @@ const DatetimePickerList = ({
               startColor={Colors.grey}
             >
               <Text
-                color={date && !locked ? Colors.text : Colors.disabled}
+                color={date && !locked ? Colors.text : Colors.black}
                 fontSize="md"
                 fontWeight="medium"
               >

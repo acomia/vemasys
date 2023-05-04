@@ -19,7 +19,7 @@ export const convertToPdfAndUpload = async (
     usePlanning.getState().getNavigationLogDocuments
 
   // Remove 'file://' from file link is react-native-image-to-pdf requirement
-  const arrayForPdf = files.map(item => {
+  const arrayForPdf = files?.map(item => {
     return item.replace('file://', '')
   })
 
@@ -60,6 +60,7 @@ export const convertToPdfAndUpload = async (
         path: upload.path,
         description,
       }
+      // eslint-disable-next-line let-convert-to-const
       let body = {
         fileGroup: {
           files:

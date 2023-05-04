@@ -13,6 +13,7 @@ import {
   Modal,
   Divider,
   Icon,
+  Select,
 } from 'native-base'
 import {Shadow} from 'react-native-shadow-2'
 import {ms} from 'react-native-size-matters'
@@ -35,6 +36,7 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import {useTranslation} from 'react-i18next'
 import {RootStackParamList} from '@bluecentury/types/nav.types'
 import {uploadComment} from '@bluecentury/utils'
+import {accessLevel} from '@bluecentury/constants'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'AddEditComment'>
 
@@ -68,6 +70,7 @@ const AddEditComment = ({navigation, route}: Props) => {
   const [imgModal, setImgModal] = useState(false)
   const [viewImg, setViewImg] = useState(false)
   const [isCameraOpen, setIsCameraOpen] = useState(false)
+  const [levelOfAccess, setLevelOfAccess] = useState(accessLevel[0].value)
 
   const cameraRef = useRef<any>()
 
@@ -135,7 +138,8 @@ const AddEditComment = ({navigation, route}: Props) => {
       attachedImages,
       showToast,
       comment,
-      navlogId
+      navlogId,
+      levelOfAccess
     )
   }
 
@@ -267,7 +271,7 @@ const AddEditComment = ({navigation, route}: Props) => {
           {method === 'edit' ? t('editAComment') : t('addAComment')}
         </Text>
 
-        <FormControl isRequired isInvalid={isCommentEmpty} my={ms(25)}>
+        <FormControl isRequired isInvalid={isCommentEmpty} mt={ms(25)}>
           <FormControl.Label color={Colors.disabled}>
             {t('description')}
           </FormControl.Label>
@@ -285,6 +289,28 @@ const AddEditComment = ({navigation, route}: Props) => {
           />
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
             {t('fillTheDescription')}
+          </FormControl.ErrorMessage>
+        </FormControl>
+        <FormControl isRequired isInvalid={isCommentEmpty} my={ms(15)}>
+          <FormControl.Label color={Colors.disabled}>
+            {t('accessLevel')}
+          </FormControl.Label>
+          <Select
+            bg={Colors.light_grey}
+            defaultValue={levelOfAccess}
+            selectedValue={levelOfAccess}
+            onValueChange={value => setLevelOfAccess(value)}
+          >
+            {accessLevel.map((access, idx) => (
+              <Select.Item
+                key={`AccessLevel-${idx}`}
+                label={access.label}
+                value={access.value}
+              />
+            ))}
+          </Select>
+          <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
+            {t('selectAccessLevel')}
           </FormControl.ErrorMessage>
         </FormControl>
         <ScrollView

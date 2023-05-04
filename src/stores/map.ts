@@ -26,6 +26,7 @@ type MapState = {
   isMobileTrackingEnable: boolean
   hasErrorLoadingNavigationLogs: boolean
   hasErrorLoadingVesselStatus: boolean
+  trackViewMode: boolean
 }
 
 type MapActions = {
@@ -42,6 +43,7 @@ type MapActions = {
   enableMobileTracking: () => void
   getVesselTrack: (vesselId: string, page: number) => void
   reset: () => void
+  setTrackViewMode: (mode: boolean) => void
 }
 
 type MapStore = MapState & MapActions
@@ -68,6 +70,7 @@ const initialMapState: MapState = {
   hasErrorLoadingNavigationLogs: false,
   hasErrorLoadingVesselStatus: false,
   hasErrorLoadingVesselTrack: false,
+  trackViewMode: false,
 }
 
 export const useMap = create(
@@ -159,7 +162,7 @@ export const useMap = create(
         try {
           const response: any = await API.getLastCompleteNavLogs(vesselId)
           if (Array.isArray(response)) {
-            let logs = response.reduce((prev, curr) => {
+            const logs = response.reduce((prev, curr) => {
               if (prev.length === 0) return [...prev, curr]
 
               if (
@@ -331,6 +334,11 @@ export const useMap = create(
       reset: () => {
         set({
           ...initialMapState,
+        })
+      },
+      setTrackViewMode: (mode: boolean) => {
+        set({
+          trackViewMode: mode,
         })
       },
     }),

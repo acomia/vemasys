@@ -78,8 +78,13 @@ const CommentCard = ({
               }
               return (
                 <TouchableOpacity onPress={() => onCommentImagePress(file)}>
-                  <Image
+                  {/* <Image
                     alt="file-upload"
+                    source={{uri: image.item}}
+                    w={ms(136)}
+                  /> */}
+                  <Image
+                    // alt="file-upload"
                     source={{uri: image.item}}
                     style={styles.image}
                   />
@@ -100,7 +105,7 @@ const CommentCard = ({
               return (
                 <TouchableOpacity>
                   <Image
-                    alt="file-upload"
+                    // alt="file-upload"
                     source={{uri: image.item.uri}}
                     style={styles.image}
                   />
