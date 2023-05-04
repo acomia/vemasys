@@ -11,7 +11,7 @@ export const uploadComment = async (
   showToast: (text: string, res: string) => void,
   commentArg?: Comments,
   navlogId?: number,
-  accessLevel: string
+  accessLevel?: string
 ) => {
   const navigationLogDetails = usePlanning.getState().navigationLogDetails
   const uploadImgFile = usePlanning.getState().uploadImgFile

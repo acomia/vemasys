@@ -31,7 +31,6 @@ const CommentCard = ({
     }
     imgLinks = res
   }
-  console.log('IMAGES', images)
   if (comment && comment.description) {
     getAttrFromString(comment.description)
   }
@@ -49,16 +48,16 @@ const CommentCard = ({
         <HStack alignItems="center">
           <Avatar
             source={{
-              uri: comment?.user?.icon?.path
-                ? `${PROD_URL}/upload/documents/${comment?.user?.icon?.path}`
+              uri: comment?.creator?.user?.icon?.path
+                ? `${PROD_URL}/upload/documents/${comment?.creator?.user?.icon?.path}`
                 : '',
             }}
             size="48px"
           />
           <Box ml={ms(10)}>
             <Text bold>
-              {comment?.user ? comment?.user?.firstname : ''}{' '}
-              {comment?.user ? comment?.user?.lastname : ''}
+              {comment?.creator?.user ? comment?.creator?.user?.firstname : ''}{' '}
+              {comment?.creator?.user ? comment?.creator?.user?.lastname : ''}
             </Text>
             <Text color={Colors.disabled} fontWeight="medium">
               {moment(comment?.creationDate).format('DD MMM YYYY')}

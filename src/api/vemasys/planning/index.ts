@@ -47,7 +47,9 @@ const reloadNavigationLogCargoHolds = async (physicalVesselId: string) => {
     })
 }
 const reloadNavigationLogComments = async (navLogId: string) => {
-  return API.get(`navigation_log_comments?log.id=${navLogId}`)
+  // return API.get(`navigation_log_comments?log.id=${navLogId}`)
+  const subjectName = 'NavigationLog'
+  return API.get(`v3/${subjectName}/${navLogId}/comments`)
     .then(response => {
       if (response.data) {
         return response.data
@@ -233,7 +235,7 @@ const updateComment = async (id: string, description: string) => {
     })
 }
 
-const uploadImgFile = async (file: ImageFile, accessLevel: string) => {
+const uploadImgFile = async (file: ImageFile, accessLevel?: string) => {
   const formData = new FormData()
   const image = {
     uri: Platform.OS === 'android' ? `file://${file.uri}` : file.uri,
