@@ -43,14 +43,15 @@ type PlanningActions = {
   createNavlogComment: (
     navLogId: string,
     comment: string,
-    userId: string
+    userId: string,
+    accessLevel: string
   ) => void
   getBulkTypes: (query: string) => void
   updateBulkCargo: (cargo: any) => void
   createBulkCargo: (cargo: any, navLogId: string) => void
   deleteBulkCargo: (id: string) => void
-  updateComment: (id: string, description: string) => void
-  uploadImgFile: (file: ImageFile, accessLevel?: string) => any
+  updateComment: (id: string, description: string, accessLevel: string) => void
+  uploadImgFile: (file: ImageFile) => any
   deleteComment: (id: string) => void
   uploadVesselNavigationLogFile: (navLogId: string, body: any) => void
   createNavigationLogAction: (
@@ -332,14 +333,16 @@ export const usePlanning = create(
       createNavlogComment: async (
         navLogId: string,
         comment: string,
-        userId: string
+        userId: string,
+        accessLevel: string
       ) => {
         set({isPlanningLoading: true})
         try {
           const response = await API.createNavlogComment(
             navLogId,
             comment,
-            userId
+            userId,
+            accessLevel
           )
           set({isPlanningLoading: false})
           return response
@@ -390,20 +393,24 @@ export const usePlanning = create(
           set({isPlanningLoading: false})
         }
       },
-      updateComment: async (id: string, description: string) => {
+      updateComment: async (
+        id: string,
+        description: string,
+        accessLevel: string
+      ) => {
         set({isPlanningLoading: true})
         try {
-          const response = await API.updateComment(id, description)
+          const response = await API.updateComment(id, description, accessLevel)
           set({isPlanningLoading: false})
           return response
         } catch (error) {
           set({isPlanningLoading: false})
         }
       },
-      uploadImgFile: async (file: ImageFile, accessLevel?: string) => {
+      uploadImgFile: async (file: ImageFile) => {
         set({isPlanningLoading: true})
         try {
-          const response = await API.uploadImgFile(file, accessLevel)
+          const response = await API.uploadImgFile(file)
           set({isPlanningLoading: false})
           return response
         } catch (error) {

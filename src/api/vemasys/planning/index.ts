@@ -123,16 +123,12 @@ const updateNavigationLogDatetimeFields = async (
 const createNavlogComment = async (
   navlogId: string,
   comment: string,
-  userId: string
+  accessLvl: string
 ) => {
-  return API.post('navigation_log_comments', {
+  const subjectName = 'NavigationLog'
+  return API.post(`v3/${subjectName}/${navlogId}/comments`, {
     description: comment,
-    user: {
-      id: userId,
-    },
-    log: {
-      id: navlogId,
-    },
+    accessLevel: accessLvl,
   })
     .then(response => {
       if (response.data) {
@@ -221,8 +217,12 @@ const deleteBulkCargoEntry = async (id: string) => {
     })
 }
 
-const updateComment = async (id: string, description: string) => {
-  return API.put(`comments/${id}`, {description})
+const updateComment = async (
+  id: string,
+  description: string,
+  accessLevel: string
+) => {
+  return API.put(`v3/comments/${id}`, {description, accessLevel})
     .then(response => {
       if (response.data) {
         return response.data
@@ -235,7 +235,7 @@ const updateComment = async (id: string, description: string) => {
     })
 }
 
-const uploadImgFile = async (file: ImageFile, accessLevel?: string) => {
+const uploadImgFile = async (file: ImageFile) => {
   const formData = new FormData()
   const image = {
     uri: Platform.OS === 'android' ? `file://${file.uri}` : file.uri,
@@ -244,7 +244,6 @@ const uploadImgFile = async (file: ImageFile, accessLevel?: string) => {
   }
 
   formData.append('file', image)
-  formData.append('access-level', accessLevel)
 
   const token = useAuth.getState().token
   const entityUserId = useEntity.getState().entityUserId
@@ -268,7 +267,7 @@ const uploadImgFile = async (file: ImageFile, accessLevel?: string) => {
 }
 
 const deleteComment = async (id: string) => {
-  return API.delete(`comments/${id}`)
+  return API.delete(`v3/comments/${id}`)
     .then(response => {
       if (response.status) {
         return response.status
