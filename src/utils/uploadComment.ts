@@ -11,7 +11,7 @@ export const uploadComment = async (
   showToast: (text: string, res: string) => void,
   commentArg?: Comments,
   navlogId?: number,
-  accessLevel?: string
+  accessLevel: string
 ) => {
   const navigationLogDetails = usePlanning.getState().navigationLogDetails
   const uploadImgFile = usePlanning.getState().uploadImgFile
@@ -63,7 +63,7 @@ export const uploadComment = async (
       if (imgFileArg.length > 0) {
         await Promise.all(
           imgFileArg.map(async (file: any) => {
-            const upload = await uploadImgFile(file, accessLevel)
+            const upload = await uploadImgFile(file)
             if (typeof upload === 'object') {
               tempComment =
                 tempComment +
@@ -78,7 +78,8 @@ export const uploadComment = async (
       }
       res = await updateComment(
         commentArg.id.toString(),
-        descriptionArg + tempComment
+        descriptionArg + tempComment,
+        accessLevel
       )
       if (typeof res === 'object') {
         showToast('Comment updated.', 'success')
@@ -93,7 +94,7 @@ export const uploadComment = async (
       if (imgFileArg.length > 0) {
         await Promise.all(
           imgFileArg.map(async (file: any) => {
-            const upload = await uploadImgFile(file, accessLevel)
+            const upload = await uploadImgFile(file)
             if (typeof upload === 'object') {
               tempComment =
                 tempComment +
@@ -108,7 +109,8 @@ export const uploadComment = async (
         const response = await createNavlogComment(
           navlogId,
           descriptionArg + tempComment,
-          user?.id
+          user?.id,
+          accessLevel
         )
         if (typeof response === 'object') {
           showToast('New comment added.', 'success')
@@ -118,7 +120,12 @@ export const uploadComment = async (
           setRejectedComments(newCommentWaitingForUpload)
         }
       } else {
-        res = await createNavlogComment(navlogId, descriptionArg, user?.id)
+        res = await createNavlogComment(
+          navlogId,
+          descriptionArg,
+          user?.id,
+          accessLevel
+        )
         if (typeof res === 'object') {
           showToast('New comment added.', 'success')
           getNavigationLogComments(navigationLogDetails?.id)
