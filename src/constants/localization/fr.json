@@ -371,5 +371,8 @@
   "draughtMeasurement": "Draught Measurement",
   "freeboardMeasurement": "Freeboard Measurement",
   "accessLevel": "Access level",
-  "selectAccessLevel": "Please select access level"
+  "selectAccessLevel": "Please select access level",
+  "endLoading": "End loading",
+  "enterMeasurement": "Enter measurement",
+  "averageDraught": "Average Draught"
 }

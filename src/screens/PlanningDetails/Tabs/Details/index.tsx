@@ -188,7 +188,6 @@ const Details = () => {
     getNavigationLogComments(navlog?.id)
     getNavigationLogRoutes(navlog?.id)
     getNavigationLogDocuments(navlog?.id)
-    console.log('navlog', navlog)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

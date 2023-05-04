@@ -6,6 +6,7 @@ import {
   NavigationLog,
   NavigationLogRoutes,
   TonnageCertifications,
+  Vessel,
 } from '@bluecentury/models'
 
 type PlanningState = {
@@ -35,6 +36,8 @@ type PlanningState = {
   isTonnageCertificateLoading: boolean
   tonnageCertificates: TonnageCertifications[] | undefined
   maxDraught: string | number | null
+  isVesselNavigationLoading: boolean
+  vesselNavigationDetails: Vessel | undefined
 }
 
 type PlanningActions = {
@@ -73,6 +76,7 @@ type PlanningActions = {
   reset?: () => void
   getTonnageCertifications: (id: string | number) => void
   setMaxDraught: (draught: string | number) => void
+  getVesselnavigationDetails: (id: string) => void
 }
 
 export type PlanningStore = PlanningState & PlanningActions
@@ -101,6 +105,8 @@ const initialState: PlanningState = {
   isTonnageCertificateLoading: false,
   tonnageCertificates: [],
   maxDraught: null,
+  isVesselNavigationLoading: false,
+  vesselNavigationDetails: undefined,
 }
 
 export const usePlanning = create(
@@ -545,20 +551,44 @@ export const usePlanning = create(
       getTonnageCertifications: (id: string | number) => {
         set({isTonnageCertificateLoading: true})
 
-        API.getTonnageCertifications(id).then(response => {
-          if (response?.status === 200) {
-            get().setMaxDraught(
-              Math.max(...response?.data?.map(item => item.draught))
-            )
+        API.getTonnageCertifications(id)
+          .then(response => {
+            if (response?.status === 200) {
+              get().setMaxDraught(
+                Math.max(...response?.data?.map(item => item.draught))
+              )
+              set({
+                isTonnageCertificateLoading: false,
+                tonnageCertificates: response?.data,
+              })
+            }
+          })
+          .catch(error => {
             set({
               isTonnageCertificateLoading: false,
-              tonnageCertificates: response?.data,
             })
-          }
-        })
+          })
       },
       setMaxDraught: (maxDraught: string | number) => {
         set({maxDraught: maxDraught})
+      },
+      getVesselnavigationDetails: async (id: string) => {
+        set({isVesselNavigationLoading: true})
+        try {
+          const response = await API.getVesselNavigationDetails(id)
+
+          if (typeof response === 'object') {
+            set({
+              vesselNavigationDetails: response,
+              isVesselNavigationLoading: false,
+            })
+            return
+          }
+
+          set({isVesselNavigationLoading: false})
+        } catch (error) {
+          set({isVesselNavigationLoading: false})
+        }
       },
     }),
     {

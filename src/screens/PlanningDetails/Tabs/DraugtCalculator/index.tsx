@@ -24,11 +24,12 @@ interface Props {
 
 export default (props: Props) => {
   const {t} = useTranslation()
-  const [statusActive, setStatusActive] = useState(0)
-  const [refreshing, setRefreshing] = useState(false)
-  const [selectedButton, setSelectedButton] = useState('')
-  const [isOpenInput, setIsOpenInput] = useState(false)
-  const [measurement, setMeasurement] = useState('')
+  const [statusActive, setStatusActive] = useState<number>(0)
+  const [refreshing, setRefreshing] = useState<boolean>(false)
+  const [selectedButton, setSelectedButton] = useState<string>('')
+  const [isOpenInput, setIsOpenInput] = useState<boolean>(false)
+  const [measurement, setMeasurement] = useState<string>('')
+  const [measurementValue, setMeasurementValue] = useState<string>('')
   const [draughtValues, setDraughtValues] = useState({
     BBV: 0,
     BBM: 0,
@@ -43,22 +44,33 @@ export default (props: Props) => {
     navigationLogDetails,
     tonnageCertificates,
     getTonnageCertifications,
+    getNavigationLogDetails,
+    getVesselnavigationDetails,
+    vesselNavigationDetails,
   } = usePlanning()
   const measurements = [
     {value: 'freeboard', label: t('freeboardMeasurement')},
     {value: 'draught', label: t('draughtMeasurement')},
   ]
 
-  const {vesselDetails} = useEntity()
+  useEffect(() => {
+    getTonnageCertifications(navigationLogDetails?.exploitationVessel?.id)
+    getVesselnavigationDetails(navigationLogDetails?.exploitationVessel?.id)
+  }, [])
 
   const buttonSelected = (selected: string) => {
     setSelectedButton(selected)
     setIsOpenInput(true)
+
+    if (draughtValues[selected] > 0) {
+      setMeasurementValue(draughtValues[selected])
+    }
   }
 
-  useEffect(() => {
-    getTonnageCertifications(navigationLogDetails?.exploitationVessel?.id)
-  }, [])
+  const closeInput = () => {
+    setMeasurementValue('')
+    setIsOpenInput(false)
+  }
 
   return (
     <PageScroll refreshing={refreshing}>
@@ -79,6 +91,7 @@ export default (props: Props) => {
           fontWeight="medium"
           minWidth="300"
           placeholder=""
+          onValueChange={itemValue => setMeasurement(itemValue)}
         >
           {measurements.map((measurement, index) => {
             return (
@@ -93,33 +106,49 @@ export default (props: Props) => {
       </Box>
       <Box>
         <Ship
+          maxDraught={
+            measurement === measurements[0].value
+              ? 0
+              : maxDraught || vesselNavigationDetails?.physicalVessel?.draught
+          }
           buttonSelected={buttonSelected}
           draughtValues={draughtValues}
-          maxDraught={maxDraught}
+          tonnage={vesselNavigationDetails?.physicalVessel?.weight}
         />
       </Box>
       <HStack mt={ms(10)} space={ms(5)}>
         <Button colorScheme={'white'} flex={1}>
-          <Text color={Colors.disabled}>End loading</Text>
+          <Text color={Colors.disabled}>{t('endLoading')}</Text>
         </Button>
-        <Button flex={1}>
-          <Text>Save</Text>
+        <Button
+          colorScheme={!measurement ? 'gray' : null}
+          disabled={!measurement}
+          flex={1}
+        >
+          <Text>{t('save')}</Text>
         </Button>
       </HStack>
       <Modal
         backgroundColor="blue"
         isOpen={isOpenInput}
         width={'full'}
-        onClose={() => setIsOpenInput(false)}
+        onClose={() => closeInput()}
       >
         <Modal.Content width={'full'}>
-          <Modal.Header>{`Enter Measurement (${selectedButton})`}</Modal.Header>
+          <Modal.Header>
+            {`${t('enterMeasurement')} (${selectedButton})`}
+          </Modal.Header>
           <Modal.Body>
             <Input
-              placeholder={vesselDetails?.physicalVessel?.draught}
-              value={measurement}
+              placeholder={
+                measurement === measurements[0].value
+                  ? '0'
+                  : vesselNavigationDetails?.physicalVessel?.draught
+              }
+              keyboardType="numeric"
+              value={measurementValue}
               onChangeText={value => {
-                setMeasurement(value)
+                setMeasurementValue(value)
               }}
             />
           </Modal.Body>
@@ -128,7 +157,7 @@ export default (props: Props) => {
               <Button
                 colorScheme={'white'}
                 flex={1}
-                onPress={() => setIsOpenInput(false)}
+                onPress={() => closeInput()}
               >
                 <Text color={Colors.disabled}>{t('close')}</Text>
               </Button>
@@ -137,9 +166,9 @@ export default (props: Props) => {
                 onPress={() => {
                   setDraughtValues({
                     ...draughtValues,
-                    [selectedButton]: measurement,
+                    [selectedButton]: parseInt(measurementValue),
                   })
-                  setIsOpenInput(false)
+                  closeInput()
                 }}
               >
                 <Text>{t('save')}</Text>
