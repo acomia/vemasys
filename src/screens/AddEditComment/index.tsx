@@ -74,8 +74,6 @@ const AddEditComment = ({navigation, route}: Props) => {
     comment?.accessLevel ? comment.accessLevel : accessLevel[0].value
   )
 
-  console.log(comment)
-
   const cameraRef = useRef<any>()
 
   useEffect(() => {
