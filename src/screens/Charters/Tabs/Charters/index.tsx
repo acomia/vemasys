@@ -143,7 +143,7 @@ export default function Charters({navigation, route}: any) {
     const uploadResponse = await uploadSignedPDF({
       uri: pathToSignedFile,
       type: 'application/pdf',
-      fileName: 'Signed_agreement',
+      fileName: 'Signed_agreement.pdf',
     })
     if (uploadResponse) {
       await linkSignPDFToCharter(
@@ -402,9 +402,7 @@ export default function Charters({navigation, route}: any) {
   }
 
   const handleSingleTap = async () => {
-    if (
-      signature
-    ) {
+    if (signature) {
       setIsDocumentSigning(true)
       setIsSignatureSampleOpen(false)
       setIsSignaturePlaceChoiceOpen(false)
@@ -756,7 +754,7 @@ export default function Charters({navigation, route}: any) {
       <EditReferenceModal
         charter={editCharter}
         isOpen={editReferenceOpen}
-        setOpen={setEditReferenceOpen}
+        setOpen={() => setEditReferenceOpen(false)}
       />
     </Box>
   )
