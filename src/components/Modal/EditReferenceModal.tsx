@@ -28,15 +28,7 @@ export default function App({isOpen, setOpen, charter}: IAppProps) {
   }
 
   return (
-    <Modal
-      finalFocusRef={inputRef}
-      flex={1}
-      isOpen={isOpen}
-      width="full"
-      onClose={() => {
-        setOpen(false)
-      }}
-    >
+    <Modal flex={1} isOpen={isOpen} width="full" onClose={setOpen}>
       <Modal.Content width="full">
         <Modal.Header>{t('editReference')}</Modal.Header>
         <Modal.Body>
@@ -50,7 +42,7 @@ export default function App({isOpen, setOpen, charter}: IAppProps) {
               {''}
             </FormControl>
             <HStack flex={1} justifyContent="space-evenly">
-              <Button width="48%" onPress={() => setOpen(false)}>
+              <Button width="48%" onPress={setOpen}>
                 {t('cancel')}
               </Button>
               <Button width="48%" onPress={() => handleChangeReference()}>
