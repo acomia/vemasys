@@ -143,7 +143,7 @@ export default function Charters({navigation, route}: any) {
     const uploadResponse = await uploadSignedPDF({
       uri: pathToSignedFile,
       type: 'application/pdf',
-      fileName: 'Signed_agreement',
+      fileName: 'Signed_agreement.pdf',
     })
     if (uploadResponse) {
       await linkSignPDFToCharter(
