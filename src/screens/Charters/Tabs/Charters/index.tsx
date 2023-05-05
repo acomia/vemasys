@@ -402,9 +402,7 @@ export default function Charters({navigation, route}: any) {
   }
 
   const handleSingleTap = async () => {
-    if (
-      signature
-    ) {
+    if (signature) {
       setIsDocumentSigning(true)
       setIsSignatureSampleOpen(false)
       setIsSignaturePlaceChoiceOpen(false)
@@ -756,7 +754,7 @@ export default function Charters({navigation, route}: any) {
       <EditReferenceModal
         charter={editCharter}
         isOpen={editReferenceOpen}
-        setOpen={setEditReferenceOpen}
+        setOpen={() => setEditReferenceOpen(false)}
       />
     </Box>
   )
