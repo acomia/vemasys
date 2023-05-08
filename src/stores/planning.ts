@@ -34,9 +34,6 @@ type PlanningState = {
   updateNavlogDatesSuccess: string
   updateNavlogDatesFailed: string
   updateNavlogDatesMessage: string
-  isTonnageCertificateLoading: boolean
-  tonnageCertificates: TonnageCertifications[] | undefined
-  maxDraught: string | number | null
   isVesselNavigationLoading: boolean
   vesselNavigationDetails: Vessel | undefined
 }
@@ -76,8 +73,6 @@ type PlanningActions = {
   ) => void
   deleteNavLogAction?: (id: string) => void
   reset?: () => void
-  getTonnageCertifications: (id: string | number) => void
-  setMaxDraught: (draught: string | number) => void
   getVesselnavigationDetails: (id: string) => void
 }
 
@@ -104,9 +99,6 @@ const initialState: PlanningState = {
   navigationLogCargoHolds: [],
   navigationLogComments: [],
   navigationLogDocuments: [],
-  isTonnageCertificateLoading: false,
-  tonnageCertificates: [],
-  maxDraught: null,
   isVesselNavigationLoading: false,
   vesselNavigationDetails: undefined,
 }
@@ -555,30 +547,6 @@ export const usePlanning = create(
           updateNavlogDatesFailed: '',
           updateNavlogDatesMessage: '',
         })
-      },
-      getTonnageCertifications: (id: string | number) => {
-        set({isTonnageCertificateLoading: true})
-
-        API.getTonnageCertifications(id)
-          .then(response => {
-            if (response?.status === 200) {
-              get().setMaxDraught(
-                Math.max(...response?.data?.map(item => item.draught))
-              )
-              set({
-                isTonnageCertificateLoading: false,
-                tonnageCertificates: response?.data,
-              })
-            }
-          })
-          .catch(error => {
-            set({
-              isTonnageCertificateLoading: false,
-            })
-          })
-      },
-      setMaxDraught: (maxDraught: string | number) => {
-        set({maxDraught: maxDraught})
       },
       getVesselnavigationDetails: async (id: string) => {
         set({isVesselNavigationLoading: true})

@@ -14,56 +14,87 @@ import {ms} from 'react-native-size-matters'
 import {BeforeAfterComponent, Ship} from './component'
 import {useTranslation} from 'react-i18next'
 import {PageScroll} from '@bluecentury/components'
-import {useEntity} from '@bluecentury/stores'
 import {usePlanning} from '@bluecentury/stores'
 import {NavigationLog} from '@bluecentury/models'
 
-interface Props {
-  navLog: NavigationLog
-}
-
-export default (props: Props) => {
+export default () => {
   const {t} = useTranslation()
-  const [statusActive, setStatusActive] = useState<number>(0)
-  const [refreshing, setRefreshing] = useState<boolean>(false)
-  const [selectedButton, setSelectedButton] = useState<string>('')
-  const [isOpenInput, setIsOpenInput] = useState<boolean>(false)
-  const [measurement, setMeasurement] = useState<string>('')
-  const [measurementValue, setMeasurementValue] = useState<string>('')
-  const [draughtValues, setDraughtValues] = useState({
-    BBV: 0,
-    BBM: 0,
-    BBA: 0,
-    SBV: 0,
-    SBM: 0,
-    SBA: 0,
-  })
 
-  const {
-    maxDraught,
-    navigationLogDetails,
-    tonnageCertificates,
-    getTonnageCertifications,
-    getNavigationLogDetails,
-    getVesselnavigationDetails,
-    vesselNavigationDetails,
-  } = usePlanning()
+  const initialDraughtValues = {
+    BBV: {value: 0, draughtValue: 0},
+    BBM: {value: 0, draughtValue: 0},
+    BBA: {value: 0, draughtValue: 0},
+    SBV: {value: 0, draughtValue: 0},
+    SBM: {value: 0, draughtValue: 0},
+    SBA: {value: 0, draughtValue: 0},
+  }
+
+  const initialDidValueChange = {
+    BBV: {didUpdate: false},
+    BBM: {didUpdate: false},
+    BBA: {didUpdate: false},
+    SBV: {didUpdate: false},
+    SBM: {didUpdate: false},
+    SBA: {didUpdate: false},
+  }
+
   const measurements = [
     {value: 'freeboard', label: t('freeboardMeasurement')},
     {value: 'draught', label: t('draughtMeasurement')},
   ]
 
+  const [isBefore, setIsBefore] = useState<number>(0)
+  const [refreshing, setRefreshing] = useState<boolean>(false)
+  const [selectedButton, setSelectedButton] = useState<string>('')
+  const [isOpenInput, setIsOpenInput] = useState<boolean>(false)
+  const [measurement, setMeasurement] = useState<string>(measurements[0].value)
+  const [measurementValue, setMeasurementValue] = useState<string>('')
+  const [draughtValues, setDraughtValues] = useState(initialDraughtValues)
+  const [didValueChange, setDidValueChange] = useState(initialDidValueChange)
+  const [averageDraught, setAverageDraught] = useState({
+    values: 0,
+    draughtValue: 0,
+  })
+  const isFreeboard = measurement === measurements[0].value
+
+  const unsavedChanges = Object.values(didValueChange).filter(
+    value => value.didUpdate === true
+  )
+
+  const {
+    navigationLogDetails,
+    getVesselnavigationDetails,
+    vesselNavigationDetails,
+  } = usePlanning()
+
+  const maxDraught = vesselNavigationDetails?.physicalVessel?.draught * 100
+  const inputRegex = /^[0-9,.]*$/
+
   useEffect(() => {
-    getTonnageCertifications(navigationLogDetails?.exploitationVessel?.id)
-    getVesselnavigationDetails(navigationLogDetails?.exploitationVessel?.id)
+    if (!vesselNavigationDetails) {
+      getVesselnavigationDetails(navigationLogDetails?.exploitationVessel?.id)
+    }
   }, [])
+
+  useEffect(() => {
+    if (draughtValues) {
+      const values = Object.values(draughtValues)
+      const average = values.reduce(
+        (acc, val) =>
+          isFreeboard && isBefore === 1
+            ? acc + val?.draughtValue
+            : acc + val?.value,
+        0
+      )
+      setAverageDraught(average / values?.length)
+    }
+  }, [draughtValues, measurement, isBefore])
 
   const buttonSelected = (selected: string) => {
     setSelectedButton(selected)
     setIsOpenInput(true)
-
-    if (draughtValues[selected] > 0) {
-      setMeasurementValue(draughtValues[selected])
+    if (draughtValues[selected].value > 0) {
+      setMeasurementValue(draughtValues[selected]?.value)
     }
   }
 
@@ -72,25 +103,30 @@ export default (props: Props) => {
     setIsOpenInput(false)
   }
 
+  const submitDraught = () => {
+    console.log('test')
+  }
+
   return (
     <PageScroll refreshing={refreshing}>
       <Text bold color={Colors.azure} fontSize={ms(20)}>
-        Draught Calculator
+        {t('draughtCalculator')}
       </Text>
       <Divider bg={Colors.light} h={ms(2)} my={ms(8)} />
-      <BeforeAfterComponent active={statusActive} setActive={setStatusActive} />
       <Box py={ms(10)}>
-        <HStack>
-          <Text color={Colors.disabled}>Select measurement </Text>
+        <HStack space={ms(5)}>
+          <Text color={Colors.disabled}>{t('selectMeasurement')}</Text>
           <Text color={Colors.danger}>*</Text>
         </HStack>
         <Select
           accessibilityLabel=""
           bg={Colors.light_grey}
+          defaultValue={measurement}
           fontSize={ms(16)}
           fontWeight="medium"
           minWidth="300"
           placeholder=""
+          selectedValue={measurement}
           onValueChange={itemValue => setMeasurement(itemValue)}
         >
           {measurements.map((measurement, index) => {
@@ -104,16 +140,16 @@ export default (props: Props) => {
           })}
         </Select>
       </Box>
-      <Box>
+      <BeforeAfterComponent active={isBefore} setActive={setIsBefore} />
+      <Box py={ms(10)}>
         <Ship
-          maxDraught={
-            measurement === measurements[0].value
-              ? 0
-              : maxDraught || vesselNavigationDetails?.physicalVessel?.draught
-          }
+          active={isBefore}
+          averageDraught={averageDraught}
           buttonSelected={buttonSelected}
           draughtValues={draughtValues}
-          tonnage={vesselNavigationDetails?.physicalVessel?.weight}
+          isFreeboard={isFreeboard}
+          maxDraught={isFreeboard ? maxDraught : 0} // get the value from the endpoint nearest value of tonnage_certificate
+          tonnage={0}
         />
       </Box>
       <HStack mt={ms(10)} space={ms(5)}>
@@ -121,9 +157,10 @@ export default (props: Props) => {
           <Text color={Colors.disabled}>{t('endLoading')}</Text>
         </Button>
         <Button
-          colorScheme={!measurement ? 'gray' : null}
-          disabled={!measurement}
+          colorScheme={!measurement && unsavedChanges.length ? 'gray' : null}
+          disabled={!measurement && unsavedChanges.length < 1}
           flex={1}
+          onPress={submitDraught}
         >
           <Text>{t('save')}</Text>
         </Button>
@@ -141,14 +178,16 @@ export default (props: Props) => {
           <Modal.Body>
             <Input
               placeholder={
-                measurement === measurements[0].value
+                isFreeboard
                   ? '0'
                   : vesselNavigationDetails?.physicalVessel?.draught
               }
               keyboardType="numeric"
               value={measurementValue}
               onChangeText={value => {
-                setMeasurementValue(value)
+                if (inputRegex.test(value)) {
+                  setMeasurementValue(value)
+                }
               }}
             />
           </Modal.Body>
@@ -164,9 +203,18 @@ export default (props: Props) => {
               <Button
                 flex={1}
                 onPress={() => {
+                  const draughtValue =
+                    measurementValue === '' ? 0 : parseInt(measurementValue)
                   setDraughtValues({
                     ...draughtValues,
-                    [selectedButton]: parseInt(measurementValue),
+                    [selectedButton]: {
+                      value: draughtValue,
+                      draughtValue: draughtValue - maxDraught,
+                    },
+                  })
+                  setDidValueChange({
+                    ...didValueChange,
+                    [selectedButton]: {didUpdate: true},
                   })
                   closeInput()
                 }}

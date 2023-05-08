@@ -9,9 +9,12 @@ import {useTranslation} from 'react-i18next'
 
 interface Props {
   buttonSelected: (selected: string) => void
-  maxDraught: string | undefined
+  maxDraught: string | number | undefined
   draughtValues: any
   tonnage: number
+  active?: number
+  averageDraught?: string
+  isFreeboard?: boolean
 }
 
 export default ({
@@ -19,121 +22,90 @@ export default ({
   maxDraught,
   draughtValues,
   tonnage,
+  active,
+  averageDraught,
+  isFreeboard,
 }: Props) => {
   const {t} = useTranslation()
-  const [avearageDraught, setAvearageDraught] = useState<number>(0)
-
   const leftObject = [
     {
       label: 'BBV',
-      value:
-        maxDraught && draughtValues?.BBV
-          ? Math.abs(draughtValues?.BBV - maxDraught)
-          : draughtValues?.BBV,
+      draughtValue: draughtValues?.BBV?.draughtValue,
+      baseValue: draughtValues?.BBV?.value,
     },
     {
       label: 'BBM',
-      value:
-        maxDraught && draughtValues?.BBM
-          ? Math.abs(draughtValues?.BBM - maxDraught)
-          : draughtValues?.BBM,
+      draughtValue: draughtValues?.BBM?.draughtValue,
+      baseValue: draughtValues?.BBM?.value,
     },
     {
       label: 'BBA',
-      value:
-        maxDraught && draughtValues?.BBA
-          ? Math.abs(draughtValues?.BBA - maxDraught)
-          : draughtValues?.BBA,
+      draughtValue: draughtValues?.BBA?.draughtValue,
+      baseValue: draughtValues?.BBA?.value,
     },
   ]
 
   const rightObject = [
     {
       label: 'SBV',
-      value:
-        maxDraught && draughtValues?.SBV
-          ? Math.abs(draughtValues?.SBV - maxDraught)
-          : draughtValues?.SBV,
+      draughtValue: draughtValues?.SBV?.draughtValue,
+      baseValue: draughtValues?.SBV?.value,
     },
     {
       label: 'SBM',
-      value:
-        maxDraught && draughtValues?.SBM
-          ? Math.abs(draughtValues?.SBM - maxDraught)
-          : draughtValues?.SBM,
+      draughtValue: draughtValues?.SBM?.draughtValue,
+      baseValue: draughtValues?.SBM?.value,
     },
     {
       label: 'SBA',
-      value:
-        maxDraught && draughtValues?.SBA
-          ? Math.abs(draughtValues?.SBA - maxDraught)
-          : draughtValues?.SBA,
+      draughtValue: draughtValues?.SBA?.draughtValue,
+      baseValue: draughtValues?.SBA?.value,
     },
   ]
 
-  useEffect(() => {
-    if (draughtValues) {
-      const values = Object.values(draughtValues)
-      const total = values.reduce(
-        (acc, val) => parseInt(acc) + parseInt(val),
-        0
+  const renderItems = (itemObjects: any[], key: string) => {
+    return itemObjects.map((item, index) => {
+      return (
+        <Button
+          key={`${key}-${index}`}
+          backgroundColor={'transparent'}
+          disabled={active === 1}
+          onPress={() => buttonSelected(item.label)}
+        >
+          <Text color={Colors.white} textAlign={'left'}>
+            {isFreeboard && active === 1 ? item.draughtValue : item.baseValue}
+          </Text>
+          <Text color={Colors.white} textAlign={'left'}>
+            {item.label}
+          </Text>
+        </Button>
       )
-      const average = total / values.length
-      setAvearageDraught(average)
-    }
-  }, [draughtValues])
+    })
+  }
 
   return (
     <Box backgroundColor={Colors.black} width={'100%'}>
       <HStack justifyContent={'space-evenly'} space={ms(5)}>
         <VStack justifyContent={'space-evenly'}>
-          {leftObject.map((item, index) => {
-            return (
-              <Button
-                key={`left-${index}`}
-                backgroundColor={'transparent'}
-                onPress={() => buttonSelected(item.label)}
-              >
-                <Text color={Colors.white} textAlign={'left'}>
-                  {item.value}
-                </Text>
-                <Text color={Colors.white} textAlign={'left'}>
-                  {item.label}
-                </Text>
-              </Button>
-            )
-          })}
+          {renderItems(leftObject, 'left')}
         </VStack>
         <Image source={Images.ship} />
         <VStack justifyContent={'space-evenly'}>
-          {rightObject.map((item, index) => {
-            return (
-              <Button
-                key={`right-${index}`}
-                backgroundColor={'transparent'}
-                onPress={() => buttonSelected(item.label)}
-              >
-                <Text color={Colors.white} textAlign={'left'}>
-                  {item.value}
-                </Text>
-                <Text color={Colors.white} textAlign={'left'}>
-                  {item.label}
-                </Text>
-              </Button>
-            )
-          })}
+          {renderItems(rightObject, 'right')}
         </VStack>
       </HStack>
       <HStack justifyContent={'space-evenly'} space={ms(5)}>
         <VStack alignItems={'center'} justifyItems={'center'} py={ms(10)}>
           <Text color={Colors.white}>{t('averageDraught')}</Text>
           <Text color={Colors.white}>
-            {formatNumber(avearageDraught, 2, ' ')}
+            {formatNumber(averageDraught, 2, ' ')}
           </Text>
         </VStack>
         <VStack alignItems={'center'} justifyItems={'center'} py={ms(10)}>
           <Text color={Colors.white}>Nu geladen</Text>
-          <Text color={Colors.white}>{formatNumber(tonnage, 2, ' ')} t</Text>
+          <Text color={Colors.white}>
+            {tonnage ? formatNumber(tonnage, 2, ' ') : 0} t
+          </Text>
         </VStack>
       </HStack>
     </Box>

@@ -13,7 +13,7 @@ import {
 } from './Tabs'
 import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
-import {usePlanning} from '@bluecentury/stores'
+import {usePlanning, useSettings} from '@bluecentury/stores'
 import {useTranslation} from 'react-i18next'
 import {
   createMaterialTopTabNavigator,
@@ -34,7 +34,7 @@ export default function PlanningDetails({route}: Props) {
     {title: t('Cargo Holds'), screen: CargoHolds},
     {title: t('Documents'), screen: Documents},
     {title: t('Map'), screen: Map},
-    {title: t('draughtCalculator'), screen: DraughtCalculator},
+    {title: t('draught'), screen: DraughtCalculator},
   ]
   const {navlog, title} = route.params
   const {
@@ -43,6 +43,7 @@ export default function PlanningDetails({route}: Props) {
     navigationLogActions,
     navigationLogDocuments,
   } = usePlanning()
+  const {env} = useSettings()
   const [routes, setRoutes] = useState(tabs)
   const isUnknownLocation = title === 'Unknown Location' ? true : false
   const screenWidth = useWindowDimensions().width
@@ -65,6 +66,16 @@ export default function PlanningDetails({route}: Props) {
               route.title !== 'Cargo Holds' && route.title !== 'Cargo List'
           )
         : tabs
+      setRoutes(newRoutes)
+    }
+
+    if (
+      // add line below for dry bulk only once going to PROD
+      // navigationLogDetails?.cargoType !== 'dry_bulk' &&
+      // navigationLogDetails?.cargoType !== undefined
+      env === 'PROD'
+    ) {
+      const newRoutes = tabs.filter(route => route.title !== t('draught'))
       setRoutes(newRoutes)
     }
   }, [navigationLogDetails])

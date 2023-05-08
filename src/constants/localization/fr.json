@@ -367,12 +367,14 @@
   "warning": "Warning",
   "overrideWarning": "Are you sure you to manually set the Arrival/departure for location",
   "overRideWarningSub2": "This will disable the automatic tracking location. Once you leave, you have to set departure date manually",
-  "draughtCalculator": "Draught",
+  "draught": "Draught",
   "draughtMeasurement": "Draught Measurement",
   "freeboardMeasurement": "Freeboard Measurement",
   "accessLevel": "Access level",
   "selectAccessLevel": "Please select access level",
   "endLoading": "End loading",
   "enterMeasurement": "Enter measurement",
-  "averageDraught": "Average Draught"
+  "averageDraught": "Average Draught",
+  "draughtCalculator": "Draught Calculator",
+  "selectMeasurement": "Select measurement"
 }
