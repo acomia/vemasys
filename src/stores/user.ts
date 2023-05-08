@@ -109,6 +109,8 @@ export const useUser = create(
         set({isLoadingRegistration: true, entityData: []})
         try {
           const response = await API.getEntityData(mmsi)
+          console.log('entity', response)
+
           if (response.length > 0) {
             useEntity.setState({entityUserId: response[0].id})
             set({entityData: response, isLoadingRegistration: false})

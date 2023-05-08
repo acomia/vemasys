@@ -54,7 +54,7 @@ export const updateUserData = async (
 export const getEntityData = async (mmsi: number) => {
   try {
     const response = await API.get(
-      `entities?exploitationVessel.physicalVessel.mmsi=${mmsi}`
+      `entities/anonymous?exploitationVessel.physicalVessel.mmsi=${mmsi}&page=1`
     )
     if (!response.data) {
       throw 'Failed to get entities data.'

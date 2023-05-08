@@ -107,7 +107,7 @@ export default function SignUpForm1({loginCreds}: Props) {
       setIsEmailNotValid(true)
       return
     }
-    loginCreds({username: values.username, password: values.plainPassword})
+    // loginCreds({username: values.username, password: values.plainPassword})
     getEntityData(Number(values.mmsi))
   }
 
