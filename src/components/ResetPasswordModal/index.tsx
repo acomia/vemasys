@@ -159,7 +159,6 @@ const ResetPasswordModal = () => {
 
       <Modal
         backgroundColor="blue"
-        initialFocusRef={passwordRef}
         isOpen={isOpenModal}
         width="full"
         onClose={() => {
@@ -177,7 +176,6 @@ const ResetPasswordModal = () => {
                 <FormControl.Label>{t('newPassword')}</FormControl.Label>
                 <Input
                   ref={passwordRef}
-                  autoFocus
                   backgroundColor={
                     'password' in errors ? Colors.navLogItemPink : null
                   }
