@@ -36,6 +36,8 @@ type PlanningState = {
   updateNavlogDatesMessage: string
   isVesselNavigationLoading: boolean
   vesselNavigationDetails: Vessel | undefined
+  isSavingNavBulkLoading: boolean
+  isSavingNavBulkSuccess: boolean
 }
 
 type PlanningActions = {
@@ -74,6 +76,7 @@ type PlanningActions = {
   deleteNavLogAction?: (id: string) => void
   reset?: () => void
   getVesselnavigationDetails: (id: string) => void
+  updateNavBulk: (id: number, tonnage: number) => void
 }
 
 export type PlanningStore = PlanningState & PlanningActions
@@ -101,6 +104,8 @@ const initialState: PlanningState = {
   navigationLogDocuments: [],
   isVesselNavigationLoading: false,
   vesselNavigationDetails: undefined,
+  isSavingNavBulkLoading: false,
+  isSavingNavBulkSuccess: false,
 }
 
 export const usePlanning = create(
@@ -564,6 +569,17 @@ export const usePlanning = create(
           set({isVesselNavigationLoading: false})
         } catch (error) {
           set({isVesselNavigationLoading: false})
+        }
+      },
+      updateNavBulk: async (id: number, tonnage: number) => {
+        set({isSavingNavBulkLoading: true, isSavingNavBulkSuccess: false})
+        try {
+          const response = await API.updateNavBulk(id, tonnage)
+          if (response?.status === 200) {
+            set({isSavingNavBulkLoading: false, isSavingNavBulkSuccess: true})
+          }
+        } catch (error) {
+          set({isSavingNavBulkLoading: false})
         }
       },
     }),

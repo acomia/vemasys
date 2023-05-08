@@ -14,11 +14,18 @@ import {ms} from 'react-native-size-matters'
 import {BeforeAfterComponent, Ship} from './component'
 import {useTranslation} from 'react-i18next'
 import {PageScroll} from '@bluecentury/components'
-import {usePlanning} from '@bluecentury/stores'
-import {NavigationLog} from '@bluecentury/models'
+import {usePlanning, useSettings} from '@bluecentury/stores'
 
 export default () => {
   const {t} = useTranslation()
+
+  const {
+    navigationLogDetails,
+    getVesselnavigationDetails,
+    vesselNavigationDetails,
+    updateNavBulk,
+  } = usePlanning()
+  const {draughtTable} = useSettings()
 
   const initialDraughtValues = {
     BBV: {value: 0, draughtValue: 0},
@@ -48,24 +55,20 @@ export default () => {
   const [selectedButton, setSelectedButton] = useState<string>('')
   const [isOpenInput, setIsOpenInput] = useState<boolean>(false)
   const [measurement, setMeasurement] = useState<string>(measurements[0].value)
-  const [measurementValue, setMeasurementValue] = useState<string>('')
+  const [measurementValue, setMeasurementValue] = useState<number>(0)
   const [draughtValues, setDraughtValues] = useState(initialDraughtValues)
   const [didValueChange, setDidValueChange] = useState(initialDidValueChange)
-  const [averageDraught, setAverageDraught] = useState({
-    values: 0,
-    draughtValue: 0,
-  })
+  const [averageDraught, setAverageDraught] = useState<number>(0)
+  const [tonnage, setTonnage] = useState<number>(0)
+
   const isFreeboard = measurement === measurements[0].value
+  const sortedDraughtTable = draughtTable?.length
+    ? draughtTable?.sort((prev, curr) => prev.draught - curr.draught)
+    : null
 
   const unsavedChanges = Object.values(didValueChange).filter(
     value => value.didUpdate === true
   )
-
-  const {
-    navigationLogDetails,
-    getVesselnavigationDetails,
-    vesselNavigationDetails,
-  } = usePlanning()
 
   const maxDraught = vesselNavigationDetails?.physicalVessel?.draught * 100
   const inputRegex = /^[0-9,.]*$/
@@ -79,32 +82,44 @@ export default () => {
   useEffect(() => {
     if (draughtValues) {
       const values = Object.values(draughtValues)
-      const average = values.reduce(
-        (acc, val) =>
-          isFreeboard && isBefore === 1
-            ? acc + val?.draughtValue
-            : acc + val?.value,
-        0
+      const average =
+        values.reduce(
+          (acc, val) =>
+            isFreeboard && isBefore === 1
+              ? acc + val?.draughtValue
+              : acc + val?.value,
+          0
+        ) / values?.length
+      setAverageDraught(average)
+
+      //find the closest tonnage from draughtTable
+      // NOTE TO KLART: get all the tonnage_certifications with exploitation_vessel_id
+      const closestDraught = sortedDraughtTable?.reduce((prev, curr) =>
+        Math.abs(curr.draught - average) < Math.abs(prev.draught - average)
+          ? curr
+          : prev
       )
-      setAverageDraught(average / values?.length)
+      if (closestDraught) setTonnage(closestDraught?.tonnage)
     }
   }, [draughtValues, measurement, isBefore])
 
   const buttonSelected = (selected: string) => {
-    setSelectedButton(selected)
-    setIsOpenInput(true)
     if (draughtValues[selected].value > 0) {
       setMeasurementValue(draughtValues[selected]?.value)
     }
+    setSelectedButton(selected)
+    setIsOpenInput(true)
   }
 
   const closeInput = () => {
-    setMeasurementValue('')
+    setMeasurementValue(0)
     setIsOpenInput(false)
   }
 
   const submitDraught = () => {
-    console.log('test')
+    if (navigationLogDetails?.exploitationVessel?.id) {
+      updateNavBulk(navigationLogDetails?.exploitationVessel?.id, tonnage)
+    }
   }
 
   return (
@@ -183,10 +198,14 @@ export default () => {
                   : vesselNavigationDetails?.physicalVessel?.draught
               }
               keyboardType="numeric"
-              value={measurementValue}
+              value={measurementValue === 0 ? '' : measurementValue.toString()}
               onChangeText={value => {
+                if (value === '') {
+                  setMeasurementValue(0)
+                  return
+                }
                 if (inputRegex.test(value)) {
-                  setMeasurementValue(value)
+                  setMeasurementValue(parseInt(value))
                 }
               }}
             />
@@ -203,13 +222,11 @@ export default () => {
               <Button
                 flex={1}
                 onPress={() => {
-                  const draughtValue =
-                    measurementValue === '' ? 0 : parseInt(measurementValue)
                   setDraughtValues({
                     ...draughtValues,
                     [selectedButton]: {
-                      value: draughtValue,
-                      draughtValue: draughtValue - maxDraught,
+                      value: measurementValue,
+                      draughtValue: measurementValue - maxDraught,
                     },
                   })
                   setDidValueChange({

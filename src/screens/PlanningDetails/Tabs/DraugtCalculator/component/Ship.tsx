@@ -13,7 +13,7 @@ interface Props {
   draughtValues: any
   tonnage: number
   active?: number
-  averageDraught?: string
+  averageDraught?: any
   isFreeboard?: boolean
 }
 
