@@ -214,9 +214,11 @@ export default function Map({navigation}: Props) {
           {selectedVessel?.alias || null}
         </Text>
         {snapStatus === 1 && (
-          <PreviousNavLogInfo logs={prevNavLogs} tracking={trackViewMode} />
+          // <PreviousNavLogInfo logs={prevNavLogs} tracking={trackViewMode} />
+          <PreviousNavLogInfo logs={prevNavLogs} tracking={false} />
         )}
-        <CurrentNavLogInfo tracking={trackViewMode} />
+        {/* <CurrentNavLogInfo tracking={trackViewMode} /> */}
+        <CurrentNavLogInfo tracking={false} />
         {snapStatus === 1 && <PlannedNavLogInfo logs={plannedNavLogs} />}
         {snapStatus === 1 && (
           <Button
