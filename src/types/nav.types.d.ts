@@ -18,8 +18,8 @@ type RootStackParamList = {
   AddEditComment: {
     comment?: Comments
     method: string
-    routeFrom?: string
-    navlogId: number
+    routeFrom: string
+    navlogId?: number
   }
   AddEditNavlogAction: {
     method: string
