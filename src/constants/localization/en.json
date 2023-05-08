@@ -368,5 +368,6 @@
   "overrideWarning": "Are you sure you want to manually set the Arrival/departure for location",
   "overRideWarningSub2": "This will disable the automatic tracking location. Once you leave, you have to set departure date manually.",
   "accessLevel": "Access level",
-  "selectAccessLevel": "Please select access level"
+  "selectAccessLevel": "Please select access level",
+  "trackingEnabled": "Tracking is enabled"
 }

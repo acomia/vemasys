@@ -88,7 +88,7 @@ const Details = () => {
     linkEntity,
     commentsWaitingForUpload,
   } = useEntity()
-  const {trackViewMode} = useMap()
+  const {trackViewMode, currentNavLogs} = useMap()
   const {navlog, title}: any = route.params
 
   const [dates, setDates] = useState<Dates>({
@@ -455,10 +455,13 @@ const Details = () => {
             })
           }}
         />
-
         <DatetimePickerList
+          trackView={
+            trackViewMode &&
+            currentNavLogs[currentNavLogs?.length - 1].id ===
+              navigationLogDetails.id
+          }
           date={dates.arrivalDatetime}
-          // iconName={trackViewMode ? 'info-circle' : null}
           locked={isUnknownLocation ? true : navigationLogDetails?.locked}
           title="Arrival"
           onChangeDate={() => {
@@ -510,8 +513,12 @@ const Details = () => {
       />
 
       <DatetimePickerList
+        trackView={
+          trackViewMode &&
+          currentNavLogs[currentNavLogs?.length - 1].id ===
+            navigationLogDetails.id
+        }
         date={dates.departureDatetime}
-        // iconName={trackViewMode ? 'info-circle' : null}
         locked={isUnknownLocation ? true : navigationLogDetails?.locked}
         title="Departure"
         onChangeDate={() => {
