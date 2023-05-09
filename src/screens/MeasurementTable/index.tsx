@@ -17,29 +17,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import {Colors} from '@bluecentury/styles'
 import {NavigationProp, useNavigation} from '@react-navigation/native'
 import {useTranslation} from 'react-i18next'
-import {useSettings} from '@bluecentury/stores'
-
-//TODO we need to add backend functionality. Steps:
-// 1) Check if we have existing table /api/tonnage_certifications?exploitationVessel.id={{uat_blue_c_exploitation_vessel_id}}
-// 2) If exists response will return an array of first and last table rows and data changed by user (first and last response elements)
-// 3) We should use calculateTable function with values of first and last table rows
-// 4) For each response element except first and last we should extract tonnage and draught and set them to changedData
-// 5) We should run recalculateTable(changedData, dataForTable)
-// 6) On save we need to add functionality to save tableData
-// 7) Step 1 - remove previous tonnage certification https://app-uat.vemasys.eu/api/tonnage_certifications/{certification_id}
-// 8) Step 2 - create an array of data to upload dataToUpload = [...changedData]
-// 9) Step 3 - look for dataForTable[0] in dataToUpload if there's no add it dataToUpload = [dataForTable[0], ...dataToUpload]
-// 10) Step 4 - look for dataForTable[last] in dataToUpload if there's no add it dataToUpload = [...dataToUpload, dataForTable[last]
-// 11) Step 5 - upload each dataToUpload element separately post https://app-uat.vemasys.eu/api/tonnage_certifications
-// {
-//     exploitationVessel: probably exploitation vessel id,
-//     vesselCategory: {
-//         title: don't know what should be here,
-//         length: don't know what should be here
-//     },
-//     tonnage: dataToUpload.tonnage,
-//     draught: dataToUpload.draught
-// }
+import {useEntity, useSettings} from '@bluecentury/stores'
+import {calculateTable, recalculateTable} from '@bluecentury/utils'
 
 type TableItem = {
   draught: number
@@ -49,7 +28,15 @@ type TableItem = {
 const MeasurementTable = () => {
   const {t} = useTranslation()
   const navigation = useNavigation<NavigationProp<RootStackParamList>>()
-  const {setDraughtTable} = useSettings()
+  const {
+    setDraughtTable,
+    draughtTable,
+    updateDraughtTable,
+    uploadedTableData,
+    removeResponse,
+    getDraughtTable,
+  } = useSettings()
+  const {vesselId} = useEntity()
 
   const [draughtCmMin, setDraughtCmMin] = useState<number | null>(null)
   const [draughtCmMax, setDraughtCmMax] = useState<number | null>(null)
@@ -57,6 +44,49 @@ const MeasurementTable = () => {
   const [tonnageTMax, setTonnageTMax] = useState<number | null>(null)
   const [dataForTable, setDataForTable] = useState<TableItem[]>([])
   const [changedData, setChangedData] = useState<TableItem[]>([])
+  const [shouldRecalculateValue, setShouldRecalculateValue] =
+    useState<boolean>(false)
+
+  useEffect(() => {
+    getDraughtTable(vesselId)
+    if (uploadedTableData.length > 2) {
+      const userChangedData = uploadedTableData.filter(
+        (item: DraughtTableItem, index: number) =>
+          index !== 0 && index !== uploadedTableData.length - 1
+      )
+      const changes = userChangedData.map((item: TableItem) => {
+        return {
+          draught: item.draught,
+          tonnage: item.tonnage,
+        }
+      })
+      setChangedData(changes)
+    }
+  }, [])
+
+  useEffect(() => {
+    setShouldRecalculateValue(false)
+    if (draughtTable.length) {
+      if (draughtTable.length === 2) {
+        setDraughtCmMin(draughtTable[0].draught)
+        setDraughtCmMax(draughtTable[1].draught)
+        setTonnageTMin(draughtTable[0].tonnage)
+        setTonnageTMax(draughtTable[1].tonnage)
+      }
+      if (draughtTable.length > 2) {
+        setDraughtCmMin(draughtTable[0].draught)
+        setDraughtCmMax(draughtTable[draughtTable.length - 1].draught)
+        setTonnageTMin(draughtTable[0].tonnage)
+        setTonnageTMax(draughtTable[draughtTable.length - 1].tonnage)
+        setDataForTable(draughtTable)
+      }
+    }
+    console.log('DRAUGHT_TABLE', draughtTable)
+  }, [draughtTable])
+
+  useEffect(() => {
+    setDataForTable(draughtTable)
+  }, [draughtTable])
 
   useEffect(() => {
     navigation.setOptions({
@@ -85,14 +115,21 @@ const MeasurementTable = () => {
       draughtCmMin !== null &&
       draughtCmMax !== null &&
       tonnageTMin !== null &&
-      tonnageTMax !== null
+      tonnageTMax !== null &&
+      shouldRecalculateValue
     ) {
       setDataForTable(
         calculateTable(tonnageTMax, tonnageTMin, draughtCmMax, draughtCmMin)
       )
+      setChangedData([])
     }
-    setChangedData([])
-  }, [draughtCmMin, draughtCmMax, tonnageTMin, tonnageTMax])
+  }, [
+    draughtCmMin,
+    draughtCmMax,
+    tonnageTMin,
+    tonnageTMax,
+    shouldRecalculateValue,
+  ])
 
   const addUserChangedData = (item: TableItem) => {
     const existingItemIndex = changedData.findIndex(
@@ -110,79 +147,60 @@ const MeasurementTable = () => {
     recalculateTable(sortedArray, dataForTable)
   }
 
-  const calculateTable = (
-    tonnageMax: number,
-    tonnageMin: number,
-    draughtMax: number,
-    draughtMin: number
-  ): TableItem[] => {
-    const tonnageToOneCmDraught =
-      (tonnageMax - tonnageMin) / (draughtMax - draughtMin)
-    const draughtDifference = draughtMax - draughtMin
-    const cmArray = Array.from(
-      Array(draughtDifference + 1),
-      (x, i) => i + draughtMin
-    )
-    const tableData = (
-      tonnageDraught: number,
-      draughts: number[]
-    ): TableItem[] => {
-      return draughts.map((item, index) => ({
-        draught: item,
-        tonnage: tonnageMin + tonnageDraught * index,
-      }))
-    }
-    return tableData(tonnageToOneCmDraught, cmArray)
-  }
-
-  const recalculateTable = (
-    changedDraughtArray: TableItem[],
-    dataArray: TableItem[]
-  ) => {
-    changedDraughtArray.map((changedDraughtArrayItem, index) => {
-      const dataArrayStartIndex = dataArray.findIndex(
-        item => changedDraughtArrayItem.draught === item.draught
-      )
-
-      if (index === changedDraughtArray.length - 1) {
-        const arrayToProceed = dataArray.slice(
-          dataArrayStartIndex,
-          dataArray.length
-        )
-        const recalculatedArray = calculateTable(
-          dataArray[dataArray.length - 1].tonnage,
-          changedDraughtArrayItem.tonnage,
-          dataArray[dataArray.length - 1].draught,
-          changedDraughtArrayItem.draught
-        )
-        dataArray.splice(
-          dataArrayStartIndex,
-          arrayToProceed.length,
-          ...recalculatedArray
-        )
-        setDataForTable(dataArray)
-      } else {
-        const dataArrayLastIndex = dataArray.findIndex(
-          item => changedDraughtArray[index + 1].draught === item.draught
-        )
-        const arrayToProceed = dataArray.slice(
-          dataArrayStartIndex,
-          dataArrayLastIndex + 1
-        )
-        const recalculatedArray = calculateTable(
-          changedDraughtArray[index + 1].tonnage,
-          changedDraughtArrayItem.tonnage,
-          changedDraughtArray[index + 1].draught,
-          changedDraughtArrayItem.draught
-        )
-        dataArray.splice(
-          dataArrayStartIndex,
-          arrayToProceed.length,
-          ...recalculatedArray
-        )
-        setDataForTable(dataArray)
+  const handleOnSave = async () => {
+    let changedDataToUpload
+    const formattedChangedData = changedData.map(item => {
+      return {
+        draught: item.draught,
+        tonnage: item.tonnage,
       }
     })
+    if (
+      shouldRecalculateValue &&
+      draughtCmMin !== null &&
+      draughtCmMax !== null &&
+      tonnageTMin !== null &&
+      tonnageTMax !== null
+    ) {
+      changedDataToUpload = [
+        {
+          draught: draughtCmMin,
+          tonnage: tonnageTMin,
+        },
+        ...formattedChangedData,
+        {
+          draught: draughtCmMax,
+          tonnage: tonnageTMax,
+        },
+      ]
+      for (const item of uploadedTableData) {
+        if (
+          !changedDataToUpload.find(element => element.draught === item.draught)
+        ) {
+          await removeResponse(item.id)
+        }
+      }
+    } else {
+      changedDataToUpload = [...formattedChangedData]
+    }
+    for (const element of changedDataToUpload) {
+      const existedItem = uploadedTableData.find(
+        (item: DraughtTableItem) => parseFloat(item.draught) === element.draught
+      )
+      if (existedItem) {
+        await updateDraughtTable(element, existedItem.id)
+      } else {
+        await updateDraughtTable(element)
+      }
+    }
+    setDraughtTable(dataForTable)
+    setDraughtCmMin(null)
+    setDraughtCmMax(null)
+    setTonnageTMin(null)
+    setTonnageTMax(null)
+    setDataForTable([])
+    setChangedData([])
+    navigation.goBack()
   }
 
   return (
@@ -200,11 +218,15 @@ const MeasurementTable = () => {
             backgroundColor={Colors.light_grey}
             borderWidth="0"
             color={Colors.text}
+            defaultValue={draughtCmMin ? draughtCmMin.toString() : ''}
             fontSize={ms(14)}
             h={ms(40)}
             keyboardType="number-pad"
             placeholder={t('enterNumber') as string}
-            onChangeText={val => setDraughtCmMin(Number(val))}
+            onChangeText={val => {
+              setDraughtCmMin(Number(val))
+              setShouldRecalculateValue(true)
+            }}
           />
         </FormControl>
         <FormControl w="40%">
@@ -215,11 +237,15 @@ const MeasurementTable = () => {
             backgroundColor={Colors.light_grey}
             borderWidth="0"
             color={Colors.text}
+            defaultValue={draughtCmMax ? draughtCmMax.toString() : ''}
             fontSize={ms(14)}
             h={ms(40)}
             keyboardType="number-pad"
             placeholder={t('enterNumber') as string}
-            onChangeText={val => setDraughtCmMax(Number(val))}
+            onChangeText={val => {
+              setDraughtCmMax(Number(val))
+              setShouldRecalculateValue(true)
+            }}
           />
         </FormControl>
       </HStack>
@@ -233,11 +259,15 @@ const MeasurementTable = () => {
             backgroundColor={Colors.light_grey}
             borderWidth="0"
             color={Colors.text}
+            defaultValue={tonnageTMin ? tonnageTMin.toString() : ''}
             fontSize={ms(14)}
             h={ms(40)}
             keyboardType="number-pad"
             placeholder={t('enterNumber') as string}
-            onChangeText={val => setTonnageTMin(Number(val))}
+            onChangeText={val => {
+              setTonnageTMin(Number(val))
+              setShouldRecalculateValue(true)
+            }}
           />
         </FormControl>
         <FormControl w="40%">
@@ -248,11 +278,15 @@ const MeasurementTable = () => {
             backgroundColor={Colors.light_grey}
             borderWidth="0"
             color={Colors.text}
+            defaultValue={tonnageTMax ? tonnageTMax.toString() : ''}
             fontSize={ms(14)}
             h={ms(40)}
             keyboardType="number-pad"
             placeholder={t('enterNumber') as string}
-            onChangeText={val => setTonnageTMax(Number(val))}
+            onChangeText={val => {
+              setTonnageTMax(Number(val))
+              setShouldRecalculateValue(true)
+            }}
           />
         </FormControl>
       </HStack>
@@ -269,7 +303,7 @@ const MeasurementTable = () => {
           </HStack>
           <ScrollView flex={1}>
             {dataForTable.map((item, index) => (
-              <HStack justifyContent="space-between">
+              <HStack key={item.draught} justifyContent="space-between">
                 <VStack w="45%">
                   <Input
                     backgroundColor={Colors.light_grey}
@@ -338,7 +372,7 @@ const MeasurementTable = () => {
               maxH={ms(40)}
               w="45%"
               onPress={() => {
-                setDraughtTable(dataForTable)
+                handleOnSave()
               }}
             >
               <Text bold color={Colors.white} fontSize={ms(16)}>
