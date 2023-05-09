@@ -335,7 +335,7 @@ const deleteNavigationLogAction = async (id: string) => {
     })
 }
 
-export const getTonnageCertifications = (id: string | number) => {
+export const getTonnageCertifications = async (id: string | number) => {
   return API.get(`tonnage_certifications?exploitationVessel.id=${id}`)
     .then(response => {
       if (response.status === 200) {

@@ -38,6 +38,8 @@ type PlanningState = {
   vesselNavigationDetails: Vessel | undefined
   isSavingNavBulkLoading: boolean
   isSavingNavBulkSuccess: boolean
+  isTonnageCertificationLoading: boolean
+  tonnageCertifications: TonnageCertifications[] | undefined
 }
 
 type PlanningActions = {
@@ -77,6 +79,7 @@ type PlanningActions = {
   reset?: () => void
   getVesselnavigationDetails: (id: string) => void
   updateNavBulk: (id: number, tonnage: number) => void
+  getNavLogTonnageCertification: (id: number) => void
 }
 
 export type PlanningStore = PlanningState & PlanningActions
@@ -106,6 +109,8 @@ const initialState: PlanningState = {
   vesselNavigationDetails: undefined,
   isSavingNavBulkLoading: false,
   isSavingNavBulkSuccess: false,
+  isTonnageCertificationLoading: false,
+  tonnageCertifications: [],
 }
 
 export const usePlanning = create(
@@ -580,6 +585,21 @@ export const usePlanning = create(
           }
         } catch (error) {
           set({isSavingNavBulkLoading: false})
+        }
+      },
+      getNavLogTonnageCertification: async (id: number) => {
+        set({isTonnageCertificationLoading: true, tonnageCertifications: []})
+        try {
+          const response = await API.getTonnageCertifications(id)
+
+          if (response?.status === 200) {
+            set({
+              isTonnageCertificationLoading: false,
+              tonnageCertifications: response?.data,
+            })
+          }
+        } catch (error) {
+          set({isTonnageCertificationLoading: false})
         }
       },
     }),

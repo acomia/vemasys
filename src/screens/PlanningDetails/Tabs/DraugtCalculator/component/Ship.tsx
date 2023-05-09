@@ -11,7 +11,7 @@ interface Props {
   buttonSelected: (selected: string) => void
   maxDraught: string | number | undefined
   draughtValues: any
-  tonnage: number
+  tonnage: number | string
   active?: number
   averageDraught?: any
   isFreeboard?: boolean

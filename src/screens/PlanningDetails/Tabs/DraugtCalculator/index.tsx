@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react'
+import {Alert} from 'react-native'
 import {
   Box,
   Text,
@@ -15,15 +16,22 @@ import {BeforeAfterComponent, Ship} from './component'
 import {useTranslation} from 'react-i18next'
 import {PageScroll} from '@bluecentury/components'
 import {usePlanning, useSettings} from '@bluecentury/stores'
+import {titleCase} from '@bluecentury/constants'
+import {Vemasys} from '@bluecentury/helpers'
+import _ from 'lodash'
 
 export default () => {
   const {t} = useTranslation()
 
   const {
     navigationLogDetails,
-    getVesselnavigationDetails,
+    tonnageCertifications,
+    navigationLogActions,
     vesselNavigationDetails,
     updateNavBulk,
+    getNavLogTonnageCertification,
+    getVesselnavigationDetails,
+    updateNavigationLogAction,
   } = usePlanning()
   const {draughtTable} = useSettings()
 
@@ -59,11 +67,16 @@ export default () => {
   const [draughtValues, setDraughtValues] = useState(initialDraughtValues)
   const [didValueChange, setDidValueChange] = useState(initialDidValueChange)
   const [averageDraught, setAverageDraught] = useState<number>(0)
-  const [tonnage, setTonnage] = useState<number>(0)
+  const [tonnage, setTonnage] = useState<string>('0')
+  const [isConfirmModal, setConfirmModal] = useState<boolean>(false)
+  const [loadingAction, setLoadingAction] = useState<NavigationLogAction>({})
+  const [activeLoadingAction, setActiveLoadingAction] = useState({})
 
   const isFreeboard = measurement === measurements[0].value
-  const sortedDraughtTable = draughtTable?.length
-    ? draughtTable?.sort((prev, curr) => prev.draught - curr.draught)
+  const sortedDraughtTable = tonnageCertifications?.length
+    ? tonnageCertifications?.sort(
+        (prev, curr) => parseInt(prev.draught) - parseInt(curr.draught)
+      )
     : null
 
   const unsavedChanges = Object.values(didValueChange).filter(
@@ -77,6 +90,17 @@ export default () => {
     if (!vesselNavigationDetails) {
       getVesselnavigationDetails(navigationLogDetails?.exploitationVessel?.id)
     }
+    if (vesselNavigationDetails) {
+      getNavLogTonnageCertification(
+        navigationLogDetails?.exploitationVessel?.id
+      )
+    }
+
+    const activeLoading = navigationLogActions?.filter(
+      action => _.isNull(action?.end) && action.type === 'Loading'
+    )
+
+    setActiveLoadingAction(activeLoading[0])
   }, [])
 
   useEffect(() => {
@@ -93,9 +117,9 @@ export default () => {
       setAverageDraught(average)
 
       //find the closest tonnage from draughtTable
-      // NOTE TO KLART: get all the tonnage_certifications with exploitation_vessel_id
       const closestDraught = sortedDraughtTable?.reduce((prev, curr) =>
-        Math.abs(curr.draught - average) < Math.abs(prev.draught - average)
+        Math.abs(parseInt(curr.draught) - average) <
+        Math.abs(parseInt(prev.draught) - average)
           ? curr
           : prev
       )
@@ -118,8 +142,40 @@ export default () => {
 
   const submitDraught = () => {
     if (navigationLogDetails?.exploitationVessel?.id) {
-      updateNavBulk(navigationLogDetails?.exploitationVessel?.id, tonnage)
+      updateNavBulk(navigationLogDetails?.bulkCargo?.id, tonnage)
     }
+  }
+
+  const onConfirmStopAction = () => {
+    setLoadingAction({
+      ...loadingAction,
+      id: activeLoadingAction?.id,
+      type: titleCase(activeLoadingAction?.type),
+      start: activeLoadingAction.start,
+      estimatedEnd: activeLoadingAction.estimatedEnd,
+      end: Vemasys.defaultDatetime(),
+      cargoHoldActions: [
+        {
+          navigationBulk: activeLoadingAction?.navigationBulk?.id,
+          amount: activeLoadingAction?.navigationBulk?.amount.toString(),
+        },
+      ],
+    })
+    submitDraught()
+    updateNavigationLogAction(
+      loadingAction?.id,
+      navigationLogDetails?.id,
+      loadingAction
+    )
+    setConfirmModal(false)
+  }
+
+  const endLoading = () => {
+    if (Object.keys(loadingAction).length === 0) {
+      Alert.alert(t('noLoading'))
+      return
+    }
+    if (loadingAction) setConfirmModal(true)
   }
 
   return (
@@ -164,11 +220,11 @@ export default () => {
           draughtValues={draughtValues}
           isFreeboard={isFreeboard}
           maxDraught={isFreeboard ? maxDraught : 0} // get the value from the endpoint nearest value of tonnage_certificate
-          tonnage={0}
+          tonnage={tonnage}
         />
       </Box>
       <HStack mt={ms(10)} space={ms(5)}>
-        <Button colorScheme={'white'} flex={1}>
+        <Button colorScheme={'white'} flex={1} onPress={endLoading}>
           <Text color={Colors.disabled}>{t('endLoading')}</Text>
         </Button>
         <Button
@@ -240,6 +296,41 @@ export default () => {
               </Button>
             </HStack>
           </Modal.Footer>
+        </Modal.Content>
+      </Modal>
+      <Modal
+        animationPreset="slide"
+        isOpen={isConfirmModal}
+        px={ms(12)}
+        size="full"
+      >
+        <Modal.Content>
+          <Modal.Header>{t('confirmation')}</Modal.Header>
+          <Text fontWeight="medium" mx={ms(12)} my={ms(20)}>
+            {t('areYouSure')}
+          </Text>
+          <HStack>
+            <Button
+              bg={Colors.grey}
+              flex="1"
+              m={ms(12)}
+              onPress={() => setConfirmModal(false)}
+            >
+              <Text color={Colors.disabled} fontWeight="medium">
+                {t('cancel')}
+              </Text>
+            </Button>
+            <Button
+              bg={Colors.danger}
+              flex="1"
+              m={ms(12)}
+              onPress={onConfirmStopAction}
+            >
+              <Text color={Colors.white} fontWeight="medium">
+                {t('stop')}
+              </Text>
+            </Button>
+          </HStack>
         </Modal.Content>
       </Modal>
     </PageScroll>

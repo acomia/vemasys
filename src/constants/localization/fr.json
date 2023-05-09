@@ -376,5 +376,6 @@
   "enterMeasurement": "Enter measurement",
   "averageDraught": "Average Draught",
   "draughtCalculator": "Draught Calculator",
-  "selectMeasurement": "Select measurement"
+  "selectMeasurement": "Select measurement",
+  "noLoading": "There are no loading actions"
 }
