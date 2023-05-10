@@ -83,6 +83,16 @@ const Settings = (props: DrawerContentComponentProps) => {
         callback={setDarkMode}
       />*/}
       <ResetPasswordModal />
+
+      {/*TODO change icon*/}
+      <SettingsItem
+        type="navigation"
+        value={t('measurementTable')}
+        iconSource={Icons.ship}
+        callback={() => {
+          navigation.navigate(Screens.MeasurementTable)
+        }}
+      />
       <HStack justifyContent="center">
         <Center>
           <VersionBuildLabel />
