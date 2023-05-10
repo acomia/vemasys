@@ -67,6 +67,7 @@ const removeTonnageCertification = async (id: number) => {
   return API.delete(`tonnage_certifications/${id}`)
     .then(response => {
       console.log('REMOVE_RESPONSE', response)
+      return response.data
     })
     .catch(error => {
       console.error(
