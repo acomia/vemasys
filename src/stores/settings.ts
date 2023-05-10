@@ -104,7 +104,6 @@ export const useSettings = create(
       getDraughtTable: async id => {
         const uploadedTableData: DraughtTableItem[] =
           await API.getTonnageCertification(id)
-        console.log('UPLOADED TABLE DATA', uploadedTableData)
         const sortedData = uploadedTableData.sort((a, b) => {
           return parseFloat(a.draught) - parseFloat(b.draught)
         })
@@ -127,7 +126,6 @@ export const useSettings = create(
                 }
               })
               .filter(item => item !== undefined)
-            console.log('UPLOADED TABLE USER DATA', uploadedTableUserData)
             recalculateTable(uploadedTableUserData as TableItem[], initialTable)
           }
           if (uploadedTableData.length === 2) {
@@ -136,7 +134,6 @@ export const useSettings = create(
         }
       },
       updateDraughtTable: async (measurement, id?) => {
-        console.log('MEASUREMENT', measurement)
         if (id) {
           return await API.putTonnageCertification(measurement, id)
         }

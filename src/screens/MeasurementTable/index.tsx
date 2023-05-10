@@ -81,7 +81,6 @@ const MeasurementTable = () => {
         setDataForTable(draughtTable)
       }
     }
-    console.log('DRAUGHT_TABLE', draughtTable)
   }, [draughtTable])
 
   useEffect(() => {

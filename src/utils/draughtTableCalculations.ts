@@ -74,7 +74,6 @@ export const recalculateTable = (
           ),
         ]
       }
-      console.log('resultTable', resultTable)
     }
   })
   setTableToStore(
