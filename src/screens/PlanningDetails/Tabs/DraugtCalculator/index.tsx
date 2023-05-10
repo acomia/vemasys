@@ -24,6 +24,8 @@ export default () => {
   const {t} = useTranslation()
 
   const {
+    isTonnageCertificationLoading,
+    isSavingNavBulkLoading,
     navigationLogDetails,
     tonnageCertifications,
     navigationLogActions,
@@ -59,7 +61,6 @@ export default () => {
   ]
 
   const [isBefore, setIsBefore] = useState<number>(0)
-  const [refreshing, setRefreshing] = useState<boolean>(false)
   const [selectedButton, setSelectedButton] = useState<string>('')
   const [isOpenInput, setIsOpenInput] = useState<boolean>(false)
   const [measurement, setMeasurement] = useState<string>(measurements[0].value)
@@ -87,20 +88,7 @@ export default () => {
   const inputRegex = /^[0-9,.]*$/
 
   useEffect(() => {
-    if (!vesselNavigationDetails) {
-      getVesselnavigationDetails(navigationLogDetails?.exploitationVessel?.id)
-    }
-    if (vesselNavigationDetails) {
-      getNavLogTonnageCertification(
-        navigationLogDetails?.exploitationVessel?.id
-      )
-    }
-
-    const activeLoading = navigationLogActions?.filter(
-      action => _.isNull(action?.end) && action.type === 'Loading'
-    )
-
-    setActiveLoadingAction(activeLoading[0])
+    getTonnage()
   }, [])
 
   useEffect(() => {
@@ -126,6 +114,23 @@ export default () => {
       if (closestDraught) setTonnage(closestDraught?.tonnage)
     }
   }, [draughtValues, measurement, isBefore])
+
+  const getTonnage = () => {
+    if (!vesselNavigationDetails) {
+      getVesselnavigationDetails(navigationLogDetails?.exploitationVessel?.id)
+    }
+    if (vesselNavigationDetails) {
+      getNavLogTonnageCertification(
+        navigationLogDetails?.exploitationVessel?.id
+      )
+    }
+
+    const activeLoading = navigationLogActions?.filter(
+      action => _.isNull(action?.end) && action.type === 'Loading'
+    )
+
+    setActiveLoadingAction(activeLoading[0])
+  }
 
   const buttonSelected = (selected: string) => {
     if (draughtValues[selected].value > 0) {
@@ -178,8 +183,21 @@ export default () => {
     if (loadingAction) setConfirmModal(true)
   }
 
+  const onPullToReload = () => {
+    getTonnage()
+  }
+
+  console.log(
+    'isTonnageCertificationLoading || isSavingNavBulkLoading',
+    isTonnageCertificationLoading,
+    isSavingNavBulkLoading
+  )
+
   return (
-    <PageScroll refreshing={refreshing}>
+    <PageScroll
+      refreshing={isTonnageCertificationLoading || isSavingNavBulkLoading}
+      onPullToReload={onPullToReload}
+    >
       <Text bold color={Colors.azure} fontSize={ms(20)}>
         {t('draughtCalculator')}
       </Text>

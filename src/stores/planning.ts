@@ -588,14 +588,20 @@ export const usePlanning = create(
         }
       },
       getNavLogTonnageCertification: async (id: number) => {
-        set({isTonnageCertificationLoading: true, tonnageCertifications: []})
+        set({
+          isTonnageCertificationLoading: true,
+          // added these two to make sure the saving will go back to its original
+          // if not it will cause the scroll infinite loading
+          isSavingNavBulkLoading: false,
+          isSavingNavBulkSuccess: false,
+          tonnageCertifications: [],
+        })
         try {
-          const response = await API.getTonnageCertifications(id)
-
-          if (response?.status === 200) {
+          const response = await API.getTonnageCertification(id.toString())
+          if (Object.values(response).length > 0) {
             set({
               isTonnageCertificationLoading: false,
-              tonnageCertifications: response?.data,
+              tonnageCertifications: response,
             })
           }
         } catch (error) {

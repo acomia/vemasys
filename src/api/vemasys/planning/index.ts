@@ -334,21 +334,6 @@ const deleteNavigationLogAction = async (id: string) => {
       console.error('Error:Delete navlog action data', error)
     })
 }
-
-export const getTonnageCertifications = async (id: string | number) => {
-  return API.get(`tonnage_certifications?exploitationVessel.id=${id}`)
-    .then(response => {
-      if (response.status === 200) {
-        return response
-      }
-
-      throw new Error('Get Tonnage certifications error')
-    })
-    .catch(error => {
-      console.error('Error: Get tonnage certifications data', error)
-    })
-}
-
 export {
   reloadNavigationLogDetails,
   reloadNavigationLogActions,
