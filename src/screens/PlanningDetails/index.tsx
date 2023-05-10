@@ -146,30 +146,28 @@ export default function PlanningDetails({route}: Props) {
         })}
         backBehavior="firstRoute"
       >
-        {routes.map((route, index) => {
-          return (
-            <Tab.Screen
-              key={index}
-              options={({route}) => ({
-                tabBarLabel: ({focused}) => (
-                  <HStack alignItems="center">
-                    <Text
-                      bold
-                      color={focused ? Colors.white : Colors.light}
-                      mr={1}
-                    >
-                      {route.name}
-                    </Text>
-                    {renderTabBadge(route.name)}
-                  </HStack>
-                ),
-              })}
-              component={route.screen}
-              initialParams={{navlog, title}}
-              name={route.title}
-            />
-          )
-        })}
+        {routes.map((route, index) => (
+          <Tab.Screen
+            key={index}
+            options={({route}) => ({
+              tabBarLabel: ({focused}) => (
+                <HStack alignItems="center">
+                  <Text
+                    bold
+                    color={focused ? Colors.white : Colors.light}
+                    mr={1}
+                  >
+                    {route.name}
+                  </Text>
+                  {renderTabBadge(route.name)}
+                </HStack>
+              ),
+            })}
+            component={route.screen}
+            initialParams={{navlog, title}}
+            name={route.title}
+          />
+        ))}
       </Tab.Navigator>
     </Box>
   )
