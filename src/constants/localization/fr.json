@@ -377,5 +377,12 @@
   "averageDraught": "Average Draught",
   "draughtCalculator": "Draught Calculator",
   "selectMeasurement": "Select measurement",
-  "noLoading": "There are no loading actions"
+  "noLoading": "There are no loading actions",
+  "measurementTable": "Measurement Table",
+  "tonnageCertification": "Tonnage Certification",
+  "draughtCmMin": "Draught (cm)(min)",
+  "draughtCmMax": "Draught (cm)(max)",
+  "tonnageTMin": "Tonnage (T)(min)",
+  "tonnageTMax": "Tonnage (T)(max)",
+  "enterNumber": "Enter number"
 }
