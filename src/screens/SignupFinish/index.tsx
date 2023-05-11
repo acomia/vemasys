@@ -17,7 +17,6 @@ import {RootStackParamList} from '@bluecentury/types/nav.types'
 import {useAuth, useUser} from '@bluecentury/stores'
 
 type Props = RouteProp<RootStackParamList, 'SignUpFinish'>
-
 export default function SignUpFinish() {
   const {t} = useTranslation()
   const route = useRoute<Props>()

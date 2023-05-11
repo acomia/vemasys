@@ -45,6 +45,7 @@ type RootStackParamList = {
   SignUp: undefined
   SignUpVerification: {signUpInfo: any}
   SignUpFinish: {email: string}
+  MeasurementTable: undefined
 }
 
 type MainStackParamList = {
