@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useState} from 'react'
-import {Box, Text, useToast} from 'native-base'
+import {Box} from 'native-base'
 
 import {NoInternetConnectionMessage} from '@bluecentury/components'
 import {SignupForm1, SignupForm2} from './components'
@@ -10,10 +10,10 @@ import {useAuth, useUser} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
 import {Credentials} from '@bluecentury/models'
 import {RootStackParamList} from '@bluecentury/types/nav.types'
+import {showToast} from '@bluecentury/hooks'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 export default function SignUp({navigation}: Props) {
-  const toast = useToast()
   const {
     registrationStatus,
     user,
@@ -60,26 +60,6 @@ export default function SignUp({navigation}: Props) {
       getLevelOfNavigationCertificate()
     }
   }, [registrationStatus, token])
-
-  const showToast = (text: string, res: string) => {
-    toast.show({
-      duration: 2000,
-      render: () => {
-        return (
-          <Text
-            bg={res === 'success' ? 'emerald.500' : 'red.500'}
-            color={Colors.white}
-            mb={5}
-            px="2"
-            py="1"
-            rounded="sm"
-          >
-            {text}
-          </Text>
-        )
-      },
-    })
-  }
 
   const onBackHeaderPress = () => {
     if (page === 1) navigation.goBack()

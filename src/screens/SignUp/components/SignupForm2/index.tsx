@@ -13,7 +13,6 @@ import {
   Switch,
   Text,
   WarningOutlineIcon,
-  useToast,
 } from 'native-base'
 import {useTranslation} from 'react-i18next'
 import {ms} from 'react-native-size-matters'
@@ -29,6 +28,7 @@ import {NoInternetConnectionMessage} from '@bluecentury/components'
 import {Credentials, ExtendedUser} from '@bluecentury/models'
 import {NavigationProp, useNavigation} from '@react-navigation/native'
 import {RootStackParamList} from '@bluecentury/types/nav.types'
+import {showToast} from '@bluecentury/hooks'
 
 const allFieldsRequired = _t('allFieldsRequired')
 const userFirstname = _t('newUserFirstname')
@@ -45,7 +45,6 @@ interface Props {
 export default function SignUpForm2({userInfo, userCreds, mmsi}: Props) {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>()
   const {t} = useTranslation()
-  const toast = useToast()
   const {
     isLoadingSignupRequest,
     isLoadingRegistration,
@@ -104,26 +103,6 @@ export default function SignUpForm2({userInfo, userCreds, mmsi}: Props) {
       resetStatus()
     }
   }, [updateUserInfoStatus, requestAccessToEntityStatus])
-
-  const showToast = (text: string, res: string) => {
-    toast.show({
-      duration: 2000,
-      render: () => {
-        return (
-          <Text
-            bg={res === 'success' ? 'emerald.500' : 'red.500'}
-            color={Colors.white}
-            mb={5}
-            px="2"
-            py="1"
-            rounded="sm"
-          >
-            {text}
-          </Text>
-        )
-      },
-    })
-  }
 
   const onDatesChange = (date: Date) => {
     const formattedDate = Vemasys.formatDate(date)

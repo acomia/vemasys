@@ -3,7 +3,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState, useEffect} from 'react'
 import {PermissionsAndroid, Platform} from 'react-native'
-import {Text, useDisclose, useToast} from 'native-base'
+import {useDisclose} from 'native-base'
 import DocumentPicker, {isInProgress, types} from 'react-native-document-picker'
 import DocumentScanner from 'react-native-document-scanner-plugin'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
@@ -13,10 +13,10 @@ import {useUser} from '@bluecentury/stores'
 import {Selfie, UploadDocs, UploadID} from './components'
 import {RootStackParamList} from '@bluecentury/types/nav.types'
 import {Colors} from '@bluecentury/styles'
+import {showToast} from '@bluecentury/hooks'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SignUpVerification'>
 export default function SignUpVerification({navigation, route}: Props) {
-  const toast = useToast()
   const {signUpInfo}: any = route.params
   const {
     createSignupRequestForCurrentUser,
@@ -95,26 +95,6 @@ export default function SignUpVerification({navigation, route}: Props) {
       resetStatus()
     }
   }, [signupRequestStatus])
-
-  const showToast = (text: string, res: string) => {
-    toast.show({
-      duration: 2000,
-      render: () => {
-        return (
-          <Text
-            bg={res === 'success' ? 'emerald.500' : 'red.500'}
-            color={Colors.white}
-            mb={5}
-            px="2"
-            py="1"
-            rounded="sm"
-          >
-            {text}
-          </Text>
-        )
-      },
-    })
-  }
 
   const onBackHeaderPress = () => {
     switch (page) {
