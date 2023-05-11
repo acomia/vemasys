@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {
   Box,
   Button,
@@ -28,10 +29,6 @@ const mmsiNotExist = _t('mmsiNotExist')
 const userPassword = _t('passwordRequired')
 const userConfirmPassword = _t('confirmPasswordRequired')
 
-// interface Props {
-//   next: () => void
-// }
-
 interface IForm1State extends UserRegistration {
   mmsi: string
   euid: string
@@ -39,12 +36,18 @@ interface IForm1State extends UserRegistration {
 }
 
 type Props = {
-  loginCreds: (creds: Credentials) => void
+  loginCreds: (creds: Credentials, _mmsi: number) => void
 }
 
 export default function SignUpForm1({loginCreds}: Props) {
   const {t} = useTranslation()
-  const {isLoadingRegistration, registerNewUser, getEntityData} = useUser()
+  const {
+    isLoadingRegistration,
+    registerNewUser,
+    getEntityData,
+    entityData,
+    mmsiNotAvailable,
+  } = useUser()
 
   const [values, setValues] = useState<IForm1State>({
     username: '',
@@ -59,10 +62,26 @@ export default function SignUpForm1({loginCreds}: Props) {
   const [isEmailEmpty, setIsEmailEmpty] = useState(false)
   const [isEmailNotValid, setIsEmailNotValid] = useState(false)
   const [isMMSIEmpty, setIsMMSIEmpty] = useState(false)
-  const [isMMSIExist, setIsMMSIExist] = useState(false)
   const [isPasswordEmpty, setIsPasswordEmpty] = useState(false)
   const [isConfirmPasswordEmpty, setIsConfirmPasswordEmpty] = useState(false)
   const [isPasswordMatch, setIsPasswordMatch] = useState(true)
+  const usernameRef = useRef<any>(null)
+  const emailRef = useRef<any>(null)
+  const mmsiRef = useRef<any>(null)
+  const euidRef = useRef<any>(null)
+  const passwordRef = useRef<any>(null)
+  const confirmPasswordRef = useRef<any>(null)
+
+  useEffect(() => {
+    if (entityData.length) {
+      const userReg = {
+        email: values.email,
+        username: values.username,
+        plainPassword: values.plainPassword,
+      }
+      registerNewUser(userReg)
+    }
+  }, [entityData])
 
   const isValidEmail = (email: string) => {
     return /\S+@\S+\.\S+/.test(email)
@@ -107,7 +126,10 @@ export default function SignUpForm1({loginCreds}: Props) {
       setIsEmailNotValid(true)
       return
     }
-    // loginCreds({username: values.username, password: values.plainPassword})
+    loginCreds(
+      {username: values.username, password: values.plainPassword},
+      Number(values.mmsi)
+    )
     getEntityData(Number(values.mmsi))
   }
 
@@ -130,8 +152,9 @@ export default function SignUpForm1({loginCreds}: Props) {
             {t('username')}
           </FormControl.Label>
           <Input
+            ref={usernameRef}
             autoCapitalize="none"
-            placeholder=""
+            returnKeyType="next"
             size="lg"
             style={{backgroundColor: '#F7F7F7'}}
             value={values.username}
@@ -139,6 +162,7 @@ export default function SignUpForm1({loginCreds}: Props) {
               setValues({...values, username: e})
               setIsAllFieldEmpty(false)
             }}
+            onSubmitEditing={() => emailRef.current.focus()}
           />
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
             {userUsername}
@@ -154,9 +178,10 @@ export default function SignUpForm1({loginCreds}: Props) {
             {t('email')}
           </FormControl.Label>
           <Input
+            ref={emailRef}
             autoCapitalize="none"
             keyboardType="email-address"
-            placeholder=""
+            returnKeyType="next"
             size="lg"
             style={{backgroundColor: '#F7F7F7'}}
             value={values.email}
@@ -166,6 +191,7 @@ export default function SignUpForm1({loginCreds}: Props) {
               setIsEmailNotValid(false)
               setIsEmailEmpty(false)
             }}
+            onSubmitEditing={() => mmsiRef.current.focus()}
           />
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
             {isEmailNotValid ? userEmailNotValid : userEmail}
@@ -173,37 +199,40 @@ export default function SignUpForm1({loginCreds}: Props) {
         </FormControl>
         <FormControl
           isRequired
-          isInvalid={isMMSIEmpty || isMMSIExist}
+          isInvalid={isMMSIEmpty || mmsiNotAvailable}
           mt={ms(10)}
         >
           <FormControl.Label color={Colors.disabled}>
             MMSI number
           </FormControl.Label>
           <Input
-            autoCapitalize="words"
-            placeholder=""
+            ref={mmsiRef}
+            keyboardType="number-pad"
+            returnKeyType="next"
             size="lg"
             style={{backgroundColor: '#F7F7F7'}}
             value={values.mmsi}
             onChangeText={e => {
               setValues({...values, mmsi: e})
             }}
+            onSubmitEditing={() => euidRef.current.focus()}
           />
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-            {isMMSIExist ? mmsiNotExist : mmsiRequired}{' '}
+            {mmsiNotAvailable ? mmsiNotExist : mmsiRequired}{' '}
           </FormControl.ErrorMessage>
         </FormControl>
         <FormControl isInvalid={false} mt={ms(10)}>
           <FormControl.Label color={Colors.disabled}>EUID</FormControl.Label>
           <Input
-            autoCapitalize="words"
-            placeholder=" "
+            ref={euidRef}
+            returnKeyType="next"
             size="lg"
             style={{backgroundColor: '#F7F7F7'}}
             value={values.euid}
             onChangeText={e => {
               setValues({...values, euid: e})
             }}
+            onSubmitEditing={() => passwordRef.current.focus()}
           />
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
             EUID
@@ -214,7 +243,8 @@ export default function SignUpForm1({loginCreds}: Props) {
             {t('password')}
           </FormControl.Label>
           <Input
-            placeholder=""
+            ref={passwordRef}
+            returnKeyType="next"
             size="lg"
             style={{backgroundColor: '#F7F7F7'}}
             type="password"
@@ -224,6 +254,7 @@ export default function SignUpForm1({loginCreds}: Props) {
               setIsAllFieldEmpty(false)
               setIsPasswordMatch(true)
             }}
+            onSubmitEditing={() => confirmPasswordRef.current.focus()}
           />
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
             {userPassword}
@@ -234,7 +265,7 @@ export default function SignUpForm1({loginCreds}: Props) {
             {t('confirmPassword')}
           </FormControl.Label>
           <Input
-            placeholder=""
+            ref={confirmPasswordRef}
             size="lg"
             style={{backgroundColor: '#F7F7F7'}}
             type="password"
@@ -268,7 +299,7 @@ export default function SignUpForm1({loginCreds}: Props) {
           }}
           bg={Colors.primary}
           isLoading={isLoadingRegistration}
-          isLoadingText="Creating new user"
+          isLoadingText="Creating new user..."
           m={ms(16)}
           size="md"
           onPress={onNextSubmit}

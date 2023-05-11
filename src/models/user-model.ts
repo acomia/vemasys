@@ -1,11 +1,11 @@
 export type User = {
-  id: number
-  firstname: string
-  lastname: string
-  professionalEmail: string
-  birthday: string
-  gender: boolean
-  address: {
+  id?: number
+  firstname?: string
+  lastname?: string
+  professionalEmail?: string
+  birthday?: string
+  gender?: boolean
+  address?: {
     id: number
     phoneNumber: string
     faxNumber: string
@@ -19,18 +19,18 @@ export type User = {
       name: string
     }
   }
-  icon: {
+  icon?: {
     id: number
     path: string
     description: string
   }
-  language: string
-  defaultLanguage: {
+  language?: string
+  defaultLanguage?: {
     id: number
     shortname: string
     fullname: string
   }
-  fileGroup: {
+  fileGroup?: {
     files: [
       {
         id: number
@@ -39,22 +39,22 @@ export type User = {
       }
     ]
   }
-  entityUsers: string[]
-  email: string
+  entityUsers?: string[]
+  email?: string
 }
 
 type ExtendUser = {
-  mmsi: string
-  identificationDocument: {
+  mmsi?: string
+  identificationDocument?: {
     path: string
     description: string
     uploader: object | null
     type: object | null
   }
-  certificateLevel: string
-  username: string
-  enabled: boolean
-  plainPassword: string
+  certificateLevel?: string
+  username?: string
+  enabled?: boolean
+  plainPassword?: string
 }
 
 export type ExtendedUser = User & ExtendUser

@@ -1,31 +1,29 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState, useEffect} from 'react'
 import {PermissionsAndroid, Platform} from 'react-native'
-import {useDisclose} from 'native-base'
+import {Text, useDisclose, useToast} from 'native-base'
 import DocumentPicker, {isInProgress, types} from 'react-native-document-picker'
 import DocumentScanner from 'react-native-document-scanner-plugin'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import Icon from 'react-native-vector-icons/Ionicons'
 
-import {useAuth, useUser} from '@bluecentury/stores'
-import {Selfie, SignUpFinish, UploadDocs, UploadID} from './components'
+import {useUser} from '@bluecentury/stores'
+import {Selfie, UploadDocs, UploadID} from './components'
+import {RootStackParamList} from '@bluecentury/types/nav.types'
+import {Colors} from '@bluecentury/styles'
 
-type Props = NativeStackScreenProps<RootStackParamList>
+type Props = NativeStackScreenProps<RootStackParamList, 'SignUpVerification'>
 export default function SignUpVerification({navigation, route}: Props) {
+  const toast = useToast()
   const {signUpInfo}: any = route.params
   const {
     createSignupRequestForCurrentUser,
     signupRequestStatus,
-    updateUserInfoStatus,
-    updateUserInfo,
-    entityData,
-    getEntityData,
-    requestAccessToEntity,
-    requestAccessToEntityStatus,
-    reset,
+    updateUserData,
+    resetStatus,
   } = useUser()
-  const {token, logout} = useAuth()
   const [page, setPage] = useState(1)
   const [documentFile, setDocumentFile] = useState<ImageFile | string>('')
   const [signUpDocs, setSignUpDocs] = useState([])
@@ -34,7 +32,13 @@ export default function SignUpVerification({navigation, route}: Props) {
   useEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <Icon name="arrow-back" size={28} onPress={onBackHeaderPress} />
+        <Icon
+          color={Colors.black}
+          name="arrow-back"
+          size={28}
+          style={{marginRight: 10}}
+          onPress={onBackHeaderPress}
+        />
       ),
     })
   }, [])
@@ -82,38 +86,35 @@ export default function SignUpVerification({navigation, route}: Props) {
   }, [documentFile])
 
   useEffect(() => {
-    if (!token) {
-      navigation.navigate('Login')
-    }
-    if (updateUserInfoStatus === 'SUCCESS') {
-      reset()
-      getEntityData(Number(signUpInfo.mmsi))
-    }
-    if (requestAccessToEntityStatus === 'SUCCESS') {
-      reset()
-      setPage(4)
-    }
     if (signupRequestStatus === 'SUCCESS') {
-      setPage(4)
-      reset()
+      resetStatus()
+      navigation.navigate('SignUpFinish', {email: signUpInfo.email})
     }
-    if (entityData.length > 0) {
-      // requestAccessToEntity(entityData[0].id.toString())
-      return
-    } else {
-      console.log(page)
+    if (signupRequestStatus === 'FAILED') {
+      showToast('Unable to create sign up request.', 'failed')
+      resetStatus()
+    }
+  }, [signupRequestStatus])
 
-      if (page === 2) {
-        setPage(3)
-      }
-    }
-  }, [
-    token,
-    updateUserInfoStatus,
-    entityData,
-    requestAccessToEntityStatus,
-    signupRequestStatus,
-  ])
+  const showToast = (text: string, res: string) => {
+    toast.show({
+      duration: 2000,
+      render: () => {
+        return (
+          <Text
+            bg={res === 'success' ? 'emerald.500' : 'red.500'}
+            color={Colors.white}
+            mb={5}
+            px="2"
+            py="1"
+            rounded="sm"
+          >
+            {text}
+          </Text>
+        )
+      },
+    })
+  }
 
   const onBackHeaderPress = () => {
     switch (page) {
@@ -123,8 +124,6 @@ export default function SignUpVerification({navigation, route}: Props) {
         return setPage(1)
       case 3:
         return setPage(2)
-      case 4:
-        return setPage(3)
       default:
         break
     }
@@ -135,17 +134,13 @@ export default function SignUpVerification({navigation, route}: Props) {
     setDocumentFile('')
   }
   const onUploadIDProceed = () => {
+    setPage(3)
     setDocumentFile('')
-    updateUserInfo(signUpInfo, signUpDocs)
+    updateUserData(signUpInfo, signUpDocs)
   }
 
   const onFinishVerification = () => {
     createSignupRequestForCurrentUser(signUpInfo, signUpDocs)
-  }
-
-  const onBackToLogin = () => {
-    logout()
-    reset()
   }
 
   const renderScreen = () => {
@@ -171,10 +166,6 @@ export default function SignUpVerification({navigation, route}: Props) {
             onOpenCam={scanDocument}
             onUploadNew={onSelectDocument}
           />
-        )
-      case 4:
-        return (
-          <SignUpFinish email={signUpInfo.email} onProceed={onBackToLogin} />
         )
       default:
         break

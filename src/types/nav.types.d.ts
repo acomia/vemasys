@@ -44,6 +44,7 @@ type RootStackParamList = {
   TrackingServiceDialog: undefined
   SignUp: undefined
   SignUpVerification: {signUpInfo: any}
+  SignUpFinish: {email: string}
 }
 
 type MainStackParamList = {

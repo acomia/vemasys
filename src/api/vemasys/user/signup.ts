@@ -18,7 +18,7 @@ export const updateUserData = async (
   user: ExtendedUser,
   docs: Array<SignupDocs>
 ) => {
-  let updateUserRequest
+  let updateUserRequest = user
   if (docs.length > 0) {
     updateUserRequest = Object.assign(
       {},
@@ -54,7 +54,7 @@ export const updateUserData = async (
 export const getEntityData = async (mmsi: number) => {
   try {
     const response = await API.get(
-      `entities/anonymous?exploitationVessel.physicalVessel.mmsi=${mmsi}&page=1`
+      `entities/anonymous?exploitationVessel.physicalVessel.mmsi=${mmsi}`
     )
     if (!response.data) {
       throw 'Failed to get entities data.'
@@ -119,19 +119,6 @@ export const createSignupRequestForCurrentUser = async (
 }
 
 export const getLevelOfNavigationCertificate = async () => {
-  try {
-    const response = await API.get('level_of_navigation_certificates')
-    if (!response.data) {
-      throw 'Failed to get level of navigation certificate data.'
-    }
-    return response.data
-  } catch (error) {
-    console.log('Error: Navigation certificate data:', error)
-    return null
-  }
-}
-
-export const getEntityAdminUser = async () => {
   try {
     const response = await API.get('level_of_navigation_certificates')
     if (!response.data) {

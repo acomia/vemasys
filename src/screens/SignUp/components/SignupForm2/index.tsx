@@ -1,4 +1,6 @@
-import React, {useEffect, useState} from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-native/no-inline-styles */
+import React, {useEffect, useRef, useState} from 'react'
 import {
   Box,
   Button,
@@ -11,6 +13,7 @@ import {
   Switch,
   Text,
   WarningOutlineIcon,
+  useToast,
 } from 'native-base'
 import {useTranslation} from 'react-i18next'
 import {ms} from 'react-native-size-matters'
@@ -25,6 +28,7 @@ import {useUser} from '@bluecentury/stores'
 import {NoInternetConnectionMessage} from '@bluecentury/components'
 import {Credentials, ExtendedUser} from '@bluecentury/models'
 import {NavigationProp, useNavigation} from '@react-navigation/native'
+import {RootStackParamList} from '@bluecentury/types/nav.types'
 
 const allFieldsRequired = _t('allFieldsRequired')
 const userFirstname = _t('newUserFirstname')
@@ -35,30 +39,37 @@ const userEmail = _t('newUserEmail')
 interface Props {
   userInfo: ExtendedUser
   userCreds: Credentials
+  mmsi: number
 }
 
-export default function SignUpForm2({userInfo, userCreds}: Props) {
+export default function SignUpForm2({userInfo, userCreds, mmsi}: Props) {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>()
   const {t} = useTranslation()
+  const toast = useToast()
   const {
     isLoadingSignupRequest,
+    isLoadingRegistration,
+    isLoadingUpdateUserInfo,
     levelNavigationCertificate,
-    getEntityData,
     entityData,
+    updateUserData,
+    updateUserInfoStatus,
+    requestAccessToEntity,
+    requestAccessToEntityStatus,
+    resetStatus,
   } = useUser()
 
   const [values, setValues] = useState({
     id: userInfo.id,
-    firstname: userInfo?.firstname,
-    lastname: userInfo?.lastname,
-    email: userInfo?.email,
-    birthday: userInfo?.birthday,
+    firstname: '',
+    lastname: '',
+    email: userInfo.email,
+    birthday: '',
     startdate: '',
-    language: userInfo?.language,
-    mmsi: '',
-    euid: '',
+    language: '',
     certificateLevel: '',
     username: userCreds.username,
+    mmsi: mmsi,
   })
   const [isAllFieldEmpty, setIsAllFieldEmpty] = useState(false)
   const [isFirstnameEmpty, setIsFirstnameEmpty] = useState(false)
@@ -67,14 +78,52 @@ export default function SignUpForm2({userInfo, userCreds}: Props) {
   const [isEmailEmpty, setIsEmailEmpty] = useState(false)
   const [selectedDate, setSelectedDate] = useState('')
   const [openDatePicker, setOpenDatePicker] = useState(false)
+  const fnameRef = useRef<any>(null)
+  const lnameRef = useRef<any>(null)
+  const emailRef = useRef<any>(null)
 
   useEffect(() => {
-    if (entityData.length > 0) {
-      navigation.navigate('SignUpVerification', {
-        signUpInfo: values,
+    if (updateUserInfoStatus === 'SUCCESS') {
+      resetStatus()
+      if (entityData.length && entityData[0].hasLinkedUser) {
+        requestAccessToEntity(entityData[0].id.toString())
+      }
+    }
+    if (requestAccessToEntityStatus === 'SUCCESS') {
+      resetStatus()
+      navigation.navigate('SignUpFinish', {
+        email: values.email,
       })
     }
-  }, [entityData])
+    if (updateUserInfoStatus === 'FAILED') {
+      showToast('Unable to update user info.', 'failed')
+      resetStatus()
+    }
+    if (requestAccessToEntityStatus === 'FAILED') {
+      showToast('Unable to request access to entity.', 'failed')
+      resetStatus()
+    }
+  }, [updateUserInfoStatus, requestAccessToEntityStatus])
+
+  const showToast = (text: string, res: string) => {
+    toast.show({
+      duration: 2000,
+      render: () => {
+        return (
+          <Text
+            bg={res === 'success' ? 'emerald.500' : 'red.500'}
+            color={Colors.white}
+            mb={5}
+            px="2"
+            py="1"
+            rounded="sm"
+          >
+            {text}
+          </Text>
+        )
+      },
+    })
+  }
 
   const onDatesChange = (date: Date) => {
     const formattedDate = Vemasys.formatDate(date)
@@ -90,7 +139,6 @@ export default function SignUpForm2({userInfo, userCreds}: Props) {
   }
 
   const onSignUpSubmit = () => {
-    getEntityData(Number(values.mmsi))
     if (
       values.firstname === '' &&
       values.lastname === '' &&
@@ -118,6 +166,13 @@ export default function SignUpForm2({userInfo, userCreds}: Props) {
       setIsEmailNotValid(true)
       return
     }
+    if (entityData.length && entityData[0].hasLinkedUser) {
+      updateUserData(values, [])
+    } else {
+      navigation.navigate('SignUpVerification', {
+        signUpInfo: values,
+      })
+    }
   }
 
   return (
@@ -139,14 +194,15 @@ export default function SignUpForm2({userInfo, userCreds}: Props) {
             {t('firstName')}
           </FormControl.Label>
           <Input
+            ref={fnameRef}
             autoCapitalize="words"
-            placeholder=""
             size="lg"
             style={{backgroundColor: '#F7F7F7'}}
             value={values.firstname}
             onChangeText={e => {
               setValues({...values, firstname: e})
             }}
+            onSubmitEditing={() => lnameRef.current.focus()}
           />
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
             {userFirstname}
@@ -157,14 +213,15 @@ export default function SignUpForm2({userInfo, userCreds}: Props) {
             {t('lastName')}
           </FormControl.Label>
           <Input
+            ref={lnameRef}
             autoCapitalize="words"
-            placeholder=""
             size="lg"
             style={{backgroundColor: '#F7F7F7'}}
             value={values.lastname}
             onChangeText={e => {
               setValues({...values, lastname: e})
             }}
+            onSubmitEditing={() => emailRef.current.focus()}
           />
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
             {userLastname}
@@ -197,9 +254,9 @@ export default function SignUpForm2({userInfo, userCreds}: Props) {
             {t('email')}
           </FormControl.Label>
           <Input
+            ref={emailRef}
             autoCapitalize="none"
             keyboardType="email-address"
-            placeholder=""
             size="lg"
             style={{backgroundColor: '#F7F7F7'}}
             value={values.email}
@@ -351,9 +408,13 @@ export default function SignUpForm2({userInfo, userCreds}: Props) {
             fontWeight: 'bold',
             fontSize: 16,
           }}
+          isLoading={
+            isLoadingSignupRequest ||
+            isLoadingRegistration ||
+            isLoadingUpdateUserInfo
+          }
           bg={Colors.primary}
-          isLoading={isLoadingSignupRequest}
-          isLoadingText="Processing"
+          isLoadingText="Processing..."
           m={ms(16)}
           size="md"
           onPress={onSignUpSubmit}

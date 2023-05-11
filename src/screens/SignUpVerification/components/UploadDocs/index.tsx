@@ -105,7 +105,7 @@ export default function UploadDocs({
             }}
             bg={Colors.primary}
             isLoading={isLoadingSignupRequest}
-            isLoadingText="Creating request"
+            isLoadingText="Creating request..."
             m={ms(16)}
             size="md"
             onPress={onFinish}

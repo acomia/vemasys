@@ -36,6 +36,7 @@ import {
   TrackingServiceDialog,
   SignUp,
   SignUpVerification,
+  SignupFinish,
 } from '@bluecentury/screens'
 import {Colors} from '@bluecentury/styles'
 import {useTranslation} from 'react-i18next'
@@ -300,6 +301,13 @@ export default function RootNavigator() {
           }}
           component={SignUpVerification}
           name={'SignUpVerification'}
+        />
+        <Screen
+          options={{
+            headerShown: false,
+          }}
+          component={SignupFinish}
+          name={'SignUpFinish'}
         />
       </Group>
       <Group

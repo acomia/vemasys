@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useState} from 'react'
 import {Box, Text, useToast} from 'native-base'
 
@@ -8,6 +9,7 @@ import Icon from 'react-native-vector-icons/Ionicons'
 import {useAuth, useUser} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
 import {Credentials} from '@bluecentury/models'
+import {RootStackParamList} from '@bluecentury/types/nav.types'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 export default function SignUp({navigation}: Props) {
@@ -15,41 +17,49 @@ export default function SignUp({navigation}: Props) {
   const {
     registrationStatus,
     user,
-    reset,
+    resetStatus,
     getLevelOfNavigationCertificate,
-    entityData,
+    resetData,
   } = useUser()
   const {authenticate, token} = useAuth()
   const [userCreds, setUserCreds] = useState<Credentials>({
     username: '',
     password: '',
   })
+  const [mmsi, setMmsi] = useState(0)
   const [page, setPage] = useState(1)
 
   useEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <Icon name="arrow-back" size={28} onPress={onBackHeaderPress} />
+        <Icon
+          color={Colors.black}
+          name="arrow-back"
+          size={28}
+          style={{marginRight: 10}}
+          onPress={onBackHeaderPress}
+        />
       ),
     })
     /* eslint-disable react-hooks/exhaustive-deps */
   }, [])
   useEffect(() => {
+    resetData()
+  }, [])
+  useEffect(() => {
     if (registrationStatus === 'SUCCESS') {
       authenticate(userCreds)
       setPage(2)
-      reset()
+      resetStatus()
     }
     if (registrationStatus === 'FAILED') {
       showToast('Unable to create new user', 'failed')
-      reset()
+      resetStatus()
     }
     if (token) {
       getLevelOfNavigationCertificate()
     }
   }, [registrationStatus, token])
-
-  console.log('entity', entityData)
 
   const showToast = (text: string, res: string) => {
     toast.show({
@@ -76,12 +86,13 @@ export default function SignUp({navigation}: Props) {
     if (page === 2) setPage(1)
   }
 
-  const loginUser = (creds: Credentials) => {
+  const loginUser = (creds: Credentials, _mmsi: number) => {
     setUserCreds({
       ...userCreds,
       username: creds.username,
       password: creds.password,
     })
+    setMmsi(_mmsi)
   }
 
   return (
@@ -90,7 +101,7 @@ export default function SignUp({navigation}: Props) {
       {page === 1 ? (
         <SignupForm1 loginCreds={loginUser} />
       ) : (
-        <SignupForm2 userCreds={userCreds} userInfo={user} />
+        <SignupForm2 mmsi={mmsi} userCreds={userCreds} userInfo={user} />
       )}
     </Box>
   )

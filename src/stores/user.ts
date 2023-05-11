@@ -19,10 +19,11 @@ type UserState = {
   isLoadingSignupRequest: boolean
   user: ExtendedUser | null
   entityData: Array<Entity>
-  registrationStatus: string
-  updateUserInfoStatus: string
-  requestAccessToEntityStatus: string
-  signupRequestStatus: string
+  mmsiNotAvailable: boolean
+  registrationStatus: 'SUCCESS' | 'FAILED' | ''
+  updateUserInfoStatus: 'SUCCESS' | 'FAILED' | ''
+  requestAccessToEntityStatus: 'SUCCESS' | 'FAILED' | ''
+  signupRequestStatus: 'SUCCESS' | 'FAILED' | ''
   levelNavigationCertificate: Array<LevelNavigationCertificate>
   isResetPasswordLoading: boolean
   isResetPasswordSuccess: boolean
@@ -38,8 +39,8 @@ type UserActions = {
     signupDocs: Array<SignupDocs>
   ) => void
   getLevelOfNavigationCertificate: () => void
-  getEntityAdminUser: () => void
-  reset: () => void
+  resetStatus: () => void
+  resetData: () => void
   resetPassword: (id: number, data: object) => void
   unmountResetPassword: () => void
 }
@@ -52,6 +53,7 @@ const initialUserState: UserState = {
   isLoadingSignupRequest: false,
   user: null,
   entityData: [],
+  mmsiNotAvailable: false,
   registrationStatus: '',
   updateUserInfoStatus: '',
   requestAccessToEntityStatus: '',
@@ -106,16 +108,18 @@ export const useUser = create(
         }
       },
       getEntityData: async (mmsi: number) => {
-        set({isLoadingRegistration: true, entityData: []})
+        set({
+          isLoadingRegistration: true,
+          entityData: [],
+          mmsiNotAvailable: false,
+        })
         try {
           const response = await API.getEntityData(mmsi)
-          console.log('entity', response)
-
           if (response.length > 0) {
             useEntity.setState({entityUserId: response[0].id})
             set({entityData: response, isLoadingRegistration: false})
           } else {
-            set({entityData: [], isLoadingRegistration: false})
+            set({mmsiNotAvailable: true, isLoadingRegistration: false})
           }
         } catch (error) {
           set({isLoadingRegistration: false})
@@ -125,7 +129,6 @@ export const useUser = create(
         set({isLoadingRegistration: true})
         try {
           const response = await API.requestAccessToEntity(entityID)
-          console.log('request access to entity: ', response)
           if (response.id) {
             set({
               requestAccessToEntityStatus: 'SUCCESS',
@@ -154,7 +157,7 @@ export const useUser = create(
             user,
             signupDocs
           )
-          if (typeof response === 'object' && response.mmsi) {
+          if (typeof response === 'object' && response.id) {
             set({
               signupRequestStatus: 'SUCCESS',
               isLoadingSignupRequest: false,
@@ -182,27 +185,17 @@ export const useUser = create(
           set({isLoadingSignupRequest: false})
         }
       },
-      getEntityAdminUser: async () => {
-        set({isLoadingRegistration: true})
-        try {
-          const response = await API.getLevelOfNavigationCertificate()
-          if (response) {
-            set({
-              isLoadingRegistration: false,
-            })
-          } else {
-            set({isLoadingRegistration: false})
-          }
-        } catch (error) {
-          set({isLoadingRegistration: false})
-        }
-      },
-      reset: () => {
+      resetStatus: () => {
         set({
           registrationStatus: '',
           updateUserInfoStatus: '',
           requestAccessToEntityStatus: '',
           signupRequestStatus: '',
+        })
+      },
+      resetData: () => {
+        set({
+          entityData: [],
         })
       },
       resetPassword: async (id: number, data: object) => {
