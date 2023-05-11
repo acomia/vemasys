@@ -6,12 +6,13 @@ import moment from 'moment'
 
 import {Colors} from '@bluecentury/styles'
 import {PROD_URL} from '@vemasys/env'
+import {Comments} from '@bluecentury/models'
 
 interface ICommentCard {
-  comment: any
-  commentDescription: string
+  comment: Comments
+  commentDescription: StringOrNull | RegExpMatchArray
   onCommentPress: () => void
-  onCommentImagePress: (file: ImageFile) => void
+  onCommentImagePress: (file: ImageFile, comment: Comments) => void
   images?: any[]
 }
 const CommentCard = ({
@@ -77,7 +78,9 @@ const CommentCard = ({
                 type: 'image/jpeg',
               }
               return (
-                <TouchableOpacity onPress={() => onCommentImagePress(file)}>
+                <TouchableOpacity
+                  onPress={() => onCommentImagePress(file, comment)}
+                >
                   {/* <Image
                     alt="file-upload"
                     source={{uri: image.item}}
