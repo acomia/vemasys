@@ -14,7 +14,6 @@ interface Props {
   tonnage: number | string
   active?: number
   averageDraught?: any
-  isFreeboard?: boolean
 }
 
 export default ({
@@ -24,42 +23,32 @@ export default ({
   tonnage,
   active,
   averageDraught,
-  isFreeboard,
 }: Props) => {
   const {t} = useTranslation()
+
+  // console.log('draughtValues', draughtValues)
+
   const leftObject = [
     {
       label: 'BBV',
-      draughtValue: draughtValues?.BBV?.draughtValue,
-      baseValue: draughtValues?.BBV?.value,
     },
     {
       label: 'BBM',
-      draughtValue: draughtValues?.BBM?.draughtValue,
-      baseValue: draughtValues?.BBM?.value,
     },
     {
       label: 'BBA',
-      draughtValue: draughtValues?.BBA?.draughtValue,
-      baseValue: draughtValues?.BBA?.value,
     },
   ]
 
   const rightObject = [
     {
       label: 'SBV',
-      draughtValue: draughtValues?.SBV?.draughtValue,
-      baseValue: draughtValues?.SBV?.value,
     },
     {
       label: 'SBM',
-      draughtValue: draughtValues?.SBM?.draughtValue,
-      baseValue: draughtValues?.SBM?.value,
     },
     {
       label: 'SBA',
-      draughtValue: draughtValues?.SBA?.draughtValue,
-      baseValue: draughtValues?.SBA?.value,
     },
   ]
 
@@ -68,12 +57,15 @@ export default ({
       return (
         <Button
           key={`${key}-${index}`}
-          backgroundColor={'transparent'}
+          // backgroundColor={item?.didUpdate ? Colors.azure : 'transparent'}
+          backgroundColor={
+            draughtValues[item.label]?.didUpdate ? Colors.azure : 'transparent'
+          }
           disabled={active === 1}
           onPress={() => buttonSelected(item.label)}
         >
           <Text color={Colors.white} textAlign={'left'}>
-            {isFreeboard && active === 1 ? item.draughtValue : item.baseValue}
+            {draughtValues[item.label]?.draughtValue}
           </Text>
           <Text color={Colors.white} textAlign={'left'}>
             {item.label}
@@ -86,11 +78,11 @@ export default ({
   return (
     <Box backgroundColor={Colors.black} width={'100%'}>
       <HStack justifyContent={'space-evenly'} space={ms(5)}>
-        <VStack justifyContent={'space-evenly'}>
+        <VStack flex={1} justifyContent={'space-evenly'} padding={ms(5)}>
           {renderItems(leftObject, 'left')}
         </VStack>
         <Image source={Images.ship} />
-        <VStack justifyContent={'space-evenly'}>
+        <VStack flex={1} justifyContent={'space-evenly'} padding={ms(5)}>
           {renderItems(rightObject, 'right')}
         </VStack>
       </HStack>

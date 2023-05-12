@@ -384,5 +384,6 @@
   "draughtCmMax": "Draught (cm)(max)",
   "tonnageTMin": "Tonnage (T)(min)",
   "tonnageTMax": "Tonnage (T)(max)",
-  "enterNumber": "Enter number"
+  "enterNumber": "Enter number",
+  "freeboard": "Freeboard"
 }

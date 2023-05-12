@@ -12,7 +12,7 @@ import {
 } from 'native-base'
 import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
-import {BeforeAfterComponent, Ship} from './component'
+import {BeforeAfterComponent, Ship, InputModal} from './component'
 import {useTranslation} from 'react-i18next'
 import {PageScroll} from '@bluecentury/components'
 import {usePlanning, useSettings} from '@bluecentury/stores'
@@ -38,12 +38,12 @@ export default () => {
   const {draughtTable} = useSettings()
 
   const initialDraughtValues = {
-    BBV: {value: 0, draughtValue: 0},
-    BBM: {value: 0, draughtValue: 0},
-    BBA: {value: 0, draughtValue: 0},
-    SBV: {value: 0, draughtValue: 0},
-    SBM: {value: 0, draughtValue: 0},
-    SBA: {value: 0, draughtValue: 0},
+    BBV: {value: 0, draughtValue: 0, didUpdate: false},
+    BBM: {value: 0, draughtValue: 0, didUpdate: false},
+    BBA: {value: 0, draughtValue: 0, didUpdate: false},
+    SBV: {value: 0, draughtValue: 0, didUpdate: false},
+    SBM: {value: 0, draughtValue: 0, didUpdate: false},
+    SBA: {value: 0, draughtValue: 0, didUpdate: false},
   }
 
   const initialDidValueChange = {
@@ -66,26 +66,31 @@ export default () => {
   const [measurement, setMeasurement] = useState<string>(measurements[0].value)
   const [measurementValue, setMeasurementValue] = useState<number>(0)
   const [draughtValues, setDraughtValues] = useState(initialDraughtValues)
-  const [didValueChange, setDidValueChange] = useState(initialDidValueChange)
   const [averageDraught, setAverageDraught] = useState<number>(0)
   const [tonnage, setTonnage] = useState<string>('0')
   const [isConfirmModal, setConfirmModal] = useState<boolean>(false)
   const [loadingAction, setLoadingAction] = useState<NavigationLogAction>({})
   const [activeLoadingAction, setActiveLoadingAction] = useState({})
 
-  const isFreeboard = measurement === measurements[0].value
+  // const isFreeboard = measurement === measurements[0].value
   const sortedDraughtTable = tonnageCertifications?.length
     ? tonnageCertifications?.sort(
         (prev, curr) => parseInt(prev.draught) - parseInt(curr.draught)
       )
     : null
 
-  const unsavedChanges = Object.values(didValueChange).filter(
+  const unsavedChanges = Object.values(draughtValues).filter(
     value => value.didUpdate === true
   )
 
   const maxDraught = vesselNavigationDetails?.physicalVessel?.draught * 100
-  const inputRegex = /^[0-9,.]*$/
+
+  const maxDraughtTonnage = Math.max(
+    ...tonnageCertifications?.map(item => item.draught)
+  )
+
+  // console.log('maxDraughtFrom tonnage', maxDraughtTonnage)
+  // console.log('draught from physical vessel', maxDraught)
 
   useEffect(() => {
     getTonnage()
@@ -95,13 +100,7 @@ export default () => {
     if (draughtValues) {
       const values = Object.values(draughtValues)
       const average =
-        values.reduce(
-          (acc, val) =>
-            isFreeboard && isBefore === 1
-              ? acc + val?.draughtValue
-              : acc + val?.value,
-          0
-        ) / values?.length
+        values.reduce((acc, val) => acc + val?.value, 0) / values?.length
       setAverageDraught(average)
 
       //find the closest tonnage from draughtTable
@@ -113,7 +112,7 @@ export default () => {
       )
       if (closestDraught) setTonnage(closestDraught?.tonnage)
     }
-  }, [draughtValues, measurement, isBefore])
+  }, [draughtValues, isBefore])
 
   const getTonnage = () => {
     if (!vesselNavigationDetails) {
@@ -133,15 +132,11 @@ export default () => {
   }
 
   const buttonSelected = (selected: string) => {
-    if (draughtValues[selected].value > 0) {
-      setMeasurementValue(draughtValues[selected]?.value)
-    }
     setSelectedButton(selected)
     setIsOpenInput(true)
   }
 
   const closeInput = () => {
-    setMeasurementValue(0)
     setIsOpenInput(false)
   }
 
@@ -152,6 +147,10 @@ export default () => {
   }
 
   const onConfirmStopAction = () => {
+    if (Object.keys(loadingAction).length === 0) {
+      Alert.alert(t('noLoading'))
+      return
+    }
     setLoadingAction({
       ...loadingAction,
       id: activeLoadingAction?.id,
@@ -175,26 +174,31 @@ export default () => {
     setConfirmModal(false)
   }
 
-  const endLoading = () => {
-    if (Object.keys(loadingAction).length === 0) {
-      Alert.alert(t('noLoading'))
-      return
-    }
-    if (loadingAction) setConfirmModal(true)
-  }
-
   const onPullToReload = () => {
     getTonnage()
   }
 
-  console.log(
-    'isTonnageCertificationLoading || isSavingNavBulkLoading',
-    isTonnageCertificationLoading,
-    isSavingNavBulkLoading
-  )
+  // freeboard = isFreeboard === 0
+  const onSaveModal = (value: any) => {
+    setDraughtValues({
+      ...draughtValues,
+      [selectedButton]: {
+        ...value,
+        didUpdate: true,
+      },
+    })
+
+    closeInput()
+  }
+
+  const clearValues = () => {
+    // console.log('clear values of the 6 inputs')
+    setDraughtValues(initialDraughtValues)
+  }
 
   return (
     <PageScroll
+      justifyContent={'space-evently'}
       refreshing={isTonnageCertificationLoading || isSavingNavBulkLoading}
       onPullToReload={onPullToReload}
     >
@@ -202,33 +206,7 @@ export default () => {
         {t('draughtCalculator')}
       </Text>
       <Divider bg={Colors.light} h={ms(2)} my={ms(8)} />
-      <Box py={ms(10)}>
-        <HStack space={ms(5)}>
-          <Text color={Colors.disabled}>{t('selectMeasurement')}</Text>
-          <Text color={Colors.danger}>*</Text>
-        </HStack>
-        <Select
-          accessibilityLabel=""
-          bg={Colors.light_grey}
-          defaultValue={measurement}
-          fontSize={ms(16)}
-          fontWeight="medium"
-          minWidth="300"
-          placeholder=""
-          selectedValue={measurement}
-          onValueChange={itemValue => setMeasurement(itemValue)}
-        >
-          {measurements.map((measurement, index) => {
-            return (
-              <Select.Item
-                key={index}
-                label={measurement.label}
-                value={measurement.value}
-              />
-            )
-          })}
-        </Select>
-      </Box>
+
       <BeforeAfterComponent active={isBefore} setActive={setIsBefore} />
       <Box py={ms(10)}>
         <Ship
@@ -236,86 +214,35 @@ export default () => {
           averageDraught={averageDraught}
           buttonSelected={buttonSelected}
           draughtValues={draughtValues}
-          isFreeboard={isFreeboard}
-          maxDraught={isFreeboard ? maxDraught : 0} // get the value from the endpoint nearest value of tonnage_certificate
+          maxDraught={maxDraught} // get the value from the endpoint nearest value of tonnage_certificate
           tonnage={tonnage}
         />
       </Box>
+
       <HStack mt={ms(10)} space={ms(5)}>
-        <Button colorScheme={'white'} flex={1} onPress={endLoading}>
-          <Text color={Colors.disabled}>{t('endLoading')}</Text>
+        <Button colorScheme={'white'} flex={1} onPress={clearValues}>
+          <Text color={Colors.disabled}>{t('cancel')}</Text>
         </Button>
         <Button
-          colorScheme={!measurement && unsavedChanges.length ? 'gray' : null}
-          disabled={!measurement && unsavedChanges.length < 1}
+          colorScheme={unsavedChanges.length ? 'gray' : null}
+          disabled={unsavedChanges.length < 1}
           flex={1}
           onPress={submitDraught}
         >
           <Text>{t('save')}</Text>
         </Button>
       </HStack>
-      <Modal
-        backgroundColor="blue"
+
+      <InputModal
+        header={`${t('enterMeasurement')} (${selectedButton})`}
         isOpen={isOpenInput}
-        width={'full'}
-        onClose={() => closeInput()}
-      >
-        <Modal.Content width={'full'}>
-          <Modal.Header>
-            {`${t('enterMeasurement')} (${selectedButton})`}
-          </Modal.Header>
-          <Modal.Body>
-            <Input
-              placeholder={
-                isFreeboard
-                  ? '0'
-                  : vesselNavigationDetails?.physicalVessel?.draught
-              }
-              keyboardType="numeric"
-              value={measurementValue === 0 ? '' : measurementValue.toString()}
-              onChangeText={value => {
-                if (value === '') {
-                  setMeasurementValue(0)
-                  return
-                }
-                if (inputRegex.test(value)) {
-                  setMeasurementValue(parseInt(value))
-                }
-              }}
-            />
-          </Modal.Body>
-          <Modal.Footer>
-            <HStack mt={ms(10)} space={ms(5)} width="100%">
-              <Button
-                colorScheme={'white'}
-                flex={1}
-                onPress={() => closeInput()}
-              >
-                <Text color={Colors.disabled}>{t('close')}</Text>
-              </Button>
-              <Button
-                flex={1}
-                onPress={() => {
-                  setDraughtValues({
-                    ...draughtValues,
-                    [selectedButton]: {
-                      value: measurementValue,
-                      draughtValue: measurementValue - maxDraught,
-                    },
-                  })
-                  setDidValueChange({
-                    ...didValueChange,
-                    [selectedButton]: {didUpdate: true},
-                  })
-                  closeInput()
-                }}
-              >
-                <Text>{t('save')}</Text>
-              </Button>
-            </HStack>
-          </Modal.Footer>
-        </Modal.Content>
-      </Modal>
+        maxDraught={maxDraught}
+        setOpen={closeInput}
+        value={draughtValues[selectedButton]}
+        onAction={onSaveModal}
+        onCancel={closeInput}
+      />
+
       <Modal
         animationPreset="slide"
         isOpen={isConfirmModal}
