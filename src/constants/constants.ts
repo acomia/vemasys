@@ -127,3 +127,12 @@ export const fuelTypes = [
   {label: 'Hydrogen', value: 'lng'},
   {label: 'Urea', value: 'urea'},
 ]
+
+export const initialDraughtValues = {
+  BBV: {value: 0, draughtValue: 0, didUpdate: false},
+  BBM: {value: 0, draughtValue: 0, didUpdate: false},
+  BBA: {value: 0, draughtValue: 0, didUpdate: false},
+  SBV: {value: 0, draughtValue: 0, didUpdate: false},
+  SBM: {value: 0, draughtValue: 0, didUpdate: false},
+  SBA: {value: 0, draughtValue: 0, didUpdate: false},
+}

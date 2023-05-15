@@ -4,7 +4,8 @@ import {Modal, Text, Button, HStack, Input, VStack} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import {Colors} from '@bluecentury/styles'
 import {useTranslation} from 'react-i18next'
-import {FormControl} from '@bluecentury/components'
+import {FormControl, OTPInput} from '@bluecentury/components'
+import TextInput from './TextInput'
 
 interface Props {
   header: string
@@ -144,57 +145,28 @@ export default ({
         <Modal.Body>
           <VStack space={ms(20)}>
             {renderToggle()}
-
             <FormControl
-              errorMessage="test error message"
               isDisabled={active === 1}
               isInvalid={'freeboard' in errors}
-              label={t('freeboardMeasurement')}
             >
-              <Input
-                borderColor={
-                  active === 0
-                    ? 'freeboard' in errors
-                      ? Colors.danger
-                      : Colors.azure
-                    : null
-                }
-                isDisabled={active === 1} // check if this is for freeboard input
-                keyboardType="numeric"
+              <TextInput
+                isActive={active === 0}
+                label={t('freeboard')}
                 maxLength={3}
-                placeholder={maxDraught.toString() || '0'}
-                value={formValues?.freeboard}
-                onChangeText={value => {
-                  if (inputRegex.test(value)) {
-                    handleOnChange('freeboard', value)
-                  }
-                }}
+                name="freeboard"
+                onChange={handleOnChange}
               />
             </FormControl>
             <FormControl
-              errorMessage="test error message"
               isDisabled={active === 0}
               isInvalid={'draught' in errors}
-              label={t('freeboardMeasurement')}
             >
-              <Input
-                borderColor={
-                  active === 1
-                    ? 'draught' in errors
-                      ? Colors.danger
-                      : Colors.azure
-                    : null
-                }
-                isDisabled={active === 0} // check if this is for freeboard input
-                keyboardType="numeric"
+              <TextInput
+                isActive={active === 1}
+                label={t('draught')}
                 maxLength={3}
-                placeholder={maxDraught.toString() || '0'}
-                value={formValues?.draught}
-                onChangeText={value => {
-                  if (inputRegex.test(value)) {
-                    handleOnChange('draught', value)
-                  }
-                }}
+                name="draught"
+                onChange={handleOnChange}
               />
             </FormControl>
           </VStack>
@@ -208,7 +180,7 @@ export default ({
                 handleOnClose()
               }}
             >
-              <Text color={Colors.disabled}>{t('close')}</Text>
+              <Text color={Colors.disabled}>{t('cancel')}</Text>
             </Button>
             <Button flex={1} onPress={() => handleSaveDraught()}>
               <Text>{t('save')}</Text>

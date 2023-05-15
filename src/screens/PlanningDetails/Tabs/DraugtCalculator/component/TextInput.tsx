@@ -1,60 +1,69 @@
-import React, {useState} from 'react'
-import {TouchableOpacity, StyleSheet} from 'react-native'
-import {VStack, Text, Input, Box, HStack} from 'native-base'
+import React, {useState, useRef} from 'react'
+import {StyleSheet} from 'react-native'
+import {Text, Input, Box, HStack} from 'native-base'
 import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
 import _ from 'lodash'
 
 interface Props {
-  active?: number
-  setActive?: React.Dispatch<React.SetStateAction<number>>
-  hasError?: boolean
-  error?: string
-  label: string
+  label?: string
   maxLength: number
+  onChange: (name: string, value: string) => void
+  name: string
+  isActive?: boolean
 }
 
-export default (props: Props) => {
-  const [textValue, setTextValue] = useState(Array(props?.maxLength).fill(''))
+export default ({label, maxLength, onChange, name, isActive}: Props) => {
+  const regex = /^[0-9]*$/
 
-  const handleOnChange = (text, index) => {
+  const [textValue, setTextValue] = useState(Array(maxLength).fill(''))
+  const inputRef = useRef<any>(null)
+  const handleOnChange = (text: string, index: number) => {
     const updatedValues = [...textValue]
     updatedValues[index] = text
     setTextValue(updatedValues)
 
-    props?.onChange(updatedValues.join(''))
+    onChange(name, updatedValues.join(''))
   }
 
   return (
-    <VStack space={ms(10)}>
-      <HStack alignItems={'center'} justifyContent={'left'}>
-        <Text>{props?.label}</Text>
-        <Box alignItems={'center'} flexDirection={'row'}>
-          {textValue.map((value, index) => {
-            return (
-              <Box
-                alignItems={'center'}
-                justifyContent={'center'}
-                mx={ms(10)}
-                width={ms(50)}
-              >
-                <Input
-                  key={index}
-                  fontSize={ms(20)}
-                  keyboardType={'numeric'}
-                  maxLength={1}
-                  placeholder={props?.placeholder}
-                  textAlign={'center'}
-                  value={value}
-                  onChangeText={text => handleOnChange(text, index)}
-                />
-              </Box>
-            )
-          })}
-        </Box>
-      </HStack>
-      {props?.hasError && <Text>{props?.error}</Text>}
-    </VStack>
+    <HStack alignItems={'center'} space={ms(10)}>
+      <Box flex={1} px={ms(10)}>
+        <Text fontSize="xs">{label}:</Text>
+      </Box>
+      <Box alignItems={'center'} flex={3} flexDirection={'row'}>
+        {textValue.map((value, index) => {
+          return (
+            <Box
+              key={name + '-' + index}
+              alignItems={'center'}
+              justifyContent={'center'}
+              mx={ms(5)}
+              width={ms(50)}
+            >
+              <Input
+                key={index}
+                ref={inputRef}
+                backgroundColor={isActive ? Colors.border : null}
+                borderColor={isActive ? Colors.primary : null}
+                fontSize={ms(20)}
+                isDisabled={!isActive}
+                keyboardType={'numeric'}
+                maxLength={1}
+                textAlign={'center'}
+                value={value}
+                onChangeText={text => {
+                  console.log('text', text)
+                  if (regex.test(text)) {
+                    handleOnChange(text, index)
+                  }
+                }}
+              />
+            </Box>
+          )
+        })}
+      </Box>
+    </HStack>
   )
 }
 

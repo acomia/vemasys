@@ -2,12 +2,12 @@ import React from 'react'
 import {FormControl, WarningOutlineIcon} from 'native-base'
 
 interface Props {
-  label: string
+  label?: string
   children: Element
   errorMessage?: string
   isRequired?: boolean
   isInvalid?: boolean
-  isDisabled: boolean
+  isDisabled?: boolean
 }
 
 export default ({

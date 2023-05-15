@@ -15,10 +15,11 @@ import {ms} from 'react-native-size-matters'
 import {BeforeAfterComponent, Ship, InputModal} from './component'
 import {useTranslation} from 'react-i18next'
 import {PageScroll} from '@bluecentury/components'
-import {usePlanning, useSettings} from '@bluecentury/stores'
+import {usePlanning} from '@bluecentury/stores'
 import {titleCase} from '@bluecentury/constants'
 import {Vemasys} from '@bluecentury/helpers'
 import _ from 'lodash'
+import {initialDraughtValues} from '@bluecentury/constants'
 
 export default () => {
   const {t} = useTranslation()
@@ -35,36 +36,10 @@ export default () => {
     getVesselnavigationDetails,
     updateNavigationLogAction,
   } = usePlanning()
-  const {draughtTable} = useSettings()
-
-  const initialDraughtValues = {
-    BBV: {value: 0, draughtValue: 0, didUpdate: false},
-    BBM: {value: 0, draughtValue: 0, didUpdate: false},
-    BBA: {value: 0, draughtValue: 0, didUpdate: false},
-    SBV: {value: 0, draughtValue: 0, didUpdate: false},
-    SBM: {value: 0, draughtValue: 0, didUpdate: false},
-    SBA: {value: 0, draughtValue: 0, didUpdate: false},
-  }
-
-  const initialDidValueChange = {
-    BBV: {didUpdate: false},
-    BBM: {didUpdate: false},
-    BBA: {didUpdate: false},
-    SBV: {didUpdate: false},
-    SBM: {didUpdate: false},
-    SBA: {didUpdate: false},
-  }
-
-  const measurements = [
-    {value: 'freeboard', label: t('freeboardMeasurement')},
-    {value: 'draught', label: t('draughtMeasurement')},
-  ]
 
   const [isBefore, setIsBefore] = useState<number>(0)
   const [selectedButton, setSelectedButton] = useState<string>('')
   const [isOpenInput, setIsOpenInput] = useState<boolean>(false)
-  const [measurement, setMeasurement] = useState<string>(measurements[0].value)
-  const [measurementValue, setMeasurementValue] = useState<number>(0)
   const [draughtValues, setDraughtValues] = useState(initialDraughtValues)
   const [averageDraught, setAverageDraught] = useState<number>(0)
   const [tonnage, setTonnage] = useState<string>('0')
@@ -88,9 +63,6 @@ export default () => {
   const maxDraughtTonnage = Math.max(
     ...tonnageCertifications?.map(item => item.draught)
   )
-
-  // console.log('maxDraughtFrom tonnage', maxDraughtTonnage)
-  // console.log('draught from physical vessel', maxDraught)
 
   useEffect(() => {
     getTonnage()
@@ -178,7 +150,6 @@ export default () => {
     getTonnage()
   }
 
-  // freeboard = isFreeboard === 0
   const onSaveModal = (value: any) => {
     setDraughtValues({
       ...draughtValues,
@@ -192,7 +163,6 @@ export default () => {
   }
 
   const clearValues = () => {
-    // console.log('clear values of the 6 inputs')
     setDraughtValues(initialDraughtValues)
   }
 
