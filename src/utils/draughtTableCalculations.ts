@@ -22,10 +22,13 @@ export const calculateTable = (
     tonnageDraught: number,
     draughts: number[]
   ): TableItem[] => {
-    return draughts.map((item, index) => ({
-      draught: item,
-      tonnage: tonnageMin + tonnageDraught * index,
-    }))
+    return draughts.map((item, index) => {
+      const tonnage = tonnageMin + tonnageDraught * index
+      return {
+        draught: item,
+        tonnage: Math.round(tonnage * 1000) / 1000,
+      }
+    })
   }
   return tableData(tonnageToOneCmDraught, cmArray)
 }

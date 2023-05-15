@@ -19,6 +19,7 @@ import {NavigationProp, useNavigation} from '@react-navigation/native'
 import {useTranslation} from 'react-i18next'
 import {useEntity, useSettings} from '@bluecentury/stores'
 import {calculateTable, recalculateTable} from '@bluecentury/utils'
+import {OTPInput} from '@bluecentury/components'
 
 type TableItem = {
   draught: number
@@ -300,45 +301,46 @@ const MeasurementTable = () => {
               Tonnage (T)
             </Text>
           </HStack>
-          <ScrollView flex={1}>
+          <ScrollView flex={1} mx={ms(-16)}>
             {dataForTable.map((item, index) => (
-              <HStack key={item.draught} justifyContent="space-between">
-                <VStack w="45%">
-                  <Input
-                    backgroundColor={Colors.light_grey}
-                    borderWidth="0"
-                    color={Colors.text}
-                    fontSize={ms(14)}
-                    h={ms(40)}
-                    isDisabled={true}
-                    keyboardType="number-pad"
-                    mb={ms(12)}
-                    value={item.draught.toString()}
-                  />
-                </VStack>
-                <VStack w="50%">
-                  <Input
-                    isDisabled={
-                      index === 0 || index === dataForTable.length - 1
+              <HStack
+                key={item.draught}
+                alignItems="center"
+                backgroundColor={(index / 2) % 1 === 0 ? Colors.white : Colors.grey}
+                justifyContent="space-between"
+                px={ms(16)}
+                py={ms(6)}
+                w="100%"
+              >
+                <Input
+                  borderWidth="0"
+                  color={Colors.text}
+                  fontSize={ms(12)}
+                  h={ms(40)}
+                  isDisabled={true}
+                  keyboardType="number-pad"
+                  // mb={ms(12)}
+                  mx={ms(0)}
+                  px={ms(0)}
+                  value={item.draught.toString()}
+                  w={ms(36)}
+                />
+                <OTPInput
+                  getValue={val => {
+                    if (val) {
+                      addUserChangedData({
+                        draught: item.draught,
+                        tonnage: parseFloat(val),
+                      })
                     }
-                    backgroundColor={Colors.light_grey}
-                    borderWidth="0"
-                    color={Colors.text}
-                    defaultValue={item.tonnage.toString()}
-                    fontSize={ms(14)}
-                    h={ms(40)}
-                    keyboardType="number-pad"
-                    mb={ms(12)}
-                    onChangeText={val => {
-                      if (val) {
-                        addUserChangedData({
-                          draught: item.draught,
-                          tonnage: parseFloat(val),
-                        })
-                      }
-                    }}
-                  />
-                </VStack>
+                  }}
+                  decimalLength={3}
+                  errorMessage={'Too match'}
+                  initialValue={item.tonnage}
+                  maxValue={11}
+                  numberLength={4}
+                  isDisabled={index === 0 || index === dataForTable.length - 1}
+                />
               </HStack>
             ))}
           </ScrollView>
