@@ -22,5 +22,9 @@ export {default as ResetPasswordModal} from './ResetPasswordModal'
 export * from './Modal'
 export * from './Blink'
 export * from './Alert'
+<<<<<<< HEAD
 export * from './Page'
 export * from './FormControl'
+=======
+export * from './OTPInput'
+>>>>>>> development
