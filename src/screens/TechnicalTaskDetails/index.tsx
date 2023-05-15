@@ -11,6 +11,7 @@ import {
   Icon,
   Image,
   Modal,
+  Pressable,
   ScrollView,
   Text,
   useToast,
@@ -23,6 +24,7 @@ import {
   IconButton,
   LoadingAnimated,
   NoInternetConnectionMessage,
+  TechnicalStatusesModal,
 } from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
@@ -30,11 +32,13 @@ import {PROD_URL} from '@vemasys/env'
 import {
   hasSelectedEntityUserPermission,
   ROLE_PERMISSION_TASK_MANAGE,
+  titleCase,
 } from '@bluecentury/constants'
 import {useEntity, useTechnical} from '@bluecentury/stores'
 import {useTranslation} from 'react-i18next'
 import * as ImagePicker from 'react-native-image-picker'
 import {RootStackParamList} from '@bluecentury/types/nav.types'
+import {showToast} from '@bluecentury/hooks'
 
 interface ICommentCard {
   comment: Comment
@@ -57,25 +61,29 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
     getVesselTaskDetails,
     taskDetails,
     uploadFileBySubject,
+    updateTaskStatus,
+    taskUpdateStatus,
+    resetStatuses,
   } = useTechnical()
   const hasTaskPermission = hasSelectedEntityUserPermission(
     selectedEntity,
     ROLE_PERMISSION_TASK_MANAGE
   )
   const toast = useToast()
-  // const options = [
-  //   {
-  //     value: 'todo',
-  //     label: 'Todo',
-  //   },
-  //   {value: 'in_progress', label: 'In Progress'},
-  //   {value: 'done', label: 'Done'},
-  //   {value: 'cancel', label: 'Cancel'},
-  // ]
+
+  const options = [
+    {
+      value: 'todo',
+      label: 'Todo',
+    },
+    {value: 'in_progress', label: 'In Progress'},
+    {value: 'done', label: 'Done'},
+  ]
   const [flaggedUpdated, setFlaggedUpdated] = useState(task?.flagged)
   const [viewImg, setViewImg] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [imgFile, setImgFile] = useState<ImageFile | null>(null)
+  const [openStatuses, setOpenStatuses] = useState(false)
 
   useEffect(() => {
     const uploadFile = async (id: number, imageFile: ImageFile) => {
@@ -129,13 +137,18 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
 
   useEffect(() => {
     getVesselTaskDetails(task?.id)
-  }, [])
+    if (taskUpdateStatus === 'SUCCESS') {
+      resetStatuses()
+      getVesselTasksByCategory(vesselId, category)
+      showToast('Task update successfully.', 'success')
+    }
+  }, [taskUpdateStatus])
 
   useEffect(() => {
     if (task?.vesselPart?.type) {
       getVesselPartType(task?.vesselPart?.type)
     }
-  }, [task])
+  }, [task, taskUpdateStatus])
 
   const renderLabels = (label: {
     id: number
@@ -424,6 +437,11 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
     })
   }
 
+  const onUpdateTaskStatus = (status: string) => {
+    updateTaskStatus(taskDetails?.id, status)
+    setOpenStatuses(false)
+  }
+
   if (isTechnicalLoading) return <LoadingAnimated />
 
   return (
@@ -439,20 +457,18 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
         px={ms(12)}
         py={ms(20)}
       >
-        {/* <Select
-          minWidth="300"
-          accessibilityLabel=""
-          placeholder=""
-          bg="#E0E0E0"
-        >
-          {options?.map((option, index) => (
-            <Select.Item
-              key={index}
-              label={option.label}
-              value={option.value}
+        <Pressable onPress={() => setOpenStatuses(true)}>
+          <HStack alignItems="center" bg={Colors.grey} borderRadius={5} p={2}>
+            <Text bold color={Colors.text} flex="1">
+              {titleCase(taskDetails?.statusCode)}
+            </Text>
+            <Ionicons
+              color={Colors.text}
+              name="chevron-down-outline"
+              size={ms(20)}
             />
-          ))}
-        </Select> */}
+          </HStack>
+        </Pressable>
         {renderTaskSection()}
         {/* Vessel Part Section */}
         <Text bold color={Colors.text} fontSize={ms(16)} mt={ms(30)}>
@@ -576,6 +592,12 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
           ) : null}
         </Modal.Content>
       </Modal>
+      <TechnicalStatusesModal
+        isOpen={openStatuses}
+        options={options}
+        setOpen={() => setOpenStatuses(false)}
+        onPressStatus={e => onUpdateTaskStatus(e)}
+      />
     </Box>
   )
 }
