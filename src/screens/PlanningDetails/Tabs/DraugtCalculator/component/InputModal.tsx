@@ -1,10 +1,10 @@
-import React, {useState, useEffect} from 'react'
-import {TouchableOpacity, StyleSheet, Alert} from 'react-native'
-import {Modal, Text, Button, HStack, Input, Box, VStack} from 'native-base'
+import React, {useState} from 'react'
+import {TouchableOpacity, StyleSheet} from 'react-native'
+import {Modal, Text, Button, HStack, Input, VStack} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import {Colors} from '@bluecentury/styles'
 import {useTranslation} from 'react-i18next'
-import {useForm} from '@bluecentury/hooks'
+import {FormControl} from '@bluecentury/components'
 
 interface Props {
   header: string
@@ -29,15 +29,8 @@ export default ({
     freeboard: '',
     draught: '',
   }
-  const {
-    handleOnChange,
-    formValues,
-    setFormValues,
-    errors,
-    setError,
-    setErrors,
-    handleSubmit,
-  } = useForm(initialValues)
+  const [formValues, setFormValues] = useState(initialValues)
+  const [errors, setErrors] = useState<any>({})
   const {t} = useTranslation()
   const [active, setActive] = useState<number>(0)
 
@@ -74,36 +67,65 @@ export default ({
   }
 
   const handleSaveDraught = () => {
-    let tempValue
+    let tempValue = {
+      value: 0,
+      draughtValue: 0,
+    }
 
     if (active === 0) {
+      const draught = maxDraught - parseInt(formValues?.freeboard)
+
+      if (draught < 0 || draught > maxDraught) {
+        setErrors({
+          ...errors,
+          freeboard: 'Draught cannot be higher than Max Draught',
+        })
+      }
+
       tempValue = {
-        value: formValues?.freeboard,
-        draughtValue: maxDraught - formValues?.freeboard,
+        value: parseInt(formValues?.freeboard),
+        draughtValue: maxDraught - parseInt(formValues?.freeboard),
       }
     } else {
+      const draught = parseInt(formValues?.draught)
+      if (draught < 0 || draught > maxDraught) {
+        setErrors({
+          ...errors,
+          draught: 'Draught cannot be higher than Max Draught',
+        })
+        return
+      }
+
       tempValue = {
-        value: maxDraught - formValues?.draught,
-        draughtValue: formValues?.draught,
+        value: maxDraught - draught,
+        draughtValue: draught,
       }
     }
 
     if (tempValue.draughtValue > maxDraught || tempValue.draughtValue < 0) {
-      setError(
-        active === 0 ? 'freeboard' : 'draught',
-        `${
+      setErrors({
+        ...errors,
+        [active === 0 ? 'freeboard' : 'draught']: `${
           active === 0 ? 'Freeboard' : 'Draught'
-        } cannot be higher than Max Draught`
-      )
+        } cannot be higher than Max Draught`,
+      })
+
       return
     }
     onAction(tempValue)
   }
 
+  console.log('errors', errors)
+  console.log('formValues', formValues)
+
   const handleOnClose = () => {
     onCancel()
     setFormValues(initialValues)
     setErrors({})
+  }
+
+  const handleOnChange = (fieldName: string, value: string) => {
+    setFormValues({...formValues, [fieldName]: value})
   }
 
   return (
@@ -122,12 +144,17 @@ export default ({
         <Modal.Body>
           <VStack space={ms(20)}>
             {renderToggle()}
-            <Box>
-              <Text>{t('freeboardMeasurement')}</Text>
+
+            <FormControl
+              errorMessage="test error message"
+              isDisabled={active === 1}
+              isInvalid={'freeboard' in errors}
+              label={t('freeboardMeasurement')}
+            >
               <Input
                 borderColor={
                   active === 0
-                    ? errors?.freeboard
+                    ? 'freeboard' in errors
                       ? Colors.danger
                       : Colors.azure
                     : null
@@ -135,7 +162,7 @@ export default ({
                 isDisabled={active === 1} // check if this is for freeboard input
                 keyboardType="numeric"
                 maxLength={3}
-                placeholder={value?.value?.toString() || '0'}
+                placeholder={maxDraught.toString() || '0'}
                 value={formValues?.freeboard}
                 onChangeText={value => {
                   if (inputRegex.test(value)) {
@@ -143,24 +170,25 @@ export default ({
                   }
                 }}
               />
-              {errors?.freeboard && active === 0 && (
-                <Text color={Colors.danger}>{errors.freeboard}</Text>
-              )}
-            </Box>
-            <Box>
-              <Text>{t('draughtMeasurement')}</Text>
+            </FormControl>
+            <FormControl
+              errorMessage="test error message"
+              isDisabled={active === 0}
+              isInvalid={'draught' in errors}
+              label={t('freeboardMeasurement')}
+            >
               <Input
                 borderColor={
                   active === 1
-                    ? errors?.draught
+                    ? 'draught' in errors
                       ? Colors.danger
                       : Colors.azure
                     : null
                 }
-                isDisabled={active === 0} // check if this is for draught input
+                isDisabled={active === 0} // check if this is for freeboard input
                 keyboardType="numeric"
                 maxLength={3}
-                placeholder={value?.draughtValue?.toString() || '0'}
+                placeholder={maxDraught.toString() || '0'}
                 value={formValues?.draught}
                 onChangeText={value => {
                   if (inputRegex.test(value)) {
@@ -168,10 +196,7 @@ export default ({
                   }
                 }}
               />
-              {errors?.draught && active === 1 && (
-                <Text color={Colors.danger}>{errors.draught}</Text>
-              )}
-            </Box>
+            </FormControl>
           </VStack>
         </Modal.Body>
         <Modal.Footer>
@@ -185,7 +210,7 @@ export default ({
             >
               <Text color={Colors.disabled}>{t('close')}</Text>
             </Button>
-            <Button flex={1} onPress={() => handleSubmit(handleSaveDraught)}>
+            <Button flex={1} onPress={() => handleSaveDraught()}>
               <Text>{t('save')}</Text>
             </Button>
           </HStack>
