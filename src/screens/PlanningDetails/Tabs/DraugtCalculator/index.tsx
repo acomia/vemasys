@@ -12,6 +12,7 @@ import {Vemasys} from '@bluecentury/helpers'
 import _ from 'lodash'
 import {initialDraughtValues} from '@bluecentury/constants'
 import IconFA5 from 'react-native-vector-icons/FontAwesome5'
+import RNFS from 'react-native-fs'
 
 export default () => {
   const {t} = useTranslation()
@@ -64,11 +65,13 @@ export default () => {
     ...tonnageCertifications?.map(item => item.draught)
   )
 
+  const filePath = `${RNFS.DocumentDirectoryPath}/data_${navigationLogDetails?.exploitationVessel?.id}.txt` // Path to the text file
+
   useEffect(() => {
     getTonnage()
   }, [])
 
-  const getTonnage = () => {
+  const getTonnage = async () => {
     if (!vesselNavigationDetails) {
       getVesselnavigationDetails(navigationLogDetails?.exploitationVessel?.id)
     }
@@ -83,6 +86,18 @@ export default () => {
     )
 
     setActiveLoadingAction(activeLoading[0])
+    console.log('filepath', filePath)
+
+    const localDraughtFile = await RNFS.readFile(filePath, 'utf8')
+    const localDraughtObj = JSON.parse(localDraughtFile)
+    if (localDraughtObj) {
+      console.log('localDraughtFile', localDraughtObj?.average?.beforeTonnage)
+      setBeforeDraught(localDraughtObj?.beforeDraught)
+      setBeforeAverage(localDraughtObj?.average?.beforeAverage)
+      setAfterAverage(localDraughtObj?.average?.afterAverage)
+      setBeforeTonnage(localDraughtObj?.average?.beforeTonnage)
+      setAfterTonnage(localDraughtObj?.average?.afterTonnage)
+    }
   }
 
   const buttonSelected = (selected: string) => {
@@ -101,9 +116,15 @@ export default () => {
   }
 
   const saveDraught = async () => {
-    const jsonString = JSON.stringify({beforeDraught, afterDraught})
+    const jsonString = JSON.stringify({
+      average: {beforeAverage, afterAverage},
+      tonnage: {beforeTonnage, afterTonnage},
+      beforeDraught,
+      afterDraught,
+    })
 
-    console.log('jsonString', jsonString)
+    await RNFS.writeFile(filePath, jsonString, 'utf8')
+    console.log('filePath', RNFS.DocumentDirectoryPath)
   }
 
   const onPullToReload = () => {

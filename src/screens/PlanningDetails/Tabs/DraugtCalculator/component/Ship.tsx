@@ -48,6 +48,9 @@ export default ({
     },
   ]
 
+  console.log('average', averageDraught)
+  console.log('tonnage', tonnage)
+
   const renderItems = (itemObjects: any[], key: string) => {
     return itemObjects.map((item, index) => {
       return (
