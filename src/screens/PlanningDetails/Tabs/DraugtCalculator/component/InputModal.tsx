@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import {TouchableOpacity, StyleSheet} from 'react-native'
+import {StyleSheet, Switch} from 'react-native'
 import {Modal, Text, Button, HStack, Input, VStack} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import {Colors} from '@bluecentury/styles'
@@ -23,7 +23,6 @@ export default ({
   setOpen,
   onAction,
   onCancel,
-  value,
   maxDraught,
 }: Props) => {
   const initialValues = {
@@ -33,36 +32,33 @@ export default ({
   const [formValues, setFormValues] = useState(initialValues)
   const [errors, setErrors] = useState<any>({})
   const {t} = useTranslation()
-  const [active, setActive] = useState<number>(0)
-
-  const inputRegex = /^[0-9,.]*$/
+  const [isDraught, setIsDraught] = useState<boolean>(false)
 
   const renderToggle = () => {
     return (
-      <HStack bg={Colors.disabled} width={'100%'}>
-        <TouchableOpacity
-          style={{
-            backgroundColor: active === 0 ? Colors.dark_green : Colors.disabled,
-            ...styles.button,
-          }}
-          onPress={() => {
-            setActive(0), setErrors({})
-          }}
+      <HStack justifyContent={'space-evenly'} width={'100%'}>
+        <Text
+          color={!isDraught ? Colors.primary : Colors.disabled}
+          fontSize={ms(17)}
+          fontWeight={'bold'}
+          onPress={() => setIsDraught(false)}
         >
-          <Text>{t('freeboard')}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{
-            backgroundColor: active === 1 ? Colors.dark_green : Colors.disabled,
-            ...styles.button,
-          }}
-          onPress={() => {
-            setActive(1)
-            setErrors({})
-          }}
+          {t('freeboard')}
+        </Text>
+        <Switch
+          thumbColor={Colors.white}
+          trackColor={{true: Colors.primary, false: Colors.primary}}
+          value={isDraught}
+          onValueChange={() => setIsDraught(prevValue => !prevValue)}
+        />
+        <Text
+          color={isDraught ? Colors.primary : Colors.disabled}
+          fontSize={ms(17)}
+          fontWeight={'bold'}
+          onPress={() => setIsDraught(true)}
         >
-          <Text>{t('draught')}</Text>
-        </TouchableOpacity>
+          {t('draught')}
+        </Text>
       </HStack>
     )
   }
@@ -73,21 +69,7 @@ export default ({
       draughtValue: 0,
     }
 
-    if (active === 0) {
-      const draught = maxDraught - parseInt(formValues?.freeboard)
-
-      if (draught < 0 || draught > maxDraught) {
-        setErrors({
-          ...errors,
-          freeboard: 'Draught cannot be higher than Max Draught',
-        })
-      }
-
-      tempValue = {
-        value: parseInt(formValues?.freeboard),
-        draughtValue: maxDraught - parseInt(formValues?.freeboard),
-      }
-    } else {
+    if (isDraught) {
       const draught = parseInt(formValues?.draught)
       if (draught < 0 || draught > maxDraught) {
         setErrors({
@@ -101,13 +83,27 @@ export default ({
         value: maxDraught - draught,
         draughtValue: draught,
       }
+    } else {
+      const draught = maxDraught - parseInt(formValues?.freeboard)
+
+      if (draught < 0 || draught > maxDraught) {
+        setErrors({
+          ...errors,
+          freeboard: 'Draught cannot be higher than Max Draught',
+        })
+      }
+
+      tempValue = {
+        value: parseInt(formValues?.freeboard),
+        draughtValue: maxDraught - parseInt(formValues?.freeboard),
+      }
     }
 
     if (tempValue.draughtValue > maxDraught || tempValue.draughtValue < 0) {
       setErrors({
         ...errors,
-        [active === 0 ? 'freeboard' : 'draught']: `${
-          active === 0 ? 'Freeboard' : 'Draught'
+        [!isDraught ? 'freeboard' : 'draught']: `${
+          !isDraught ? 'Freeboard' : 'Draught'
         } cannot be higher than Max Draught`,
       })
 
@@ -115,9 +111,6 @@ export default ({
     }
     onAction(tempValue)
   }
-
-  console.log('errors', errors)
-  console.log('formValues', formValues)
 
   const handleOnClose = () => {
     onCancel()
@@ -146,11 +139,11 @@ export default ({
           <VStack space={ms(20)}>
             {renderToggle()}
             <FormControl
-              isDisabled={active === 1}
+              isDisabled={isDraught}
               isInvalid={'freeboard' in errors}
             >
               <TextInput
-                isActive={active === 0}
+                isActive={!isDraught}
                 label={t('freeboard')}
                 maxLength={3}
                 name="freeboard"
@@ -158,11 +151,11 @@ export default ({
               />
             </FormControl>
             <FormControl
-              isDisabled={active === 0}
+              isDisabled={!isDraught}
               isInvalid={'draught' in errors}
             >
               <TextInput
-                isActive={active === 1}
+                isActive={isDraught}
                 label={t('draught')}
                 maxLength={3}
                 name="draught"
@@ -183,7 +176,7 @@ export default ({
               <Text color={Colors.disabled}>{t('cancel')}</Text>
             </Button>
             <Button flex={1} onPress={() => handleSaveDraught()}>
-              <Text>{t('save')}</Text>
+              <Text color={Colors.white}>{t('save')}</Text>
             </Button>
           </HStack>
         </Modal.Footer>

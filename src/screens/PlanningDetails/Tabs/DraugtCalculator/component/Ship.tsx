@@ -12,7 +12,7 @@ interface Props {
   maxDraught: string | number | undefined
   draughtValues: any
   tonnage: number | string
-  active?: number
+  active?: boolean
   averageDraught?: any
 }
 
@@ -25,8 +25,6 @@ export default ({
   averageDraught,
 }: Props) => {
   const {t} = useTranslation()
-
-  // console.log('draughtValues', draughtValues)
 
   const leftObject = [
     {
@@ -61,7 +59,6 @@ export default ({
           backgroundColor={
             draughtValues[item.label]?.didUpdate ? Colors.azure : 'transparent'
           }
-          disabled={active === 1}
           onPress={() => buttonSelected(item.label)}
         >
           <Text color={Colors.white} textAlign={'left'}>
@@ -76,7 +73,7 @@ export default ({
   }
 
   return (
-    <Box backgroundColor={Colors.black} width={'100%'}>
+    <Box backgroundColor={Colors.black} flex={1}>
       <HStack justifyContent={'space-evenly'} space={ms(5)}>
         <VStack flex={1} justifyContent={'space-evenly'} padding={ms(5)}>
           {renderItems(leftObject, 'left')}

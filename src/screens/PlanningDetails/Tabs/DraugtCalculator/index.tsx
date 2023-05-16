@@ -1,15 +1,6 @@
 import React, {useState, useEffect} from 'react'
 import {Alert} from 'react-native'
-import {
-  Box,
-  Text,
-  Divider,
-  Select,
-  HStack,
-  Button,
-  Modal,
-  Input,
-} from 'native-base'
+import {Box, Text, HStack, Button, Modal} from 'native-base'
 import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
 import {BeforeAfterComponent, Ship, InputModal} from './component'
@@ -20,6 +11,7 @@ import {titleCase} from '@bluecentury/constants'
 import {Vemasys} from '@bluecentury/helpers'
 import _ from 'lodash'
 import {initialDraughtValues} from '@bluecentury/constants'
+import IconFA5 from 'react-native-vector-icons/FontAwesome5'
 
 export default () => {
   const {t} = useTranslation()
@@ -47,7 +39,6 @@ export default () => {
   const [loadingAction, setLoadingAction] = useState<NavigationLogAction>({})
   const [activeLoadingAction, setActiveLoadingAction] = useState({})
 
-  // const isFreeboard = measurement === measurements[0].value
   const sortedDraughtTable = tonnageCertifications?.length
     ? tonnageCertifications?.sort(
         (prev, curr) => parseInt(prev.draught) - parseInt(curr.draught)
@@ -167,39 +158,54 @@ export default () => {
   }
 
   return (
-    <PageScroll
-      justifyContent={'space-evently'}
-      refreshing={isTonnageCertificationLoading || isSavingNavBulkLoading}
-      onPullToReload={onPullToReload}
-    >
-      <Text bold color={Colors.azure} fontSize={ms(20)}>
-        {t('draughtCalculator')}
-      </Text>
-      <Divider bg={Colors.light} h={ms(2)} my={ms(8)} />
+    <Box flex={1}>
+      <PageScroll
+        backgroundColor={Colors.light}
+        refreshing={isTonnageCertificationLoading || isSavingNavBulkLoading}
+        onPullToReload={onPullToReload}
+      >
+        <Box my={ms(10)}>
+          <BeforeAfterComponent active={isBefore} setActive={setIsBefore} />
+        </Box>
+        <HStack alignItems={'center'} pt={ms(10)} space={ms(5)}>
+          <IconFA5 color={Colors.primary} name="info-circle" size={ms(10)} />
+          <Text color={Colors.primary} fontSize={ms(10)}>
+            Highlighted values have been edited
+          </Text>
+        </HStack>
+        <Box py={ms(10)}>
+          <Ship
+            active={isBefore}
+            averageDraught={averageDraught}
+            buttonSelected={buttonSelected}
+            draughtValues={draughtValues}
+            maxDraught={maxDraught} // get the value from the endpoint nearest value of tonnage_certificate
+            tonnage={tonnage}
+          />
+        </Box>
+      </PageScroll>
 
-      <BeforeAfterComponent active={isBefore} setActive={setIsBefore} />
-      <Box py={ms(10)}>
-        <Ship
-          active={isBefore}
-          averageDraught={averageDraught}
-          buttonSelected={buttonSelected}
-          draughtValues={draughtValues}
-          maxDraught={maxDraught} // get the value from the endpoint nearest value of tonnage_certificate
-          tonnage={tonnage}
-        />
-      </Box>
-
-      <HStack mt={ms(10)} space={ms(5)}>
+      {/* buttons */}
+      <HStack
+        backgroundColor={Colors.white}
+        px={ms(10)}
+        py={ms(20)}
+        space={ms(5)}
+      >
         <Button colorScheme={'white'} flex={1} onPress={clearValues}>
           <Text color={Colors.disabled}>{t('cancel')}</Text>
         </Button>
+
+        <Button backgroundColor={Colors.light} flex={1}>
+          <Text color={Colors.disabled}>{t('endLoading')}</Text>
+        </Button>
         <Button
-          colorScheme={unsavedChanges.length ? 'gray' : null}
+          backgroundColor={unsavedChanges.length < 1 ? Colors.disabled : null}
           disabled={unsavedChanges.length < 1}
           flex={1}
           onPress={submitDraught}
         >
-          <Text>{t('save')}</Text>
+          <Text color={Colors.white}>{t('save')}</Text>
         </Button>
       </HStack>
 
@@ -248,6 +254,6 @@ export default () => {
           </HStack>
         </Modal.Content>
       </Modal>
-    </PageScroll>
+    </Box>
   )
 }

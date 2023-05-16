@@ -18,9 +18,6 @@ export default ({
   isInvalid = false,
   isDisabled = false,
 }: Props) => {
-  console.log('isRequied', isRequired)
-  console.log('isInvalid', isInvalid)
-
   return (
     <FormControl
       isDisabled={isDisabled}

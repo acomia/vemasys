@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react'
+import React, {useState} from 'react'
 import {StyleSheet} from 'react-native'
 import {Text, Input, Box, HStack} from 'native-base'
 import {Colors} from '@bluecentury/styles'
@@ -17,10 +17,14 @@ export default ({label, maxLength, onChange, name, isActive}: Props) => {
   const regex = /^[0-9]*$/
 
   const [textValue, setTextValue] = useState(Array(maxLength).fill(''))
-  const inputRef = useRef<any>(null)
   const handleOnChange = (text: string, index: number) => {
     const updatedValues = [...textValue]
-    updatedValues[index] = text
+
+    if (text.length > 1) {
+      updatedValues[index] = text[1]
+    } else {
+      updatedValues[index] = text[0]
+    }
     setTextValue(updatedValues)
 
     onChange(name, updatedValues.join(''))
@@ -34,32 +38,24 @@ export default ({label, maxLength, onChange, name, isActive}: Props) => {
       <Box alignItems={'center'} flex={3} flexDirection={'row'}>
         {textValue.map((value, index) => {
           return (
-            <Box
-              key={name + '-' + index}
-              alignItems={'center'}
-              justifyContent={'center'}
+            <Input
+              key={index}
+              backgroundColor={isActive ? Colors.border : null}
+              borderColor={isActive ? Colors.primary : null}
+              fontSize={ms(20)}
+              isDisabled={!isActive}
+              keyboardType={'numeric'}
+              maxLength={2}
               mx={ms(5)}
+              textAlign={'center'}
+              value={value}
               width={ms(50)}
-            >
-              <Input
-                key={index}
-                ref={inputRef}
-                backgroundColor={isActive ? Colors.border : null}
-                borderColor={isActive ? Colors.primary : null}
-                fontSize={ms(20)}
-                isDisabled={!isActive}
-                keyboardType={'numeric'}
-                maxLength={1}
-                textAlign={'center'}
-                value={value}
-                onChangeText={text => {
-                  console.log('text', text)
-                  if (regex.test(text)) {
-                    handleOnChange(text, index)
-                  }
-                }}
-              />
-            </Box>
+              onChangeText={text => {
+                if (regex.test(text)) {
+                  handleOnChange(text, index)
+                }
+              }}
+            />
           )
         })}
       </Box>

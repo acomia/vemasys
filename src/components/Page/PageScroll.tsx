@@ -8,20 +8,28 @@ interface Props {
   children: Element
   refreshing: boolean
   onPullToReload?: () => void
+  contentContainerStyle?: object
+  backgroundColor: string
 }
 
 export default (props: Props) => {
   return (
     <Box flex={1}>
       <ScrollView
+        contentContainerStyle={[
+          {
+            flexGrow: 1,
+            paddingBottom: 30,
+          },
+          props.contentContainerStyle,
+        ]}
         refreshControl={
           <RefreshControl
             refreshing={props.refreshing}
             onRefresh={props.onPullToReload}
           />
         }
-        bg={Colors.white}
-        contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}
+        bg={props.backgroundColor === '' ? Colors.white : props.backgroundColor}
         px={ms(12)}
         py={ms(10)}
         scrollEventThrottle={16}
