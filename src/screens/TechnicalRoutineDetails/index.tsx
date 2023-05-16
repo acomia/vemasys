@@ -216,7 +216,7 @@ const TechnicalRoutineDetails = ({navigation, route}: Props) => {
   }
 
   const onUpdateTaskStatus = (status: string) => {
-    updateTaskStatus(routineDetails?.id.toString(), status)
+    updateTaskStatus(routineDetails?.openTasks[0]?.id.toString(), status)
     setOpenStatuses(false)
   }
 
@@ -240,7 +240,10 @@ const TechnicalRoutineDetails = ({navigation, route}: Props) => {
         <Pressable onPress={() => setOpenStatuses(true)}>
           <HStack alignItems="center" bg={Colors.grey} borderRadius={5} p={2}>
             <Text bold color={Colors.text} flex="1">
-              {titleCase(routineDetails?.openTasks[0]?.status?.code)}
+              {routineDetails?.openTasks &&
+              routineDetails?.openTasks?.length > 0
+                ? titleCase(routineDetails?.openTasks[0]?.status?.code)
+                : ''}
             </Text>
             <Ionicons
               color={Colors.text}
