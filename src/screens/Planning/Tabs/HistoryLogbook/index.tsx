@@ -89,7 +89,12 @@ const HistoryLogbook = () => {
             current.isSame(start, 'day') &&
             current.isSame(end, 'day')
           if (currentStartAndEndDayAreEqual) {
-            return `${start.format('HH:mm')} - ${end.format('HH:mm')}`
+            // before
+            // return `${start.format('HH:mm')} - ${end.format('HH:mm')}`
+            // after
+            return start.format('HH:mm') === end.format('HH:mm')
+              ? start.format('HH:mm')
+              : `${start.format('HH:mm')} - ${end.format('HH:mm')}`
           } else {
             return `${start.format('DD/MM/YYYY HH:mm')} - ${end.format(
               'DD/MM/YYYY HH:mm'
