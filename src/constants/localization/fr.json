@@ -387,5 +387,6 @@
   "enterNumber": "Enter number",
   "freeboard": "Freeboard",
   "after": "After",
-  "before": "Before"
+  "before": "Before",
+  "highlightedText": "Highlighted values have been edited"
 }

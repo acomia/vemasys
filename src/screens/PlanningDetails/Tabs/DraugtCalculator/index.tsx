@@ -6,7 +6,7 @@ import {ms} from 'react-native-size-matters'
 import {BeforeAfterComponent, Ship, InputModal} from './component'
 import {useTranslation} from 'react-i18next'
 import {PageScroll} from '@bluecentury/components'
-import {usePlanning} from '@bluecentury/stores'
+import {usePlanning, useDraught} from '@bluecentury/stores'
 import {titleCase} from '@bluecentury/constants'
 import {Vemasys} from '@bluecentury/helpers'
 import _ from 'lodash'
@@ -29,15 +29,24 @@ export default () => {
     updateNavigationLogAction,
   } = usePlanning()
 
-  const [isBefore, setIsBefore] = useState<number>(0)
+  const {isDraughtLoading, updateDraught} = useDraught()
+
+  const [beforeDraught, setBeforeDraught] = useState(initialDraughtValues)
+  const [afterDraught, setAfterDraught] = useState(initialDraughtValues)
+
+  const [beforeTonnage, setBeforeTonnage] = useState<number>(0)
+  const [afterTonnage, setAfterTonnage] = useState<number>(0)
+
+  const [beforeAverage, setBeforeAverage] = useState<number>(0)
+  const [afterAverage, setAfterAverage] = useState<number>(0)
+
+  const [isBefore, setIsBefore] = useState<boolean>(true)
   const [selectedButton, setSelectedButton] = useState<string>('')
   const [isOpenInput, setIsOpenInput] = useState<boolean>(false)
-  const [draughtValues, setDraughtValues] = useState(initialDraughtValues)
-  const [averageDraught, setAverageDraught] = useState<number>(0)
-  const [tonnage, setTonnage] = useState<string>('0')
+
   const [isConfirmModal, setConfirmModal] = useState<boolean>(false)
   const [loadingAction, setLoadingAction] = useState<NavigationLogAction>({})
-  const [activeLoadingAction, setActiveLoadingAction] = useState({})
+  const [activeLoadingAction, setActiveLoadingAction] = useState<any>({})
 
   const sortedDraughtTable = tonnageCertifications?.length
     ? tonnageCertifications?.sort(
@@ -45,7 +54,7 @@ export default () => {
       )
     : null
 
-  const unsavedChanges = Object.values(draughtValues).filter(
+  const unsavedChanges = Object.values(beforeDraught).filter(
     value => value.didUpdate === true
   )
 
@@ -58,24 +67,6 @@ export default () => {
   useEffect(() => {
     getTonnage()
   }, [])
-
-  useEffect(() => {
-    if (draughtValues) {
-      const values = Object.values(draughtValues)
-      const average =
-        values.reduce((acc, val) => acc + val?.value, 0) / values?.length
-      setAverageDraught(average)
-
-      //find the closest tonnage from draughtTable
-      const closestDraught = sortedDraughtTable?.reduce((prev, curr) =>
-        Math.abs(parseInt(curr.draught) - average) <
-        Math.abs(parseInt(prev.draught) - average)
-          ? curr
-          : prev
-      )
-      if (closestDraught) setTonnage(closestDraught?.tonnage)
-    }
-  }, [draughtValues, isBefore])
 
   const getTonnage = () => {
     if (!vesselNavigationDetails) {
@@ -103,38 +94,16 @@ export default () => {
     setIsOpenInput(false)
   }
 
-  const submitDraught = () => {
+  const saveTonnage = () => {
     if (navigationLogDetails?.exploitationVessel?.id) {
-      updateNavBulk(navigationLogDetails?.bulkCargo?.id, tonnage)
+      updateNavBulk(navigationLogDetails?.bulkCargo[0]?.id, beforeTonnage)
     }
   }
 
-  const onConfirmStopAction = () => {
-    if (Object.keys(loadingAction).length === 0) {
-      Alert.alert(t('noLoading'))
-      return
-    }
-    setLoadingAction({
-      ...loadingAction,
-      id: activeLoadingAction?.id,
-      type: titleCase(activeLoadingAction?.type),
-      start: activeLoadingAction.start,
-      estimatedEnd: activeLoadingAction.estimatedEnd,
-      end: Vemasys.defaultDatetime(),
-      cargoHoldActions: [
-        {
-          navigationBulk: activeLoadingAction?.navigationBulk?.id,
-          amount: activeLoadingAction?.navigationBulk?.amount.toString(),
-        },
-      ],
-    })
-    submitDraught()
-    updateNavigationLogAction(
-      loadingAction?.id,
-      navigationLogDetails?.id,
-      loadingAction
-    )
-    setConfirmModal(false)
+  const saveDraught = async () => {
+    const jsonString = JSON.stringify({beforeDraught, afterDraught})
+
+    console.log('jsonString', jsonString)
   }
 
   const onPullToReload = () => {
@@ -142,26 +111,103 @@ export default () => {
   }
 
   const onSaveModal = (value: any) => {
-    setDraughtValues({
-      ...draughtValues,
-      [selectedButton]: {
-        ...value,
-        didUpdate: true,
-      },
-    })
+    const values = isBefore
+      ? Object.values({
+          ...beforeDraught,
+          [selectedButton]: {
+            ...value,
+            didUpdate: true,
+          },
+        })
+      : Object.values({
+          ...afterDraught,
+          [selectedButton]: {
+            ...value,
+            didUpdate: true,
+          },
+        })
+
+    const average =
+      values.reduce((acc, val) => acc + val?.draught, 0) / values?.length
+
+    const closestDraught = sortedDraughtTable?.reduce((prev, curr) =>
+      Math.abs(parseInt(curr.draught) - average) <
+      Math.abs(parseInt(prev.draught) - average)
+        ? curr
+        : prev
+    )
+
+    if (isBefore) {
+      setBeforeDraught({
+        ...beforeDraught,
+        [selectedButton]: {
+          ...value,
+          didUpdate: true,
+        },
+      })
+      setBeforeAverage(average)
+      setBeforeTonnage(closestDraught?.tonnage || 0)
+    }
+
+    if (!isBefore) {
+      setAfterDraught({
+        ...afterDraught,
+        [selectedButton]: {
+          ...value,
+          didUpdate: true,
+        },
+      })
+      setAfterAverage(average)
+      setAfterTonnage(closestDraught?.tonnage || 0)
+    }
 
     closeInput()
   }
 
-  const clearValues = () => {
-    setDraughtValues(initialDraughtValues)
+  const onConfirmStopAction = () => {
+    if (Object.keys(loadingAction).length === 0) {
+      Alert.alert(t('noLoading'))
+      return
+    }
+    saveDraught()
+
+    if (Object.keys(loadingAction).length > 0) {
+      setLoadingAction({
+        ...loadingAction,
+        id: activeLoadingAction?.id,
+        type: titleCase(activeLoadingAction?.type),
+        start: activeLoadingAction.start,
+        estimatedEnd: activeLoadingAction.estimatedEnd,
+        end: Vemasys.defaultDatetime(),
+        cargoHoldActions: [
+          {
+            navigationBulk: activeLoadingAction?.navigationBulk?.id,
+            amount: activeLoadingAction?.navigationBulk?.amount.toString(),
+          },
+        ],
+      })
+
+      updateNavigationLogAction(
+        loadingAction?.id,
+        navigationLogDetails?.id,
+        loadingAction
+      )
+    }
+
+    saveTonnage()
+
+    setConfirmModal(false)
   }
 
   return (
     <Box flex={1}>
       <PageScroll
+        refreshing={
+          isTonnageCertificationLoading || isSavingNavBulkLoading
+          // ||
+          // isDraughtLoading
+        }
         backgroundColor={Colors.light}
-        refreshing={isTonnageCertificationLoading || isSavingNavBulkLoading}
         onPullToReload={onPullToReload}
       >
         <Box my={ms(10)}>
@@ -170,17 +216,16 @@ export default () => {
         <HStack alignItems={'center'} pt={ms(10)} space={ms(5)}>
           <IconFA5 color={Colors.primary} name="info-circle" size={ms(10)} />
           <Text color={Colors.primary} fontSize={ms(10)}>
-            Highlighted values have been edited
+            {t('highlightedText')}
           </Text>
         </HStack>
         <Box py={ms(10)}>
           <Ship
-            active={isBefore}
-            averageDraught={averageDraught}
+            averageDraught={isBefore ? beforeAverage : afterAverage}
             buttonSelected={buttonSelected}
-            draughtValues={draughtValues}
-            maxDraught={maxDraught} // get the value from the endpoint nearest value of tonnage_certificate
-            tonnage={tonnage}
+            draughtValues={isBefore ? beforeDraught : afterDraught}
+            isBefore={isBefore}
+            tonnage={isBefore ? beforeTonnage : afterTonnage}
           />
         </Box>
       </PageScroll>
@@ -192,18 +237,26 @@ export default () => {
         py={ms(20)}
         space={ms(5)}
       >
-        <Button colorScheme={'white'} flex={1} onPress={clearValues}>
+        <Button
+          colorScheme={'white'}
+          flex={1}
+          onPress={() => setBeforeDraught(initialDraughtValues)}
+        >
           <Text color={Colors.disabled}>{t('cancel')}</Text>
         </Button>
 
-        <Button backgroundColor={Colors.light} flex={1}>
+        <Button
+          backgroundColor={Colors.light}
+          flex={1}
+          onPress={() => setConfirmModal(true)}
+        >
           <Text color={Colors.disabled}>{t('endLoading')}</Text>
         </Button>
         <Button
           backgroundColor={unsavedChanges.length < 1 ? Colors.disabled : null}
           disabled={unsavedChanges.length < 1}
           flex={1}
-          onPress={submitDraught}
+          onPress={saveDraught}
         >
           <Text color={Colors.white}>{t('save')}</Text>
         </Button>
@@ -214,7 +267,6 @@ export default () => {
         isOpen={isOpenInput}
         maxDraught={maxDraught}
         setOpen={closeInput}
-        value={draughtValues[selectedButton]}
         onAction={onSaveModal}
         onCancel={closeInput}
       />

@@ -579,10 +579,12 @@ export const usePlanning = create(
       updateNavBulk: async (id: number, tonnage: number) => {
         set({isSavingNavBulkLoading: true, isSavingNavBulkSuccess: false})
         try {
+          // console.log('id', id)
           const response = await API.updateNavBulk(id, tonnage)
           if (response?.status === 200) {
-            set({isSavingNavBulkLoading: false, isSavingNavBulkSuccess: true})
+            set({isSavingNavBulkSuccess: true})
           }
+          set({isSavingNavBulkLoading: false})
         } catch (error) {
           set({isSavingNavBulkLoading: false})
         }

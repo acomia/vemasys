@@ -129,10 +129,10 @@ export const fuelTypes = [
 ]
 
 export const initialDraughtValues = {
-  BBV: {value: 0, draughtValue: 0, didUpdate: false},
-  BBM: {value: 0, draughtValue: 0, didUpdate: false},
-  BBA: {value: 0, draughtValue: 0, didUpdate: false},
-  SBV: {value: 0, draughtValue: 0, didUpdate: false},
-  SBM: {value: 0, draughtValue: 0, didUpdate: false},
-  SBA: {value: 0, draughtValue: 0, didUpdate: false},
+  BBV: {freeboard: 0, draught: 0, didUpdate: false},
+  BBM: {freeboard: 0, draught: 0, didUpdate: false},
+  BBA: {freeboard: 0, draught: 0, didUpdate: false},
+  SBV: {freeboard: 0, draught: 0, didUpdate: false},
+  SBM: {freeboard: 0, draught: 0, didUpdate: false},
+  SBA: {freeboard: 0, draught: 0, didUpdate: false},
 }

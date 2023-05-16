@@ -64,58 +64,30 @@ export default ({
   }
 
   const handleSaveDraught = () => {
-    let tempValue = {
-      value: 0,
-      draughtValue: 0,
-    }
+    const draught = isDraught
+      ? parseInt(formValues?.draught)
+      : maxDraught - parseInt(formValues?.freeboard)
 
-    if (isDraught) {
-      const draught = parseInt(formValues?.draught)
-      if (draught < 0 || draught > maxDraught) {
-        setErrors({
-          ...errors,
-          draught: 'Draught cannot be higher than Max Draught',
-        })
-        return
-      }
+    const freeboard = isDraught
+      ? maxDraught - draught
+      : parseInt(formValues?.freeboard)
 
-      tempValue = {
-        value: maxDraught - draught,
-        draughtValue: draught,
-      }
-    } else {
-      const draught = maxDraught - parseInt(formValues?.freeboard)
-
-      if (draught < 0 || draught > maxDraught) {
-        setErrors({
-          ...errors,
-          freeboard: 'Draught cannot be higher than Max Draught',
-        })
-      }
-
-      tempValue = {
-        value: parseInt(formValues?.freeboard),
-        draughtValue: maxDraught - parseInt(formValues?.freeboard),
-      }
-    }
-
-    if (tempValue.draughtValue > maxDraught || tempValue.draughtValue < 0) {
+    if (draught < 0 || draught > maxDraught) {
       setErrors({
         ...errors,
-        [!isDraught ? 'freeboard' : 'draught']: `${
-          !isDraught ? 'Freeboard' : 'Draught'
-        } cannot be higher than Max Draught`,
+        [isDraught ? 'draught' : 'freeboard']:
+          'Draught cannot be higher than Max Draught',
       })
-
       return
     }
-    onAction(tempValue)
+
+    onAction({draught, freeboard})
   }
 
   const handleOnClose = () => {
-    onCancel()
     setFormValues(initialValues)
     setErrors({})
+    onCancel()
   }
 
   const handleOnChange = (fieldName: string, value: string) => {
@@ -184,12 +156,3 @@ export default ({
     </Modal>
   )
 }
-
-const styles = StyleSheet.create({
-  button: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: ms(10),
-  },
-})

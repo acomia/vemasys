@@ -5,8 +5,8 @@ import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
 
 interface Props {
-  active: number
-  setActive: React.Dispatch<React.SetStateAction<number>>
+  active: boolean
+  setActive: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export default (props: Props) => {
@@ -14,21 +14,19 @@ export default (props: Props) => {
     <HStack bg={Colors.disabled} width={'100%'}>
       <TouchableOpacity
         style={{
-          backgroundColor:
-            props.active === 0 ? Colors.dark_green : Colors.disabled,
+          backgroundColor: props.active ? Colors.dark_green : Colors.disabled,
           ...styles.button,
         }}
-        onPress={() => props.setActive(0)}
+        onPress={() => props.setActive(true)}
       >
         <Text>Before</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={{
-          backgroundColor:
-            props.active === 1 ? Colors.dark_green : Colors.disabled,
+          backgroundColor: !props.active ? Colors.dark_green : Colors.disabled,
           ...styles.button,
         }}
-        onPress={() => props.setActive(1)}
+        onPress={() => props.setActive(false)}
       >
         <Text>After</Text>
       </TouchableOpacity>

@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react'
-import {Image, StyleSheet} from 'react-native'
+import React from 'react'
+import {Image} from 'react-native'
 import {Box, HStack, VStack, Text, Button} from 'native-base'
 import {Images} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
@@ -9,19 +9,17 @@ import {useTranslation} from 'react-i18next'
 
 interface Props {
   buttonSelected: (selected: string) => void
-  maxDraught: string | number | undefined
   draughtValues: any
   tonnage: number | string
-  active?: boolean
+  isBefore?: boolean
   averageDraught?: any
 }
 
 export default ({
   buttonSelected,
-  maxDraught,
   draughtValues,
   tonnage,
-  active,
+  isBefore,
   averageDraught,
 }: Props) => {
   const {t} = useTranslation()
@@ -55,16 +53,32 @@ export default ({
       return (
         <Button
           key={`${key}-${index}`}
-          // backgroundColor={item?.didUpdate ? Colors.azure : 'transparent'}
-          backgroundColor={
-            draughtValues[item.label]?.didUpdate ? Colors.azure : 'transparent'
-          }
+          backgroundColor={'transparent'}
+          justifyContent={key === 'left' ? 'flex-start' : 'flex-end'}
+          width={'full'}
           onPress={() => buttonSelected(item.label)}
         >
-          <Text color={Colors.white} textAlign={'left'}>
-            {draughtValues[item.label]?.draughtValue}
-          </Text>
-          <Text color={Colors.white} textAlign={'left'}>
+          <Box
+            bgColor={
+              draughtValues[item.label]?.didUpdate
+                ? Colors.azure
+                : 'transparent'
+            }
+            borderColor={Colors.primary}
+            borderWidth={draughtValues[item.label]?.didUpdate ? 1 : 0}
+            width={ms(100)}
+          >
+            <Text
+              backgroundColor={'blue'}
+              color={Colors.white}
+              fontSize={ms(20)}
+              textAlign={key}
+              width={'full'}
+            >
+              {draughtValues[item.label]?.draught}
+            </Text>
+          </Box>
+          <Text color={Colors.white} textAlign={key}>
             {item.label}
           </Text>
         </Button>
@@ -85,15 +99,21 @@ export default ({
       </HStack>
       <HStack justifyContent={'space-evenly'} space={ms(5)}>
         <VStack alignItems={'center'} justifyItems={'center'} py={ms(10)}>
-          <Text color={Colors.white}>{t('averageDraught')}</Text>
-          <Text color={Colors.white}>
-            {formatNumber(averageDraught, 2, ' ')}
+          <Text color={Colors.white} fontSize={ms(20)}>
+            {t('averageDraught')}
+          </Text>
+          <Text color={Colors.white} fontSize={ms(20)}>
+            {averageDraught && averageDraught > 0
+              ? formatNumber(averageDraught, 2, ' ')
+              : '0,00'}
           </Text>
         </VStack>
         <VStack alignItems={'center'} justifyItems={'center'} py={ms(10)}>
-          <Text color={Colors.white}>Nu geladen</Text>
-          <Text color={Colors.white}>
-            {tonnage ? formatNumber(tonnage, 2, ' ') : 0} t
+          <Text color={Colors.white} fontSize={ms(20)}>
+            Nu geladen
+          </Text>
+          <Text color={Colors.white} fontSize={ms(20)}>
+            {tonnage ? formatNumber(tonnage, 2, ' ') : '0,00'} t
           </Text>
         </VStack>
       </HStack>
