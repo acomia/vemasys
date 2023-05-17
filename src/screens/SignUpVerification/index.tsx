@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState, useEffect} from 'react'
@@ -6,22 +7,41 @@ import {useDisclose} from 'native-base'
 import DocumentPicker, {isInProgress, types} from 'react-native-document-picker'
 import DocumentScanner from 'react-native-document-scanner-plugin'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
+import Icon from 'react-native-vector-icons/Ionicons'
 
-import {useEntity} from '@bluecentury/stores'
-import {Selfie, SignUpFinish, UploadDocs, UploadID} from './components'
+import {useUser} from '@bluecentury/stores'
+import {Selfie, UploadDocs, UploadID} from './components'
+import {RootStackParamList} from '@bluecentury/types/nav.types'
+import {Colors} from '@bluecentury/styles'
+import {showToast} from '@bluecentury/hooks'
 
-type Props = NativeStackScreenProps<RootStackParamList>
+type Props = NativeStackScreenProps<RootStackParamList, 'SignUpVerification'>
 export default function SignUpVerification({navigation, route}: Props) {
-  const {signUpInfo, requestAsOwner}: any = route.params
-  const {createSignUpRequest, signUpRequestStatus, reset} = useEntity()
+  const {signUpInfo}: any = route.params
+  const {
+    createSignupRequestForCurrentUser,
+    signupRequestStatus,
+    updateUserData,
+    resetStatus,
+  } = useUser()
   const [page, setPage] = useState(1)
   const [documentFile, setDocumentFile] = useState<ImageFile | string>('')
   const [signUpDocs, setSignUpDocs] = useState([])
   const {onClose} = useDisclose()
 
   useEffect(() => {
-    if (requestAsOwner) setPage(3)
-  }, [requestAsOwner])
+    navigation.setOptions({
+      headerLeft: () => (
+        <Icon
+          color={Colors.black}
+          name="arrow-back"
+          size={28}
+          style={{marginRight: 10}}
+          onPress={onBackHeaderPress}
+        />
+      ),
+    })
+  }, [])
 
   useEffect(() => {
     if (page === 1 && documentFile !== '') {
@@ -29,15 +49,28 @@ export default function SignUpVerification({navigation, route}: Props) {
         return [
           ...prevS,
           {
-            userIdentificationDocument: {
+            icon: {
               path: documentFile.uri,
-              description: `ID of ${signUpInfo.firstName} ${signUpInfo.lastName}`,
+              description: `Selfie of ${signUpInfo.firstname} ${signUpInfo.lastname}`,
             },
           },
         ]
       })
     }
     if (page === 2 && documentFile !== '') {
+      setSignUpDocs((prevS: any) => {
+        return [
+          ...prevS,
+          {
+            identificationDocument: {
+              path: documentFile.uri,
+              description: `ID of ${signUpInfo.firstname} ${signUpInfo.lastname}`,
+            },
+          },
+        ]
+      })
+    }
+    if (page === 3 && documentFile !== '') {
       setSignUpDocs((prevS: any) => {
         return [
           ...prevS,
@@ -53,31 +86,50 @@ export default function SignUpVerification({navigation, route}: Props) {
   }, [documentFile])
 
   useEffect(() => {
-    if (signUpRequestStatus === 'SUCCESS') {
-      setPage(3)
+    if (signupRequestStatus === 'SUCCESS') {
+      resetStatus()
+      navigation.navigate('SignUpFinish', {email: signUpInfo.email})
     }
-  }, [signUpRequestStatus])
+    if (signupRequestStatus === 'FAILED') {
+      showToast('Unable to create sign up request.', 'failed')
+      resetStatus()
+    }
+  }, [signupRequestStatus])
 
-  const onUploadIDProceed = () => {
+  const onBackHeaderPress = () => {
+    switch (page) {
+      case 1:
+        return navigation.goBack()
+      case 2:
+        return setPage(1)
+      case 3:
+        return setPage(2)
+      default:
+        break
+    }
+  }
+
+  const onSelfieProceed = () => {
     setPage(2)
     setDocumentFile('')
   }
-
-  const onFinishVerification = () => {
-    createSignUpRequest(signUpInfo, signUpDocs)
+  const onUploadIDProceed = () => {
+    setPage(3)
+    setDocumentFile('')
+    updateUserData(signUpInfo, signUpDocs)
   }
 
-  const onBackToLogin = () => {
-    setPage(1)
-    reset()
-    navigation.navigate('Login')
+  const onFinishVerification = () => {
+    createSignupRequestForCurrentUser(signUpInfo, signUpDocs)
   }
 
   const renderScreen = () => {
     switch (page) {
-      // case 1:
-      //   return <Selfie onProceed={() => setPage(2)} />
       case 1:
+        return (
+          <Selfie onProceed={onSelfieProceed} onTakeSelfie={onTakeSelfie} />
+        )
+      case 2:
         return (
           <UploadID
             file={documentFile}
@@ -86,7 +138,7 @@ export default function SignUpVerification({navigation, route}: Props) {
             onUploadNew={onSelectDocument}
           />
         )
-      case 2:
+      case 3:
         return (
           <UploadDocs
             file={documentFile}
@@ -95,13 +147,17 @@ export default function SignUpVerification({navigation, route}: Props) {
             onUploadNew={onSelectDocument}
           />
         )
-      case 3:
-        return (
-          <SignUpFinish email={signUpInfo.email} onProceed={onBackToLogin} />
-        )
       default:
         break
     }
+  }
+
+  const onTakeSelfie = async (file: ImageFile) => {
+    setDocumentFile({
+      uri: file.uri,
+      fileName: file.fileName,
+      type: file.type,
+    })
   }
 
   const requestCameraPermission = async () => {
@@ -142,12 +198,6 @@ export default function SignUpVerification({navigation, route}: Props) {
         type: [types.images],
       })
       onClose()
-      console.log({
-        uri: pickerResult.uri,
-        fileName: pickerResult.name,
-        type: pickerResult.type,
-      })
-
       setDocumentFile({
         uri: pickerResult.uri,
         fileName: pickerResult.name,

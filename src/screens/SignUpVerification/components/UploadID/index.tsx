@@ -6,6 +6,7 @@ import {Shadow} from 'react-native-shadow-2'
 import {useTranslation} from 'react-i18next'
 
 import {Colors} from '@bluecentury/styles'
+import {useUser} from '@bluecentury/stores'
 
 interface IUploadID {
   file: ImageFile | string
@@ -20,6 +21,7 @@ export default function UploadID({
   onOpenCam,
 }: IUploadID) {
   const {t} = useTranslation()
+  const {isLoadingUpdateUserInfo, isLoadingSignupRequest} = useUser()
   return (
     <Box bg={Colors.white} flex="1">
       <Box flex="1" p={ms(16)}>
@@ -97,6 +99,8 @@ export default function UploadID({
               fontSize: 16,
             }}
             bg={Colors.primary}
+            isLoading={isLoadingUpdateUserInfo || isLoadingSignupRequest}
+            isLoadingText="Processing"
             m={ms(16)}
             size="md"
             onPress={onProceed}

@@ -17,7 +17,11 @@ import {ms} from 'react-native-size-matters'
 import {useEntity, useAuth, useSettings} from '@bluecentury/stores'
 import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
-import {EntityCard, LoadingAnimated, NoInternetConnectionMessage} from '@bluecentury/components'
+import {
+  EntityCard,
+  LoadingAnimated,
+  NoInternetConnectionMessage,
+} from '@bluecentury/components'
 import {Shadow} from 'react-native-shadow-2'
 import {resetAllStates} from '@bluecentury/utils'
 import {useSafeAreaInsets} from 'react-native-safe-area-context'
@@ -51,7 +55,7 @@ export default function Entity({route, navigation}: Props) {
     entityId,
   } = useEntity()
   const [entityItems, setEntityItems] = useState<EntityUser[]>()
-  const {logout, isLoggingOut} = useAuth()
+  const {logout, isLoggingOut, token} = useAuth()
   const {isMobileTracking, setIsMobileTracking} = useSettings()
   const [isOpenLogoutAlert, setIsOpenLogoutAlert] = useState(false)
   const [isOpenAlertIsMobileTracking, setIsOpenAlertIsMobileTracking] =
@@ -104,6 +108,14 @@ export default function Entity({route, navigation}: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [acceptRoleStatus])
 
+  useEffect(() => {
+    if (!token) {
+      navigation.navigate('Login')
+      return
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token])
+
   const showToast = (text: string, res: string) => {
     toast.show({
       duration: 2000,
@@ -140,6 +152,7 @@ export default function Entity({route, navigation}: Props) {
     if (isMobileTracking && !entityId) {
       setIsMobileTracking(false)
     }
+
     if (!entity?.hasUserAccepted) {
       selectEntityUser(entity)
       navigation.dispatch(
@@ -168,6 +181,7 @@ export default function Entity({route, navigation}: Props) {
   }
 
   const handleOnPressYesLogout = () => {
+    setIsOpenLogoutAlert(false)
     resetAllStates()
     logout()
   }

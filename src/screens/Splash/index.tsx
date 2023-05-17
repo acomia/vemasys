@@ -4,7 +4,11 @@ import {Box, Center, Image} from 'native-base'
 import {Images} from '@bluecentury/assets'
 import {useAuth, useEntity, useSettings} from '@bluecentury/stores'
 // import {} from '@bluecentury/utils'
-import {CommonActions, useNavigation} from '@react-navigation/native'
+import {
+  CommonActions,
+  useIsFocused,
+  useNavigation,
+} from '@react-navigation/native'
 import {resetAllStates} from '@bluecentury/utils'
 import {RootStackParamList} from '@bluecentury/types/nav.types'
 import {NativeStackNavigationProp} from '@react-navigation/native-stack'
@@ -12,6 +16,7 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack'
 export default function Splash() {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>()
+  const isFocused = useIsFocused()
   const {hasAuthHydrated, token, setUser} = useAuth(state => state)
   const {hasEntityHydrated, entityId} = useEntity(state => state)
   const {hasSettingsRehydrated, apiUrl, setEnv, rememberMe} = useSettings(
@@ -33,7 +38,12 @@ export default function Splash() {
     }
   }, [hasSettingsRehydrated])
   useEffect(() => {
-    if (hasAuthHydrated && hasEntityHydrated && hasSettingsRehydrated) {
+    if (
+      hasAuthHydrated &&
+      hasEntityHydrated &&
+      hasSettingsRehydrated &&
+      isFocused
+    ) {
       // non-authenticated
       if (!token) {
         resetAllStates()
@@ -62,6 +72,7 @@ export default function Splash() {
     hasSettingsRehydrated,
     token,
     entityId,
+    isFocused,
   ])
 
   return (
