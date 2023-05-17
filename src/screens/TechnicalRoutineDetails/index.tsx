@@ -25,7 +25,7 @@ import {
   IconButton,
   LoadingAnimated,
   NoInternetConnectionMessage,
-  TechnicalStatusesModal,
+  TechnicalBottomModal,
 } from '@bluecentury/components'
 import {Colors} from '@bluecentury/styles'
 import {PROD_URL} from '@vemasys/env'
@@ -329,10 +329,11 @@ const TechnicalRoutineDetails = ({navigation, route}: Props) => {
         </Button> */}
         {/* End of Comment Section */}
       </ScrollView>
-      <TechnicalStatusesModal
+      <TechnicalBottomModal
         isOpen={openStatuses}
         options={options}
         setOpen={() => setOpenStatuses(false)}
+        title={t('updateStatus')}
         onPressStatus={e => onUpdateTaskStatus(e)}
       />
     </Box>

@@ -1,37 +1,24 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState, useEffect, useRef} from 'react'
-import {
-  Box,
-  Button,
-  Divider,
-  FormControl,
-  HStack,
-  Input,
-  Modal,
-  Pressable,
-  Text,
-  VStack,
-} from 'native-base'
-import {useTranslation} from 'react-i18next'
+import React from 'react'
+import {Box, Button, Divider, Modal, Pressable, Text} from 'native-base'
 import {ms} from 'react-native-size-matters'
-import {useCharters} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
 
 interface IStatusModalProps {
   isOpen: boolean
   setOpen: () => void
+  title: string
   options: Array<{label: string; value: string}>
   onPressStatus: (option: string) => void
 }
 
-export default function TechnicalStatusesModal({
+export default function TechnicalBottomModal({
   isOpen,
   setOpen,
+  title,
   options,
   onPressStatus,
 }: IStatusModalProps) {
-  const {t} = useTranslation()
-
   const labelColor = (val: string) => {
     switch (val) {
       case 'todo':
@@ -50,7 +37,7 @@ export default function TechnicalStatusesModal({
       <Modal.Content style={{marginBottom: 0, marginTop: 'auto'}} width="99%">
         <Modal.Header alignItems="center">
           <Text bold color={Colors.text} fontSize={ms(13)}>
-            {t('updateStatus')}
+            {title}
           </Text>
         </Modal.Header>
         {options.map((option, key) => (
