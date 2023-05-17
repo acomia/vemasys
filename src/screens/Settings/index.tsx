@@ -24,6 +24,7 @@ const Settings = (props: DrawerContentComponentProps) => {
   // const setMobileTracking = useSettings(state => state.setIsMobileTracking)
   const setIsQrScanner = useSettings(state => state.setIsQrScanner)
   const isQrScanner = useSettings(state => state.isQrScanner)
+  const env = useSettings(state => state.env)
 
   const handleOnValueChange = () => {
     navigation.navigate('TrackingServiceDialog')
@@ -85,14 +86,16 @@ const Settings = (props: DrawerContentComponentProps) => {
       <ResetPasswordModal />
 
       {/*TODO change icon*/}
-      <SettingsItem
-        type="navigation"
-        value={t('measurementTable')}
-        iconSource={Icons.ship}
-        callback={() => {
-          navigation.navigate(Screens.MeasurementTable)
-        }}
-      />
+      {env === 'UAT' ? (
+        <SettingsItem
+          callback={() => {
+            navigation.navigate(Screens.MeasurementTable)
+          }}
+          iconSource={Icons.ruler}
+          type="navigation"
+          value={t('measurementTable')}
+        />
+      ) : null}
       <HStack justifyContent="center">
         <Center>
           <VersionBuildLabel />
