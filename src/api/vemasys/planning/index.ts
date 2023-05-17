@@ -334,7 +334,6 @@ const deleteNavigationLogAction = async (id: string) => {
       console.error('Error:Delete navlog action data', error)
     })
 }
-
 export {
   reloadNavigationLogDetails,
   reloadNavigationLogActions,

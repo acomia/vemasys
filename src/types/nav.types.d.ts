@@ -18,8 +18,8 @@ type RootStackParamList = {
   AddEditComment: {
     comment?: Comments
     method: string
-    routeFrom?: string
-    navlogId: number
+    routeFrom: string
+    navlogId?: number
   }
   AddEditNavlogAction: {
     method: string
@@ -43,7 +43,9 @@ type RootStackParamList = {
   CharterAcceptSign: {charter?: any}
   TrackingServiceDialog: undefined
   SignUp: undefined
-  SignUpVerification: {signUpInfo: any; requestAsOwner: boolean}
+  SignUpVerification: {signUpInfo: any}
+  SignUpFinish: {email: string}
+  MeasurementTable: undefined
 }
 
 type MainStackParamList = {

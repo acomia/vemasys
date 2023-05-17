@@ -4,7 +4,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import * as API from '@bluecentury/api/vemasys'
 import moment from 'moment'
-import {PartType, Task, TaskSection} from '@bluecentury/models'
+import {
+  PartType,
+  Routine,
+  RoutineSection,
+  Task,
+  TaskSection,
+} from '@bluecentury/models'
 
 type TechnicalState = {
   isTechnicalLoading: boolean
@@ -17,9 +23,9 @@ type TechnicalState = {
   reservoirs: any[]
   tasksCategory: Array<TaskSection>
   tasksByCategory: Array<Task>
-  routinesCategory: any[]
-  routinesByCategory: any[]
-  routineDetails: any[]
+  routinesCategory: Array<TaskSection>
+  routinesByCategory: Array<RoutineSection>
+  routineDetails: Routine | Record<string, never>
   certificates: any[]
   lastMeasurements: any[]
   inventory: any[]
@@ -28,6 +34,7 @@ type TechnicalState = {
   vesselPartType: PartType | null
   isBunkeringLoading: boolean
   taskDetails: Task | null
+  taskUpdateStatus: 'SUCCESS' | 'FAILED' | ''
 }
 
 type TechnicalActions = {
@@ -60,6 +67,8 @@ type TechnicalActions = {
   updateVesselInventoryItem: (quantity: number, consumableId: number) => void
   getVesselPartType: (id: string) => void
   getVesselTaskDetails: (id: string) => void
+  updateTaskStatus: (id: string, status: string) => void
+  resetStatuses: () => void
 }
 
 type TechnicalStore = TechnicalState & TechnicalActions
@@ -79,7 +88,7 @@ export const useTechnical = create(
       tasksByCategory: [],
       routinesCategory: [],
       routinesByCategory: [],
-      routineDetails: [],
+      routineDetails: {},
       certificates: [],
       lastMeasurements: [],
       inventory: [],
@@ -88,6 +97,7 @@ export const useTechnical = create(
       vesselPartType: null,
       isBunkeringLoading: false,
       taskDetails: null,
+      taskUpdateStatus: '',
       getVesselBunkering: async (vesselId: string) => {
         set({
           isTechnicalLoading: true,
@@ -477,7 +487,7 @@ export const useTechnical = create(
         }
       },
       getVesselRoutineDetails: async (id: string) => {
-        set({isTechnicalLoading: true, routineDetails: []})
+        set({isTechnicalLoading: true, routineDetails: {}})
         try {
           const response = await API.reloadRoutineDetails(id)
           if (typeof response === 'object') {
@@ -488,7 +498,7 @@ export const useTechnical = create(
           } else {
             set({
               isTechnicalLoading: false,
-              routineDetails: [],
+              routineDetails: {},
             })
           }
         } catch (error) {
@@ -525,6 +535,28 @@ export const useTechnical = create(
         } catch (error) {
           set({isTechnicalLoading: false})
         }
+      },
+      updateTaskStatus: async (id: string, status: string) => {
+        set({isTechnicalLoading: true})
+        try {
+          const response = await API.updateTaskStatus(id, status)
+          if (Array.isArray(response)) {
+            set({
+              isTechnicalLoading: false,
+              taskUpdateStatus: 'SUCCESS',
+            })
+          } else {
+            set({
+              isTechnicalLoading: false,
+              taskUpdateStatus: 'FAILED',
+            })
+          }
+        } catch (error) {
+          set({isTechnicalLoading: false})
+        }
+      },
+      resetStatuses: () => {
+        set({taskUpdateStatus: ''})
       },
     }),
     {

@@ -21,6 +21,7 @@ export type Entity = {
   fileGroup: {
     id: number
   }
+  hasLinkedUser: boolean
 }
 
 // {

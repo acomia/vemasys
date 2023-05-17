@@ -7,9 +7,10 @@ import {ms} from 'react-native-size-matters'
 import Fontisto from 'react-native-vector-icons/Fontisto'
 
 interface ISelfie {
+  onTakeSelfie: (file: ImageFile) => void
   onProceed: () => void
 }
-export default function Selfie({onProceed}: ISelfie) {
+export default function Selfie({onTakeSelfie, onProceed}: ISelfie) {
   const camRef = useRef<RNCamera>(null)
   const [imgFile, setImgFile] = useState<ImageFile | string>('')
   const [snapLoading, setSnapLoading] = useState(false)
@@ -23,6 +24,12 @@ export default function Selfie({onProceed}: ISelfie) {
       const fileName = arrFromPath[arrFromPath.length - 1]
       const fileNameWithoutExtension = fileName.split('.')[0]
       setImgFile({
+        id: fileNameWithoutExtension,
+        uri: data.uri,
+        fileName: fileName,
+        type: 'image/jpeg',
+      })
+      onTakeSelfie({
         id: fileNameWithoutExtension,
         uri: data.uri,
         fileName: fileName,
@@ -58,6 +65,26 @@ export default function Selfie({onProceed}: ISelfie) {
           style={styles.preview}
           type={RNCamera.Constants.Type.front}
         >
+          <Box
+            style={{
+              transform: [{scaleY: 1.5}],
+            }}
+            borderColor={Colors.primary}
+            borderRadius={210 / 2}
+            borderStyle="dashed"
+            borderWidth={4}
+            h={230}
+            w={230}
+          />
+          <Text
+            bold
+            color={Colors.primary}
+            fontSize={16}
+            mt={190 / 2}
+            textAlign="center"
+          >
+            Position your face inside the dotted circle
+          </Text>
           {snapLoading ? (
             <Text bold color={Colors.white} fontSize={20}>
               Processing...

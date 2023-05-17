@@ -36,6 +36,8 @@ import {
   TrackingServiceDialog,
   SignUp,
   SignUpVerification,
+  SignupFinish,
+  MeasurementTable,
 } from '@bluecentury/screens'
 import {Colors} from '@bluecentury/styles'
 import {useTranslation} from 'react-i18next'
@@ -295,11 +297,26 @@ export default function RootNavigator() {
         <Screen
           options={{
             headerShown: true,
-            title: 'Verification',
+            title: t('verification'),
             headerStyle: {backgroundColor: Colors.white},
           }}
           component={SignUpVerification}
           name={'SignUpVerification'}
+        />
+        <Screen
+          options={{
+            headerShown: false,
+          }}
+          component={SignupFinish}
+          name={'SignUpFinish'}
+        />
+        <Screen
+          options={{
+            headerShown: true,
+            title: t('measurementTable'),
+          }}
+          component={MeasurementTable}
+          name={'MeasurementTable'}
         />
       </Group>
       <Group

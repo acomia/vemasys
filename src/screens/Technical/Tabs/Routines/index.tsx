@@ -29,7 +29,7 @@ const Routines = () => {
     setPullRefresh(false)
   }
 
-  // if (isTechnicalLoading) return <LoadingAnimated />
+  if (isTechnicalLoading) return <LoadingAnimated />
 
   return (
     <Box flex="1">
@@ -38,27 +38,27 @@ const Routines = () => {
           flexGrow: 1,
           paddingBottom: 30,
         }}
-        scrollEventThrottle={16}
         refreshControl={
-          <RefreshControl onRefresh={onPullRefresh} refreshing={pullRefresh} />
+          <RefreshControl refreshing={pullRefresh} onRefresh={onPullRefresh} />
         }
-        showsVerticalScrollIndicator={false}
+        bg={Colors.white}
         px={ms(12)}
         py={ms(20)}
-        bg={Colors.white}
+        scrollEventThrottle={16}
+        showsVerticalScrollIndicator={false}
       >
-        <Text fontSize={ms(20)} bold color={Colors.azure}>
+        <Text bold color={Colors.azure} fontSize={ms(20)}>
           {t('overview')}
         </Text>
         <HStack
+          alignItems="center"
           flexWrap="wrap"
           justifyContent="space-between"
-          alignItems="center"
           mt={ms(15)}
         >
           {routinesCategory?.length > 0 ? (
             routinesCategory?.map((task: any, index) => {
-              let icon = undefined
+              let icon
               switch (task.key) {
                 case 'clipboard':
                   icon = Icons.clipboard
@@ -91,20 +91,20 @@ const Routines = () => {
                   }
                 >
                   <Box
-                    w={width / 2 - 30}
-                    p={ms(30)}
                     alignItems="center"
-                    justifyContent="center"
                     bg={Colors.white}
                     borderRadius={ms(5)}
-                    shadow={4}
+                    justifyContent="center"
                     mt={ms(10)}
+                    p={ms(30)}
+                    shadow={4}
+                    w={width / 2 - 30}
                   >
-                    <Image alt={`${task.key}-icon`} source={icon} mb={ms(15)} />
-                    <Text fontSize={ms(22)} bold color={Colors.text}>
+                    <Image alt={`${task.key}-icon`} mb={ms(15)} source={icon} />
+                    <Text bold color={Colors.text} fontSize={ms(22)}>
                       {task.count}
                     </Text>
-                    <Text fontWeight="medium" color={Colors.text}>
+                    <Text color={Colors.text} fontWeight="medium">
                       {t(task.label)}
                     </Text>
                   </Box>
