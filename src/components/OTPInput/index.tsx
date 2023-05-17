@@ -33,6 +33,8 @@ export const OTPInput = ({
   const [initialNumber, setInitialNumber] = useState<string | null>(null)
   const [initialDecimal, setInitialDecimal] = useState<string | null>(null)
   const {t} = useTranslation()
+  const inputRefs = useRef<any>([])
+  const decimalRefs = useRef<any>([])
 
   useEffect(() => {
     if (initialValue) {
@@ -65,6 +67,14 @@ export const OTPInput = ({
       const newNumber = newOtp.join('')
       setNumber(newNumber.padStart(numberLength, '0'))
       setIsInputInvalid(false)
+
+      if (value.length >= 1 && index < inputRefs.current.length - 1) {
+        inputRefs?.current[index + 1]?.focus()
+      }
+
+      if (index === inputRefs.current.length - 1) {
+        decimalRefs?.current[0]?.focus()
+      }
     }
   }
 
@@ -75,6 +85,10 @@ export const OTPInput = ({
       const newNumber = newOtp.join('')
       setDecimal(newNumber.padEnd(decimalLength, '0'))
       setIsInputInvalid(false)
+
+      if (value.length >= 1 && index < decimalRefs.current.length - 1) {
+        decimalRefs?.current[index + 1]?.focus()
+      }
     }
   }
 
@@ -148,6 +162,7 @@ export const OTPInput = ({
               {Array.from(number.toString()).map((digit, index) => (
                 <TextInput
                   key={index}
+                  ref={ref => (inputRefs.current[index] = ref)}
                   defaultValue={digit}
                   keyboardType="numeric"
                   maxLength={1}
@@ -160,6 +175,7 @@ export const OTPInput = ({
                 ? Array.from(decimal.toString()).map((digit, index) => (
                     <TextInput
                       key={index}
+                      ref={ref => (decimalRefs.current[index] = ref)}
                       defaultValue={digit}
                       keyboardType="numeric"
                       maxLength={1}

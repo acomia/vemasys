@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useRef} from 'react'
 import {StyleSheet} from 'react-native'
 import {Text, Input, Box, HStack} from 'native-base'
 import {Colors} from '@bluecentury/styles'
@@ -15,8 +15,9 @@ interface Props {
 
 export default ({label, maxLength, onChange, name, isActive}: Props) => {
   const regex = /^[0-9]*$/
-
+  const inputRefs = useRef<any>([])
   const [textValue, setTextValue] = useState(Array(maxLength).fill(''))
+
   const handleOnChange = (text: string, index: number) => {
     const updatedValues = [...textValue]
 
@@ -28,6 +29,10 @@ export default ({label, maxLength, onChange, name, isActive}: Props) => {
     setTextValue(updatedValues)
 
     onChange(name, updatedValues.join(''))
+
+    if (text.length >= 1 && index < inputRefs.current.length - 1) {
+      inputRefs?.current[index + 1]?.focus()
+    }
   }
 
   return (
@@ -40,12 +45,13 @@ export default ({label, maxLength, onChange, name, isActive}: Props) => {
           return (
             <Input
               key={index}
+              ref={ref => (inputRefs.current[index] = ref)}
               backgroundColor={isActive ? Colors.border : null}
               borderColor={isActive ? Colors.primary : null}
               fontSize={ms(20)}
               isDisabled={!isActive}
               keyboardType={'numeric'}
-              maxLength={2}
+              maxLength={1}
               mx={ms(5)}
               textAlign={'center'}
               value={value}
