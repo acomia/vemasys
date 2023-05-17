@@ -5,7 +5,7 @@ import {IComboBoxProps} from 'native-base/lib/typescript/components/composites/T
 
 export function LoadingAnimated(props: Partial<IComboBoxProps>) {
   return (
-    <Box size="32" alignSelf="center" {...props}>
+    <Box alignSelf="center" size="32" {...props}>
       <Lottie
         autoPlay
         loop
