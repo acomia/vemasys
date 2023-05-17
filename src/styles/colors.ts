@@ -33,4 +33,7 @@ export const Colors = {
   light_blue: '#D9EDF7',
   dark_green: '#5B9570',
   light_red: '#ffe2e2',
+
+  //Table colors
+  tableGreyBackground: '#F0F0F0BD',
 }

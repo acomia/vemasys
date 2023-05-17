@@ -47,6 +47,8 @@ const MeasurementTable = () => {
   const [changedData, setChangedData] = useState<TableItem[]>([])
   const [shouldRecalculateValue, setShouldRecalculateValue] =
     useState<boolean>(false)
+  const [draughtError, setDraughtError] = useState<boolean>(false)
+  const [tonnageError, setTonnageError] = useState<boolean>(false)
 
   useEffect(() => {
     getDraughtTable(vesselId)
@@ -118,6 +120,14 @@ const MeasurementTable = () => {
       tonnageTMax !== null &&
       shouldRecalculateValue
     ) {
+      if (draughtCmMin > draughtCmMax) {
+        setDraughtError(true)
+        return
+      }
+      if (tonnageTMin > tonnageTMax) {
+        setTonnageError(true)
+        return
+      }
       setDataForTable(
         calculateTable(tonnageTMax, tonnageTMin, draughtCmMax, draughtCmMin)
       )
@@ -224,6 +234,7 @@ const MeasurementTable = () => {
             keyboardType="number-pad"
             placeholder={t('enterNumber') as string}
             onChangeText={val => {
+              setDraughtError(false)
               setDraughtCmMin(Number(val))
               setShouldRecalculateValue(true)
             }}
@@ -243,12 +254,18 @@ const MeasurementTable = () => {
             keyboardType="number-pad"
             placeholder={t('enterNumber') as string}
             onChangeText={val => {
+              setDraughtError(false)
               setDraughtCmMax(Number(val))
               setShouldRecalculateValue(true)
             }}
           />
         </FormControl>
       </HStack>
+      {draughtError ? (
+        <Text color={Colors.offlineWarning} textAlign="center" w="100%">
+          {t('enteredValuesAreWrong')}
+        </Text>
+      ) : null}
       <Divider mb={ms(20)} mt={ms(10)} />
       <HStack justifyContent="space-between">
         <FormControl w="40%">
@@ -265,6 +282,7 @@ const MeasurementTable = () => {
             keyboardType="number-pad"
             placeholder={t('enterNumber') as string}
             onChangeText={val => {
+              setTonnageError(false)
               setTonnageTMin(Number(val))
               setShouldRecalculateValue(true)
             }}
@@ -284,47 +302,73 @@ const MeasurementTable = () => {
             keyboardType="number-pad"
             placeholder={t('enterNumber') as string}
             onChangeText={val => {
+              setTonnageError(false)
               setTonnageTMax(Number(val))
               setShouldRecalculateValue(true)
             }}
           />
         </FormControl>
       </HStack>
+      {tonnageError ? (
+        <Text color={Colors.offlineWarning} textAlign="center" w="100%">
+          {t('enteredValuesAreWrong')}
+        </Text>
+      ) : null}
       <Divider mb={ms(20)} mt={ms(10)} />
       {dataForTable.length ? (
-        <Box flex={1}>
+        <Box
+          borderColor={Colors.light}
+          borderRadius={5}
+          borderWidth={1}
+          flex={1}
+        >
           <HStack>
-            <Text color={Colors.text} fontSize={ms(14)} mb={ms(8)} w="50%">
-              Draught (cm)
-            </Text>
-            <Text color={Colors.text} fontSize={ms(14)} mb={ms(8)} w="50%">
-              Tonnage (T)
-            </Text>
+            <Box
+              borderRightColor={Colors.light}
+              borderRightWidth={1}
+              px={ms(6)}
+              py={ms(8)}
+              w={ms(104)}
+            >
+              <Text color={Colors.disabled} fontSize={ms(14)}>
+                Draught (cm)
+              </Text>
+            </Box>
+            <Box px={ms(6)} py={ms(8)}>
+              <Text color={Colors.disabled} fontSize={ms(14)}>
+                Tonnage (T)
+              </Text>
+            </Box>
           </HStack>
-          <ScrollView flex={1} mx={ms(-16)}>
+          <ScrollView flex={1}>
             {dataForTable.map((item, index) => (
               <HStack
                 key={item.draught}
+                backgroundColor={
+                  (index / 2) % 1 === 0
+                    ? Colors.white
+                    : Colors.tableGreyBackground
+                }
                 alignItems="center"
-                backgroundColor={(index / 2) % 1 === 0 ? Colors.white : Colors.grey}
-                justifyContent="space-between"
-                px={ms(16)}
-                py={ms(6)}
+                borderBottomColor={Colors.light}
+                borderBottomWidth={1}
+                borderTopColor={index === 0 ? Colors.light : null}
+                borderTopWidth={index === 0 ? 1 : 0}
+                h={ms(58)}
                 w="100%"
               >
-                <Input
-                  borderWidth="0"
-                  color={Colors.text}
-                  fontSize={ms(12)}
-                  h={ms(40)}
-                  isDisabled={true}
-                  keyboardType="number-pad"
-                  // mb={ms(12)}
-                  mx={ms(0)}
-                  px={ms(0)}
-                  value={item.draught.toString()}
-                  w={ms(36)}
-                />
+                <Box
+                  borderRightColor={Colors.light}
+                  borderRightWidth={1}
+                  h={'100%'}
+                  justifyContent="center"
+                  px={ms(6)}
+                  w={ms(104)}
+                >
+                  <Text my={0} py={0}>
+                    {item.draught.toString()}
+                  </Text>
+                </Box>
                 <OTPInput
                   getValue={val => {
                     if (val) {
@@ -337,52 +381,54 @@ const MeasurementTable = () => {
                   decimalLength={3}
                   errorMessage={'Too match'}
                   initialValue={item.tonnage}
+                  isDisabled={index === 0 || index === dataForTable.length - 1}
+                  lineIndex={index}
                   maxValue={11}
                   numberLength={4}
-                  isDisabled={index === 0 || index === dataForTable.length - 1}
                 />
               </HStack>
             ))}
           </ScrollView>
-          <HStack
-            justifyContent="space-between"
-            pb={ms(48)}
-            pt={ms(12)}
-            px={ms(12)}
-          >
-            <Button
-              bg={Colors.white}
-              maxH={ms(40)}
-              w="45%"
-              onPress={() => {
-                setDraughtCmMin(null)
-                setDraughtCmMax(null)
-                setTonnageTMin(null)
-                setTonnageTMax(null)
-                setDataForTable([])
-                setChangedData([])
-                navigation.goBack()
-              }}
-            >
-              <Text bold color={Colors.disabled} fontSize={ms(16)}>
-                {t('cancel')}
-              </Text>
-            </Button>
-            <Button
-              bg={Colors.primary}
-              maxH={ms(40)}
-              w="45%"
-              onPress={() => {
-                handleOnSave()
-              }}
-            >
-              <Text bold color={Colors.white} fontSize={ms(16)}>
-                {t('save')}
-              </Text>
-            </Button>
-          </HStack>
         </Box>
       ) : null}
+      <HStack
+        alignItems="flex-end"
+        justifyContent="space-between"
+        pb={ms(48)}
+        pt={ms(12)}
+        px={ms(12)}
+      >
+        <Button
+          bg={Colors.white}
+          maxH={ms(40)}
+          w="45%"
+          onPress={() => {
+            setDraughtCmMin(null)
+            setDraughtCmMax(null)
+            setTonnageTMin(null)
+            setTonnageTMax(null)
+            setDataForTable([])
+            setChangedData([])
+            navigation.goBack()
+          }}
+        >
+          <Text bold color={Colors.disabled} fontSize={ms(16)}>
+            {t('cancel')}
+          </Text>
+        </Button>
+        <Button
+          bg={Colors.primary}
+          maxH={ms(40)}
+          w="45%"
+          onPress={() => {
+            handleOnSave()
+          }}
+        >
+          <Text bold color={Colors.white} fontSize={ms(16)}>
+            {t('save')}
+          </Text>
+        </Button>
+      </HStack>
     </Box>
   )
 }

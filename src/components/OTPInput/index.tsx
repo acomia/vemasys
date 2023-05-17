@@ -1,7 +1,7 @@
-import React, {useState, useEffect, useRef} from 'react'
+import React, {useState, useEffect} from 'react'
 import {TextInput, StyleSheet, Text, Pressable} from 'react-native'
 import {ms} from 'react-native-size-matters'
-import {Button, HStack, Modal, useToast} from 'native-base'
+import {Button, HStack, Modal} from 'native-base'
 import {Colors} from '@bluecentury/styles'
 import {useTranslation} from 'react-i18next'
 
@@ -14,6 +14,7 @@ type Props = {
   minValue?: number
   errorMessage?: string
   isDisabled?: boolean
+  lineIndex?: number
 }
 
 export const OTPInput = ({
@@ -25,6 +26,7 @@ export const OTPInput = ({
   minValue,
   errorMessage,
   isDisabled,
+  lineIndex,
 }: Props) => {
   const [number, setNumber] = useState('')
   const [decimal, setDecimal] = useState('')
@@ -88,25 +90,6 @@ export const OTPInput = ({
     }
   }
 
-  const formNewNumber = (num: string, dec: string) => {
-    const newNumber = parseFloat(`${num}.${dec}`)
-    if (maxValue && minValue) {
-      if (newNumber > maxValue || newNumber < minValue) {
-        return setIsInputInvalid(true)
-      }
-    }
-    if (maxValue) {
-      if (newNumber > maxValue) {
-        return setIsInputInvalid(true)
-      }
-    }
-    if (minValue) {
-      if (newNumber < minValue) {
-        return setIsInputInvalid(true)
-      }
-    }
-  }
-
   const onModalSave = (num: string, dec: string) => {
     const newNumber = parseFloat(`${num}.${dec}`)
 
@@ -136,6 +119,27 @@ export const OTPInput = ({
     setIsModalOpen(false)
   }
 
+  const defineInputStyle = (
+    initial: number,
+    num: string,
+    index: number,
+    dec: boolean
+  ) => {
+    let wholeNumber
+    let decimalNumber = ''
+    if (initial % 1 === 0) {
+      wholeNumber = initial.toString()
+    } else {
+      wholeNumber = initial.toString().split('.')[0]
+      decimalNumber = initial.toString().split('.')[1]
+    }
+    if (dec) {
+      return decimalNumber.length - 1 < index
+    } else {
+      return numberLength - wholeNumber.length - 1 >= index
+    }
+  }
+
   return (
     <Pressable
       style={styles.container}
@@ -144,11 +148,17 @@ export const OTPInput = ({
       {Array.from(number.toString()).map((digit, index) => (
         <TextInput
           key={index}
+          style={
+            defineInputStyle(initialValue, number, index, false)
+              ? (lineIndex && lineIndex % 2 === 0) || lineIndex === 0
+                ? styles.disabled
+                : [styles.disabled, {backgroundColor: Colors.white}]
+              : styles.boxSmall
+          }
           defaultValue={digit}
           editable={false}
           keyboardType="numeric"
           maxLength={1}
-          style={styles.box}
           onPressIn={!isDisabled ? () => setIsModalOpen(true) : null}
         />
       ))}
@@ -157,11 +167,17 @@ export const OTPInput = ({
         ? Array.from(decimal.toString()).map((digit, index) => (
             <TextInput
               key={index}
+              style={
+                defineInputStyle(initialValue, number, index, true)
+                  ? (lineIndex && lineIndex % 2 === 0) || lineIndex === 0
+                    ? styles.disabled
+                    : [styles.disabled, {backgroundColor: Colors.white}]
+                  : styles.decimalBoxSmall
+              }
               defaultValue={digit}
               editable={false}
               keyboardType="numeric"
               maxLength={1}
-              style={styles.decimalBox}
               onPressIn={!isDisabled ? () => setIsModalOpen(true) : null}
             />
           ))
@@ -169,7 +185,7 @@ export const OTPInput = ({
       <Modal animationPreset="slide" isOpen={isModalOpen} size="full">
         <Modal.Content>
           <Modal.Header>
-            <Text>Enter tonnage</Text>
+            <Text>{t('enterNumber')}</Text>
           </Modal.Header>
           <Modal.Body>
             <HStack justifyContent="space-between">
@@ -221,7 +237,6 @@ export const OTPInput = ({
               flex="1"
               m={ms(5)}
               onPress={() => {
-                formNewNumber(number, decimal)
                 onModalSave(number, decimal)
               }}
             >
@@ -240,40 +255,45 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     flex: 1,
+    paddingHorizontal: ms(6),
+    height: ms(58),
   },
   numbersContainer: {
-    height: ms(40),
     alignSelf: 'stretch',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    flex: 4,
   },
   numbersWithoutDecimal: {
-    height: ms(40),
-    alignSelf: 'stretch',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'flex-start',
-    flex: 4,
   },
   decimalContainer: {
-    height: ms(40),
-    alignSelf: 'stretch',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    flex: 3,
   },
   box: {
     borderWidth: 1,
     borderColor: '#44A7B9',
     borderRadius: 5,
-    width: ms(40),
-    height: ms(40),
     textAlign: 'center',
     backgroundColor: '#44A7B942',
     fontSize: 14,
+    aspectRatio: 1,
+  },
+  boxSmall: {
+    borderWidth: 1,
+    borderColor: '#44A7B9',
+    borderRadius: 5,
+    height: '50%',
+    aspectRatio: 1,
+    textAlign: 'center',
+    backgroundColor: '#44A7B942',
+    fontSize: 14,
+    paddingVertical: 0,
+    marginVertical: 0,
   },
   decimalBox: {
     borderWidth: 1,
@@ -285,12 +305,35 @@ const styles = StyleSheet.create({
     backgroundColor: '#23475C42',
     fontSize: 14,
   },
+  decimalBoxSmall: {
+    borderWidth: 1,
+    borderColor: '#23475C',
+    borderRadius: 5,
+    height: '50%',
+    aspectRatio: 1,
+    textAlign: 'center',
+    backgroundColor: '#23475C42',
+    fontSize: 14,
+    paddingVertical: 0,
+    marginVertical: 0,
+  },
   coma: {
-    alignSelf: 'flex-end',
+    alignSelf: 'center',
   },
   error: {
     color: Colors.danger,
     textAlign: 'center',
     paddingTop: ms(5),
+  },
+  disabled: {
+    borderRadius: 5,
+    height: '50%',
+    aspectRatio: 1,
+    textAlign: 'center',
+    backgroundColor: Colors.light_grey,
+    fontSize: 14,
+    color: Colors.disabled,
+    paddingVertical: 0,
+    marginVertical: 0,
   },
 })

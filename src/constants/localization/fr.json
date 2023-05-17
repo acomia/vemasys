@@ -388,5 +388,6 @@
   "freeboard": "Freeboard",
   "after": "After",
   "before": "Before",
-  "highlightedText": "Highlighted values have been edited"
+  "highlightedText": "Highlighted values have been edited",
+  "enteredValuesAreWrong": "Entered values are wrong"
 }

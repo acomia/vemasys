@@ -96,16 +96,17 @@ const Settings = (props: DrawerContentComponentProps) => {
 
       {/*TODO change icon*/}
       {/** remove the checking of env when going to production */}
-      {env === 'UAT' && (
+
+      {env === 'UAT' ? (
         <SettingsItem
           callback={() => {
             navigation.navigate(Screens.MeasurementTable)
           }}
-          iconSource={Icons.ship}
+          iconSource={Icons.ruler}
           type="navigation"
           value={t('measurementTable')}
         />
-      )}
+      ) : null}
       <HStack justifyContent="center">
         <Center>
           <VersionBuildLabel />

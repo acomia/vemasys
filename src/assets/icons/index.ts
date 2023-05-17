@@ -111,4 +111,5 @@ export const Icons = {
   keySkeleton: require('./key-skeleton.png'),
   navlogLoading: require('./navlog_loading.png'),
   navlogUnloading: require('./navlog_unloading.png'),
+  ruler: require('./ruler.png'),
 }
