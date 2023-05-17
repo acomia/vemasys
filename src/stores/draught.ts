@@ -6,38 +6,54 @@ import RNFS from 'react-native-fs'
 
 type DraughtState = {
   isDraughtLoading: boolean
-  draught: [] | undefined
+  draughtTable: any | null | undefined
 }
 
 type DraughtActions = {
-  getDraught: () => void
-  updateDraught: (beforeValue: any, afterValue: any) => void
+  getDraught: (id: number) => void
+  updateDraught: (id: number, data: any) => void
 }
 
 const initialState: DraughtState = {
   isDraughtLoading: false,
-  draught: [],
+  draughtTable: null,
 }
 
 type DraughtStore = DraughtState & DraughtActions
-
-const filePath = `${RNFS.DocumentDirectoryPath}/data.txt`
 
 export const useDraught = create(
   persist<DraughtStore>(
     set => ({
       ...initialState,
-      getDraught: () => {
+      getDraught: async (id: number) => {
         set({isDraughtLoading: false})
-      },
-      updateDraught: async (beforeValue: any, afterValue: any) => {
-        set({isDraughtLoading: false})
+        const filePath = `${RNFS.DocumentDirectoryPath}/data_${id}.txt`
 
         try {
-          const jsonString = JSON.stringify([{beforeValue}, {afterValue}])
+          // it should be an API here
 
-          console.log('jsonString', jsonString)
-        } catch (error) {}
+          const draughtResponse = await RNFS.readFile(filePath)
+          if (draughtResponse) {
+            set({draughtTable: JSON.parse(draughtResponse)})
+          }
+          set({isDraughtLoading: false})
+        } catch (error) {
+          set({isDraughtLoading: false})
+        }
+      },
+      updateDraught: async (id: number, data: any) => {
+        const filePath = `${RNFS.DocumentDirectoryPath}/data_${id}.txt`
+        set({isDraughtLoading: true})
+
+        try {
+          const jsonString = JSON.stringify(data)
+
+          // it should be an API here
+          await RNFS.writeFile(filePath, jsonString, 'utf8')
+          set({isDraughtLoading: false})
+        } catch (error) {
+          set({isDraughtLoading: false})
+        }
       },
     }),
     {

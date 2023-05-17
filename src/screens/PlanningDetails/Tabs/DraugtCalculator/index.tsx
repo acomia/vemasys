@@ -7,12 +7,10 @@ import {BeforeAfterComponent, Ship, InputModal} from './component'
 import {useTranslation} from 'react-i18next'
 import {PageScroll} from '@bluecentury/components'
 import {usePlanning, useDraught} from '@bluecentury/stores'
-import {titleCase} from '@bluecentury/constants'
+import {titleCase, initialDraughtValues} from '@bluecentury/constants'
 import {Vemasys} from '@bluecentury/helpers'
 import _ from 'lodash'
-import {initialDraughtValues} from '@bluecentury/constants'
 import IconFA5 from 'react-native-vector-icons/FontAwesome5'
-import RNFS from 'react-native-fs'
 
 export default () => {
   const {t} = useTranslation()
@@ -30,7 +28,8 @@ export default () => {
     updateNavigationLogAction,
   } = usePlanning()
 
-  const {isDraughtLoading, updateDraught} = useDraught()
+  const {isDraughtLoading, updateDraught, draughtTable, getDraught} =
+    useDraught()
 
   const [beforeDraught, setBeforeDraught] = useState(initialDraughtValues)
   const [afterDraught, setAfterDraught] = useState(initialDraughtValues)
@@ -55,9 +54,14 @@ export default () => {
       )
     : null
 
-  const unsavedChanges = Object.values(beforeDraught).filter(
+  const beforeUnsaveChanges = Object.values(beforeDraught).filter(
     value => value.didUpdate === true
   )
+  const afterUnsaveChanges = Object.values(afterDraught).filter(
+    value => value.didUpdate === true
+  )
+
+  const unsavedChanges = beforeUnsaveChanges.length + afterUnsaveChanges.length
 
   const maxDraught = vesselNavigationDetails?.physicalVessel?.draught * 100
 
@@ -65,11 +69,47 @@ export default () => {
     ...tonnageCertifications?.map(item => item.draught)
   )
 
-  const filePath = `${RNFS.DocumentDirectoryPath}/data_${navigationLogDetails?.exploitationVessel?.id}.txt` // Path to the text file
-
   useEffect(() => {
     getTonnage()
+
+    getDraught(navigationLogDetails?.exploitationVessel?.id)
+
+    if (draughtTable) {
+      setBeforeDraught(draughtTable?.beforeDraught)
+      setAfterDraught(draughtTable?.afterDraught)
+    }
   }, [])
+
+  useEffect(() => {
+    if (beforeDraught) {
+      const beforeAverageCalc = calculateAverage(beforeDraught)
+      if (beforeAverageCalc) {
+        setBeforeAverage(beforeAverageCalc)
+      }
+    }
+    if (afterDraught) {
+      const afterDraughtCalc = calculateAverage(afterDraught)
+      if (afterDraughtCalc) {
+        setAfterAverage(afterDraughtCalc)
+      }
+    }
+  }, [beforeDraught, afterDraught])
+
+  const calculateAverage = (value: object) => {
+    if (!value) return
+    const values = Object.values(value)
+
+    return values.reduce((acc, val) => acc + val?.draught, 0) / values.length
+  }
+
+  const getClosestDraught = (average: number) => {
+    return sortedDraughtTable?.reduce((prev, curr) =>
+      Math.abs(parseInt(curr.draught) - average) <
+      Math.abs(parseInt(prev.draught) - average)
+        ? curr
+        : prev
+    )
+  }
 
   const getTonnage = async () => {
     if (!vesselNavigationDetails) {
@@ -86,18 +126,6 @@ export default () => {
     )
 
     setActiveLoadingAction(activeLoading[0])
-    console.log('filepath', filePath)
-
-    const localDraughtFile = await RNFS.readFile(filePath, 'utf8')
-    const localDraughtObj = JSON.parse(localDraughtFile)
-    if (localDraughtObj) {
-      console.log('localDraughtFile', localDraughtObj?.average?.beforeTonnage)
-      setBeforeDraught(localDraughtObj?.beforeDraught)
-      setBeforeAverage(localDraughtObj?.average?.beforeAverage)
-      setAfterAverage(localDraughtObj?.average?.afterAverage)
-      setBeforeTonnage(localDraughtObj?.average?.beforeTonnage)
-      setAfterTonnage(localDraughtObj?.average?.afterTonnage)
-    }
   }
 
   const buttonSelected = (selected: string) => {
@@ -116,15 +144,32 @@ export default () => {
   }
 
   const saveDraught = async () => {
-    const jsonString = JSON.stringify({
-      average: {beforeAverage, afterAverage},
-      tonnage: {beforeTonnage, afterTonnage},
-      beforeDraught,
-      afterDraught,
-    })
+    const beforeDraughtTemp = Object.keys(beforeDraught).reduce(
+      (acc: any, key) => {
+        return {
+          ...acc,
+          [key]: {...beforeDraught[key], didUpdate: false},
+        }
+      },
+      {}
+    )
 
-    await RNFS.writeFile(filePath, jsonString, 'utf8')
-    console.log('filePath', RNFS.DocumentDirectoryPath)
+    const afterDraughtTemp = Object.keys(afterDraught).reduce(
+      (acc: any, key) => {
+        return {
+          ...acc,
+          [key]: {...afterDraught[key], didUpdate: false},
+        }
+      },
+      {}
+    )
+
+    updateDraught(navigationLogDetails?.exploitationVessel?.id, {
+      beforeDraught: beforeDraughtTemp,
+      afterDraught: afterDraughtTemp,
+    })
+    setBeforeDraught(beforeDraughtTemp)
+    setAfterDraught(afterDraughtTemp)
   }
 
   const onPullToReload = () => {
@@ -132,31 +177,25 @@ export default () => {
   }
 
   const onSaveModal = (value: any) => {
-    const values = isBefore
-      ? Object.values({
-          ...beforeDraught,
-          [selectedButton]: {
-            ...value,
-            didUpdate: true,
-          },
-        })
-      : Object.values({
-          ...afterDraught,
-          [selectedButton]: {
-            ...value,
-            didUpdate: true,
-          },
-        })
-
-    const average =
-      values.reduce((acc, val) => acc + val?.draught, 0) / values?.length
-
-    const closestDraught = sortedDraughtTable?.reduce((prev, curr) =>
-      Math.abs(parseInt(curr.draught) - average) <
-      Math.abs(parseInt(prev.draught) - average)
-        ? curr
-        : prev
+    const average = calculateAverage(
+      isBefore
+        ? {
+            ...beforeDraught,
+            [selectedButton]: {
+              ...value,
+              didUpdate: true,
+            },
+          }
+        : {
+            ...afterDraught,
+            [selectedButton]: {
+              ...value,
+              didUpdate: true,
+            },
+          }
     )
+
+    const closestDraught = getClosestDraught(average)
 
     if (isBefore) {
       setBeforeDraught({
@@ -224,9 +263,9 @@ export default () => {
     <Box flex={1}>
       <PageScroll
         refreshing={
-          isTonnageCertificationLoading || isSavingNavBulkLoading
-          // ||
-          // isDraughtLoading
+          isTonnageCertificationLoading ||
+          isSavingNavBulkLoading ||
+          isDraughtLoading
         }
         backgroundColor={Colors.light}
         onPullToReload={onPullToReload}
@@ -274,8 +313,8 @@ export default () => {
           <Text color={Colors.disabled}>{t('endLoading')}</Text>
         </Button>
         <Button
-          backgroundColor={unsavedChanges.length < 1 ? Colors.disabled : null}
-          disabled={unsavedChanges.length < 1}
+          backgroundColor={unsavedChanges === 0 ? Colors.disabled : null}
+          disabled={unsavedChanges === 0}
           flex={1}
           onPress={saveDraught}
         >

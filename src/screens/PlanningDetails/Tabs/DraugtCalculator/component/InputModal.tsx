@@ -1,10 +1,10 @@
 import React, {useState} from 'react'
-import {StyleSheet, Switch} from 'react-native'
-import {Modal, Text, Button, HStack, Input, VStack} from 'native-base'
+import {Switch} from 'react-native'
+import {Modal, Text, Button, HStack, VStack} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import {Colors} from '@bluecentury/styles'
 import {useTranslation} from 'react-i18next'
-import {FormControl, OTPInput} from '@bluecentury/components'
+import {FormControl} from '@bluecentury/components'
 import TextInput from './TextInput'
 
 interface Props {
