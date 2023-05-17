@@ -35,6 +35,8 @@ export const OTPInput = ({
   const [initialNumber, setInitialNumber] = useState<string | null>(null)
   const [initialDecimal, setInitialDecimal] = useState<string | null>(null)
   const {t} = useTranslation()
+  const inputRefs = useRef<any>([])
+  const decimalRefs = useRef<any>([])
 
   useEffect(() => {
     if (initialValue) {
@@ -56,10 +58,6 @@ export const OTPInput = ({
     }
   }, [initialValue])
 
-  useEffect(() => {
-    formNewNumber(number, decimal)
-  }, [number, decimal])
-
   const handleNumberChange = (value: string, index: number) => {
     if (value) {
       const newOtp = [...Array.from(number.toString())]
@@ -67,6 +65,14 @@ export const OTPInput = ({
       const newNumber = newOtp.join('')
       setNumber(newNumber.padStart(numberLength, '0'))
       setIsInputInvalid(false)
+
+      if (value.length >= 1 && index < inputRefs.current.length - 1) {
+        inputRefs?.current[index + 1]?.focus()
+      }
+
+      if (index === inputRefs.current.length - 1) {
+        decimalRefs?.current[0]?.focus()
+      }
     }
   }
 
@@ -77,11 +83,16 @@ export const OTPInput = ({
       const newNumber = newOtp.join('')
       setDecimal(newNumber.padEnd(decimalLength, '0'))
       setIsInputInvalid(false)
+
+      if (value.length >= 1 && index < decimalRefs.current.length - 1) {
+        decimalRefs?.current[index + 1]?.focus()
+      }
     }
   }
 
-  const formNewNumber = (num: string, dec: string) => {
+  const onModalSave = (num: string, dec: string) => {
     const newNumber = parseFloat(`${num}.${dec}`)
+
     if (maxValue && minValue) {
       if (newNumber > maxValue || newNumber < minValue) {
         return setIsInputInvalid(true)
@@ -97,9 +108,7 @@ export const OTPInput = ({
         return setIsInputInvalid(true)
       }
     }
-  }
 
-  const onModalSave = (num: string, dec: string) => {
     getValue(`${num}.${dec}`)
     setIsModalOpen(false)
   }
@@ -183,6 +192,7 @@ export const OTPInput = ({
               {Array.from(number.toString()).map((digit, index) => (
                 <TextInput
                   key={index}
+                  ref={ref => (inputRefs.current[index] = ref)}
                   defaultValue={digit}
                   keyboardType="numeric"
                   maxLength={1}
@@ -195,6 +205,7 @@ export const OTPInput = ({
                 ? Array.from(decimal.toString()).map((digit, index) => (
                     <TextInput
                       key={index}
+                      ref={ref => (decimalRefs.current[index] = ref)}
                       defaultValue={digit}
                       keyboardType="numeric"
                       maxLength={1}

@@ -16,15 +16,24 @@ import {
 const Settings = (props: DrawerContentComponentProps) => {
   const {t} = useTranslation()
   const {navigation} = props
-  const isDarkMode = useSettings(state => state.isDarkMode)
-  const isMobileTracking = useSettings(state => state.isMobileTracking)
-  const language = useSettings(state => state.language)
-  const setLanguage = useSettings(state => state.setLanguage)
-  const setDarkMode = useSettings(state => state.setDarkMode)
-  // const setMobileTracking = useSettings(state => state.setIsMobileTracking)
-  const setIsQrScanner = useSettings(state => state.setIsQrScanner)
-  const isQrScanner = useSettings(state => state.isQrScanner)
-  const env = useSettings(state => state.env)
+  // const isDarkMode = useSettings(state => state.isDarkMode)
+  // const isMobileTracking = useSettings(state => state.isMobileTracking)
+  // const language = useSettings(state => state.language)
+  // const setLanguage = useSettings(state => state.setLanguage)
+  // const setDarkMode = useSettings(state => state.setDarkMode)
+  // // const setMobileTracking = useSettings(state => state.setIsMobileTracking)
+  // const setIsQrScanner = useSettings(state => state.setIsQrScanner)
+  // const isQrScanner = useSettings(state => state.isQrScanner)
+  const {
+    isDarkMode,
+    env,
+    isMobileTracking,
+    language,
+    setLanguage,
+    setDarkMode,
+    setIsQrScanner,
+    isQrScanner,
+  } = useSettings()
 
   const handleOnValueChange = () => {
     navigation.navigate('TrackingServiceDialog')
@@ -86,6 +95,8 @@ const Settings = (props: DrawerContentComponentProps) => {
       <ResetPasswordModal />
 
       {/*TODO change icon*/}
+      {/** remove the checking of env when going to production */}
+
       {env === 'UAT' ? (
         <SettingsItem
           callback={() => {
