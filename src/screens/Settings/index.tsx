@@ -16,14 +16,24 @@ import {
 const Settings = (props: DrawerContentComponentProps) => {
   const {t} = useTranslation()
   const {navigation} = props
-  const isDarkMode = useSettings(state => state.isDarkMode)
-  const isMobileTracking = useSettings(state => state.isMobileTracking)
-  const language = useSettings(state => state.language)
-  const setLanguage = useSettings(state => state.setLanguage)
-  const setDarkMode = useSettings(state => state.setDarkMode)
-  // const setMobileTracking = useSettings(state => state.setIsMobileTracking)
-  const setIsQrScanner = useSettings(state => state.setIsQrScanner)
-  const isQrScanner = useSettings(state => state.isQrScanner)
+  // const isDarkMode = useSettings(state => state.isDarkMode)
+  // const isMobileTracking = useSettings(state => state.isMobileTracking)
+  // const language = useSettings(state => state.language)
+  // const setLanguage = useSettings(state => state.setLanguage)
+  // const setDarkMode = useSettings(state => state.setDarkMode)
+  // // const setMobileTracking = useSettings(state => state.setIsMobileTracking)
+  // const setIsQrScanner = useSettings(state => state.setIsQrScanner)
+  // const isQrScanner = useSettings(state => state.isQrScanner)
+  const {
+    isDarkMode,
+    env,
+    isMobileTracking,
+    language,
+    setLanguage,
+    setDarkMode,
+    setIsQrScanner,
+    isQrScanner,
+  } = useSettings()
 
   const handleOnValueChange = () => {
     navigation.navigate('TrackingServiceDialog')
@@ -85,14 +95,18 @@ const Settings = (props: DrawerContentComponentProps) => {
       <ResetPasswordModal />
 
       {/*TODO change icon*/}
-      <SettingsItem
-        type="navigation"
-        value={t('measurementTable')}
-        iconSource={Icons.ship}
-        callback={() => {
-          navigation.navigate(Screens.MeasurementTable)
-        }}
-      />
+      {/** remove the checking of env when going to production */}
+
+      {env === 'UAT' ? (
+        <SettingsItem
+          callback={() => {
+            navigation.navigate(Screens.MeasurementTable)
+          }}
+          iconSource={Icons.ruler}
+          type="navigation"
+          value={t('measurementTable')}
+        />
+      ) : null}
       <HStack justifyContent="center">
         <Center>
           <VersionBuildLabel />
