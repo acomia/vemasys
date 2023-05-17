@@ -56,10 +56,6 @@ export const OTPInput = ({
     }
   }, [initialValue])
 
-  useEffect(() => {
-    formNewNumber(number, decimal)
-  }, [number, decimal])
-
   const handleNumberChange = (value: string, index: number) => {
     if (value) {
       const newOtp = [...Array.from(number.toString())]
@@ -112,6 +108,24 @@ export const OTPInput = ({
   }
 
   const onModalSave = (num: string, dec: string) => {
+    const newNumber = parseFloat(`${num}.${dec}`)
+
+    if (maxValue && minValue) {
+      if (newNumber > maxValue || newNumber < minValue) {
+        return setIsInputInvalid(true)
+      }
+    }
+    if (maxValue) {
+      if (newNumber > maxValue) {
+        return setIsInputInvalid(true)
+      }
+    }
+    if (minValue) {
+      if (newNumber < minValue) {
+        return setIsInputInvalid(true)
+      }
+    }
+
     getValue(`${num}.${dec}`)
     setIsModalOpen(false)
   }
@@ -207,6 +221,7 @@ export const OTPInput = ({
               flex="1"
               m={ms(5)}
               onPress={() => {
+                formNewNumber(number, decimal)
                 onModalSave(number, decimal)
               }}
             >
