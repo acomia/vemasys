@@ -91,7 +91,13 @@ export default ({
   }
 
   const handleOnChange = (fieldName: string, value: string) => {
-    setFormValues({...formValues, [fieldName]: value})
+    const draught = isDraught ? parseInt(value) : maxDraught - parseInt(value)
+    const freeboard = isDraught ? maxDraught - parseInt(value) : parseInt(value)
+
+    setFormValues({
+      draught: draught.toString(),
+      freeboard: freeboard.toString(),
+    })
   }
 
   return (
@@ -119,6 +125,7 @@ export default ({
                 label={t('freeboard')}
                 maxLength={3}
                 name="freeboard"
+                value={formValues?.freeboard}
                 onChange={handleOnChange}
               />
             </FormControl>
@@ -131,6 +138,7 @@ export default ({
                 label={t('draught')}
                 maxLength={3}
                 name="draught"
+                value={formValues?.draught}
                 onChange={handleOnChange}
               />
             </FormControl>
