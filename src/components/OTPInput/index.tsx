@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import {TextInput, StyleSheet, Text, Pressable} from 'react-native'
 import {ms} from 'react-native-size-matters'
 import {Button, HStack, Modal} from 'native-base'
@@ -294,6 +294,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     paddingVertical: 0,
     marginVertical: 0,
+    color: '#000',
   },
   decimalBox: {
     borderWidth: 1,
@@ -316,6 +317,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     paddingVertical: 0,
     marginVertical: 0,
+    color: '#000',
   },
   coma: {
     alignSelf: 'center',
