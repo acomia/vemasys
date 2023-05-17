@@ -64,14 +64,8 @@ export default ({
   }
 
   const handleSaveDraught = () => {
-    const draught = isDraught
-      ? parseInt(formValues?.draught)
-      : maxDraught - parseInt(formValues?.freeboard)
-
-    const freeboard = isDraught
-      ? maxDraught - draught
-      : parseInt(formValues?.freeboard)
-
+    const draught = parseInt(formValues?.draught)
+    const freeboard = parseInt(formValues?.freeboard)
     if (draught < 0 || draught > maxDraught) {
       setErrors({
         ...errors,
@@ -82,11 +76,14 @@ export default ({
     }
 
     onAction({draught, freeboard})
+
+    handleOnClose()
   }
 
   const handleOnClose = () => {
     setFormValues(initialValues)
     setErrors({})
+
     onCancel()
   }
 
