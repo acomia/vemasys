@@ -284,7 +284,6 @@ export default () => {
             averageDraught={isBefore ? beforeAverage : afterAverage}
             buttonSelected={buttonSelected}
             draughtValues={isBefore ? beforeDraught : afterDraught}
-            isBefore={isBefore}
             tonnage={isBefore ? beforeTonnage : afterTonnage}
           />
         </Box>

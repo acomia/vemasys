@@ -11,7 +11,6 @@ interface Props {
   buttonSelected: (selected: string) => void
   draughtValues: any
   tonnage: number | string
-  isBefore?: boolean
   averageDraught?: any
 }
 
@@ -19,7 +18,6 @@ export default ({
   buttonSelected,
   draughtValues,
   tonnage,
-  isBefore,
   averageDraught,
 }: Props) => {
   const {t} = useTranslation()
@@ -66,7 +64,6 @@ export default ({
             }
             borderColor={Colors.primary}
             borderWidth={draughtValues[item.label]?.didUpdate ? 1 : 0}
-            width={ms(100)}
           >
             <Text
               backgroundColor={'blue'}
