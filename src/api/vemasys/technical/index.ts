@@ -1,7 +1,7 @@
 import moment from 'moment'
 import {API} from '../../apiService'
 import {ENTITY_TYPE_SUPPLIER_COMPANY} from '@bluecentury/constants'
-import {useEntity} from '@bluecentury/stores'
+import {useEntity, useTechnical} from '@bluecentury/stores'
 import {Task} from '@bluecentury/models'
 
 const reloadVesselBunkering = async (vesselId: string) => {
@@ -360,6 +360,27 @@ const reloadTaskDetails = async (id: string) => {
     })
 }
 
+const uploadBunkeringDocument = async (filePath: string) => {
+  const bunkeringId: string = useTechnical.getState().currentBunkeringId
+  return API.post(`v3/ConsumptionBunkering/${bunkeringId}/files`, {
+    path: filePath,
+    description: `Bunkering scan ${Date.now()}`,
+    uploader: useEntity.getState().user?.id,
+    // type: [],
+    type: {
+      title: 'bunkerbon',
+      relevance: 'receipt',
+    },
+  })
+    .then(response => {
+      return Promise.resolve(response.data.id ? 'SUCCESS' : 'FAILED')
+    })
+    .catch(error => {
+      console.error('Error: Add bunkering scan error', JSON.stringify(error))
+      return Promise.reject(JSON.stringify(error))
+    })
+}
+
 export {
   reloadVesselBunkering,
   reloadVesselGasoilReservoirs,
@@ -384,6 +405,7 @@ export {
   updateVesselInventoryItem,
   reloadVesselPartTypes,
   reloadTaskDetails,
+  uploadBunkeringDocument,
 }
 
 export * from './measurements'

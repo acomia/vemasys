@@ -1,5 +1,5 @@
 import RNImageToPdf from 'react-native-image-to-pdf'
-import {useFinancial, usePlanning} from '@bluecentury/stores'
+import {useFinancial, usePlanning, useTechnical} from '@bluecentury/stores'
 import moment from 'moment'
 
 export const convertToPdfAndUpload = async (
@@ -7,7 +7,8 @@ export const convertToPdfAndUpload = async (
   showToast: (msgText: string, type: string) => void,
   planning?: boolean,
   navlog?: any,
-  setScannedImage?: (description: string) => void
+  setScannedImage?: (description: string) => void,
+  bunkering?: boolean
 ) => {
   const uploadImgFile = usePlanning.getState().uploadImgFile
   const addFinancialScan = useFinancial.getState().addFinancialScan
@@ -17,6 +18,7 @@ export const convertToPdfAndUpload = async (
     usePlanning.getState().uploadVesselNavigationLogFile
   const getNavigationLogDocuments =
     usePlanning.getState().getNavigationLogDocuments
+  const addBunkeringScan = useTechnical.getState().addBunkeringScan
 
   // Remove 'file://' from file link is react-native-image-to-pdf requirement
   const arrayForPdf = files?.map(item => {
@@ -45,8 +47,16 @@ export const convertToPdfAndUpload = async (
 
     const upload = await uploadImgFile(file)
 
-    if (typeof upload === 'object' && !planning) {
+    if (typeof upload === 'object' && !planning && !bunkering) {
       const uploadDocs = await addFinancialScan(upload.path)
+      if (uploadDocs === 'SUCCESS') {
+        showToast('File upload successfully.', 'success')
+      } else {
+        showToast('File upload failed.', 'failed')
+      }
+    }
+    if (typeof upload === 'object' && bunkering) {
+      const uploadDocs = await addBunkeringScan(upload.path)
       if (uploadDocs === 'SUCCESS') {
         showToast('File upload successfully.', 'success')
       } else {

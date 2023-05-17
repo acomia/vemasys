@@ -35,6 +35,7 @@ type TechnicalState = {
   isBunkeringLoading: boolean
   taskDetails: Task | null
   taskUpdateStatus: 'SUCCESS' | 'FAILED' | ''
+  currentBunkeringId: string | null
 }
 
 type TechnicalActions = {
@@ -69,6 +70,8 @@ type TechnicalActions = {
   getVesselTaskDetails: (id: string) => void
   updateTaskStatus: (id: string, status: string) => void
   resetStatuses: () => void
+  addBunkeringScan: (path: string) => Promise<string>
+  setCurrentBunkeringId: (id: string) => void
 }
 
 type TechnicalStore = TechnicalState & TechnicalActions
@@ -98,6 +101,7 @@ export const useTechnical = create(
       isBunkeringLoading: false,
       taskDetails: null,
       taskUpdateStatus: '',
+      currentBunkeringId: null,
       getVesselBunkering: async (vesselId: string) => {
         set({
           isTechnicalLoading: true,
@@ -558,6 +562,25 @@ export const useTechnical = create(
       resetStatuses: () => {
         set({taskUpdateStatus: ''})
       },
+      addBunkeringScan: async (path: string) => {
+        set({
+          isUploadingFileLoading: true,
+        })
+        try {
+          const response = await API.uploadBunkeringDocument(path)
+          set({
+            isUploadingFileLoading: false,
+          })
+          return response
+        } catch (error) {
+          set({
+            isUploadingFileLoading: false,
+          })
+          console.log('ADD_BUNKERING_SCAN_ERROR', error)
+          return 'ADD_BUNKERING_SCAN_FAILED'
+        }
+      },
+      setCurrentBunkeringId: (id: string) => set({currentBunkeringId: id}),
     }),
     {
       name: 'technical-storage',
