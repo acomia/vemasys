@@ -1,7 +1,7 @@
 import moment from 'moment'
 import {API} from '../../apiService'
 import {ENTITY_TYPE_SUPPLIER_COMPANY} from '@bluecentury/constants'
-import {useEntity} from '@bluecentury/stores'
+import {useEntity, useTechnical} from '@bluecentury/stores'
 import {Task} from '@bluecentury/models'
 
 const reloadVesselBunkering = async (vesselId: string) => {
@@ -360,6 +360,38 @@ const reloadTaskDetails = async (id: string) => {
     })
 }
 
+const uploadCertificateDocument = async (filePath: string) => {
+  const certificateId: string = useTechnical.getState().certificateId
+  return API.post(`v3/Certificate/${certificateId}/files`, {
+    path: filePath,
+    description: `Certificate file upload ${Date.now()}`,
+    uploader: useEntity.getState().user?.id,
+    type: {
+      title: 'certificate',
+      relevance: null,
+    },
+  })
+    .then(response => {
+      return Promise.resolve(response?.data?.id ? 'SUCCESS' : 'FAILED')
+    })
+    .catch(error => {
+      return Promise.reject(JSON.stringify(error))
+    })
+}
+
+const reloadCertificateDetails = async (id: string) => {
+  return API.get(`certificates/${id}`)
+    .then(response => {
+      if (response.data) {
+        return response.data
+      }
+      throw new Error('Certificate details failed.')
+    })
+    .catch(error => {
+      console.error('Error: Certificate details data', error)
+    })
+}
+
 export {
   reloadVesselBunkering,
   reloadVesselGasoilReservoirs,
@@ -384,6 +416,8 @@ export {
   updateVesselInventoryItem,
   reloadVesselPartTypes,
   reloadTaskDetails,
+  uploadCertificateDocument,
+  reloadCertificateDetails,
 }
 
 export * from './measurements'

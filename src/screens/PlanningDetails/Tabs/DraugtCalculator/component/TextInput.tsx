@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react'
+import React, {useState, useRef, useEffect} from 'react'
 import {StyleSheet} from 'react-native'
 import {Text, Input, Box, HStack} from 'native-base'
 import {Colors} from '@bluecentury/styles'
@@ -11,21 +11,24 @@ interface Props {
   onChange: (name: string, value: string) => void
   name: string
   isActive?: boolean
+  value?: string
 }
 
-export default ({label, maxLength, onChange, name, isActive}: Props) => {
+export default ({label, maxLength, onChange, name, isActive, value}: Props) => {
   const regex = /^[0-9]*$/
   const inputRefs = useRef<any>([])
   const [textValue, setTextValue] = useState(Array(maxLength).fill(''))
+  console.log(name, 'value', value)
+  useEffect(() => {
+    if (!isActive && value.length > 0) {
+      setTextValue(value?.split(''))
+    }
+  }, [value])
 
   const handleOnChange = (text: string, index: number) => {
     const updatedValues = [...textValue]
 
-    if (text.length > 1) {
-      updatedValues[index] = text[1]
-    } else {
-      updatedValues[index] = text[0]
-    }
+    updatedValues[index] = text
     setTextValue(updatedValues)
 
     onChange(name, updatedValues.join(''))
