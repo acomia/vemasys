@@ -64,7 +64,7 @@ const App = () => {
 
   useEffect(() => {
     isOnline ? console.log('ONLINE') : console.log('OFFLINE')
-    if (isOnline && commentsWaitingForUpload.length) {
+    if (isOnline && commentsWaitingForUpload?.length) {
       setAreCommentsUploading(true)
 
       let uploadingItemNumber = 0
@@ -84,7 +84,8 @@ const App = () => {
               item.attachedImgs,
               item.showToast,
               undefined,
-              item.navlogId
+              item.navlogId,
+              'shared_within_company'
             )
           } catch (e) {
             console.log(e)

@@ -22,10 +22,14 @@ import * as Keychain from 'react-native-keychain'
 import {Colors} from '@bluecentury/styles'
 import {Credentials} from '@bluecentury/models'
 import {Images} from '@bluecentury/assets'
-import {useAuth, useSettings} from '@bluecentury/stores'
+import {useAuth, useSettings, useEntity} from '@bluecentury/stores'
 import {VersionBuildLabel} from '@bluecentury/components/version-build-label'
 import {useTranslation} from 'react-i18next'
-import {useNavigation} from '@react-navigation/native'
+import {
+  NavigationProp,
+  useIsFocused,
+  useNavigation,
+} from '@react-navigation/native'
 import {NoInternetConnectionMessage} from '@bluecentury/components'
 import {RootStackParamList} from '@bluecentury/types/nav.types'
 import {NativeStackNavigationProp} from '@react-navigation/native-stack'
@@ -33,9 +37,11 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack'
 export default function Login() {
   const {t} = useTranslation()
   const insets = useSafeAreaInsets()
-  const navigation =
-    useNavigation<NativeStackNavigationProp<RootStackParamList>>()
-  const {isAuthenticatingUser, authenticate, hasAuthenticationError} = useAuth()
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>()
+  const isFocused = useIsFocused()
+  const {entityId} = useEntity()
+  const {isAuthenticatingUser, authenticate, hasAuthenticationError, token} =
+    useAuth()
   const {rememberMe, setRememberMe} = useSettings()
   const [user, setUser] = useState<Credentials>({username: '', password: ''})
   const [isShowPassword, setIsShowPassword] = useState(false)
@@ -79,6 +85,21 @@ export default function Login() {
         console.log('Error: ', error)
       })
   }, [])
+
+  useEffect(() => {
+    if (isFocused) {
+      if (!token) {
+        navigation.navigate('Login')
+        return
+      }
+      // no entity selected
+      if (!entityId) {
+        navigation.navigate('SelectEntity')
+        return
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, entityId, isFocused])
 
   return (
     <Box safeArea flex="1">
