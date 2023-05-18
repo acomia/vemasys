@@ -8,8 +8,7 @@ export const convertToPdfAndUpload = async (
   planning?: boolean,
   navlog?: any,
   setScannedImage?: (description: string) => void,
-  certificates?: boolean
-  setScannedImage?: (description: string) => void,
+  certificates?: boolean,
   bunkering?: boolean
 ) => {
   const uploadImgFile = usePlanning.getState().uploadImgFile
@@ -51,7 +50,12 @@ export const convertToPdfAndUpload = async (
 
     const upload = await uploadImgFile(file)
 
-    if (typeof upload === 'object' && !planning && !certificates && !bunkering) {
+    if (
+      typeof upload === 'object' &&
+      !planning &&
+      !certificates &&
+      !bunkering
+    ) {
       const uploadDocs = await addFinancialScan(upload.path)
       if (uploadDocs === 'SUCCESS') {
         showToast('File upload successfully.', 'success')
@@ -83,7 +87,7 @@ export const convertToPdfAndUpload = async (
         description,
       }
       // eslint-disable-next-line let-convert-to-const
-      let body = {
+      const body = {
         fileGroup: {
           files:
             navigationLogDocuments?.length > 0
