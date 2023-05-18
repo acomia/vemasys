@@ -18,13 +18,13 @@ import DocumentScanner from 'react-native-document-scanner-plugin'
 import {Colors} from '@bluecentury/styles'
 import moment from 'moment'
 import {formatNumber} from '@bluecentury/constants'
-import {IconButton, NoInternetConnectionMessage} from '@bluecentury/components'
+import { IconButton, LoadingAnimated, NoInternetConnectionMessage } from "@bluecentury/components";
 import {Icons} from '@bluecentury/assets'
 import {PermissionsAndroid, Platform, TouchableOpacity} from 'react-native'
 import {useTranslation} from 'react-i18next'
 import {RootStackParamList} from '@bluecentury/types/nav.types'
 import {convertToPdfAndUpload} from '@bluecentury/utils'
-import {usePlanning, useTechnical, useSettings} from '@bluecentury/stores'
+import { usePlanning, useTechnical, useSettings, useEntity } from "@bluecentury/stores";
 import * as ImagePicker from 'react-native-image-picker'
 import {PROD_URL, UAT_URL} from '@vemasys/env'
 
@@ -33,11 +33,19 @@ export default function BunkeringDetails({route, navigation}: Props) {
   const {t} = useTranslation()
   const {bunk}: any = route.params
   const toast = useToast()
-  const {setCurrentBunkeringId, addBunkeringScan} = useTechnical()
+  const {
+    setCurrentBunkeringId,
+    addBunkeringScan,
+    getVesselBunkering,
+    bunkering,
+    isBunkeringLoading,
+  } = useTechnical()
   const {uploadImgFile} = usePlanning()
+  const {vesselId} = useEntity()
   const {env} = useSettings()
   const [viewImg, setViewImg] = useState(false)
   const [selectedImg, setSelectedImg] = useState('')
+  const [shouldUpdateImagesList, setShouldUpdateImagesList] = useState(false)
 
   useEffect(() => {
     if (selectedImg) {
@@ -47,7 +55,16 @@ export default function BunkeringDetails({route, navigation}: Props) {
 
   useEffect(() => {
     setCurrentBunkeringId(bunk.id)
+    console.log('BUNK', bunk)
   }, [bunk])
+
+  useEffect(() => {
+    console.log('BUNKERING', bunkering.find(item => item.id === bunk.id))
+    if (bunkering && bunkering.find(item => item.id === bunk.id)?.fileGroup?.files?.length > 0) {
+      setShouldUpdateImagesList(true)
+    }
+
+  }, [bunkering])
 
   const requestCameraPermission = async () => {
     try {
@@ -99,6 +116,7 @@ export default function BunkeringDetails({route, navigation}: Props) {
         undefined,
         true
       )
+      getVesselBunkering(vesselId)
     }
   }
 
@@ -156,7 +174,8 @@ export default function BunkeringDetails({route, navigation}: Props) {
               values.map(async item => {
                 return await addBunkeringScan(item.path)
               })
-            ).then(val => {
+            ).then(async val => {
+              await getVesselBunkering(vesselId)
               showToast('File upload successfully', 'success')
             })
           })
@@ -195,60 +214,67 @@ export default function BunkeringDetails({route, navigation}: Props) {
           </Text>
         </HStack>
         <Divider my={ms(15)} />
-        {bunk?.fileGroup?.files?.length > 0 ? (
+        {shouldUpdateImagesList &&
+        bunkering &&
+        bunkering?.find(item => item.id === bunk.id) ? (
           <ScrollView>
-            {bunk?.fileGroup?.files?.map((file: any, index: number) => (
-              <TouchableOpacity key={index}>
-                <HStack
-                  alignItems="center"
-                  bg={Colors.white}
-                  borderRadius={5}
-                  height={ms(50)}
-                  justifyContent="space-between"
-                  mb={ms(15)}
-                  px={ms(16)}
-                  shadow={3}
-                  width="100%"
-                >
-                  <Text
-                    ellipsizeMode="middle"
-                    flex="1"
-                    fontWeight="medium"
-                    maxW="80%"
-                    numberOfLines={1}
+            {/*{bunk?.fileGroup?.files?.map((file: any, index: number) => (*/}
+            {bunkering
+              ?.find(item => item.id === bunk.id)
+              .fileGroup?.files?.map((file: any, index: number) => (
+                <TouchableOpacity key={index}>
+                  <HStack
+                    alignItems="center"
+                    bg={Colors.white}
+                    borderRadius={5}
+                    height={ms(50)}
+                    justifyContent="space-between"
+                    mb={ms(15)}
+                    px={ms(16)}
+                    shadow={3}
+                    width="100%"
                   >
-                    {file.path}
-                  </Text>
-                  <HStack alignItems="center">
-                    <IconButton
-                      size={ms(22)}
-                      source={Icons.file_download}
-                      onPress={() => {}}
-                    />
-                    <Box w={ms(10)} />
-                    <IconButton
-                      size={ms(22)}
-                      source={Icons.eye}
-                      onPress={() => {
-                        if (file.path.split('.')[1] === 'pdf') {
-                          navigation.navigate('PDFView', {
-                            // path: `${VEMASYS_PRODUCTION_FILE_URL}/${file.path}`,
-                            path: `${UAT_URL}upload/documents/${file.path}`,
-                          })
-                        } else {
-                          setSelectedImg(file.path)
-                        }
-                      }}
-                    />
+                    <Text
+                      ellipsizeMode="middle"
+                      flex="1"
+                      fontWeight="medium"
+                      maxW="80%"
+                      numberOfLines={1}
+                    >
+                      {file.path}
+                    </Text>
+                    <HStack alignItems="center">
+                      <IconButton
+                        size={ms(22)}
+                        source={Icons.file_download}
+                        onPress={() => {}}
+                      />
+                      <Box w={ms(10)} />
+                      <IconButton
+                        size={ms(22)}
+                        source={Icons.eye}
+                        onPress={() => {
+                          if (file.path.split('.')[1] === 'pdf') {
+                            navigation.navigate('PDFView', {
+                              // path: `${VEMASYS_PRODUCTION_FILE_URL}/${file.path}`,
+                              path: `${UAT_URL}upload/documents/${file.path}`,
+                            })
+                          } else {
+                            setSelectedImg(file.path)
+                          }
+                        }}
+                      />
+                    </HStack>
                   </HStack>
-                </HStack>
-              </TouchableOpacity>
-            ))}
+                </TouchableOpacity>
+              ))}
           </ScrollView>
-        ) : (
-          <Text color={Colors.text} fontWeight="medium" mb={ms(20)}>
+        ) : !isBunkeringLoading ? (
+          <Text color={Colors.text} flex={1} fontWeight="medium" mb={ms(20)}>
             {t('noUploadedFiles')}
           </Text>
+        ) : (
+          <LoadingAnimated />
         )}
         <Button
           bg={Colors.primary}
