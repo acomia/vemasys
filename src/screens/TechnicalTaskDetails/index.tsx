@@ -24,7 +24,7 @@ import {
   IconButton,
   LoadingAnimated,
   NoInternetConnectionMessage,
-  TechnicalStatusesModal,
+  TechnicalBottomModal,
 } from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
@@ -592,10 +592,11 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
           ) : null}
         </Modal.Content>
       </Modal>
-      <TechnicalStatusesModal
+      <TechnicalBottomModal
         isOpen={openStatuses}
         options={options}
         setOpen={() => setOpenStatuses(false)}
+        title={t('updateStatus')}
         onPressStatus={e => onUpdateTaskStatus(e)}
       />
     </Box>

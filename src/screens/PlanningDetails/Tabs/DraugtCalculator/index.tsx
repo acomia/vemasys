@@ -299,7 +299,14 @@ export default () => {
         <Button
           colorScheme={'white'}
           flex={1}
-          onPress={() => setBeforeDraught(initialDraughtValues)}
+          onPress={() => {
+            if (draughtTable) {
+              setBeforeDraught(draughtTable?.beforeDraught)
+              setAfterDraught(draughtTable?.afterDraught)
+            } else {
+              setBeforeDraught(initialDraughtValues)
+            }
+          }}
         >
           <Text color={Colors.disabled}>{t('cancel')}</Text>
         </Button>

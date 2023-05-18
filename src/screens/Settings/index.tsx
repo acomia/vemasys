@@ -94,7 +94,6 @@ const Settings = (props: DrawerContentComponentProps) => {
       />*/}
       <ResetPasswordModal />
 
-      {/*TODO change icon*/}
       {/** remove the checking of env when going to production */}
 
       {env === 'UAT' ? (
