@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState} from 'react'
 import {
   Pressable,
   HStack,
@@ -21,14 +21,23 @@ interface Props {
   type: string
   value: string
   iconSource: ImageSourcePropType
-  callback: Function
+  callback: (val?: string) => void
   switchState?: boolean
   language?: string
+  isEntireBlockPressable: boolean
 }
 
 const SettingsItem = (props: Props) => {
   const {t} = useTranslation()
-  const {type, value, iconSource, callback, switchState, language} = props
+  const {
+    type,
+    value,
+    iconSource,
+    callback,
+    switchState,
+    language,
+    isEntireBlockPressable,
+  } = props
   const [isSelection, setIsSelection] = useState(false)
 
   const languageIcon = (lang: string) => {
@@ -64,26 +73,26 @@ const SettingsItem = (props: Props) => {
   const languageSelect = () => {
     return (
       <Menu
-        w="400"
-        placement="bottom left"
-        onOpen={() => setIsSelection(true)}
-        onClose={() => setIsSelection(false)}
         trigger={triggerProps => {
           return (
             <Pressable
               accessibilityLabel="More options menu"
-              pt={ms(18)}
               h="100%"
+              pt={ms(18)}
               {...triggerProps}
             >
               {isSelection ? (
-                <ChevronUpIcon size="4" color={Colors.text} mr={ms(10)} />
+                <ChevronUpIcon color={Colors.text} mr={ms(10)} size="4" />
               ) : (
-                <ChevronDownIcon size="4" color={Colors.text} mr={ms(10)} />
+                <ChevronDownIcon color={Colors.text} mr={ms(10)} size="4" />
               )}
             </Pressable>
           )
         }}
+        placement="bottom left"
+        w="400"
+        onClose={() => setIsSelection(false)}
+        onOpen={() => setIsSelection(true)}
       >
         <Menu.Item
           w="100%"
@@ -92,7 +101,7 @@ const SettingsItem = (props: Props) => {
           }}
         >
           <HStack>
-            <Image source={Icons.english} mr={ms(13)} alt="Company Logo" />
+            <Image alt="Company Logo" mr={ms(13)} source={Icons.english} />
             <Text>{t('english')}</Text>
           </HStack>
         </Menu.Item>
@@ -112,7 +121,7 @@ const SettingsItem = (props: Props) => {
           }}
         >
           <HStack>
-            <Image source={Icons.french} mr={ms(13)} alt="Company Logo" />
+            <Image alt="Company Logo" mr={ms(13)} source={Icons.french} />
             <Text>{t('french')}</Text>
           </HStack>
         </Menu.Item>
@@ -144,8 +153,8 @@ const SettingsItem = (props: Props) => {
     if (itemType === 'navigation') {
       return (
         <IconButton
-          onPress={() => callback()}
           icon={<ChevronRightIcon color={Colors.text} size="4" />}
+          onPress={() => callback()}
         />
       )
     }
@@ -155,16 +164,22 @@ const SettingsItem = (props: Props) => {
   }
 
   return (
-    <Pressable overflow="hidden" borderRadius="15" width="100%" pb={ms(12)}>
+    <Pressable
+      borderRadius="15"
+      overflow="hidden"
+      pb={ms(12)}
+      width="100%"
+      onPress={isEntireBlockPressable ? () => callback() : null}
+    >
       <HStack
-        justifyContent={'space-between'}
         alignItems="center"
-        pl={ms(12)}
-        pr={ms(24)}
-        borderWidth="1"
+        backgroundColor={Colors.white}
         borderColor={Colors.light}
         borderRadius="15"
-        backgroundColor={Colors.white}
+        borderWidth="1"
+        justifyContent={'space-between'}
+        pl={ms(12)}
+        pr={ms(24)}
         shadow="3"
       >
         <HStack alignItems={'center'}>
@@ -172,25 +187,25 @@ const SettingsItem = (props: Props) => {
             <Image
               key={language}
               alt="Company Logo"
-              source={languageIcon(language)}
-              resizeMode="contain"
-              w={ms(17)}
               h={ms(17)}
-              my={ms(20)}
               mr={ms(12)}
+              my={ms(20)}
+              resizeMode="contain"
+              source={languageIcon(language)}
+              w={ms(17)}
             />
           ) : (
             <Image
               alt="Company Logo"
-              source={iconSource}
-              resizeMode="contain"
-              w={ms(17)}
               h={ms(17)}
-              my={ms(20)}
               mr={ms(12)}
+              my={ms(20)}
+              resizeMode="contain"
+              source={iconSource}
+              w={ms(17)}
             />
           )}
-          <Text w="70%" color={Colors.text} fontWeight="500">
+          <Text color={Colors.text} fontWeight="500" w="70%">
             {type === 'select' ? languageName(language) : value}
           </Text>
         </HStack>

@@ -8,8 +8,7 @@ export const convertToPdfAndUpload = async (
   planning?: boolean,
   navlog?: any,
   setScannedImage?: (description: string) => void,
-  certificates?: boolean
-  setScannedImage?: (description: string) => void,
+  certificates?: boolean,
   bunkering?: boolean
 ) => {
   const uploadImgFile = usePlanning.getState().uploadImgFile
