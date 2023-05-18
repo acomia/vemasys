@@ -1,5 +1,5 @@
 import RNImageToPdf from 'react-native-image-to-pdf'
-import {useFinancial, usePlanning} from '@bluecentury/stores'
+import {useFinancial, usePlanning, useTechnical} from '@bluecentury/stores'
 import moment from 'moment'
 
 export const convertToPdfAndUpload = async (
@@ -7,10 +7,13 @@ export const convertToPdfAndUpload = async (
   showToast: (msgText: string, type: string) => void,
   planning?: boolean,
   navlog?: any,
-  setScannedImage?: (description: string) => void
+  setScannedImage?: (description: string) => void,
+  certificates?: boolean
 ) => {
   const uploadImgFile = usePlanning.getState().uploadImgFile
   const addFinancialScan = useFinancial.getState().addFinancialScan
+  const uploadCertificateScannedDoc =
+    useTechnical.getState().uploadCertificateScannedDoc
   const navigationLogDocuments = usePlanning.getState().navigationLogDocuments
   const navigationLogDetails = usePlanning.getState().navigationLogDetails
   const uploadVesselNavigationLogFile =
@@ -45,8 +48,16 @@ export const convertToPdfAndUpload = async (
 
     const upload = await uploadImgFile(file)
 
-    if (typeof upload === 'object' && !planning) {
+    if (typeof upload === 'object' && !planning && !certificates) {
       const uploadDocs = await addFinancialScan(upload.path)
+      if (uploadDocs === 'SUCCESS') {
+        showToast('File upload successfully.', 'success')
+      } else {
+        showToast('File upload failed.', 'failed')
+      }
+    }
+    if (typeof upload === 'object' && certificates) {
+      const uploadDocs = await uploadCertificateScannedDoc(upload.path)
       if (uploadDocs === 'SUCCESS') {
         showToast('File upload successfully.', 'success')
       } else {
@@ -61,7 +72,7 @@ export const convertToPdfAndUpload = async (
         description,
       }
       // eslint-disable-next-line let-convert-to-const
-      let body = {
+      const body = {
         fileGroup: {
           files:
             navigationLogDocuments?.length > 0
