@@ -392,6 +392,27 @@ const reloadCertificateDetails = async (id: string) => {
     })
 }
 
+const uploadBunkeringDocument = async (filePath: string) => {
+  const bunkeringId: string = useTechnical.getState().currentBunkeringId
+  return API.post(`v3/ConsumptionBunkering/${bunkeringId}/files`, {
+    path: filePath,
+    description: `Bunkering scan ${Date.now()}`,
+    uploader: useEntity.getState().user?.id,
+    // type: [],
+    type: {
+      title: 'bunkerbon',
+      relevance: 'receipt',
+    },
+  })
+    .then(response => {
+      return Promise.resolve(response.data.id ? 'SUCCESS' : 'FAILED')
+    })
+    .catch(error => {
+      console.error('Error: Add bunkering scan error', JSON.stringify(error))
+      return Promise.reject(JSON.stringify(error))
+    })
+}
+
 export {
   reloadVesselBunkering,
   reloadVesselGasoilReservoirs,
@@ -418,6 +439,7 @@ export {
   reloadTaskDetails,
   uploadCertificateDocument,
   reloadCertificateDetails,
+  uploadBunkeringDocument,
 }
 
 export * from './measurements'
