@@ -18,13 +18,22 @@ import DocumentScanner from 'react-native-document-scanner-plugin'
 import {Colors} from '@bluecentury/styles'
 import moment from 'moment'
 import {formatNumber} from '@bluecentury/constants'
-import { IconButton, LoadingAnimated, NoInternetConnectionMessage } from "@bluecentury/components";
+import {
+  IconButton,
+  LoadingAnimated,
+  NoInternetConnectionMessage,
+} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {PermissionsAndroid, Platform, TouchableOpacity} from 'react-native'
 import {useTranslation} from 'react-i18next'
 import {RootStackParamList} from '@bluecentury/types/nav.types'
 import {convertToPdfAndUpload} from '@bluecentury/utils'
-import { usePlanning, useTechnical, useSettings, useEntity } from "@bluecentury/stores";
+import {
+  usePlanning,
+  useTechnical,
+  useSettings,
+  useEntity,
+} from '@bluecentury/stores'
 import * as ImagePicker from 'react-native-image-picker'
 import {PROD_URL, UAT_URL} from '@vemasys/env'
 
@@ -59,11 +68,12 @@ export default function BunkeringDetails({route, navigation}: Props) {
   }, [bunk])
 
   useEffect(() => {
-    console.log('BUNKERING', bunkering.find(item => item.id === bunk.id))
-    if (bunkering && bunkering.find(item => item.id === bunk.id)?.fileGroup?.files?.length > 0) {
+    if (
+      bunkering &&
+      bunkering.find(item => item.id === bunk.id)?.fileGroup?.files?.length > 0
+    ) {
       setShouldUpdateImagesList(true)
     }
-
   }, [bunkering])
 
   const requestCameraPermission = async () => {
