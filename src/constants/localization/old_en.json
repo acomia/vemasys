@@ -11,5 +11,9 @@
   "newUserBday": "Birthdate is required.",
   "newUserEmail": "Email is required.",
   "newUserRole": "User role is required.",
-  "newUserPhone": "Phone is required."
+  "newUserPhone": "Phone is required.",
+  "confirmPasswordRequired": "Confirm password is required.",
+  "emailIsInvalid": "Email is not valid.",
+  "mmsiIsRequired": "MMSI is required.",
+  "mmsiNotExist": "MMSI number does not exist."
 }

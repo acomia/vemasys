@@ -2,7 +2,13 @@ import create from 'zustand'
 import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as API from '@bluecentury/api/vemasys'
-import {Comments, NavigationLog, NavigationLogRoutes} from '@bluecentury/models'
+import {
+  NavigationLog,
+  NavigationLogRoutes,
+  TonnageCertifications,
+  Vessel,
+  Comments,
+} from '@bluecentury/models'
 
 type PlanningState = {
   isPlanningLoading: boolean
@@ -28,6 +34,12 @@ type PlanningState = {
   updateNavlogDatesSuccess: string
   updateNavlogDatesFailed: string
   updateNavlogDatesMessage: string
+  isVesselNavigationLoading: boolean
+  vesselNavigationDetails: Vessel | undefined
+  isSavingNavBulkLoading: boolean
+  isSavingNavBulkSuccess: boolean
+  isTonnageCertificationLoading: boolean
+  tonnageCertifications: TonnageCertifications[] | undefined
 }
 
 type PlanningActions = {
@@ -65,6 +77,9 @@ type PlanningActions = {
   ) => void
   deleteNavLogAction?: (id: string) => void
   reset?: () => void
+  getVesselnavigationDetails: (id: string) => void
+  updateNavBulk: (id: number, tonnage: number) => void
+  getNavLogTonnageCertification: (id: number) => void
 }
 
 export type PlanningStore = PlanningState & PlanningActions
@@ -90,6 +105,12 @@ const initialState: PlanningState = {
   navigationLogCargoHolds: [],
   navigationLogComments: [],
   navigationLogDocuments: [],
+  isVesselNavigationLoading: false,
+  vesselNavigationDetails: undefined,
+  isSavingNavBulkLoading: false,
+  isSavingNavBulkSuccess: false,
+  isTonnageCertificationLoading: false,
+  tonnageCertifications: [],
 }
 
 export const usePlanning = create(
@@ -536,6 +557,58 @@ export const usePlanning = create(
           updateNavlogDatesFailed: '',
           updateNavlogDatesMessage: '',
         })
+      },
+      getVesselnavigationDetails: async (id: string) => {
+        set({isVesselNavigationLoading: true})
+        try {
+          const response = await API.getVesselNavigationDetails(id)
+
+          if (typeof response === 'object') {
+            set({
+              vesselNavigationDetails: response,
+              isVesselNavigationLoading: false,
+            })
+            return
+          }
+
+          set({isVesselNavigationLoading: false})
+        } catch (error) {
+          set({isVesselNavigationLoading: false})
+        }
+      },
+      updateNavBulk: async (id: number, tonnage: number) => {
+        set({isSavingNavBulkLoading: true, isSavingNavBulkSuccess: false})
+        try {
+          // console.log('id', id)
+          const response = await API.updateNavBulk(id, tonnage)
+          if (response?.status === 200) {
+            set({isSavingNavBulkSuccess: true})
+          }
+          set({isSavingNavBulkLoading: false})
+        } catch (error) {
+          set({isSavingNavBulkLoading: false})
+        }
+      },
+      getNavLogTonnageCertification: async (id: number) => {
+        set({
+          isTonnageCertificationLoading: true,
+          // added these two to make sure the saving will go back to its original
+          // if not it will cause the scroll infinite loading
+          isSavingNavBulkLoading: false,
+          isSavingNavBulkSuccess: false,
+          tonnageCertifications: [],
+        })
+        try {
+          const response = await API.getTonnageCertification(id.toString())
+          if (Object.values(response).length > 0) {
+            set({
+              isTonnageCertificationLoading: false,
+              tonnageCertifications: response,
+            })
+          }
+        } catch (error) {
+          set({isTonnageCertificationLoading: false})
+        }
       },
     }),
     {

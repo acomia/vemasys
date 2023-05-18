@@ -35,7 +35,7 @@ const TechnicalTasksList = ({navigation, route}: Props) => {
     switch (status) {
       case 'todo':
         title = t('toDo')
-        color = '#E0E0E0'
+        color = Colors.grey
         textColor = Colors.text
         break
 
@@ -46,7 +46,7 @@ const TechnicalTasksList = ({navigation, route}: Props) => {
         break
       case 'in_progress':
         title = t('inProgress')
-        color = Colors.secondary
+        color = Colors.highlighted_text
         textColor = Colors.white
         break
       case 'overdue':

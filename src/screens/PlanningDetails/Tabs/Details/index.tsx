@@ -17,6 +17,7 @@ import {ms} from 'react-native-size-matters'
 import DatePicker from 'react-native-date-picker'
 import {
   NavigationProp,
+  RouteProp,
   useIsFocused,
   useNavigation,
   useRoute,
@@ -39,8 +40,7 @@ import {
 import {LoadingAnimated, WarningAlert} from '@bluecentury/components'
 import {Vemasys} from '@bluecentury/helpers'
 import {RootStackParamList} from '@bluecentury/types/nav.types'
-import {Contacts} from '@bluecentury/models'
-import {CustomAlert} from '@bluecentury/components/custom-alert'
+import {Comments, Contacts} from '@bluecentury/models'
 
 type Dates = {
   plannedETA: Date | undefined | StringOrNull
@@ -50,11 +50,13 @@ type Dates = {
   terminalApprovedDeparture: Date | undefined | StringOrNull
   departureDatetime: Date | undefined | StringOrNull
 }
+
+type DetailsScreenRouteProp = RouteProp<RootStackParamList, 'PlanningDetails'>
 const Details = () => {
   const {t} = useTranslation()
   const toast = useToast()
   const navigation = useNavigation<NavigationProp<RootStackParamList>>()
-  const route = useRoute()
+  const route = useRoute<DetailsScreenRouteProp>()
   const focused = useIsFocused()
   const isOnline = useSettings().isOnline
   const {
@@ -87,6 +89,7 @@ const Details = () => {
     getLinkEntityInfo,
     linkEntity,
     commentsWaitingForUpload,
+    user,
   } = useEntity()
   const {trackViewMode, currentNavLogs} = useMap()
   const {navlog, title}: any = route.params
@@ -265,9 +268,11 @@ const Details = () => {
     isUpdateNavLogActionSuccess,
   ])
 
-  const onSelectImage = (image: ImageFile) => {
-    setViewImg(true)
-    setSelectedImg(image)
+  const onSelectImage = (image: ImageFile, comment: Comments) => {
+    if (user?.id === comment.creator.user.id) {
+      setViewImg(true)
+      setSelectedImg(image)
+    }
   }
 
   const showToast = (text: string, res: string) => {
@@ -708,6 +713,16 @@ const Details = () => {
     }
   }
 
+  const onCommentCardPress = (comment: Comments) => {
+    if (user?.id === comment.creator.user.id) {
+      navigation.navigate('AddEditComment', {
+        comment: comment,
+        method: 'edit',
+        routeFrom: 'Planning',
+      })
+    }
+  }
+
   const onPullToReload = () => {
     getNavigationLogDetails(navlog.id)
     getNavigationLogActions(navlog?.id)
@@ -837,14 +852,10 @@ const Details = () => {
               key={index}
               comment={comment}
               commentDescription={descriptionText}
-              onCommentPress={() =>
-                navigation.navigate('AddEditComment', {
-                  comment: comment,
-                  method: 'edit',
-                  routeFrom: 'Planning',
-                })
+              onCommentImagePress={(file: ImageFile) =>
+                onSelectImage(file, comment)
               }
-              onCommentImagePress={(file: ImageFile) => onSelectImage(file)}
+              onCommentPress={() => onCommentCardPress(comment)}
             />
           )
         })}

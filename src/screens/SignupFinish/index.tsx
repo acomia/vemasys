@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import {Box, Button, Image, Text} from 'native-base'
 import {Shadow} from 'react-native-shadow-2'
 import {ms} from 'react-native-size-matters'
@@ -6,14 +6,43 @@ import {useTranslation} from 'react-i18next'
 
 import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
+import {
+  NavigationProp,
+  RouteProp,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native'
+import {NativeStackScreenProps} from '@react-navigation/native-stack'
+import {RootStackParamList} from '@bluecentury/types/nav.types'
+import {useAuth, useUser} from '@bluecentury/stores'
 
-interface ISignUpFinish {
-  email: string
-  onProceed: () => void
-}
-
-export default function SignUpFinish({email, onProceed}: ISignUpFinish) {
+type Props = RouteProp<RootStackParamList, 'SignUpFinish'>
+export default function SignUpFinish() {
   const {t} = useTranslation()
+  const route = useRoute<Props>()
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>()
+  const {email} = route.params
+  const {resetData} = useUser()
+  const {token, logout} = useAuth()
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerShown: false,
+    })
+    /* eslint-disable react-hooks/exhaustive-deps */
+  }, [])
+
+  useEffect(() => {
+    if (!token) {
+      navigation.navigate('Login')
+    }
+  }, [token])
+
+  const onBackToLogin = () => {
+    resetData()
+    logout()
+  }
+
   return (
     <Box bg={Colors.white} flex="1">
       <Box flex="1" justifyContent="center" p={ms(16)}>
@@ -57,7 +86,7 @@ export default function SignUpFinish({email, onProceed}: ISignUpFinish) {
             bg={Colors.primary}
             m={ms(16)}
             size="md"
-            onPress={onProceed}
+            onPress={onBackToLogin}
           >
             {t('backToLogin')}
           </Button>

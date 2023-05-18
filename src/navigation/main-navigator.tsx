@@ -90,7 +90,10 @@ export default function MainNavigator({navigation}: Props) {
   }, [token])
 
   useEffect(() => {
+    console.log('USE_EFFCET_STARTED')
+    const id = useEntity.getState().vesselId
     useEntity.getState().getUserInfo()
+    useSettings.getState().getDraughtTable(id)
   }, [])
 
   const initBackgroundFetch = async () => {
