@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as API from '@bluecentury/api/vemasys'
 import moment from 'moment'
 import {
+  Certificate,
   PartType,
   Routine,
   RoutineSection,
@@ -26,7 +27,7 @@ type TechnicalState = {
   routinesCategory: Array<TaskSection>
   routinesByCategory: Array<RoutineSection>
   routineDetails: Routine | Record<string, never>
-  certificates: any[]
+  certificates: Array<Certificate>
   lastMeasurements: any[]
   inventory: any[]
   consumableTypes: any[]
@@ -35,6 +36,9 @@ type TechnicalState = {
   isBunkeringLoading: boolean
   taskDetails: Task | null
   taskUpdateStatus: 'SUCCESS' | 'FAILED' | ''
+  certificateId: string
+  certificateDetails: Certificate | Record<string, never>
+  certificateUploadStatus: 'SUCCESS' | 'FAILED' | ''
 }
 
 type TechnicalActions = {
@@ -69,6 +73,9 @@ type TechnicalActions = {
   getVesselTaskDetails: (id: string) => void
   updateTaskStatus: (id: string, status: string) => void
   resetStatuses: () => void
+  uploadCertificateScannedDoc: (path: string) => Promise<string>
+  getCertificateDetails: (id: string) => void
+  setCertificateId: (id: string) => void
 }
 
 type TechnicalStore = TechnicalState & TechnicalActions
@@ -98,6 +105,9 @@ export const useTechnical = create(
       isBunkeringLoading: false,
       taskDetails: null,
       taskUpdateStatus: '',
+      certificateId: '',
+      certificateDetails: {},
+      certificateUploadStatus: '',
       getVesselBunkering: async (vesselId: string) => {
         set({
           isTechnicalLoading: true,
@@ -556,8 +566,46 @@ export const useTechnical = create(
         }
       },
       resetStatuses: () => {
-        set({taskUpdateStatus: ''})
+        set({taskUpdateStatus: '', certificateUploadStatus: ''})
       },
+      uploadCertificateScannedDoc: async (path: string) => {
+        set({
+          isUploadingFileLoading: true,
+        })
+        try {
+          const response = await API.uploadCertificateDocument(path)
+          set({
+            isUploadingFileLoading: false,
+            certificateUploadStatus: response,
+          })
+          return response
+        } catch (error) {
+          set({
+            isUploadingFileLoading: false,
+          })
+          return 'CERTIFICATE_UPLOAD_SCANNED_FAILED'
+        }
+      },
+      getCertificateDetails: async (id: string) => {
+        set({isTechnicalLoading: true})
+        try {
+          const response = await API.reloadCertificateDetails(id)
+          if (typeof response === 'object') {
+            set({
+              isTechnicalLoading: false,
+              certificateDetails: response,
+            })
+          } else {
+            set({
+              isTechnicalLoading: false,
+              certificateDetails: {},
+            })
+          }
+        } catch (error) {
+          set({isTechnicalLoading: false})
+        }
+      },
+      setCertificateId: (id: string) => set({certificateId: id}),
     }),
     {
       name: 'technical-storage',
