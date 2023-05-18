@@ -9,6 +9,8 @@ export const convertToPdfAndUpload = async (
   navlog?: any,
   setScannedImage?: (description: string) => void,
   certificates?: boolean
+  setScannedImage?: (description: string) => void,
+  bunkering?: boolean
 ) => {
   const uploadImgFile = usePlanning.getState().uploadImgFile
   const addFinancialScan = useFinancial.getState().addFinancialScan
@@ -20,6 +22,7 @@ export const convertToPdfAndUpload = async (
     usePlanning.getState().uploadVesselNavigationLogFile
   const getNavigationLogDocuments =
     usePlanning.getState().getNavigationLogDocuments
+  const addBunkeringScan = useTechnical.getState().addBunkeringScan
 
   // Remove 'file://' from file link is react-native-image-to-pdf requirement
   const arrayForPdf = files?.map(item => {
@@ -48,7 +51,7 @@ export const convertToPdfAndUpload = async (
 
     const upload = await uploadImgFile(file)
 
-    if (typeof upload === 'object' && !planning && !certificates) {
+    if (typeof upload === 'object' && !planning && !certificates && !bunkering) {
       const uploadDocs = await addFinancialScan(upload.path)
       if (uploadDocs === 'SUCCESS') {
         showToast('File upload successfully.', 'success')
@@ -64,6 +67,14 @@ export const convertToPdfAndUpload = async (
         showToast('File upload failed.', 'failed')
       }
     }
+    if (typeof upload === 'object' && bunkering) {
+      const uploadDocs = await addBunkeringScan(upload.path)
+      if (uploadDocs === 'SUCCESS') {
+        showToast('File upload successfully.', 'success')
+      } else {
+        showToast('File upload failed.', 'failed')
+      }
+    }
     if (typeof upload === 'object' && planning) {
       const description = `${moment().format('YYYY-MM-DD HH:mm:ss')}.pdf`
 
@@ -72,7 +83,7 @@ export const convertToPdfAndUpload = async (
         description,
       }
       // eslint-disable-next-line let-convert-to-const
-      const body = {
+      let body = {
         fileGroup: {
           files:
             navigationLogDocuments?.length > 0
