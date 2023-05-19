@@ -1,6 +1,13 @@
 import React, {useState} from 'react'
-import {Switch} from 'react-native'
-import {Modal, Text, Button, HStack, VStack} from 'native-base'
+import {Switch, Platform} from 'react-native'
+import {
+  Modal,
+  Text,
+  Button,
+  HStack,
+  VStack,
+  KeyboardAvoidingView,
+} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import {Colors} from '@bluecentury/styles'
 import {useTranslation} from 'react-i18next'
@@ -88,6 +95,10 @@ export default ({
   }
 
   const handleOnChange = (fieldName: string, value: string) => {
+    if (value === '') {
+      setFormValues(initialValues)
+      return
+    }
     const draught = isDraught ? parseInt(value) : maxDraught - parseInt(value)
     const freeboard = isDraught ? maxDraught - parseInt(value) : parseInt(value)
 
@@ -98,66 +109,70 @@ export default ({
   }
 
   return (
-    <Modal
-      backgroundColor="blue"
-      isOpen={isOpen}
-      width={'full'}
-      onClose={() => {
-        setOpen()
-      }}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <Modal.Content width={'full'}>
-        <Modal.Header>
-          <Text>{header}</Text>
-        </Modal.Header>
-        <Modal.Body>
-          <VStack space={ms(20)}>
-            {renderToggle()}
-            <FormControl
-              isDisabled={isDraught}
-              isInvalid={'freeboard' in errors}
-            >
-              <TextInput
-                isActive={!isDraught}
-                label={t('freeboard')}
-                maxLength={3}
-                name="freeboard"
-                value={formValues?.freeboard}
-                onChange={handleOnChange}
-              />
-            </FormControl>
-            <FormControl
-              isDisabled={!isDraught}
-              isInvalid={'draught' in errors}
-            >
-              <TextInput
-                isActive={isDraught}
-                label={t('draught')}
-                maxLength={3}
-                name="draught"
-                value={formValues?.draught}
-                onChange={handleOnChange}
-              />
-            </FormControl>
-          </VStack>
-        </Modal.Body>
-        <Modal.Footer>
-          <HStack mt={ms(10)} space={ms(5)} width="100%">
-            <Button
-              colorScheme={'white'}
-              flex={1}
-              onPress={() => {
-                handleOnClose()
-              }}
-            >
-              <Text color={Colors.disabled}>{t('cancel')}</Text>
-            </Button>
-            <Button flex={1} onPress={() => handleSaveDraught()}>
-              <Text color={Colors.white}>{t('save')}</Text>
-            </Button>
-          </HStack>
-        </Modal.Footer>
-      </Modal.Content>
-    </Modal>
+      <Modal
+        backgroundColor="blue"
+        isOpen={isOpen}
+        width={'full'}
+        onClose={() => {
+          setOpen()
+        }}
+      >
+        <Modal.Content width={'full'}>
+          <Modal.Header>
+            <Text>{header}</Text>
+          </Modal.Header>
+          <Modal.Body>
+            <VStack space={ms(20)}>
+              {renderToggle()}
+              <FormControl
+                isDisabled={isDraught}
+                isInvalid={'freeboard' in errors}
+              >
+                <TextInput
+                  isActive={!isDraught}
+                  label={t('freeboard')}
+                  maxLength={3}
+                  name="freeboard"
+                  value={formValues?.freeboard}
+                  onChange={handleOnChange}
+                />
+              </FormControl>
+              <FormControl
+                isDisabled={!isDraught}
+                isInvalid={'draught' in errors}
+              >
+                <TextInput
+                  isActive={isDraught}
+                  label={t('draught')}
+                  maxLength={3}
+                  name="draught"
+                  value={formValues?.draught}
+                  onChange={handleOnChange}
+                />
+              </FormControl>
+            </VStack>
+          </Modal.Body>
+          <Modal.Footer>
+            <HStack mt={ms(10)} space={ms(5)} width="100%">
+              <Button
+                colorScheme={'white'}
+                flex={1}
+                onPress={() => {
+                  handleOnClose()
+                }}
+              >
+                <Text color={Colors.disabled}>{t('cancel')}</Text>
+              </Button>
+              <Button flex={1} onPress={() => handleSaveDraught()}>
+                <Text color={Colors.white}>{t('save')}</Text>
+              </Button>
+            </HStack>
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal>
+    </KeyboardAvoidingView>
   )
 }

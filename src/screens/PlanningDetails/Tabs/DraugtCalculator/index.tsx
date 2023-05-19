@@ -1,6 +1,13 @@
 import React, {useState, useEffect} from 'react'
-import {Alert} from 'react-native'
-import {Box, Text, HStack, Button, Modal} from 'native-base'
+import {Alert, Platform} from 'react-native'
+import {
+  Box,
+  Text,
+  HStack,
+  Button,
+  Modal,
+  KeyboardAvoidingView,
+} from 'native-base'
 import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
 import {BeforeAfterComponent, Ship, InputModal} from './component'
@@ -11,6 +18,7 @@ import {titleCase, initialDraughtValues} from '@bluecentury/constants'
 import {Vemasys} from '@bluecentury/helpers'
 import _ from 'lodash'
 import IconFA5 from 'react-native-vector-icons/FontAwesome5'
+import {API} from '@bluecentury/api'
 
 export default () => {
   const {t} = useTranslation()
@@ -121,11 +129,11 @@ export default () => {
       )
     }
 
-    const activeLoading = navigationLogActions?.filter(
-      action => _.isNull(action?.end) && action.type === 'Loading'
-    )
+    // const activeLoading = navigationLogActions?.filter(
+    //   action => _.isNull(action?.end) && action.type === 'Loading'
+    // )
 
-    setActiveLoadingAction(activeLoading[0])
+    // setActiveLoadingAction(activeLoading[0])
   }
 
   const buttonSelected = (selected: string) => {
@@ -136,10 +144,10 @@ export default () => {
   const closeInput = () => {
     setIsOpenInput(false)
   }
-
   const saveTonnage = () => {
     if (navigationLogDetails?.exploitationVessel?.id) {
-      updateNavBulk(navigationLogDetails?.bulkCargo[0]?.id, beforeTonnage)
+      // updateNavBulk(navigationLogDetails?.bulkCargo[0]?.id, beforeTonnage)
+      API.updateNavBulk(navigationLogDetails?.bulkCargo[0]?.id, beforeTonnage)
     }
   }
 
@@ -225,34 +233,34 @@ export default () => {
   }
 
   const onConfirmStopAction = () => {
-    if (Object.keys(loadingAction).length === 0) {
-      Alert.alert(t('noLoading'))
-      return
-    }
+    // if (Object.keys(loadingAction).length === 0) {
+    //   Alert.alert(t('noLoading'))
+    //   return
+    // }
     saveDraught()
 
-    if (Object.keys(loadingAction).length > 0) {
-      setLoadingAction({
-        ...loadingAction,
-        id: activeLoadingAction?.id,
-        type: titleCase(activeLoadingAction?.type),
-        start: activeLoadingAction.start,
-        estimatedEnd: activeLoadingAction.estimatedEnd,
-        end: Vemasys.defaultDatetime(),
-        cargoHoldActions: [
-          {
-            navigationBulk: activeLoadingAction?.navigationBulk?.id,
-            amount: activeLoadingAction?.navigationBulk?.amount.toString(),
-          },
-        ],
-      })
+    // if (Object.keys(loadingAction).length > 0) {
+    //   setLoadingAction({
+    //     ...loadingAction,
+    //     id: activeLoadingAction?.id,
+    //     type: titleCase(activeLoadingAction?.type),
+    //     start: activeLoadingAction.start,
+    //     estimatedEnd: activeLoadingAction.estimatedEnd,
+    //     end: Vemasys.defaultDatetime(),
+    //     cargoHoldActions: [
+    //       {
+    //         navigationBulk: activeLoadingAction?.navigationBulk?.id,
+    //         amount: activeLoadingAction?.navigationBulk?.amount.toString(),
+    //       },
+    //     ],
+    //   })
 
-      updateNavigationLogAction(
-        loadingAction?.id,
-        navigationLogDetails?.id,
-        loadingAction
-      )
-    }
+    //   updateNavigationLogAction(
+    //     loadingAction?.id,
+    //     navigationLogDetails?.id,
+    //     loadingAction
+    //   )
+    // }
 
     saveTonnage()
 
@@ -261,6 +269,15 @@ export default () => {
 
   return (
     <Box flex={1}>
+      {/* <KeyboardAvoidingView
+        h={{
+          base: '100%',
+          lg: 'auto',
+        }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        flex={1}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? ms(80) : ms(70)}
+      > */}
       <PageScroll
         refreshing={
           isTonnageCertificationLoading ||
@@ -372,6 +389,7 @@ export default () => {
           </HStack>
         </Modal.Content>
       </Modal>
+      {/* </KeyboardAvoidingView> */}
     </Box>
   )
 }
