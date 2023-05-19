@@ -19,7 +19,7 @@ import {NavigationProp, useNavigation} from '@react-navigation/native'
 import {useTranslation} from 'react-i18next'
 import {useEntity, useSettings} from '@bluecentury/stores'
 import {calculateTable, recalculateTable} from '@bluecentury/utils'
-import {OTPInput} from '@bluecentury/components'
+import {OTPInput, LoadingAnimated} from '@bluecentury/components'
 
 type TableItem = {
   draught: number
@@ -36,6 +36,7 @@ const MeasurementTable = () => {
     uploadedTableData,
     removeResponse,
     getDraughtTable,
+    isDraughtTableLoading,
   } = useSettings()
   const {vesselId} = useEntity()
 
@@ -211,6 +212,10 @@ const MeasurementTable = () => {
     setDataForTable([])
     setChangedData([])
     navigation.goBack()
+  }
+
+  if (isDraughtTableLoading) {
+    return <LoadingAnimated />
   }
 
   return (
