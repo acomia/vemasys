@@ -102,6 +102,7 @@ const Settings = (props: DrawerContentComponentProps) => {
             navigation.navigate(Screens.MeasurementTable)
           }}
           iconSource={Icons.ruler}
+          isEntireBlockPressable={true}
           type="navigation"
           value={t('measurementTable')}
         />
