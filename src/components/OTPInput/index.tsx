@@ -226,9 +226,7 @@ export const OTPInput = ({
                 : null}
             </HStack>
             {isInputInvalid && (
-              <Text style={styles.error}>
-                Value can't be higher than maximal value
-              </Text>
+              <Text style={styles.error}>{t('wrongValue')}</Text>
             )}
           </Modal.Body>
           <Modal.Footer>
