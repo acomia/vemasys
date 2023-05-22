@@ -367,6 +367,7 @@
   "warning": "Warning",
   "accessLevel": "Access level",
   "selectAccessLevel": "Please select access level",
+  "trackingEnabled": "Tracking is enabled",
   "overrideWarning": "Are you sure you to manually set the Arrival/departure for location",
   "overRideWarningSub2": "This will disable the automatic tracking location. Once you leave, you have to set departure date manually",
   "draught": "Draught",
@@ -391,5 +392,6 @@
   "before": "Before",
   "highlightedText": "Highlighted values have been edited",
   "enteredValuesAreWrong": "Entered values are wrong",
+  "areYouSure": "Are you sure you want to End Loading? It will automatically update the actual amount of cargo to the computed Tonnage?",
   "wrongValue": "Value can't be higher than maximal value and less then minimal"
 }

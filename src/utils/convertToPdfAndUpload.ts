@@ -50,7 +50,12 @@ export const convertToPdfAndUpload = async (
 
     const upload = await uploadImgFile(file)
 
-    if (typeof upload === 'object' && !planning && !certificates && !bunkering) {
+    if (
+      typeof upload === 'object' &&
+      !planning &&
+      !certificates &&
+      !bunkering
+    ) {
       const uploadDocs = await addFinancialScan(upload.path)
       if (uploadDocs === 'SUCCESS') {
         showToast('File upload successfully.', 'success')
@@ -81,7 +86,8 @@ export const convertToPdfAndUpload = async (
         path: upload.path,
         description,
       }
-      // eslint-disable-next-line let-convert-to-const
+
+      // eslint-disable-next-line
       let body = {
         fileGroup: {
           files:
