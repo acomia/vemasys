@@ -51,7 +51,7 @@ export const PreviousNavLogInfo = ({logs, tracking}: Props) => {
                 'DD MMM YYYY | HH:mm'
               )}
             </Text>
-            {/* {tracking ? (
+            {tracking ? (
               <>
                 <HStack
                   alignItems="center"
@@ -71,14 +71,14 @@ export const PreviousNavLogInfo = ({logs, tracking}: Props) => {
                   </Text>
                 </HStack>
               </>
-            ) : ( */}
-            <Text color="#ADADAD" fontSize={ms(11)}>
-              {t('departureDate')}
-              {moment(navigationLog?.departureDatetime).format(
-                'DD MMM YYYY | HH:mm'
-              )}
-            </Text>
-            {/* )} */}
+            ) : (
+              <Text color="#ADADAD" fontSize={ms(11)}>
+                {t('departureDate')}
+                {moment(navigationLog?.departureDatetime).format(
+                  'DD MMM YYYY | HH:mm'
+                )}
+              </Text>
+            )}
           </>
         )}
       </Box>

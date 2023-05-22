@@ -52,7 +52,6 @@
   "new": "New ",
   "cleaning": "Cleaning",
   "confirmation": "Confirmation",
-  "areYouSure": "Are you sure you want to stop this action?",
   "cancel": "Cancel",
   "stop": "Stop",
   "details": "Details",
@@ -367,6 +366,7 @@
   "warning": "Warning",
   "accessLevel": "Access level",
   "selectAccessLevel": "Please select access level",
+  "trackingEnabled": "Tracking is enabled",
   "overrideWarning": "Are you sure you to manually set the Arrival/departure for location",
   "overRideWarningSub2": "This will disable the automatic tracking location. Once you leave, you have to set departure date manually.",
   "draught": "Draught",
@@ -390,5 +390,7 @@
   "after": "After",
   "before": "Before",
   "highlightedText": "Highlighted values have been edited",
-  "enteredValuesAreWrong": "Entered values are wrong"
+  "enteredValuesAreWrong": "Entered values are wrong",
+  "wrongValue": "Value can't be higher than maximal value and less then minimal",
+  "areYouSure": "Are you sure you want to End Loading? It will automatically update the actual amount of cargo to the computed Tonnage?"
 }

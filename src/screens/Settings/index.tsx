@@ -94,7 +94,6 @@ const Settings = (props: DrawerContentComponentProps) => {
       />*/}
       <ResetPasswordModal />
 
-      {/*TODO change icon*/}
       {/** remove the checking of env when going to production */}
 
       {env === 'UAT' ? (
@@ -103,6 +102,7 @@ const Settings = (props: DrawerContentComponentProps) => {
             navigation.navigate(Screens.MeasurementTable)
           }}
           iconSource={Icons.ruler}
+          isEntireBlockPressable={true}
           type="navigation"
           value={t('measurementTable')}
         />

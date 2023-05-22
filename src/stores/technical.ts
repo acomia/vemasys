@@ -39,6 +39,7 @@ type TechnicalState = {
   certificateId: string
   certificateDetails: Certificate | Record<string, never>
   certificateUploadStatus: 'SUCCESS' | 'FAILED' | ''
+  currentBunkeringId: string | null
 }
 
 type TechnicalActions = {
@@ -76,6 +77,8 @@ type TechnicalActions = {
   uploadCertificateScannedDoc: (path: string) => Promise<string>
   getCertificateDetails: (id: string) => void
   setCertificateId: (id: string) => void
+  addBunkeringScan: (path: string) => Promise<string>
+  setCurrentBunkeringId: (id: string) => void
 }
 
 type TechnicalStore = TechnicalState & TechnicalActions
@@ -108,6 +111,7 @@ export const useTechnical = create(
       certificateId: '',
       certificateDetails: {},
       certificateUploadStatus: '',
+      currentBunkeringId: null,
       getVesselBunkering: async (vesselId: string) => {
         set({
           isTechnicalLoading: true,
@@ -586,6 +590,25 @@ export const useTechnical = create(
           return 'CERTIFICATE_UPLOAD_SCANNED_FAILED'
         }
       },
+      addBunkeringScan: async (path: string) => {
+        set({
+          isUploadingFileLoading: true,
+        })
+        try {
+          const response = await API.uploadBunkeringDocument(path)
+          set({
+            isUploadingFileLoading: false,
+          })
+          return response
+        } catch (error) {
+          set({
+            isUploadingFileLoading: false,
+          })
+          console.log('ADD_BUNKERING_SCAN_ERROR', error)
+          return 'ADD_BUNKERING_SCAN_FAILED'
+        }
+      },
+      setCurrentBunkeringId: (id: string) => set({currentBunkeringId: id}),
       getCertificateDetails: async (id: string) => {
         set({isTechnicalLoading: true})
         try {

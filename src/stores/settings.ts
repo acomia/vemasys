@@ -27,6 +27,7 @@ type SettingsState = {
   draughtTable: TableItem[]
   tonnageCertificationID: number | null
   uploadedTableData: any | null
+  isDraughtTableLoading: boolean
 }
 
 type SettingsActions = {
@@ -61,6 +62,7 @@ export const useSettings = create(
       draughtTable: [],
       tonnageCertificationID: null,
       uploadedTableData: null,
+      isDraughtTableLoading: false,
       setDarkMode: async darkMode => {
         set({
           isDarkMode: darkMode,
@@ -102,6 +104,7 @@ export const useSettings = create(
         set({draughtTable: val})
       },
       getDraughtTable: async id => {
+        set({isDraughtTableLoading: true})
         const uploadedTableData: DraughtTableItem[] =
           await API.getTonnageCertification(id)
         const sortedData = uploadedTableData.sort((a, b) => {
@@ -131,6 +134,7 @@ export const useSettings = create(
           if (uploadedTableData.length === 2) {
             set({draughtTable: initialTable})
           }
+          set({isDraughtTableLoading: false})
         }
       },
       updateDraughtTable: async (measurement, id?) => {
