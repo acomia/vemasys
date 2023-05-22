@@ -78,7 +78,6 @@ type PlanningActions = {
   deleteNavLogAction?: (id: string) => void
   reset?: () => void
   getVesselnavigationDetails: (id: string) => void
-  updateNavBulk: (id: number, tonnage: number) => void
   getNavLogTonnageCertification: (id: number) => void
 }
 
@@ -574,19 +573,6 @@ export const usePlanning = create(
           set({isVesselNavigationLoading: false})
         } catch (error) {
           set({isVesselNavigationLoading: false})
-        }
-      },
-      updateNavBulk: async (id: number, tonnage: number) => {
-        set({isSavingNavBulkLoading: true, isSavingNavBulkSuccess: false})
-        try {
-          // console.log('id', id)
-          const response = await API.updateNavBulk(id, tonnage)
-          if (response?.status === 200) {
-            set({isSavingNavBulkSuccess: true})
-          }
-          set({isSavingNavBulkLoading: false})
-        } catch (error) {
-          set({isSavingNavBulkLoading: false})
         }
       },
       getNavLogTonnageCertification: async (id: number) => {

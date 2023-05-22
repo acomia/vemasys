@@ -122,27 +122,6 @@ const getEntityInfo = async (id: string) => {
     })
 }
 
-const updateNavBulk = async (id: number, tonnage: number) => {
-  usePlanning.setState({isSavingNavBulkSuccess: true})
-  return API.put(`v2/navigation_bulks/${id}`, {actualAmmount: tonnage})
-    .then(response => {
-      console.log('response', response?.data)
-      if (response.status === 200) {
-        usePlanning.setState({
-          isSavingNavBulkSuccess: false,
-          isSavingNavBulkSuccess: true,
-        })
-        return response
-      }
-
-      usePlanning.setState({isSavingNavBulkSuccess: false})
-      throw Error('Request failed')
-    })
-    .catch(error => {
-      console.error('Error: API Navigation bulk', error)
-    })
-}
-
 export {
   reloadEntityUsers,
   getVesselNavigationDetails,
@@ -152,5 +131,4 @@ export {
   rejectPendingRole,
   createSignUpRequest,
   getEntityInfo,
-  updateNavBulk,
 }

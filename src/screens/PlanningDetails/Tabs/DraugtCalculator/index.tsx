@@ -18,7 +18,8 @@ import {titleCase, initialDraughtValues} from '@bluecentury/constants'
 import {Vemasys} from '@bluecentury/helpers'
 import _ from 'lodash'
 import IconFA5 from 'react-native-vector-icons/FontAwesome5'
-import {API} from '@bluecentury/api'
+import {showToast} from '@bluecentury/hooks'
+import {useNavigation} from '@react-navigation/native'
 
 export default () => {
   const {t} = useTranslation()
@@ -28,16 +29,17 @@ export default () => {
     isSavingNavBulkLoading,
     navigationLogDetails,
     tonnageCertifications,
-    navigationLogActions,
     vesselNavigationDetails,
-    updateNavBulk,
+    updateBulkCargo,
     getNavLogTonnageCertification,
     getVesselnavigationDetails,
-    updateNavigationLogAction,
+    getNavigationLogDetails,
   } = usePlanning()
 
   const {isDraughtLoading, updateDraught, draughtTable, getDraught} =
     useDraught()
+
+  const navigation = useNavigation()
 
   const [beforeDraught, setBeforeDraught] = useState(initialDraughtValues)
   const [afterDraught, setAfterDraught] = useState(initialDraughtValues)
@@ -53,8 +55,6 @@ export default () => {
   const [isOpenInput, setIsOpenInput] = useState<boolean>(false)
 
   const [isConfirmModal, setConfirmModal] = useState<boolean>(false)
-  const [loadingAction, setLoadingAction] = useState<NavigationLogAction>({})
-  const [activeLoadingAction, setActiveLoadingAction] = useState<any>({})
 
   const sortedDraughtTable = tonnageCertifications?.length
     ? tonnageCertifications?.sort(
@@ -93,15 +93,27 @@ export default () => {
       const beforeAverageCalc = calculateAverage(beforeDraught)
       if (beforeAverageCalc) {
         setBeforeAverage(beforeAverageCalc)
+
+        if (sortedDraughtTable && beforeAverageCalc) {
+          const tonnage = getClosestDraught(beforeAverageCalc)
+
+          if (tonnage) setBeforeTonnage(tonnage?.tonnage)
+        }
       }
     }
     if (afterDraught) {
       const afterDraughtCalc = calculateAverage(afterDraught)
       if (afterDraughtCalc) {
         setAfterAverage(afterDraughtCalc)
+
+        if (sortedDraughtTable && afterDraughtCalc) {
+          const tonnage = getClosestDraught(afterDraughtCalc)
+
+          if (tonnage) setAfterTonnage(tonnage?.tonnage)
+        }
       }
     }
-  }, [beforeDraught, afterDraught])
+  }, [beforeDraught, afterDraught, sortedDraughtTable])
 
   const calculateAverage = (value: object) => {
     if (!value) return
@@ -128,12 +140,6 @@ export default () => {
         navigationLogDetails?.exploitationVessel?.id
       )
     }
-
-    // const activeLoading = navigationLogActions?.filter(
-    //   action => _.isNull(action?.end) && action.type === 'Loading'
-    // )
-
-    // setActiveLoadingAction(activeLoading[0])
   }
 
   const buttonSelected = (selected: string) => {
@@ -144,10 +150,23 @@ export default () => {
   const closeInput = () => {
     setIsOpenInput(false)
   }
-  const saveTonnage = () => {
-    if (navigationLogDetails?.exploitationVessel?.id) {
-      // updateNavBulk(navigationLogDetails?.bulkCargo[0]?.id, beforeTonnage)
-      API.updateNavBulk(navigationLogDetails?.bulkCargo[0]?.id, beforeTonnage)
+
+  const saveTonnage = async () => {
+    if (navigationLogDetails?.bulkCargo[0].id) {
+      const objCargo = {
+        id: navigationLogDetails?.bulkCargo[0].id,
+        typeId: navigationLogDetails?.bulkCargo[0].type?.id,
+        amount: navigationLogDetails?.bulkCargo[0].amount,
+        actualAmount: afterTonnage,
+        isLoading: navigationLogDetails?.bulkCargo[0].isLoading,
+      }
+
+      const response = await updateBulkCargo(objCargo)
+
+      if (typeof response === 'object' && response?.id) {
+        showToast('Cargo entry updated ', 'success')
+        getNavigationLogDetails(navigationLogDetails?.id)
+      }
     }
   }
 
@@ -233,34 +252,7 @@ export default () => {
   }
 
   const onConfirmStopAction = () => {
-    // if (Object.keys(loadingAction).length === 0) {
-    //   Alert.alert(t('noLoading'))
-    //   return
-    // }
     saveDraught()
-
-    // if (Object.keys(loadingAction).length > 0) {
-    //   setLoadingAction({
-    //     ...loadingAction,
-    //     id: activeLoadingAction?.id,
-    //     type: titleCase(activeLoadingAction?.type),
-    //     start: activeLoadingAction.start,
-    //     estimatedEnd: activeLoadingAction.estimatedEnd,
-    //     end: Vemasys.defaultDatetime(),
-    //     cargoHoldActions: [
-    //       {
-    //         navigationBulk: activeLoadingAction?.navigationBulk?.id,
-    //         amount: activeLoadingAction?.navigationBulk?.amount.toString(),
-    //       },
-    //     ],
-    //   })
-
-    //   updateNavigationLogAction(
-    //     loadingAction?.id,
-    //     navigationLogDetails?.id,
-    //     loadingAction
-    //   )
-    // }
 
     saveTonnage()
 

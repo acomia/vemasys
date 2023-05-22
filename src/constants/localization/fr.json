@@ -52,7 +52,6 @@
   "new": "Nouveau ",
   "cleaning": "Nettoyage",
   "confirmation": "Confirmation",
-  "areYouSure": "Êtes-vous sûr de vouloir arrêter cette action?",
   "cancel": "Annuler",
   "stop": "Stop",
   "details": "Détails",
@@ -389,5 +388,6 @@
   "after": "After",
   "before": "Before",
   "highlightedText": "Highlighted values have been edited",
-  "enteredValuesAreWrong": "Entered values are wrong"
+  "enteredValuesAreWrong": "Entered values are wrong",
+  "areYouSure": "Are you sure you want to End Loading? It will automatically update the actual amount of cargo to the computed Tonnage?"
 }
