@@ -39,6 +39,12 @@ export const OTPInput = ({
   const decimalRefs = useRef<any>([])
 
   useEffect(() => {
+    if (isModalOpen && inputRefs) {
+      setTimeout(() => inputRefs?.current[0]?.focus(), 100)
+    }
+  }, [isModalOpen])
+
+  useEffect(() => {
     if (initialValue) {
       if (initialValue % 1 === 0) {
         setDecimal('0'.padEnd(decimalLength, '0'))
@@ -153,6 +159,8 @@ export const OTPInput = ({
               ? (lineIndex && lineIndex % 2 === 0) || lineIndex === 0
                 ? styles.disabled
                 : [styles.disabled, {backgroundColor: Colors.white}]
+              : isDisabled
+              ? styles.disabledWithNumber
               : styles.boxSmall
           }
           defaultValue={digit}
@@ -172,6 +180,8 @@ export const OTPInput = ({
                   ? (lineIndex && lineIndex % 2 === 0) || lineIndex === 0
                     ? styles.disabled
                     : [styles.disabled, {backgroundColor: Colors.white}]
+                  : isDisabled
+                  ? styles.disabledWithNumber
                   : styles.decimalBoxSmall
               }
               defaultValue={digit}
@@ -185,7 +195,7 @@ export const OTPInput = ({
       <Modal animationPreset="slide" isOpen={isModalOpen} size="full">
         <Modal.Content>
           <Modal.Header>
-            <Text>{t('enterNumber')}</Text>
+            <Text style={styles.modalHeader}>{t('enterNumber')}</Text>
           </Modal.Header>
           <Modal.Body>
             <HStack justifyContent="space-between">
@@ -216,9 +226,7 @@ export const OTPInput = ({
                 : null}
             </HStack>
             {isInputInvalid && (
-              <Text style={styles.error}>
-                Tonnage can't be higher than maximal tonnage
-              </Text>
+              <Text style={styles.error}>{t('wrongValue')}</Text>
             )}
           </Modal.Body>
           <Modal.Footer>
@@ -282,6 +290,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#44A7B942',
     fontSize: 14,
     aspectRatio: 1,
+    color: Colors.black,
   },
   boxSmall: {
     borderWidth: 1,
@@ -305,6 +314,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     backgroundColor: '#23475C42',
     fontSize: 14,
+    color: Colors.black,
   },
   decimalBoxSmall: {
     borderWidth: 1,
@@ -321,6 +331,7 @@ const styles = StyleSheet.create({
   },
   coma: {
     alignSelf: 'center',
+    color: Colors.black,
   },
   error: {
     color: Colors.danger,
@@ -337,5 +348,19 @@ const styles = StyleSheet.create({
     color: Colors.disabled,
     paddingVertical: 0,
     marginVertical: 0,
+  },
+  disabledWithNumber: {
+    borderRadius: 5,
+    height: '50%',
+    aspectRatio: 1,
+    textAlign: 'center',
+    backgroundColor: Colors.light_grey,
+    fontSize: 14,
+    color: Colors.black,
+    paddingVertical: 0,
+    marginVertical: 0,
+  },
+  modalHeader: {
+    color: Colors.black,
   },
 })

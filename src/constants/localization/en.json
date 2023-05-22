@@ -391,5 +391,6 @@
   "after": "After",
   "before": "Before",
   "highlightedText": "Highlighted values have been edited",
-  "enteredValuesAreWrong": "Entered values are wrong"
+  "enteredValuesAreWrong": "Entered values are wrong",
+  "wrongValue": "Value can't be higher than maximal value and less then minimal"
 }
