@@ -20,7 +20,7 @@ const DatetimePickerList = ({
   onChangeDate,
   onClearDate,
   readOnly = false,
-  iconName,
+  trackView = false,
 }: any) => {
   const {t} = useTranslation()
   const {isPlanningDetailsLoading} = usePlanning()
@@ -39,14 +39,9 @@ const DatetimePickerList = ({
   }
   return (
     <VStack mb={ms(10)}>
-      <HStack alignItems="center" justifyItems={'center'} space={ms(5)}>
-        {iconName && (
-          <IconFA5 color={Colors.warning} name={iconName} size={ms(15)} />
-        )}
-        <Text color={Colors.disabled} fontWeight="medium">
-          {title}
-        </Text>
-      </HStack>
+      <Text color={Colors.disabled} fontWeight="medium">
+        {title}
+      </Text>
       <HStack
         alignItems="center"
         bg={readOnly ? Colors.white : '#F7F7F7'}
@@ -90,6 +85,12 @@ const DatetimePickerList = ({
         </Pressable>
         {!locked ? icon() : null}
       </HStack>
+      {trackView && (
+        <HStack alignItems="center" justifyItems="center" space={ms(5)}>
+          <IconFA5 color={Colors.warning} name="info-circle" size={ms(15)} />
+          <Text color={Colors.warning}>{t('trackingEnabled')}</Text>
+        </HStack>
+      )}
     </VStack>
   )
 }
