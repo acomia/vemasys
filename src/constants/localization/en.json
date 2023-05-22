@@ -52,7 +52,7 @@
   "new": "New ",
   "cleaning": "Cleaning",
   "confirmation": "Confirmation",
-  "areYouSure": "Are you sure you want to stop this action?",
+  "areYouSure": "Are you sure you want to End Loading? It will automatically update the actual amount of cargo to the computed Tonnage?",
   "cancel": "Cancel",
   "stop": "Stop",
   "details": "Details",

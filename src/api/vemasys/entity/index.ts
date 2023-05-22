@@ -1,5 +1,6 @@
 import {R} from 'react-native-shadow-2'
 import {API} from '../../apiService'
+import {usePlanning} from '@bluecentury/stores'
 
 const reloadEntityUsers = async () => {
   return API.get<any>('v2/active_entity_users')
@@ -121,20 +122,6 @@ const getEntityInfo = async (id: string) => {
     })
 }
 
-const updateNavBulk = async (id: number, tonnage: number) => {
-  return API.put(`v2/navigation_bulks/${id}`, {actualAmmount: tonnage})
-    .then(response => {
-      if (response.status === 200) {
-        return response
-      }
-
-      throw Error('Request failed')
-    })
-    .catch(error => {
-      console.error('Error: API Navigation bulk', error)
-    })
-}
-
 export {
   reloadEntityUsers,
   getVesselNavigationDetails,
@@ -144,5 +131,4 @@ export {
   rejectPendingRole,
   createSignUpRequest,
   getEntityInfo,
-  updateNavBulk,
 }

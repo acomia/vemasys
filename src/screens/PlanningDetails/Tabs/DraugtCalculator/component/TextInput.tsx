@@ -18,10 +18,15 @@ export default ({label, maxLength, onChange, name, isActive, value}: Props) => {
   const regex = /^[0-9]*$/
   const inputRefs = useRef<any>([])
   const [textValue, setTextValue] = useState(Array(maxLength).fill(''))
-  console.log(name, 'value', value)
+
   useEffect(() => {
+    if (!isActive && value === '') {
+      setTextValue(Array(maxLength).fill(''))
+    }
+
     if (!isActive && value.length > 0) {
-      setTextValue(value?.split(''))
+      const paddedValue = value?.padStart(maxLength, '0')
+      setTextValue(paddedValue?.split(''))
     }
   }, [value])
 
