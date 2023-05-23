@@ -30,6 +30,7 @@ export default () => {
     navigationLogDetails,
     tonnageCertifications,
     vesselNavigationDetails,
+    isUpdateBulkCargoLoading,
     updateBulkCargo,
     getNavLogTonnageCertification,
     getVesselnavigationDetails,
@@ -164,8 +165,8 @@ export default () => {
       const response = await updateBulkCargo(objCargo)
 
       if (typeof response === 'object' && response?.id) {
-        showToast('Cargo entry updated ', 'success')
         getNavigationLogDetails(navigationLogDetails?.id)
+        showToast('Cargo entry updated ', 'success')
       }
     }
   }
@@ -274,7 +275,8 @@ export default () => {
         refreshing={
           isTonnageCertificationLoading ||
           isSavingNavBulkLoading ||
-          isDraughtLoading
+          isDraughtLoading ||
+          isUpdateBulkCargoLoading
         }
         backgroundColor={Colors.light}
         onPullToReload={onPullToReload}
