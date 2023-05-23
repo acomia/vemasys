@@ -4,14 +4,14 @@ import BackgroundGeolocation from 'react-native-background-geolocation'
 export const InitializeTrackingService = () => {
   const entityId = useEntity.getState().entityId as string
   const entityType = useEntity.getState().entityType as string
-  BackgroundGeolocation.onLocation((location) => {
+  BackgroundGeolocation.onLocation(location => {
     console.log('[onLocation]', location)
-    if(entityType === 'ExploitationVessel'){
-    useMap.getState().sendCurrentPosition(entityId, location.coords)
+    if (entityType === 'ExploitationVessel') {
+      useMap.getState().sendCurrentPosition(entityId, location.coords)
     }
   })
 
-  BackgroundGeolocation.onMotionChange((event) => {
+  BackgroundGeolocation.onMotionChange(event => {
     console.log('[onMotionChange]', event)
   })
 
@@ -21,18 +21,17 @@ export const InitializeTrackingService = () => {
       persist: true,
     }).then(location => {
       console.log('[onHeartBeat_getCurrentPosition] ', location)
-      if(entityType === 'ExploitationVessel'){
-
+      if (entityType === 'ExploitationVessel') {
         useMap.getState().sendCurrentPosition(entityId, location.coords)
       }
     })
   })
 
-  BackgroundGeolocation.onActivityChange((event) => {
+  BackgroundGeolocation.onActivityChange(event => {
     console.log('[onMotionChange]', event)
   })
 
-  BackgroundGeolocation.onProviderChange((event) => {
+  BackgroundGeolocation.onProviderChange(event => {
     console.log('[onProviderChange]', event)
   })
 
