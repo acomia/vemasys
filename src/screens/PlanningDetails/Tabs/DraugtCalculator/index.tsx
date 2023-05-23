@@ -261,15 +261,6 @@ export default () => {
 
   return (
     <Box flex={1}>
-      {/* <KeyboardAvoidingView
-        h={{
-          base: '100%',
-          lg: 'auto',
-        }}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        flex={1}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? ms(80) : ms(70)}
-      > */}
       <PageScroll
         refreshing={
           isTonnageCertificationLoading ||
@@ -321,11 +312,11 @@ export default () => {
         </Button>
 
         <Button
-          backgroundColor={Colors.light}
+          backgroundColor={Colors.danger}
           flex={1}
           onPress={() => setConfirmModal(true)}
         >
-          <Text color={Colors.disabled}>{t('endLoading')}</Text>
+          <Text color={Colors.white}>{t('endLoading')}</Text>
         </Button>
         <Button
           backgroundColor={unsavedChanges === 0 ? Colors.disabled : null}
@@ -381,7 +372,6 @@ export default () => {
           </HStack>
         </Modal.Content>
       </Modal>
-      {/* </KeyboardAvoidingView> */}
     </Box>
   )
 }
