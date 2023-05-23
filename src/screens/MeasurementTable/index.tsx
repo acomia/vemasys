@@ -6,7 +6,6 @@ import {
   FormControl,
   Input,
   HStack,
-  VStack,
   ScrollView,
   Button,
 } from 'native-base'
@@ -121,7 +120,7 @@ const MeasurementTable = () => {
       tonnageTMax !== null &&
       shouldRecalculateValue
     ) {
-      if (draughtCmMin > draughtCmMax) {
+      if (draughtCmMin > draughtCmMax || draughtCmMax > 999) {
         setDraughtError(true)
         return
       }
@@ -141,6 +140,51 @@ const MeasurementTable = () => {
     tonnageTMax,
     shouldRecalculateValue,
   ])
+
+  const onInputChange = (
+    draughtMin: number,
+    draughtMax: number,
+    tonnageMin: number,
+    tonnageMax: number,
+    val: number,
+    identifier: string
+  ) => {
+    if (
+      draughtMin !== null &&
+      draughtMax !== null &&
+      tonnageMin !== null &&
+      tonnageMax !== null &&
+      shouldRecalculateValue
+    ) {
+      if (draughtMin >= draughtMax || draughtMax > 999) {
+        setDraughtError(true)
+        return
+      }
+      if (tonnageMin >= tonnageMax) {
+        setTonnageError(true)
+        return
+      }
+      setDataForTable(
+        calculateTable(tonnageMax, tonnageMin, draughtMax, draughtMin)
+      )
+      setChangedData([])
+      setDraughtError(false)
+      setTonnageError(false)
+      if (identifier === 'draughtCmMax') {
+        setDraughtCmMax(Number(val))
+      }
+      if (identifier === 'draughtCmMin') {
+        setDraughtCmMin(Number(val))
+      }
+      if (identifier === 'tonnageTMax') {
+        setTonnageTMax(Number(val))
+      }
+      if (identifier === 'tonnageTMin') {
+        setTonnageTMin(Number(val))
+      }
+      // setShouldRecalculateValue(true)
+    }
+  }
 
   const addUserChangedData = (item: TableItem) => {
     const existingItemIndex = changedData.findIndex(
@@ -239,9 +283,15 @@ const MeasurementTable = () => {
             keyboardType="number-pad"
             placeholder={t('enterNumber') as string}
             onChangeText={val => {
-              setDraughtError(false)
-              setDraughtCmMin(Number(val))
               setShouldRecalculateValue(true)
+              onInputChange(
+                Number(val),
+                Number(draughtCmMax),
+                Number(tonnageTMin),
+                Number(tonnageTMax),
+                Number(val),
+                'draughtCmMin'
+              )
             }}
           />
         </FormControl>
@@ -259,9 +309,15 @@ const MeasurementTable = () => {
             keyboardType="number-pad"
             placeholder={t('enterNumber') as string}
             onChangeText={val => {
-              setDraughtError(false)
-              setDraughtCmMax(Number(val))
               setShouldRecalculateValue(true)
+              onInputChange(
+                Number(draughtCmMin),
+                Number(val),
+                Number(tonnageTMin),
+                Number(tonnageTMax),
+                Number(val),
+                'draughtCmMax'
+              )
             }}
           />
         </FormControl>
@@ -287,9 +343,15 @@ const MeasurementTable = () => {
             keyboardType="number-pad"
             placeholder={t('enterNumber') as string}
             onChangeText={val => {
-              setTonnageError(false)
-              setTonnageTMin(Number(val))
               setShouldRecalculateValue(true)
+              onInputChange(
+                Number(draughtCmMin),
+                Number(draughtCmMax),
+                Number(val),
+                Number(tonnageTMax),
+                Number(val),
+                'tonnageTMin'
+              )
             }}
           />
         </FormControl>
@@ -307,9 +369,15 @@ const MeasurementTable = () => {
             keyboardType="number-pad"
             placeholder={t('enterNumber') as string}
             onChangeText={val => {
-              setTonnageError(false)
-              setTonnageTMax(Number(val))
               setShouldRecalculateValue(true)
+              onInputChange(
+                Number(draughtCmMin),
+                Number(draughtCmMax),
+                Number(tonnageTMin),
+                Number(val),
+                Number(val),
+                'tonnageTMax'
+              )
             }}
           />
         </FormControl>
@@ -367,12 +435,19 @@ const MeasurementTable = () => {
                   borderRightWidth={1}
                   h={'100%'}
                   justifyContent="center"
-                  px={ms(6)}
+                  // px={ms(6)}
                   w={ms(104)}
                 >
-                  <Text my={0} py={0}>
-                    {item.draught.toString()}
-                  </Text>
+                  <OTPInput
+                    getValue={val => {
+                      console.log(val)
+                    }}
+                    decimalLength={0}
+                    initialValue={item.draught}
+                    isDisabled={true}
+                    lineIndex={index}
+                    numberLength={3}
+                  />
                 </Box>
                 <OTPInput
                   getValue={val => {
@@ -390,6 +465,7 @@ const MeasurementTable = () => {
                   lineIndex={index}
                   maxValue={11}
                   numberLength={4}
+                  tableValue={item.draught}
                 />
               </HStack>
             ))}
