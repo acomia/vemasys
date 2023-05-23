@@ -31,6 +31,7 @@ import {useEntity, useTechnical} from '@bluecentury/stores'
 import {
   LoadingAnimated,
   NoInternetConnectionMessage,
+  OTPInput,
 } from '@bluecentury/components'
 import {Colors} from '@bluecentury/styles'
 import {MeasurementCard} from './measurement-card'
@@ -51,7 +52,7 @@ const Measurements = ({navigation, route}: Props) => {
     getVesselReservoirs,
   } = useTechnical()
   const {physicalVesselId, selectedEntity} = useEntity()
-  const [newMeasurement, setNewMeasurement] = useState('')
+  const [newMeasurement, setNewMeasurement] = useState('0')
   const [open, setOpen] = useState(false)
   const [openConfirmation, setOpenConfirmation] = useState(false)
   const [inputInvalid, setInputInvalid] = useState(false)
@@ -390,7 +391,7 @@ const Measurements = ({navigation, route}: Props) => {
               : t('enterNewMeasurementsHour')}
           </Modal.Header>
           <Modal.Body>
-            <Input
+            {/* <Input
               ref={inputRef}
               autoFocus
               bold
@@ -402,6 +403,17 @@ const Measurements = ({navigation, route}: Props) => {
               value={newMeasurement}
               variant="filled"
               onChangeText={e => handleInputChange(e)}
+            /> */}
+            <OTPInput
+              getValue={val => {
+                if (val) {
+                  setNewMeasurement(val)
+                }
+              }}
+              decimalLength={3}
+              errorMessage={'Too match'}
+              initialValue={newMeasurement}
+              numberLength={4}
             />
             {inputInvalid && (
               <Text color={Colors.danger} textAlign="center">
