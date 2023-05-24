@@ -161,12 +161,8 @@ export const OTPInput = ({
               ? (lineIndex && lineIndex % 2 === 0) || lineIndex === 0
                 ? styles.disabled
                 : [styles.disabled, {backgroundColor: Colors.white}]
-              : isDisabled &&
-                ((lineIndex && lineIndex % 2 === 0) || lineIndex === 0)
+              : isDisabled
               ? styles.disabledWithNumber
-              : isDisabled &&
-                ((lineIndex && lineIndex % 2 !== 0) || lineIndex !== 0)
-              ? [styles.disabledWithNumber, {backgroundColor: Colors.white}]
               : styles.boxSmall
           }
           defaultValue={digit}
@@ -229,10 +225,18 @@ export const OTPInput = ({
                 <TextInput
                   key={index}
                   ref={ref => (inputRefs.current[index] = ref)}
+                  style={
+                    defineInputStyle(initialValue, number, index, false)
+                      ? [
+                          styles.box,
+                          {borderWidth: 0, backgroundColor: Colors.grey},
+                        ]
+                      : styles.box
+                  }
                   defaultValue={digit}
                   keyboardType="numeric"
+                  // style={styles.box}
                   maxLength={1}
-                  style={styles.box}
                   onChangeText={value => handleNumberChange(value, index)}
                 />
               ))}
@@ -242,10 +246,18 @@ export const OTPInput = ({
                     <TextInput
                       key={index}
                       ref={ref => (decimalRefs.current[index] = ref)}
+                      style={
+                        defineInputStyle(initialValue, decimal, index, true)
+                          ? [
+                              styles.decimalBox,
+                              {borderWidth: 0, backgroundColor: Colors.grey},
+                            ]
+                          : styles.decimalBox
+                      }
                       defaultValue={digit}
                       keyboardType="numeric"
+                      // style={styles.decimalBox}
                       maxLength={1}
-                      style={styles.decimalBox}
                       onChangeText={value => handleDecimalChange(value, index)}
                     />
                   ))

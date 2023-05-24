@@ -11,6 +11,7 @@ export const calculateTable = (
   draughtMax: number,
   draughtMin: number
 ): TableItem[] => {
+  console.log('CALCULATE_TABLE_STARTED')
   const tonnageToOneCmDraught =
     (tonnageMax - tonnageMin) / (draughtMax - draughtMin)
   const draughtDifference = draughtMax - draughtMin
