@@ -13,10 +13,10 @@ import IconFA5 from 'react-native-vector-icons/FontAwesome5'
 
 interface Props {
   logs: Array<any>
-  tracking: boolean
+  tracking?: boolean
 }
 
-export const PreviousNavLogInfo = ({logs, tracking}: Props) => {
+export const PreviousNavLogInfo = ({logs, tracking = false}: Props) => {
   const {t} = useTranslation()
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>()
