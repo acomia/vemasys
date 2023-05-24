@@ -305,11 +305,12 @@ export default function Entity({route, navigation}: Props) {
         }}
         buttons={[
           {
-            variant: 'link',
+            colorScheme: 'info',
             _text: {
               color: Colors.black,
             },
-            children: t('ok'),
+            width: ms(60),
+            children: t('OK'),
             onPress: () => setIsOpenAlertIsMobileTracking(false),
           },
         ]}
