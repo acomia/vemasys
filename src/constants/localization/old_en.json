@@ -15,5 +15,8 @@
   "confirmPasswordRequired": "Confirm password is required.",
   "emailIsInvalid": "Email is not valid.",
   "mmsiIsRequired": "MMSI is required.",
-  "mmsiNotExist": "MMSI number does not exist."
+  "mmsiNotExist": "MMSI number does not exist.",
+  "certificateLevelIsRequired": "Please select a certificate level",
+  "birthdateIsRequired": "Birthdate is required.",
+  "languageIsRequired": "Please select a language"
 }
