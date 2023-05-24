@@ -34,6 +34,7 @@ import {
   IconButton,
   LoadingAnimated,
   NoInternetConnectionMessage,
+  OTPInput,
 } from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {Vemasys} from '@bluecentury/helpers'
@@ -301,7 +302,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
     const {nameEn, nameNl}: BulkType = navigationLogDetails?.bulkCargo[0]?.type
     return (
       <HStack alignItems="center" mb={ms(10)}>
-        <Box flex="2" mr={ms(10)}>
+        <Box flex="1">
           <Text color={Colors.disabled} fontWeight="medium" mb={ms(6)}>
             {t('cargo')}
           </Text>
@@ -328,7 +329,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
             </Box>
           )}
         </Box>
-        <Box bgColor={'blue'} flex="1">
+        {/* <Box bgColor={'blue'} flex="1">
           <Text color={Colors.disabled} fontWeight="medium" mb={ms(6)}>
             {t('amount')}
           </Text>
@@ -344,7 +345,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
             onBlur={() => Keyboard.dismiss()}
             onChangeText={val => onChangeAmount(val)}
           />
-        </Box>
+        </Box> */}
       </HStack>
     )
   }
@@ -518,6 +519,23 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
               />
             </Animated.View>
             {actionType === 'Cleaning' ? null : renderCargoHoldActions()}
+            <Text color={Colors.disabled} fontWeight="medium">
+              {t('amount')}
+            </Text>
+            <Box>
+              <OTPInput
+                getValue={val => {
+                  if (val) {
+                    onChangeAmount(val)
+                  }
+                }}
+                decimalLength={3}
+                errorMessage={'Too match'}
+                initialValue={navActionDetails.cargoHoldActions[0].amount}
+                numberLength={4}
+              />
+            </Box>
+
             <DatePicker
               modal
               date={new Date()}

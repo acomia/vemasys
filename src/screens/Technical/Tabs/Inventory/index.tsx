@@ -19,7 +19,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import {Icons} from '@bluecentury/assets'
 import {useEntity, useTechnical} from '@bluecentury/stores'
 import {formatConsumableLabel} from '@bluecentury/constants'
-import {LoadingAnimated} from '@bluecentury/components'
+import {LoadingAnimated, OTPInput} from '@bluecentury/components'
 import {Colors} from '@bluecentury/styles'
 import {useTranslation} from 'react-i18next'
 
@@ -39,7 +39,7 @@ const Inventory = () => {
   const [inventoryData, setInventoryData] = useState([])
   const [selectedFilter, setSelectedFilter] = useState([])
   const [selectedItem, setSelectedItem] = useState(0)
-  const [quantity, setQuantity] = useState('')
+  const [quantity, setQuantity] = useState('0')
   const [openFilter, setOpenFilter] = useState(false)
   const [openNewStock, setOpenNewStock] = useState(false)
 
@@ -173,7 +173,7 @@ const Inventory = () => {
       <TouchableOpacity
         key={index}
         activeOpacity={0.7}
-        onPress={() => onSelectItem(item.id)}
+        onPress={() => onSelectItem(item)}
       >
         <HStack
           alignItems="center"
@@ -283,9 +283,10 @@ const Inventory = () => {
     }
   }
 
-  const onSelectItem = (id: number) => {
+  const onSelectItem = (inv: any) => {
     setOpenNewStock(true)
-    setSelectedItem(id)
+    setQuantity(inv.quantity.toString())
+    setSelectedItem(inv.id)
   }
 
   const onSaveNewStock = async () => {
@@ -390,7 +391,7 @@ const Inventory = () => {
           <Modal.Content px={ms(10)} width="95%">
             <Modal.Header>Enter quantity</Modal.Header>
             <Modal.Body>
-              <Input
+              {/* <Input
                 bold
                 backgroundColor={Colors.light_grey}
                 fontSize={ms(15)}
@@ -399,6 +400,17 @@ const Inventory = () => {
                 value={quantity}
                 variant="filled"
                 onChangeText={e => setQuantity(e)}
+              /> */}
+              <OTPInput
+                getValue={val => {
+                  if (val) {
+                    setQuantity(val)
+                  }
+                }}
+                decimalLength={0}
+                errorMessage={'Too match'}
+                initialValue={quantity}
+                numberLength={4}
               />
             </Modal.Body>
             <Modal.Footer>
