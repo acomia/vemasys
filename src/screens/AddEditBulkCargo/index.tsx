@@ -35,8 +35,12 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
   const [cargoData, setCargoData] = useState({
     id: cargo !== undefined ? cargo?.id : '',
     typeId: cargo !== undefined ? cargo?.type?.id : '',
-    amount: cargo !== undefined ? (cargo?.amount ? cargo?.amount : 0) : '',
-    actualAmount: cargo ? (cargo?.actualAmount ? cargo?.actualAmount : 0) : '',
+    amount: cargo !== undefined ? (cargo?.amount ? cargo?.amount : '0') : '0',
+    actualAmount: cargo
+      ? cargo?.actualAmount
+        ? cargo?.actualAmount
+        : '0'
+      : '0',
     isLoading: cargo !== undefined ? (cargo?.isLoading ? '1' : '0') : '0',
   })
   const [bulkTypesData, setBulkTypesData] = useState([])
