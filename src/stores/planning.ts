@@ -40,6 +40,7 @@ type PlanningState = {
   isSavingNavBulkSuccess: boolean
   isTonnageCertificationLoading: boolean
   tonnageCertifications: TonnageCertifications[] | undefined
+  isUpdateBulkCargoLoading: boolean
 }
 
 type PlanningActions = {
@@ -110,6 +111,7 @@ const initialState: PlanningState = {
   isSavingNavBulkSuccess: false,
   isTonnageCertificationLoading: false,
   tonnageCertifications: [],
+  isUpdateBulkCargoLoading: false,
 }
 
 export const usePlanning = create(
@@ -384,13 +386,13 @@ export const usePlanning = create(
         }
       },
       updateBulkCargo: async (cargo: any) => {
-        set({isPlanningLoading: true})
+        set({isPlanningLoading: true, isUpdateBulkCargoLoading: true})
         try {
           const response = await API.updateBulkCargoEntry(cargo)
-          set({isPlanningLoading: false})
+          set({isPlanningLoading: false, isUpdateBulkCargoLoading: false})
           return response
         } catch (error) {
-          set({isPlanningLoading: false})
+          set({isPlanningLoading: false, isUpdateBulkCargoLoading: false})
         }
       },
       createBulkCargo: async (cargo: any, navLogId: string) => {
