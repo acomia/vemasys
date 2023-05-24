@@ -25,6 +25,7 @@ import {useTechnical} from '@bluecentury/stores'
 import {
   LoadingAnimated,
   NoInternetConnectionMessage,
+  OTPInput,
 } from '@bluecentury/components'
 import {useTranslation} from 'react-i18next'
 import {fuelTypes} from '@bluecentury/constants'
@@ -43,7 +44,7 @@ export default function NewBunkering() {
   const [bunkering, setBunkering] = useState({
     date: new Date(),
     bunkeringId: '',
-    amount: '',
+    amount: '0',
     description: '',
     fuelType: '',
   })
@@ -216,7 +217,19 @@ export default function NewBunkering() {
           <FormControl.Label color={Colors.disabled}>
             {t('amount')}
           </FormControl.Label>
-          <Input
+          <OTPInput
+            getValue={val => {
+              if (val) {
+                setBunkering({...bunkering, amount: val})
+                setIsAmountEmpty(false)
+              }
+            }}
+            decimalLength={3}
+            errorMessage={'Too match'}
+            initialValue={bunkering.amount}
+            numberLength={4}
+          />
+          {/* <Input
             bold
             bg={'#F7F7F7'}
             fontSize={ms(15)}
@@ -228,7 +241,7 @@ export default function NewBunkering() {
               setBunkering({...bunkering, amount: e})
               setIsAmountEmpty(false)
             }}
-          />
+          /> */}
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
             {bunkering.bunkeringId === '' && bunkering.amount === ''
               ? t('allFieldsRequired')
