@@ -159,9 +159,9 @@ export const hasSelectedEntityUserPermission = (
 export const titleCase = (str: string) => {
   const re = /_/g
   return str
-    .toLowerCase()
-    .replace(/\b\w/g, s => s.toUpperCase())
-    .replace(re, ' ')
+    ?.toLowerCase()
+    ?.replace(/\b\w/g, s => s.toUpperCase())
+    ?.replace(re, ' ')
 }
 
 export const formatConsumableLabel = (consumable: Consumable) => {
