@@ -21,12 +21,11 @@ LogBox.ignoreLogs([
 AppRegistry.registerComponent(appName, () => App)
 let HeadlessTask = async event => {
   const entityId = useEntity.getState().entityId
-  const entityType = useEntity.getState().entityType
 
   let params = event.params
   console.log('[BackgroundGeolocation HeadlessTask] EVENT', event)
 
-  event.name === 'location' && entityType === 'ExploitationVessel'
+  event.name === 'location'
     ? useMap.getState().sendCurrentPosition(entityId, params.coords)
     : console.log('HAVE_NO_COORDS')
 }
@@ -46,15 +45,13 @@ let HeadlessTaskStationary = async event => {
   }
 
   const entityId = useEntity.getState().entityId
-  const entityType = useEntity.getState().entityType
 
   console.log('[BackgroundFetch HeadlessTask] start: ', taskId)
 
   let location = await BackgroundGeolocation.getCurrentPosition()
   console.log('[BackgroundFetch HeadlessTask] - getCurrentPosition:', location)
-  if (entityType === 'ExploitationVessel') {
-    useMap.getState().sendCurrentPosition(entityId, location.coords)
-  }
+
+  useMap.getState().sendCurrentPosition(entityId, location.coords)
   BackgroundFetch.finish(taskId)
 }
 BackgroundFetch.registerHeadlessTask(HeadlessTaskStationary)

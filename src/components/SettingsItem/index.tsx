@@ -25,6 +25,7 @@ interface Props {
   switchState?: boolean
   language?: string
   isEntireBlockPressable: boolean
+  disabled?: boolean
 }
 
 const SettingsItem = (props: Props) => {
@@ -140,11 +141,13 @@ const SettingsItem = (props: Props) => {
   }
 
   const renderItem = (itemType: string) => {
+    console.log('props.disabled', props.disabled)
     if (itemType === 'switch') {
       return (
         <Switch
           defaultIsChecked
           colorScheme="primary"
+          disabled={props.disabled}
           isChecked={switchState}
           onToggle={() => callback(!switchState)}
         />
