@@ -6,8 +6,6 @@ import {
   FormControl,
   Input,
   HStack,
-  VStack,
-  ScrollView,
   Button,
 } from 'native-base'
 import {RootStackParamList} from '@bluecentury/types/nav.types'
@@ -20,6 +18,7 @@ import {useTranslation} from 'react-i18next'
 import {useEntity, useSettings} from '@bluecentury/stores'
 import {calculateTable, recalculateTable} from '@bluecentury/utils'
 import {OTPInput, LoadingAnimated} from '@bluecentury/components'
+import {FlashList} from '@shopify/flash-list'
 
 type TableItem = {
   draught: number
@@ -50,6 +49,14 @@ const MeasurementTable = () => {
     useState<boolean>(false)
   const [draughtError, setDraughtError] = useState<boolean>(false)
   const [tonnageError, setTonnageError] = useState<boolean>(false)
+
+  useEffect(() => {
+    console.log('DATA_FOR_TABLE', dataForTable)
+  }, [dataForTable])
+
+  useEffect(() => {
+    console.log('DRAUGHT_ERROR', draughtError)
+  }, [draughtError])
 
   useEffect(() => {
     getDraughtTable(vesselId)
@@ -119,16 +126,11 @@ const MeasurementTable = () => {
       draughtCmMax !== null &&
       tonnageTMin !== null &&
       tonnageTMax !== null &&
+      !draughtError &&
+      !tonnageError &&
       shouldRecalculateValue
     ) {
-      if (draughtCmMin > draughtCmMax) {
-        setDraughtError(true)
-        return
-      }
-      if (tonnageTMin > tonnageTMax) {
-        setTonnageError(true)
-        return
-      }
+      console.log('DRAUGHT_ERROR', draughtError)
       setDataForTable(
         calculateTable(tonnageTMax, tonnageTMin, draughtCmMax, draughtCmMin)
       )
@@ -140,7 +142,42 @@ const MeasurementTable = () => {
     tonnageTMin,
     tonnageTMax,
     shouldRecalculateValue,
+    draughtError,
+    tonnageError,
   ])
+
+  const onInputChange = (
+    draughtMin: number,
+    draughtMax: number,
+    tonnageMin: number,
+    tonnageMax: number,
+    val: number,
+    identifier: string
+  ) => {
+    console.log(draughtMin, draughtMax, tonnageMin, tonnageMax, val, identifier)
+    setChangedData([])
+    setDraughtError(false)
+    setTonnageError(false)
+    if (draughtMin >= draughtMax) {
+      setDraughtError(true)
+    }
+    if (tonnageMin >= tonnageMax) {
+      setTonnageError(true)
+    }
+    if (identifier === 'draughtCmMax') {
+      setDraughtCmMax(Number(val))
+    }
+    if (identifier === 'draughtCmMin') {
+      console.log('DRAUGHT_CM_MIN_SET')
+      setDraughtCmMin(Number(val))
+    }
+    if (identifier === 'tonnageTMax') {
+      setTonnageTMax(Number(val))
+    }
+    if (identifier === 'tonnageTMin') {
+      setTonnageTMin(Number(val))
+    }
+  }
 
   const addUserChangedData = (item: TableItem) => {
     const existingItemIndex = changedData.findIndex(
@@ -214,6 +251,56 @@ const MeasurementTable = () => {
     navigation.goBack()
   }
 
+  const renderItem = ({item, index}: {item: TableItem; index: number}) => {
+    return (
+      <HStack
+        backgroundColor={
+          (index / 2) % 1 === 0 ? Colors.white : Colors.tableGreyBackground
+        }
+        alignItems="center"
+        borderBottomColor={Colors.light}
+        borderBottomWidth={1}
+        borderTopColor={index === 0 ? Colors.light : null}
+        borderTopWidth={index === 0 ? 1 : 0}
+        h={ms(58)}
+        w="100%"
+      >
+        <Box
+          borderRightColor={Colors.light}
+          borderRightWidth={1}
+          h={'100%'}
+          justifyContent="center"
+          px={ms(6)}
+          w={ms(96)}
+        >
+          <Text my={0} py={0}>
+            {item.draught.toString()}
+          </Text>
+        </Box>
+        <OTPInput
+          getValue={val => {
+            if (val) {
+              addUserChangedData({
+                draught: item.draught,
+                tonnage: parseFloat(val),
+              })
+            }
+          }}
+          decimalLength={3}
+          errorMessage={'Too match'}
+          initialValue={item.tonnage}
+          isDisabled={index === 0 || index === dataForTable.length - 1}
+          lineIndex={index}
+          maxValue={11}
+          numberLength={4}
+          tableValue={item.draught}
+        />
+      </HStack>
+    )
+  }
+
+  const keyExtractor = (item: TableItem) => item.draught.toString()
+
   if (isDraughtTableLoading) {
     return <LoadingAnimated />
   }
@@ -238,11 +325,18 @@ const MeasurementTable = () => {
             h={ms(40)}
             keyboardType="number-pad"
             placeholder={t('enterNumber') as string}
-            onChangeText={val => {
-              setDraughtError(false)
-              setDraughtCmMin(Number(val))
+            onEndEditing={val => {
               setShouldRecalculateValue(true)
+              onInputChange(
+                Number(val.nativeEvent.text),
+                Number(draughtCmMax),
+                Number(tonnageTMin),
+                Number(tonnageTMax),
+                Number(val.nativeEvent.text),
+                'draughtCmMin'
+              )
             }}
+            // onEndEditing={}
           />
         </FormControl>
         <FormControl w="40%">
@@ -258,10 +352,16 @@ const MeasurementTable = () => {
             h={ms(40)}
             keyboardType="number-pad"
             placeholder={t('enterNumber') as string}
-            onChangeText={val => {
-              setDraughtError(false)
-              setDraughtCmMax(Number(val))
+            onEndEditing={val => {
               setShouldRecalculateValue(true)
+              onInputChange(
+                Number(draughtCmMin),
+                Number(val.nativeEvent.text),
+                Number(tonnageTMin),
+                Number(tonnageTMax),
+                Number(val.nativeEvent.text),
+                'draughtCmMax'
+              )
             }}
           />
         </FormControl>
@@ -286,10 +386,16 @@ const MeasurementTable = () => {
             h={ms(40)}
             keyboardType="number-pad"
             placeholder={t('enterNumber') as string}
-            onChangeText={val => {
-              setTonnageError(false)
-              setTonnageTMin(Number(val))
+            onEndEditing={val => {
               setShouldRecalculateValue(true)
+              onInputChange(
+                Number(draughtCmMin),
+                Number(draughtCmMax),
+                Number(val.nativeEvent.text),
+                Number(tonnageTMax),
+                Number(val.nativeEvent.text),
+                'tonnageTMin'
+              )
             }}
           />
         </FormControl>
@@ -306,10 +412,16 @@ const MeasurementTable = () => {
             h={ms(40)}
             keyboardType="number-pad"
             placeholder={t('enterNumber') as string}
-            onChangeText={val => {
-              setTonnageError(false)
-              setTonnageTMax(Number(val))
+            onEndEditing={val => {
               setShouldRecalculateValue(true)
+              onInputChange(
+                Number(draughtCmMin),
+                Number(draughtCmMax),
+                Number(tonnageTMin),
+                Number(val.nativeEvent.text),
+                Number(val.nativeEvent.text),
+                'tonnageTMax'
+              )
             }}
           />
         </FormControl>
@@ -333,67 +445,25 @@ const MeasurementTable = () => {
               borderRightWidth={1}
               px={ms(6)}
               py={ms(8)}
-              w={ms(104)}
+              w={ms(96)}
             >
-              <Text color={Colors.disabled} fontSize={ms(14)}>
+              <Text color={Colors.disabled} fontSize={ms(12)}>
                 Draught (cm)
               </Text>
             </Box>
             <Box px={ms(6)} py={ms(8)}>
-              <Text color={Colors.disabled} fontSize={ms(14)}>
+              <Text color={Colors.disabled} fontSize={ms(12)}>
                 Tonnage (T)
               </Text>
             </Box>
           </HStack>
-          <ScrollView flex={1}>
-            {dataForTable.map((item, index) => (
-              <HStack
-                key={item.draught}
-                backgroundColor={
-                  (index / 2) % 1 === 0
-                    ? Colors.white
-                    : Colors.tableGreyBackground
-                }
-                alignItems="center"
-                borderBottomColor={Colors.light}
-                borderBottomWidth={1}
-                borderTopColor={index === 0 ? Colors.light : null}
-                borderTopWidth={index === 0 ? 1 : 0}
-                h={ms(58)}
-                w="100%"
-              >
-                <Box
-                  borderRightColor={Colors.light}
-                  borderRightWidth={1}
-                  h={'100%'}
-                  justifyContent="center"
-                  px={ms(6)}
-                  w={ms(104)}
-                >
-                  <Text my={0} py={0}>
-                    {item.draught.toString()}
-                  </Text>
-                </Box>
-                <OTPInput
-                  getValue={val => {
-                    if (val) {
-                      addUserChangedData({
-                        draught: item.draught,
-                        tonnage: parseFloat(val),
-                      })
-                    }
-                  }}
-                  decimalLength={3}
-                  errorMessage={'Too match'}
-                  initialValue={item.tonnage}
-                  isDisabled={index === 0 || index === dataForTable.length - 1}
-                  lineIndex={index}
-                  maxValue={11}
-                  numberLength={4}
-                />
-              </HStack>
-            ))}
-          </ScrollView>
+          <FlashList
+            data={dataForTable}
+            estimatedItemSize={ms(58)}
+            keyExtractor={keyExtractor}
+            // maxToRenderPerBatch={8}
+            renderItem={renderItem}
+          />
         </Box>
       ) : null}
       <HStack

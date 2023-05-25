@@ -8,7 +8,12 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {Colors} from '@bluecentury/styles'
 import {usePlanning} from '@bluecentury/stores'
 import {formatBulkTypeLabel} from '@bluecentury/constants'
-import {IconButton, LoadingAnimated, NoInternetConnectionMessage} from '@bluecentury/components'
+import {
+  IconButton,
+  LoadingAnimated,
+  NoInternetConnectionMessage,
+  OTPInput,
+} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {useTranslation} from 'react-i18next'
 
@@ -30,8 +35,12 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
   const [cargoData, setCargoData] = useState({
     id: cargo !== undefined ? cargo?.id : '',
     typeId: cargo !== undefined ? cargo?.type?.id : '',
-    amount: cargo !== undefined ? (cargo?.amount ? cargo?.amount : 0) : '',
-    actualAmount: cargo ? (cargo?.actualAmount ? cargo?.actualAmount : 0) : '',
+    amount: cargo !== undefined ? (cargo?.amount ? cargo?.amount : '0') : '0',
+    actualAmount: cargo
+      ? cargo?.actualAmount
+        ? cargo?.actualAmount
+        : '0'
+      : '0',
     isLoading: cargo !== undefined ? (cargo?.isLoading ? '1' : '0') : '0',
   })
   const [bulkTypesData, setBulkTypesData] = useState([])
@@ -227,7 +236,20 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
         >
           {t('bookedAmount')}
         </Text>
-        <Input
+        <Box h={ms(50)}>
+          <OTPInput
+            getValue={val => {
+              if (val) {
+                setCargoData({...cargoData, amount: val})
+              }
+            }}
+            decimalLength={3}
+            errorMessage={'Too match'}
+            initialValue={cargoData.amount}
+            numberLength={4}
+          />
+        </Box>
+        {/* <Input
           bold
           bg={'#F7F7F7'}
           fontSize={ms(15)}
@@ -237,7 +259,7 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
           onChangeText={e =>
             setCargoData({...cargoData, amount: e.replace(',', '.')})
           }
-        />
+        /> */}
         <Text
           color={Colors.disabled}
           fontWeight="medium"
@@ -246,7 +268,20 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
         >
           {t('actualAmount')}
         </Text>
-        <Input
+        <Box h={ms(50)}>
+          <OTPInput
+            getValue={val => {
+              if (val) {
+                setCargoData({...cargoData, actualAmount: val})
+              }
+            }}
+            decimalLength={3}
+            errorMessage={'Too match'}
+            initialValue={cargoData.actualAmount}
+            numberLength={4}
+          />
+        </Box>
+        {/* <Input
           bold
           bg={'#F7F7F7'}
           fontSize={ms(15)}
@@ -256,7 +291,7 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
           onChangeText={e =>
             setCargoData({...cargoData, actualAmount: e.replace(',', '.')})
           }
-        />
+        /> */}
       </Box>
       <Box bg={Colors.white} position="relative">
         <Shadow

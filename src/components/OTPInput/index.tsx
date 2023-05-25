@@ -15,6 +15,7 @@ type Props = {
   errorMessage?: string
   isDisabled?: boolean
   lineIndex?: number
+  tableValue?: number
 }
 
 export const OTPInput = ({
@@ -27,6 +28,7 @@ export const OTPInput = ({
   errorMessage,
   isDisabled,
   lineIndex,
+  tableValue,
 }: Props) => {
   const [number, setNumber] = useState('')
   const [decimal, setDecimal] = useState('')
@@ -170,7 +172,7 @@ export const OTPInput = ({
           onPressIn={!isDisabled ? () => setIsModalOpen(true) : null}
         />
       ))}
-      <Text style={styles.coma}>,</Text>
+      {decimalLength > 0 ? <Text style={styles.coma}>,</Text> : null}
       {decimalLength
         ? Array.from(decimal.toString()).map((digit, index) => (
             <TextInput
@@ -194,8 +196,28 @@ export const OTPInput = ({
         : null}
       <Modal animationPreset="slide" isOpen={isModalOpen} size="full">
         <Modal.Content>
-          <Modal.Header>
-            <Text style={styles.modalHeader}>{t('enterNumber')}</Text>
+          <Modal.Header py="0">
+            {!tableValue ? (
+              <Text style={styles.modalHeader}>{t('enterNumber')}</Text>
+            ) : (
+              <HStack alignItems="center" h={ms(56)} py="0">
+                {Array.from(tableValue.toString()).map((digit, index) => (
+                  <TextInput
+                    key={index}
+                    ref={ref => (inputRefs.current[index] = ref)}
+                    style={[
+                      styles.disabledWithNumber,
+                      {backgroundColor: Colors.grey, marginLeft: ms(8)},
+                    ]}
+                    defaultValue={digit}
+                    editable={false}
+                    keyboardType="numeric"
+                    maxLength={1}
+                    onChangeText={value => handleNumberChange(value, index)}
+                  />
+                ))}
+              </HStack>
+            )}
           </Modal.Header>
           <Modal.Body>
             <HStack justifyContent="space-between">
@@ -203,10 +225,18 @@ export const OTPInput = ({
                 <TextInput
                   key={index}
                   ref={ref => (inputRefs.current[index] = ref)}
+                  style={
+                    defineInputStyle(initialValue, number, index, false)
+                      ? [
+                          styles.box,
+                          {borderWidth: 0, backgroundColor: Colors.grey},
+                        ]
+                      : styles.box
+                  }
                   defaultValue={digit}
                   keyboardType="numeric"
+                  // style={styles.box}
                   maxLength={1}
-                  style={styles.box}
                   onChangeText={value => handleNumberChange(value, index)}
                 />
               ))}
@@ -216,10 +246,18 @@ export const OTPInput = ({
                     <TextInput
                       key={index}
                       ref={ref => (decimalRefs.current[index] = ref)}
+                      style={
+                        defineInputStyle(initialValue, decimal, index, true)
+                          ? [
+                              styles.decimalBox,
+                              {borderWidth: 0, backgroundColor: Colors.grey},
+                            ]
+                          : styles.decimalBox
+                      }
                       defaultValue={digit}
                       keyboardType="numeric"
+                      // style={styles.decimalBox}
                       maxLength={1}
-                      style={styles.decimalBox}
                       onChangeText={value => handleDecimalChange(value, index)}
                     />
                   ))
@@ -296,7 +334,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#44A7B9',
     borderRadius: 5,
-    height: '50%',
+    height: '45%',
     aspectRatio: 1,
     textAlign: 'center',
     backgroundColor: '#44A7B942',
@@ -320,7 +358,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#23475C',
     borderRadius: 5,
-    height: '50%',
+    height: '45%',
     aspectRatio: 1,
     textAlign: 'center',
     backgroundColor: '#23475C42',
@@ -340,7 +378,7 @@ const styles = StyleSheet.create({
   },
   disabled: {
     borderRadius: 5,
-    height: '50%',
+    height: '45%',
     aspectRatio: 1,
     textAlign: 'center',
     backgroundColor: Colors.light_grey,
@@ -351,7 +389,7 @@ const styles = StyleSheet.create({
   },
   disabledWithNumber: {
     borderRadius: 5,
-    height: '50%',
+    height: '45%',
     aspectRatio: 1,
     textAlign: 'center',
     backgroundColor: Colors.light_grey,

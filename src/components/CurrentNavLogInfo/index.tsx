@@ -13,10 +13,10 @@ import IconFA5 from 'react-native-vector-icons/FontAwesome5'
 import {Colors} from '@bluecentury/styles'
 
 interface Props {
-  tracking: boolean
+  tracking?: boolean
 }
 
-export const CurrentNavLogInfo = ({tracking}: Props) => {
+export const CurrentNavLogInfo = ({tracking = false}: Props) => {
   const {t} = useTranslation()
   const navigation = useNavigation()
   const {currentNavLogs, prevNavLogs, vesselStatus}: any = useMap()

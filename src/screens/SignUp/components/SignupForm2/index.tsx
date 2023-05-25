@@ -35,6 +35,9 @@ const userFirstname = _t('newUserFirstname')
 const userLastname = _t('newUserLastname')
 const userEmailNotValid = _t('emailIsInvalid')
 const userEmail = _t('newUserEmail')
+const userBday = _t('birthdateIsRequired')
+const language = _t('languageIsRequired')
+const certificateLevel = _t('certificateLevelIsRequired')
 
 interface Props {
   userInfo: ExtendedUser
@@ -75,6 +78,9 @@ export default function SignUpForm2({userInfo, userCreds, mmsi}: Props) {
   const [isLastnameEmpty, setIsLastnameEmpty] = useState(false)
   const [isEmailNotValid, setIsEmailNotValid] = useState(false)
   const [isEmailEmpty, setIsEmailEmpty] = useState(false)
+  const [isBdayEmpty, setIsBdayEmpty] = useState(false)
+  const [isLanguageEmpty, setIsLanguageEmpty] = useState(false)
+  const [isCertLevelEmpty, setIsCertLevelEmpty] = useState(false)
   const [selectedDate, setSelectedDate] = useState('')
   const [openDatePicker, setOpenDatePicker] = useState(false)
   const fnameRef = useRef<any>(null)
@@ -121,7 +127,10 @@ export default function SignUpForm2({userInfo, userCreds, mmsi}: Props) {
     if (
       values.firstname === '' &&
       values.lastname === '' &&
-      values.email === ''
+      values.email === '' &&
+      values.birthday === '' &&
+      values.language === '' &&
+      values.certificateLevel === ''
     ) {
       setIsAllFieldEmpty(true)
       return
@@ -129,7 +138,10 @@ export default function SignUpForm2({userInfo, userCreds, mmsi}: Props) {
     if (
       values.firstname === '' ||
       values.lastname === '' ||
-      values.email === ''
+      values.email === '' ||
+      values.birthday === '' ||
+      values.language === '' ||
+      values.certificateLevel === ''
     ) {
       values.firstname === ''
         ? setIsFirstnameEmpty(true)
@@ -137,8 +149,14 @@ export default function SignUpForm2({userInfo, userCreds, mmsi}: Props) {
       values.lastname === ''
         ? setIsLastnameEmpty(true)
         : setIsLastnameEmpty(false)
-      // values.phone === '' ? setIsPhoneEmpty(true) : setIsPhoneEmpty(false)
       values.email === '' ? setIsEmailEmpty(true) : setIsEmailEmpty(false)
+      values.birthday === '' ? setIsBdayEmpty(true) : setIsBdayEmpty(false)
+      values.language === ''
+        ? setIsLanguageEmpty(true)
+        : setIsLanguageEmpty(false)
+      values.certificateLevel === ''
+        ? setIsCertLevelEmpty(true)
+        : setIsCertLevelEmpty(false)
       return
     }
     if (!isValidEmail(values.email)) {
@@ -250,9 +268,9 @@ export default function SignUpForm2({userInfo, userCreds, mmsi}: Props) {
           </FormControl.ErrorMessage>
         </FormControl>
         <HStack>
-          <FormControl flex="1" isInvalid={false} mt={ms(10)}>
+          <FormControl isRequired flex="1" isInvalid={isBdayEmpty} mt={ms(10)}>
             <FormControl.Label color={Colors.disabled}>
-              Birth date
+              {t('birthdate')}
             </FormControl.Label>
             <DatetimePicker
               color={Colors.azure}
@@ -265,13 +283,13 @@ export default function SignUpForm2({userInfo, userCreds, mmsi}: Props) {
             <FormControl.ErrorMessage
               leftIcon={<WarningOutlineIcon size="xs" />}
             >
-              Birth date
+              {userBday}
             </FormControl.ErrorMessage>
           </FormControl>
           <Box w={3} />
           <FormControl flex="1" isInvalid={false} mt={ms(10)}>
             <FormControl.Label color={Colors.disabled}>
-              Start date
+              {t('startDate')}
             </FormControl.Label>
             <DatetimePicker
               color={Colors.azure}
@@ -281,16 +299,11 @@ export default function SignUpForm2({userInfo, userCreds, mmsi}: Props) {
                 setOpenDatePicker(true)
               }}
             />
-            <FormControl.ErrorMessage
-              leftIcon={<WarningOutlineIcon size="xs" />}
-            >
-              Start date
-            </FormControl.ErrorMessage>
           </FormControl>
         </HStack>
-        <FormControl isInvalid={false} mt={ms(10)}>
+        <FormControl isRequired isInvalid={isLanguageEmpty} mt={ms(10)}>
           <FormControl.Label color={Colors.disabled}>
-            Language
+            {t('language')}
           </FormControl.Label>
           <Select
             _selectedItem={{
@@ -307,7 +320,7 @@ export default function SignUpForm2({userInfo, userCreds, mmsi}: Props) {
             <Select.Item label="French" value="fr" />
           </Select>
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-            Please select a language
+            {language}
           </FormControl.ErrorMessage>
         </FormControl>
         {/* <FormControl isInvalid={false} mt={ms(10)}>
@@ -334,9 +347,9 @@ export default function SignUpForm2({userInfo, userCreds, mmsi}: Props) {
           </FormControl.ErrorMessage>
         </FormControl> */}
 
-        <FormControl isInvalid={false} mt={ms(10)}>
+        <FormControl isRequired isInvalid={isCertLevelEmpty} mt={ms(10)}>
           <FormControl.Label color={Colors.disabled}>
-            Certificate level
+            {t('certificateLevel')}
           </FormControl.Label>
           <Select
             _selectedItem={{
@@ -358,7 +371,7 @@ export default function SignUpForm2({userInfo, userCreds, mmsi}: Props) {
             ))}
           </Select>
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-            Please select a certificate level
+            {certificateLevel}
           </FormControl.ErrorMessage>
         </FormControl>
 
