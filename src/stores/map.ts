@@ -27,6 +27,10 @@ type MapState = {
   hasErrorLoadingNavigationLogs: boolean
   hasErrorLoadingVesselStatus: boolean
   trackViewMode: boolean
+  isSearchLoading: boolean
+  searchLocations: any[]
+  isGeographicLoading: boolean
+  geographicLocation: any[]
 }
 
 type MapActions = {
@@ -71,6 +75,10 @@ const initialMapState: MapState = {
   hasErrorLoadingVesselStatus: false,
   hasErrorLoadingVesselTrack: false,
   trackViewMode: false,
+  isSearchLoading: false,
+  searchLocations: [],
+  isGeographicLoading: false,
+  geographicLocation: [],
 }
 
 export const useMap = create(

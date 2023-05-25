@@ -43,6 +43,7 @@ import {
   RootStackParamList,
 } from '@bluecentury/types/nav.types'
 import {ExploitationVessel, NavigationLog} from '@bluecentury/models'
+import {Search} from './components'
 
 const {width, height} = Dimensions.get('window')
 const ASPECT_RATIO = width / height
@@ -96,6 +97,7 @@ export default function Map({navigation}: Props) {
   const uniqueTracks: Array<VesselGeolocation> = []
   const uniqueVesselTracks: {latitude: number; longitude: number}[] = []
   const [isLoadingMap, setLoadingMap] = useState(false)
+  const [isSearchOpen, setSearchOpen] = useState(false)
 
   const uniqueVesselTrack = vesselTracks?.filter(element => {
     const isDuplicate = uniqueTracks.includes(element.latitude)
@@ -603,6 +605,25 @@ export default function Map({navigation}: Props) {
                 }}
               />
             </Box>
+            <Box
+              alignItems={'center'}
+              bg={Colors.white}
+              borderRadius="full"
+              height={ms(45)}
+              justifyContent={'center'}
+              p="2"
+              shadow={2}
+              width={ms(45)}
+            >
+              <FontAwesome5Icon
+                color={Colors.azure}
+                name="search"
+                size={ms(20)}
+                onPress={() => {
+                  setSearchOpen(true)
+                }}
+              />
+            </Box>
           </VStack>
         </Box>
         <Box
@@ -623,6 +644,12 @@ export default function Map({navigation}: Props) {
           snapPoints={['63%', '30%']}
           onCloseEnd={() => setSnapStatus(0)}
           onOpenEnd={() => setSnapStatus(1)}
+        />
+        {/* modal for search */}
+        <Search
+          header={t('search')}
+          isOpen={isSearchOpen}
+          setOpen={setSearchOpen}
         />
       </Box>
     </Box>
