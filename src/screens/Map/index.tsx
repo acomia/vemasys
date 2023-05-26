@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useRef, useState} from 'react'
-import {StyleSheet, Dimensions} from 'react-native'
+import {AppState, StyleSheet, Dimensions} from 'react-native'
 import {Box, Text, Button, HStack, Image, Icon, VStack} from 'native-base'
 import MapView, {
   PROVIDER_GOOGLE,
@@ -82,6 +82,7 @@ export default function Map({navigation}: Props) {
   const snapRef = useRef<boolean>(false)
   const mapRef = useRef<MapView>(null)
   const markerRef = useRef<Marker>(null)
+  const appState = useRef(AppState.currentState)
   const [snapStatus, setSnapStatus] = useState(0)
   const [region, setRegion] = useState({
     latitude: LATITUDE,
@@ -113,6 +114,22 @@ export default function Map({navigation}: Props) {
     })
   })
   const refreshId = useRef<any>()
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === 'active'
+      ) {
+        updateMap()
+      }
+      appState.current = nextAppState
+    })
+
+    return () => {
+      subscription.remove()
+    }
+  }, [])
 
   useEffect(() => {
     if (vesselId) {
