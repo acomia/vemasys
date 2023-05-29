@@ -26,7 +26,7 @@ type SettingsState = {
   isOnline: boolean
   draughtTable: TableItem[]
   tonnageCertificationID: number | null
-  uploadedTableData: any | null
+  uploadedTableData: any
   isDraughtTableLoading: boolean
 }
 
@@ -61,7 +61,7 @@ export const useSettings = create(
       isOnline: true,
       draughtTable: [],
       tonnageCertificationID: null,
-      uploadedTableData: null,
+      uploadedTableData: [],
       isDraughtTableLoading: false,
       setDarkMode: async darkMode => {
         set({
@@ -135,6 +135,10 @@ export const useSettings = create(
             set({draughtTable: initialTable})
           }
           set({isDraughtTableLoading: false})
+        } else {
+          set({
+            isDraughtTableLoading: false,
+          })
         }
       },
       updateDraughtTable: async (measurement, id?) => {

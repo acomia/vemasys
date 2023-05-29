@@ -158,10 +158,10 @@ const MeasurementTable = () => {
     setChangedData([])
     setDraughtError(false)
     setTonnageError(false)
-    if (draughtMin >= draughtMax) {
+    if (draughtMin >= draughtMax && draughtMin && draughtMax) {
       setDraughtError(true)
     }
-    if (tonnageMin >= tonnageMax) {
+    if (tonnageMin >= tonnageMax && tonnageMin && tonnageMax) {
       setTonnageError(true)
     }
     if (identifier === 'draughtCmMax') {
