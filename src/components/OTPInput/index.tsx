@@ -240,7 +240,7 @@ export const OTPInput = ({
                   onChangeText={value => handleNumberChange(value, index)}
                 />
               ))}
-              <Text style={styles.coma}>,</Text>
+              {decimalLength ? <Text style={styles.coma}>,</Text> : null}
               {decimalLength
                 ? Array.from(decimal.toString()).map((digit, index) => (
                     <TextInput
