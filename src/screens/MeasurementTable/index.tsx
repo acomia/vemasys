@@ -255,7 +255,7 @@ const MeasurementTable = () => {
     return (
       <HStack
         backgroundColor={
-          (index / 2) % 1 === 0 ? Colors.white : Colors.tableGreyBackground
+          (index / 2) % 1 === 0 ? Colors.tableGreyBackground : Colors.white
         }
         alignItems="center"
         borderBottomColor={Colors.light}
