@@ -240,7 +240,7 @@ export const OTPInput = ({
                   onChangeText={value => handleNumberChange(value, index)}
                 />
               ))}
-              <Text style={styles.coma}>,</Text>
+              {decimalLength ? <Text style={styles.coma}>,</Text> : null}
               {decimalLength
                 ? Array.from(decimal.toString()).map((digit, index) => (
                     <TextInput
@@ -324,6 +324,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#44A7B9',
     borderRadius: 5,
+    width: ms(40),
+    height: ms(40),
     textAlign: 'center',
     backgroundColor: '#44A7B942',
     fontSize: 14,
