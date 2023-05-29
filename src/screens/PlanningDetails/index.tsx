@@ -71,7 +71,7 @@ export default function PlanningDetails({route}: Props) {
 
     if (
       // add line below for dry bulk only once going to PROD
-      navigationLogDetails?.cargoType !== 'dry_bulk' &&
+      navigationLogDetails?.cargoType !== 'bulk' &&
       navigationLogDetails?.cargoType !== undefined
     ) {
       const newRoutes = tabs.filter(route => route.title !== t('draught'))
