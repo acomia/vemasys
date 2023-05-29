@@ -1,26 +1,34 @@
 import React, {useEffect, useState} from 'react'
-import {KeyboardAvoidingView} from 'react-native'
-import {Box, Input, Text, Modal, FlatList, Pressable} from 'native-base'
+import {KeyboardAvoidingView, ActivityIndicator} from 'react-native'
+import {Box, Input, Text, Modal, FlatList, Pressable, VStack} from 'native-base'
 import {Colors} from '@bluecentury/styles'
 import {API} from '@bluecentury/api'
 import {useMap} from '@bluecentury/stores'
 import {ms} from 'react-native-size-matters'
+import IconFA5 from 'react-native-vector-icons/FontAwesome5'
+import {useTranslation} from 'react-i18next'
 
 type Props = {
-  isOpen: boolean
-  setOpen: (isOpen: boolean) => void
-  onAction?: () => void
-  value?: any
-  header: string
+  onBlur?: () => void
+  onFocus?: () => void
+  centerMapLocation?: (lat: any, lng: any) => void
+  setSearchPin: (lat: any, lng: any) => void
 }
 
-export default (props: Props) => {
+export default ({onBlur, onFocus, centerMapLocation, setSearchPin}: Props) => {
+  const {t} = useTranslation()
   const [searchValue, setSearchValue] = useState('')
-  const {isSearchLoading, searchLocations, geographicLocation} = useMap()
+  const [isItemPressed, setItemPressed] = useState(false)
+  const {
+    isSearchLoading,
+    searchLocations,
+    geographicLocation,
+    unmountLocations,
+  } = useMap()
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (searchValue) {
+      if (searchValue && !isItemPressed) {
         API.searchMap(searchValue)
       }
     }, 1000)
@@ -34,45 +42,97 @@ export default (props: Props) => {
     return (
       <Pressable
         key={index}
-        bgColor={Colors.navLogItemBlue}
         borderRadius={5}
         mb={ms(5)}
         px={ms(5)}
         py={ms(5)}
-        onPress={() => {
-          API.geographicPoints(item.id)
-        }}
+        onPress={() => handleItemPress(item)}
       >
         <Text>{item?.label}</Text>
       </Pressable>
     )
   }
 
-  console.log('geographicLocation', geographicLocation)
+  const handleItemPress = (item: any) => {
+    setItemPressed(true)
+    setSearchValue(item?.label)
+    API.geographicPoints(item?.id).then(response => {
+      if (response?.latitude && response?.longitude) {
+        setSearchPin(response?.latitude, response?.longitude)
+        unmountLocations()
+        return
+      }
+    })
+  }
+
+  const clearInput = () => {
+    setSearchValue('')
+    unmountLocations()
+    setItemPressed(false)
+  }
 
   return (
-    <KeyboardAvoidingView>
-      <Modal
-        isOpen={props.isOpen}
-        onClose={() => {
-          props.setOpen(false)
+    <VStack
+      bgColor={Colors.white}
+      // maxHeight={'50%'}
+      borderRadius={5}
+      maxHeight={searchLocations.length > 0 ? '78%' : null}
+      space={ms(5)}
+    >
+      <Input
+        InputLeftElement={
+          <IconFA5
+            color={Colors.disabled}
+            name="search"
+            size={ms(15)}
+            style={{paddingLeft: 15}}
+          />
+        }
+        InputRightElement={
+          <Box paddingRight={ms(15)}>
+            {isSearchLoading ? (
+              <ActivityIndicator size={15} />
+            ) : (
+              <Pressable
+                alignItems={'center'}
+                height={ms(20)}
+                justifyContent={'center'}
+                width={ms(20)}
+                onPress={clearInput}
+              >
+                <IconFA5 color={Colors.disabled} name="times" size={ms(15)} />
+              </Pressable>
+            )}
+          </Box>
+        }
+        borderRadius={5}
+        borderWidth={0}
+        placeholder={`${t('searchLocation')}`}
+        value={searchValue}
+        onBlur={() => {
+          // unmountLocations()
+          onBlur()
         }}
-      >
-        <Modal.Content width={'full'}>
-          <Modal.Header>
-            <Text>{props.header}</Text>
-          </Modal.Header>
-          <Modal.Body>
-            <Input value={searchValue} onChangeText={setSearchValue} />
-
-            <FlatList
-              data={searchLocations}
-              my={ms(10)}
-              renderItem={renderLocations}
-            />
-          </Modal.Body>
-        </Modal.Content>
-      </Modal>
-    </KeyboardAvoidingView>
+        onChangeText={value => {
+          setItemPressed(false)
+          setSearchValue(value)
+        }}
+        onFocus={() => {
+          setItemPressed(false)
+          onFocus()
+        }}
+        onSubmitEditing={() => API.searchMap(searchValue)}
+      />
+      {searchLocations.length > 0 ? (
+        <Box maxHeight={'80%'}>
+          <FlatList
+            data={searchLocations}
+            keyExtractor={(item, index) => index.toString()}
+            px={ms(5)}
+            renderItem={renderLocations}
+          />
+        </Box>
+      ) : null}
+    </VStack>
   )
 }

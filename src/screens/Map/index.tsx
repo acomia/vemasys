@@ -1,7 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useRef, useState} from 'react'
-import {StyleSheet, Dimensions} from 'react-native'
-import {Box, Text, Button, HStack, Image, Icon, VStack} from 'native-base'
+import {StyleSheet, Dimensions, Keyboard} from 'react-native'
+import {
+  Box,
+  Text,
+  Button,
+  HStack,
+  Image,
+  Icon,
+  VStack,
+  KeyboardAvoidingView,
+} from 'native-base'
 import MapView, {
   PROVIDER_GOOGLE,
   Marker,
@@ -74,6 +83,7 @@ export default function Map({navigation}: Props) {
     vesselTracks,
     trackViewMode,
     setTrackViewMode,
+    unmountLocations,
   } = useMap()
   const {notifications, getAllNotifications, calculateBadge} = useNotif()
 
@@ -97,7 +107,9 @@ export default function Map({navigation}: Props) {
   const uniqueTracks: Array<VesselGeolocation> = []
   const uniqueVesselTracks: {latitude: number; longitude: number}[] = []
   const [isLoadingMap, setLoadingMap] = useState(false)
-  const [isSearchOpen, setSearchOpen] = useState(false)
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false)
+  const [isSearchPin, setIsSearchPin] = useState(false)
+  const [searchedCoords, setSearchedCoords] = useState<any>({})
 
   const uniqueVesselTrack = vesselTracks?.filter(element => {
     const isDuplicate = uniqueTracks.includes(element.latitude)
@@ -115,6 +127,16 @@ export default function Map({navigation}: Props) {
     })
   })
   const refreshId = useRef<any>()
+
+  useEffect(() => {
+    Keyboard.addListener('keyboardDidShow', handleKeyboardShow)
+    Keyboard.addListener('keyboardDidHide', handleKeyboardHide)
+
+    return () => {
+      Keyboard.removeListener('keyboardDidShow', handleKeyboardShow)
+      Keyboard.removeListener('keyboardDidHide', handleKeyboardHide)
+    }
+  }, [])
 
   useEffect(() => {
     if (vesselId) {
@@ -139,7 +161,13 @@ export default function Map({navigation}: Props) {
         updateMap()
       }, 30000)
     }
-    return () => clearInterval(refreshId.current)
+
+    unmountLocations()
+
+    return () => {
+      clearInterval(refreshId.current)
+      unmountLocations()
+    }
   }, [vesselId, focused])
 
   useEffect(() => {
@@ -154,19 +182,7 @@ export default function Map({navigation}: Props) {
 
   useEffect(() => {
     if (vesselStatus && !vesselUpdated) {
-      const {latitude, longitude}: VesselGeolocation = vesselStatus
-      const camera = {
-        center: {
-          latitude: Number(latitude),
-          longitude: Number(longitude),
-        },
-        zoom: 15,
-        heading: 0,
-        pitch: 0,
-        altitude: 5,
-      }
-      const duration = 1000 * 3
-      mapRef.current?.animateCamera(camera, {duration: duration})
+      centerMapToCurrentLocation()
     }
   }, [vesselStatus])
 
@@ -181,6 +197,14 @@ export default function Map({navigation}: Props) {
       fitToAllMarkers()
     }
   }, [vesselTracks])
+
+  const handleKeyboardShow = () => {
+    setKeyboardVisible(true)
+  }
+
+  const handleKeyboardHide = () => {
+    setKeyboardVisible(false)
+  }
 
   const updateMap = async () => {
     if (vesselId) {
@@ -495,6 +519,23 @@ export default function Map({navigation}: Props) {
     }
   }
 
+  const centerMapToLocation = (lat: any, lng: any) => {
+    if (lat && lng) {
+      const camera: Camera = {
+        center: {
+          latitude: Number(lat),
+          longitude: Number(lng),
+        },
+        zoom: 15,
+        heading: 0,
+        pitch: 0,
+        altitude: 5,
+      }
+      const duration = 1000 * 3
+      mapRef.current?.animateCamera(camera, {duration: duration})
+    }
+  }
+
   const handleRegionChange = (reg: {
     latitude: number
     longitude: number
@@ -523,8 +564,39 @@ export default function Map({navigation}: Props) {
     getVesselTrack(vesselId, page + 1)
   }
 
+  const renderSearchLocationMarker = () => {
+    if (isSearchPin) {
+      centerMapToLocation(searchedCoords?.lat, searchedCoords?.lng)
+      return (
+        <Marker
+          coordinate={{
+            latitude: Number(searchedCoords?.lat),
+            longitude: Number(searchedCoords?.lng),
+          }}
+          anchor={{x: 0, y: 0.5}}
+          // image={Icons.ellipsis_marker}
+          style={{justifyContent: 'center', alignItems: 'center'}}
+          zIndex={1}
+        >
+          <Text color={Colors.offlineWarning}>Get Directions...</Text>
+
+          <FontAwesome5Icon
+            color={Colors.offlineWarning}
+            name="map-marker-alt"
+            size={ms(25)}
+          />
+        </Marker>
+      )
+    }
+  }
+
+  const setSearchPin = (lat: any, lng: any) => {
+    setSearchedCoords({lat, lng})
+    setIsSearchPin(true)
+  }
+
   return (
-    <Box bg={Colors.light} flex="1">
+    <Box bg={Colors.light} height={'full'}>
       {entityType === ENTITY_TYPE_EXPLOITATION_GROUP && (
         <FleetHeader
           onPress={(index: number, vessel: ExploitationVessel) =>
@@ -533,7 +605,7 @@ export default function Map({navigation}: Props) {
         />
       )}
       <NoInternetConnectionMessage />
-      <Box flex="1">
+      <Box height={'full'}>
         <MapView
           ref={mapRef}
           initialRegion={region} // remove if not using Google Maps
@@ -567,6 +639,7 @@ export default function Map({navigation}: Props) {
           {trackViewMode &&
             uniqueVesselTracks.length > 0 &&
             renderTrackLineBeginningMarker()}
+          {renderSearchLocationMarker()}
         </MapView>
         {isLoadingMap && (
           <LoadingSlide
@@ -575,68 +648,63 @@ export default function Map({navigation}: Props) {
             loading={true}
           />
         )}
-        <Box position="absolute" right="0">
-          <VStack justifyContent="flex-start" m="4" space="5">
-            {/*<Box bg={Colors.white} borderRadius="full" p="2" shadow={2}>*/}
-            {/*  <IconButton*/}
-            {/*    source={Icons.compass}*/}
-            {/*    size={ms(30)}*/}
-            {/*    onPress={centerMapToCurrentLocation}*/}
-            {/*  />*/}
-            {/*</Box>*/}
-            <Box bg={Colors.white} borderRadius="full" p="2" shadow={2}>
-              <IconButton
-                size={ms(30)}
-                source={Icons.location}
-                onPress={centerMapToCurrentLocation}
-              />
-            </Box>
-            <Box bg={Colors.white} borderRadius="full" p="2" shadow={2}>
-              <IconButton
-                size={ms(30)}
-                source={Icons.navigating_route}
-                onPress={() => {
-                  if (trackViewMode) {
-                    centerMapToCurrentLocation()
-                  } else {
-                    getVesselTrack(vesselId, page)
-                  }
-                  setTrackViewMode(!trackViewMode)
-                }}
-              />
-            </Box>
-            <Box
-              alignItems={'center'}
-              bg={Colors.white}
-              borderRadius="full"
-              height={ms(45)}
-              justifyContent={'center'}
-              p="2"
-              shadow={2}
-              width={ms(45)}
-            >
-              <FontAwesome5Icon
-                color={Colors.azure}
-                name="search"
-                size={ms(20)}
-                onPress={() => {
-                  setSearchOpen(true)
-                }}
-              />
-            </Box>
-          </VStack>
+
+        {/* search input */}
+        <Box justifyContent="flex-start" pt={ms(15)} px={ms(10)}>
+          <Search
+            centerMapLocation={centerMapToLocation}
+            setSearchPin={setSearchPin}
+            onBlur={() => setKeyboardVisible(false)}
+            onFocus={() => setKeyboardVisible(true)}
+          />
         </Box>
-        <Box
-          bgColor={Colors.light}
-          h={ms(1)}
-          left={0}
-          position="absolute"
-          right={0}
-          shadow={2}
-          top={0}
-        />
+      </Box>
+
+      <Box position="absolute" right="0" top={ms(50)}>
+        <VStack justifyContent="flex-start" m="4" space="5">
+          {/*<Box bg={Colors.white} borderRadius="full" p="2" shadow={2}>*/}
+          {/*  <IconButton*/}
+          {/*    source={Icons.compass}*/}
+          {/*    size={ms(30)}*/}
+          {/*    onPress={centerMapToCurrentLocation}*/}
+          {/*  />*/}
+          {/*</Box>*/}
+          <Box bg={Colors.white} borderRadius="full" p="2" shadow={2}>
+            <IconButton
+              size={ms(30)}
+              source={Icons.location}
+              onPress={centerMapToCurrentLocation}
+            />
+          </Box>
+          <Box bg={Colors.white} borderRadius="full" p="2" shadow={2}>
+            <IconButton
+              size={ms(30)}
+              source={Icons.navigating_route}
+              onPress={() => {
+                if (trackViewMode) {
+                  centerMapToCurrentLocation()
+                } else {
+                  getVesselTrack(vesselId, page)
+                }
+                setTrackViewMode(!trackViewMode)
+              }}
+            />
+          </Box>
+        </VStack>
+      </Box>
+      <Box
+        bgColor={Colors.light}
+        h={ms(1)}
+        left={0}
+        position="absolute"
+        right={0}
+        shadow={2}
+        top={0}
+      />
+      {!isKeyboardVisible ? (
         <BottomSheet
           ref={sheetRef}
+          enabledBottomClamp
           borderRadius={20}
           enabledGestureInteraction={false}
           initialSnap={1}
@@ -645,13 +713,7 @@ export default function Map({navigation}: Props) {
           onCloseEnd={() => setSnapStatus(0)}
           onOpenEnd={() => setSnapStatus(1)}
         />
-        {/* modal for search */}
-        <Search
-          header={t('search')}
-          isOpen={isSearchOpen}
-          setOpen={setSearchOpen}
-        />
-      </Box>
+      ) : null}
     </Box>
   )
 }

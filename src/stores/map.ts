@@ -48,6 +48,7 @@ type MapActions = {
   getVesselTrack: (vesselId: string, page: number) => void
   reset: () => void
   setTrackViewMode: (mode: boolean) => void
+  unmountLocations: () => void
 }
 
 type MapStore = MapState & MapActions
@@ -348,6 +349,9 @@ export const useMap = create(
         set({
           trackViewMode: mode,
         })
+      },
+      unmountLocations: () => {
+        set({searchLocations: []})
       },
     }),
     {

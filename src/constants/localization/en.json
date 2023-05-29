@@ -396,5 +396,6 @@
   "startDate": "Start date",
   "language": "Language",
   "certificateLevel": "Certificate level",
-  "search": "Search"
+  "search": "Search",
+  "searchLocation": "Search location..."
 }
