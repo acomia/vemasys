@@ -4,6 +4,7 @@ import {ms} from 'react-native-size-matters'
 import {Button, HStack, Modal} from 'native-base'
 import {Colors} from '@bluecentury/styles'
 import {useTranslation} from 'react-i18next'
+import {numberRegex} from '@bluecentury/constants'
 
 type Props = {
   numberLength: number
@@ -31,7 +32,9 @@ export const OTPInput = ({
   tableValue,
 }: Props) => {
   const [number, setNumber] = useState('')
+  const [tempNumber, setTempNumber] = useState(Array(numberLength).fill(''))
   const [decimal, setDecimal] = useState('')
+  const [tempDecimal, setTempDecimal] = useState(Array(decimalLength).fill(''))
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isInputInvalid, setIsInputInvalid] = useState(false)
   const [initialNumber, setInitialNumber] = useState<string | null>(null)
@@ -67,39 +70,38 @@ export const OTPInput = ({
   }, [initialValue])
 
   const handleNumberChange = (value: string, index: number) => {
-    if (value) {
-      const newOtp = [...Array.from(number.toString())]
-      newOtp[index] = value
-      const newNumber = newOtp.join('')
-      setNumber(newNumber.padStart(numberLength, '0'))
-      setIsInputInvalid(false)
+    const newOtp = [...Array.from(tempNumber)]
 
-      if (value.length >= 1 && index < inputRefs.current.length - 1) {
-        inputRefs?.current[index + 1]?.focus()
-      }
+    newOtp[index] = value
+    const newNumber = newOtp.join('')
+    // setNumber(newNumber.padStart(numberLength, '0'))
+    setTempNumber(newOtp)
+    setIsInputInvalid(false)
 
-      if (index === inputRefs.current.length - 1) {
-        decimalRefs?.current[0]?.focus()
-      }
+    if (value.length >= 1 && index < inputRefs.current.length - 1) {
+      inputRefs?.current[index + 1]?.focus()
+    }
+
+    if (index === inputRefs.current.length - 1) {
+      decimalRefs?.current[0]?.focus()
     }
   }
 
   const handleDecimalChange = (value: string, index: number) => {
-    if (value) {
-      const newOtp = [...Array.from(decimal.toString())]
-      newOtp[index] = value
-      const newNumber = newOtp.join('')
-      setDecimal(newNumber.padEnd(decimalLength, '0'))
-      setIsInputInvalid(false)
+    const newOtp = [...Array.from(tempDecimal)]
+    newOtp[index] = value
+    const newNumber = newOtp.join('')
+    // setDecimal(newNumber.padEnd(decimalLength, '0'))
+    setTempDecimal(newOtp)
+    setIsInputInvalid(false)
 
-      if (value.length >= 1 && index < decimalRefs.current.length - 1) {
-        decimalRefs?.current[index + 1]?.focus()
-      }
+    if (value.length >= 1 && index < decimalRefs.current.length - 1) {
+      decimalRefs?.current[index + 1]?.focus()
     }
   }
 
   const onModalSave = (num: string, dec: string) => {
-    const newNumber = parseFloat(`${num}.${dec}`)
+    const newNumber = num || dec ? parseFloat(`${num}.${dec}`) : parseFloat('0')
 
     if (maxValue && minValue) {
       if (newNumber > maxValue || newNumber < minValue) {
@@ -117,7 +119,9 @@ export const OTPInput = ({
       }
     }
 
-    getValue(`${num}.${dec}`)
+    getValue(`${num ? num : '0'}.${dec}`)
+    setTempNumber([])
+    setTempDecimal([])
     setIsModalOpen(false)
   }
 
@@ -125,6 +129,8 @@ export const OTPInput = ({
     setNumber(initialNum)
     setDecimal(initialDec)
     setIsModalOpen(false)
+    setTempNumber([])
+    setTempDecimal([])
   }
 
   const defineInputStyle = (
@@ -233,11 +239,16 @@ export const OTPInput = ({
                         ]
                       : styles.box
                   }
-                  defaultValue={digit}
                   keyboardType="numeric"
-                  // style={styles.box}
                   maxLength={1}
-                  onChangeText={value => handleNumberChange(value, index)}
+                  // style={styles.box}
+                  placeholder={digit}
+                  value={tempNumber[index]}
+                  onChangeText={value => {
+                    if (numberRegex.test(value)) {
+                      handleNumberChange(value, index)
+                    }
+                  }}
                 />
               ))}
               {decimalLength ? <Text style={styles.coma}>,</Text> : null}
@@ -254,11 +265,16 @@ export const OTPInput = ({
                             ]
                           : styles.decimalBox
                       }
-                      defaultValue={digit}
                       keyboardType="numeric"
-                      // style={styles.decimalBox}
                       maxLength={1}
-                      onChangeText={value => handleDecimalChange(value, index)}
+                      // style={styles.decimalBox}
+                      placeholder={digit}
+                      value={tempDecimal[index]}
+                      onChangeText={value => {
+                        if (numberRegex.test(value)) {
+                          handleDecimalChange(value, index)
+                        }
+                      }}
                     />
                   ))
                 : null}
@@ -283,7 +299,7 @@ export const OTPInput = ({
               flex="1"
               m={ms(5)}
               onPress={() => {
-                onModalSave(number, decimal)
+                onModalSave(tempNumber.join(''), tempDecimal.join(''))
               }}
             >
               {t('save')}
