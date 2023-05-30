@@ -25,8 +25,8 @@ export default ({alert, buttons, title, content}: Props) => {
             {/* <Button.Group space={2}> */}
             <HStack space={ms(5)}>
               {buttons.map((props, index) => (
-                <Box width={'50%'}>
-                  <Button key={`button-${index}`} width={'100%'} {...props} />
+                <Box key={`button-${index}`} width={'50%'}>
+                  <Button width={'100%'} {...props} />
                 </Box>
               ))}
             </HStack>
