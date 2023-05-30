@@ -24,8 +24,9 @@ export const CharterStatus = ({entityType, charter, isCreator}: any) => {
       return CHARTER_ORDERER_STATUS_COMPLETED
     }
 
-    if (charter.contractorStatus === CHARTER_CONTRACTOR_STATUS_ARCHIVED)
+    if (charter.contractorStatus === CHARTER_CONTRACTOR_STATUS_ARCHIVED) {
       return charter.contractorStatus
+    }
 
     return selectedEntityType === ENTITY_TYPE_EXPLOITATION_VESSEL ||
       selectedEntityType === ENTITY_TYPE_EXPLOITATION_GROUP
@@ -174,7 +175,6 @@ const styles = StyleSheet.create({
   },
   badge: {
     borderRadius: 5,
-    width: 102,
     justifyContent: 'center',
   },
 })

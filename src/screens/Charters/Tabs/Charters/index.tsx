@@ -234,6 +234,7 @@ export default function Charters({navigation, route}: any) {
           borderRadius={ms(5)}
           borderWidth={1}
           mb={ms(10)}
+          opacity={status === 'completed' ? 0.5 : 1}
           overflow="hidden"
         >
           <HStack
@@ -243,7 +244,7 @@ export default function Charters({navigation, route}: any) {
             pr={ms(10)}
             py={ms(8)}
           >
-            <VStack maxWidth="72%">
+            <VStack flex="1">
               {renderRefNumber(item)}
               {item.navigationLogs &&
                 item.navigationLogs.map(
@@ -283,7 +284,7 @@ export default function Charters({navigation, route}: any) {
             />
           </HStack>
           <Box
-            bg={status === 'completed' ? Colors.secondary : Colors.grey}
+            bg={status === 'completed' ? Colors.secondary : Colors.disabled}
             bottom={0}
             left={0}
             position="absolute"
