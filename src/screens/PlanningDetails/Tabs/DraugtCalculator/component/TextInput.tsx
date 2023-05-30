@@ -4,6 +4,7 @@ import {Text, Input, Box, HStack} from 'native-base'
 import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
 import _ from 'lodash'
+import {numberRegex} from '@bluecentury/constants'
 
 interface Props {
   label?: string
@@ -15,7 +16,6 @@ interface Props {
 }
 
 export default ({label, maxLength, onChange, name, isActive, value}: Props) => {
-  const regex = /^[0-9]*$/
   const inputRefs = useRef<any>([])
   const [textValue, setTextValue] = useState(Array(maxLength).fill(''))
 
@@ -65,7 +65,7 @@ export default ({label, maxLength, onChange, name, isActive, value}: Props) => {
               value={value}
               width={ms(50)}
               onChangeText={text => {
-                if (regex.test(text)) {
+                if (numberRegex.test(text)) {
                   handleOnChange(text, index)
                 }
               }}

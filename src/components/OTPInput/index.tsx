@@ -4,6 +4,7 @@ import {ms} from 'react-native-size-matters'
 import {Button, HStack, Modal} from 'native-base'
 import {Colors} from '@bluecentury/styles'
 import {useTranslation} from 'react-i18next'
+import {numberRegex} from '@bluecentury/constants'
 
 type Props = {
   numberLength: number
@@ -69,37 +70,33 @@ export const OTPInput = ({
   }, [initialValue])
 
   const handleNumberChange = (value: string, index: number) => {
-    if (value) {
-      const newOtp = [...Array.from(tempNumber)]
+    const newOtp = [...Array.from(tempNumber)]
 
-      newOtp[index] = value
-      const newNumber = newOtp.join('')
-      // setNumber(newNumber.padStart(numberLength, '0'))
-      setTempNumber(newOtp)
-      setIsInputInvalid(false)
+    newOtp[index] = value
+    const newNumber = newOtp.join('')
+    // setNumber(newNumber.padStart(numberLength, '0'))
+    setTempNumber(newOtp)
+    setIsInputInvalid(false)
 
-      if (value.length >= 1 && index < inputRefs.current.length - 1) {
-        inputRefs?.current[index + 1]?.focus()
-      }
+    if (value.length >= 1 && index < inputRefs.current.length - 1) {
+      inputRefs?.current[index + 1]?.focus()
+    }
 
-      if (index === inputRefs.current.length - 1) {
-        decimalRefs?.current[0]?.focus()
-      }
+    if (index === inputRefs.current.length - 1) {
+      decimalRefs?.current[0]?.focus()
     }
   }
 
   const handleDecimalChange = (value: string, index: number) => {
-    if (value) {
-      const newOtp = [...Array.from(tempDecimal)]
-      newOtp[index] = value
-      const newNumber = newOtp.join('')
-      // setDecimal(newNumber.padEnd(decimalLength, '0'))
-      setTempDecimal(newOtp)
-      setIsInputInvalid(false)
+    const newOtp = [...Array.from(tempDecimal)]
+    newOtp[index] = value
+    const newNumber = newOtp.join('')
+    // setDecimal(newNumber.padEnd(decimalLength, '0'))
+    setTempDecimal(newOtp)
+    setIsInputInvalid(false)
 
-      if (value.length >= 1 && index < decimalRefs.current.length - 1) {
-        decimalRefs?.current[index + 1]?.focus()
-      }
+    if (value.length >= 1 && index < decimalRefs.current.length - 1) {
+      decimalRefs?.current[index + 1]?.focus()
     }
   }
 
@@ -242,12 +239,16 @@ export const OTPInput = ({
                         ]
                       : styles.box
                   }
-                  defaultValue={tempNumber[index]}
                   keyboardType="numeric"
-                  // style={styles.box}
                   maxLength={1}
+                  // style={styles.box}
                   placeholder={digit}
-                  onChangeText={value => handleNumberChange(value, index)}
+                  value={tempNumber[index]}
+                  onChangeText={value => {
+                    if (numberRegex.test(value)) {
+                      handleNumberChange(value, index)
+                    }
+                  }}
                 />
               ))}
               {decimalLength ? <Text style={styles.coma}>,</Text> : null}
@@ -264,12 +265,16 @@ export const OTPInput = ({
                             ]
                           : styles.decimalBox
                       }
-                      defaultValue={tempDecimal[index]}
                       keyboardType="numeric"
-                      // style={styles.decimalBox}
                       maxLength={1}
+                      // style={styles.decimalBox}
                       placeholder={digit}
-                      onChangeText={value => handleDecimalChange(value, index)}
+                      value={tempDecimal[index]}
+                      onChangeText={value => {
+                        if (numberRegex.test(value)) {
+                          handleDecimalChange(value, index)
+                        }
+                      }}
                     />
                   ))
                 : null}
