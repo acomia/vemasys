@@ -31,7 +31,9 @@ export const OTPInput = ({
   tableValue,
 }: Props) => {
   const [number, setNumber] = useState('')
+  const [tempNumber, setTempNumber] = useState(Array(numberLength).fill(''))
   const [decimal, setDecimal] = useState('')
+  const [tempDecimal, setTempDecimal] = useState(Array(decimalLength).fill(''))
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isInputInvalid, setIsInputInvalid] = useState(false)
   const [initialNumber, setInitialNumber] = useState<string | null>(null)
@@ -68,10 +70,12 @@ export const OTPInput = ({
 
   const handleNumberChange = (value: string, index: number) => {
     if (value) {
-      const newOtp = [...Array.from(number.toString())]
+      const newOtp = [...Array.from(tempNumber)]
+
       newOtp[index] = value
       const newNumber = newOtp.join('')
-      setNumber(newNumber.padStart(numberLength, '0'))
+      // setNumber(newNumber.padStart(numberLength, '0'))
+      setTempNumber(newOtp)
       setIsInputInvalid(false)
 
       if (value.length >= 1 && index < inputRefs.current.length - 1) {
@@ -86,10 +90,11 @@ export const OTPInput = ({
 
   const handleDecimalChange = (value: string, index: number) => {
     if (value) {
-      const newOtp = [...Array.from(decimal.toString())]
+      const newOtp = [...Array.from(tempDecimal)]
       newOtp[index] = value
       const newNumber = newOtp.join('')
-      setDecimal(newNumber.padEnd(decimalLength, '0'))
+      // setDecimal(newNumber.padEnd(decimalLength, '0'))
+      setTempDecimal(newOtp)
       setIsInputInvalid(false)
 
       if (value.length >= 1 && index < decimalRefs.current.length - 1) {
@@ -99,7 +104,7 @@ export const OTPInput = ({
   }
 
   const onModalSave = (num: string, dec: string) => {
-    const newNumber = parseFloat(`${num}.${dec}`)
+    const newNumber = num || dec ? parseFloat(`${num}.${dec}`) : parseFloat('0')
 
     if (maxValue && minValue) {
       if (newNumber > maxValue || newNumber < minValue) {
@@ -117,7 +122,9 @@ export const OTPInput = ({
       }
     }
 
-    getValue(`${num}.${dec}`)
+    getValue(`${num ? num : '0'}.${dec}`)
+    setTempNumber([])
+    setTempDecimal([])
     setIsModalOpen(false)
   }
 
@@ -125,6 +132,8 @@ export const OTPInput = ({
     setNumber(initialNum)
     setDecimal(initialDec)
     setIsModalOpen(false)
+    setTempNumber([])
+    setTempDecimal([])
   }
 
   const defineInputStyle = (
@@ -233,10 +242,11 @@ export const OTPInput = ({
                         ]
                       : styles.box
                   }
-                  defaultValue={digit}
+                  defaultValue={tempNumber[index]}
                   keyboardType="numeric"
                   // style={styles.box}
                   maxLength={1}
+                  placeholder={digit}
                   onChangeText={value => handleNumberChange(value, index)}
                 />
               ))}
@@ -254,10 +264,11 @@ export const OTPInput = ({
                             ]
                           : styles.decimalBox
                       }
-                      defaultValue={digit}
+                      defaultValue={tempDecimal[index]}
                       keyboardType="numeric"
                       // style={styles.decimalBox}
                       maxLength={1}
+                      placeholder={digit}
                       onChangeText={value => handleDecimalChange(value, index)}
                     />
                   ))
@@ -283,7 +294,7 @@ export const OTPInput = ({
               flex="1"
               m={ms(5)}
               onPress={() => {
-                onModalSave(number, decimal)
+                onModalSave(tempNumber.join(''), tempDecimal.join(''))
               }}
             >
               {t('save')}
