@@ -58,6 +58,7 @@ export default ({onBlur, onFocus, centerMapLocation, setSearchPin}: Props) => {
     setSearchValue(item?.label)
     API.geographicPoints(item?.id).then(response => {
       if (response?.latitude && response?.longitude) {
+        centerMapLocation(response?.latitude, response?.longitude)
         setSearchPin(response?.latitude, response?.longitude)
         unmountLocations()
         return

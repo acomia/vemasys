@@ -517,18 +517,19 @@ export default function Map({navigation}: Props) {
   const centerMapToCurrentLocation = () => {
     if (vesselStatus) {
       const {latitude, longitude}: VesselGeolocation = vesselStatus
-      const camera: Camera = {
-        center: {
-          latitude: Number(latitude),
-          longitude: Number(longitude),
-        },
-        zoom: 15,
-        heading: 0,
-        pitch: 0,
-        altitude: 5,
-      }
-      const duration = 1000 * 3
-      mapRef.current?.animateCamera(camera, {duration: duration})
+      centerMapToLocation(latitude, longitude)
+      // const camera: Camera = {
+      //   center: {
+      //     latitude: Number(latitude),
+      //     longitude: Number(longitude),
+      //   },
+      //   zoom: 15,
+      //   heading: 0,
+      //   pitch: 0,
+      //   altitude: 5,
+      // }
+      // const duration = 1000 * 3
+      // mapRef.current?.animateCamera(camera, {duration: duration})
     }
   }
 
@@ -579,7 +580,6 @@ export default function Map({navigation}: Props) {
 
   const renderSearchLocationMarker = () => {
     if (isSearchPin) {
-      centerMapToLocation(searchedCoords?.lat, searchedCoords?.lng)
       return (
         <Marker
           coordinate={{
@@ -588,16 +588,17 @@ export default function Map({navigation}: Props) {
           }}
           anchor={{x: 0, y: 0.5}}
           // image={Icons.ellipsis_marker}
+          // icon={Icons.ellipsis_marker}
           style={{justifyContent: 'center', alignItems: 'center'}}
           zIndex={1}
         >
           <Text color={Colors.offlineWarning}>Get Directions...</Text>
-
+          {/*
           <FontAwesome5Icon
             color={Colors.offlineWarning}
             name="map-marker-alt"
             size={ms(25)}
-          />
+          /> */}
         </Marker>
       )
     }
