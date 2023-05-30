@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useRef, useState} from 'react'
-import {StyleSheet, Dimensions, Keyboard} from 'react-native'
+import {AppState, StyleSheet, Dimensions, Keyboard} from 'react-native'
 import {
   Box,
   Text,
@@ -11,6 +11,7 @@ import {
   VStack,
   KeyboardAvoidingView,
 } from 'native-base'
+import {} from 'react-native'
 import MapView, {
   PROVIDER_GOOGLE,
   Marker,
@@ -93,6 +94,7 @@ export default function Map({navigation}: Props) {
   const snapRef = useRef<boolean>(false)
   const mapRef = useRef<MapView>(null)
   const markerRef = useRef<Marker>(null)
+  const appState = useRef(AppState.currentState)
   const [snapStatus, setSnapStatus] = useState(0)
   const [region, setRegion] = useState({
     latitude: LATITUDE,
@@ -132,9 +134,20 @@ export default function Map({navigation}: Props) {
     Keyboard.addListener('keyboardDidShow', handleKeyboardShow)
     Keyboard.addListener('keyboardDidHide', handleKeyboardHide)
 
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === 'active'
+      ) {
+        updateMap()
+      }
+      appState.current = nextAppState
+    })
+
     return () => {
-      Keyboard.removeListener('keyboardDidShow', handleKeyboardShow)
-      Keyboard.removeListener('keyboardDidHide', handleKeyboardHide)
+      Keyboard.removeAllListeners('keyboardDidShow')
+      Keyboard.removeAllListeners('keyboardDidHide')
+      subscription.remove()
     }
   }, [])
 

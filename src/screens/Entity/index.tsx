@@ -307,7 +307,7 @@ export default function Entity({route, navigation}: Props) {
           {
             colorScheme: 'info',
             _text: {
-              color: Colors.black,
+              color: Colors.white,
             },
             width: ms(60),
             children: t('OK'),

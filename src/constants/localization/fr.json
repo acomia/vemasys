@@ -394,5 +394,8 @@
   "wrongValue": "Value can't be higher than maximal value and less then minimal",
   "areYouSure": "This action will automatically update the actual amount of cargo to the computed Tonnage. Are you sure you want to End Loading?",
   "search": "Search",
-  "searchLocation": "Search location..."
+  "searchLocation": "Search location...",
+  "startDate": "Start date",
+  "language": "Language",
+  "certificateLevel": "Certificate level"
 }

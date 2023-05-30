@@ -158,10 +158,10 @@ const MeasurementTable = () => {
     setChangedData([])
     setDraughtError(false)
     setTonnageError(false)
-    if (draughtMin >= draughtMax) {
+    if (draughtMin >= draughtMax && draughtMin && draughtMax) {
       setDraughtError(true)
     }
-    if (tonnageMin >= tonnageMax) {
+    if (tonnageMin >= tonnageMax && tonnageMin && tonnageMax) {
       setTonnageError(true)
     }
     if (identifier === 'draughtCmMax') {
@@ -291,7 +291,8 @@ const MeasurementTable = () => {
           initialValue={item.tonnage}
           isDisabled={index === 0 || index === dataForTable.length - 1}
           lineIndex={index}
-          maxValue={11}
+          maxValue={tonnageTMax ? tonnageTMax : undefined}
+          minValue={tonnageTMin ? tonnageTMin : undefined}
           numberLength={4}
           tableValue={item.draught}
         />

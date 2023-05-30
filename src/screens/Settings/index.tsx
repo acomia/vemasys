@@ -96,17 +96,15 @@ const Settings = (props: DrawerContentComponentProps) => {
 
       {/** remove the checking of env when going to production */}
 
-      {env === 'UAT' ? (
-        <SettingsItem
-          callback={() => {
-            navigation.navigate(Screens.MeasurementTable)
-          }}
-          iconSource={Icons.ruler}
-          isEntireBlockPressable={true}
-          type="navigation"
-          value={t('measurementTable')}
-        />
-      ) : null}
+      <SettingsItem
+        callback={() => {
+          navigation.navigate(Screens.MeasurementTable)
+        }}
+        iconSource={Icons.ruler}
+        isEntireBlockPressable={true}
+        type="navigation"
+        value={t('measurementTable')}
+      />
       <HStack justifyContent="center">
         <Center>
           <VersionBuildLabel />
