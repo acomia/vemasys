@@ -3,37 +3,16 @@ import {StyleSheet} from 'react-native'
 import {Badge, Center, HStack, Image, Text} from 'native-base'
 import {ms} from 'react-native-size-matters'
 
-import {
-  CHARTER_ORDERER_STATUS_COMPLETED,
-  CHARTER_CONTRACTOR_STATUS_ARCHIVED,
-  ENTITY_TYPE_EXPLOITATION_VESSEL,
-  ENTITY_TYPE_EXPLOITATION_GROUP,
-} from '@bluecentury/constants'
 import {Animated, Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
+import {Charter} from '@bluecentury/models'
 
-export const CharterStatus = ({entityType, charter, isCreator}: any) => {
-  const getStatus = (
-    charter: {ordererStatus: string; contractorStatus: string},
-    selectedEntityType: string
-  ) => {
-    if (
-      charter.ordererStatus === CHARTER_ORDERER_STATUS_COMPLETED &&
-      charter.contractorStatus !== CHARTER_CONTRACTOR_STATUS_ARCHIVED
-    ) {
-      return CHARTER_ORDERER_STATUS_COMPLETED
-    }
+type Props = {
+  charter: Charter
+  isCreator: boolean
+}
 
-    if (charter.contractorStatus === CHARTER_CONTRACTOR_STATUS_ARCHIVED) {
-      return charter.contractorStatus
-    }
-
-    return selectedEntityType === ENTITY_TYPE_EXPLOITATION_VESSEL ||
-      selectedEntityType === ENTITY_TYPE_EXPLOITATION_GROUP
-      ? charter.contractorStatus
-      : charter.ordererStatus
-  }
-
+export const CharterStatus = ({charter, isCreator}: Props) => {
   const renderIcon = (status: string) => {
     const {isActive} = charter
 
@@ -80,10 +59,10 @@ export const CharterStatus = ({entityType, charter, isCreator}: any) => {
   }
 
   const renderItem = () => {
-    if (status === 'new' && isCreator) {
+    if (charter.status === 'new' && isCreator) {
       return null
     }
-    if (status === 'new') {
+    if (charter.status === 'new') {
       return (
         <HStack alignItems="center" mr={ms(10)}>
           <Image
@@ -110,25 +89,24 @@ export const CharterStatus = ({entityType, charter, isCreator}: any) => {
           height={ms(30)}
           mb={ms(5)}
           resizeMode="contain"
-          source={renderIcon(status)}
+          source={renderIcon(charter.status)}
           width={ms(30)}
         />
       )
     }
   }
 
-  const status = getStatus(charter, entityType)
   return (
-    <Center>
+    <Center opacity={charter.status === 'completed' ? 0.5 : 1}>
       {renderItem()}
-      {status === 'new' ? null : (
-        <Badge style={[styles.badge, styles[`${status}Status`]]}>
+      {charter.status === 'new' ? null : (
+        <Badge style={[styles.badge, styles[`${charter.status}Status`]]}>
           <Text
             bold
-            color={status === 'draft' ? Colors.azure : Colors.white}
+            color={charter.status === 'draft' ? Colors.azure : Colors.white}
             fontSize={ms(12)}
           >
-            {status}
+            {charter.status}
           </Text>
         </Badge>
       )}

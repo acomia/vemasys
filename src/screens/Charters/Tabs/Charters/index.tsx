@@ -32,7 +32,7 @@ import {decode as atob, encode as btoa} from 'base-64'
 import ReactNativeBlobUtil from 'react-native-blob-util'
 import {useTranslation} from 'react-i18next'
 import Signature, {SignatureViewRef} from 'react-native-signature-canvas'
-import {orderBy, sortBy} from 'lodash'
+import {sortBy} from 'lodash'
 
 import {useCharters, useEntity, useSettings} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
@@ -208,7 +208,6 @@ export default function Charters({navigation, route}: any) {
           borderRadius={ms(5)}
           borderWidth={1}
           mb={ms(10)}
-          opacity={status === 'completed' ? 0.5 : 1}
           overflow="hidden"
         >
           <HStack
@@ -251,11 +250,7 @@ export default function Charters({navigation, route}: any) {
                   : 'TBD'}
               </Text>
             </VStack>
-            <CharterStatus
-              charter={item}
-              entityType={entityType}
-              isCreator={isCreator}
-            />
+            <CharterStatus charter={item} isCreator={isCreator} />
           </HStack>
           <Box
             bg={item.status === 'completed' ? Colors.secondary : Colors.grey}
