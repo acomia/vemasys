@@ -15,20 +15,26 @@ const PlanningLogbook = () => {
   const {t} = useTranslation()
   const {
     isPlanningLoading,
+    isHistoryLoading,
     plannedNavigationLogs,
     getVesselPlannedNavLogs,
     hasErrorLoadingPlannedNavigationLogs,
     isUpdateNavLogActionSuccess,
     isDeleteNavLogActionSuccess,
     isCreateNavLogActionSuccess,
+    getWholeVesselHistoryNavLogs,
+    wholeVesselHistoryNavLogs,
+    setPlannedNavigationLogs,
   } = usePlanning()
   const {vesselId} = useEntity()
   const [display, setDisplay] = useState(null)
+  const [finishedNavlogs, setFinishedNavlogs] = useState<number[]>([])
   const {isOnline} = useSettings()
 
   useEffect(() => {
     if (isOnline) {
       getVesselPlannedNavLogs(vesselId as string)
+      getWholeVesselHistoryNavLogs(vesselId as string)
     }
     /* eslint-disable react-hooks/exhaustive-deps */
     /* eslint-disable react-native/no-inline-styles */
@@ -38,6 +44,26 @@ const PlanningLogbook = () => {
     isUpdateNavLogActionSuccess,
     isDeleteNavLogActionSuccess,
   ])
+
+  useEffect(() => {
+    if (wholeVesselHistoryNavLogs.length && plannedNavigationLogs?.length) {
+      const finishedNavlogsIds: number[] = []
+      const filteredHistory: NavigationLog[] = []
+      plannedNavigationLogs.map((item: NavigationLog) => {
+        const filteredByCharter = wholeVesselHistoryNavLogs.filter(
+          historyItem => {
+            return historyItem.charter?.id === item.charter.id
+          }
+        )
+        filteredHistory.push(...filteredByCharter)
+      })
+      filteredHistory.forEach(item => {
+        finishedNavlogsIds.push(item.id)
+      })
+      setFinishedNavlogs(finishedNavlogsIds)
+      setPlannedNavigationLogs(filteredHistory)
+    }
+  }, [wholeVesselHistoryNavLogs])
 
   plannedNavigationLogs?.sort(
     (a: any, b: any) =>
@@ -71,6 +97,7 @@ const PlanningLogbook = () => {
 
   const onPullRefresh = () => {
     getVesselPlannedNavLogs(vesselId as string)
+    getWholeVesselHistoryNavLogs(vesselId as string)
   }
 
   // Logic to choose right colour for planned item start
@@ -152,14 +179,14 @@ const PlanningLogbook = () => {
     }
   })
 
-  if (isPlanningLoading) return <LoadingAnimated />
+  if (isPlanningLoading || isHistoryLoading) return <LoadingAnimated />
 
   return (
     <Box bgColor={Colors.white} flex="1">
       <ScrollView
         refreshControl={
           <RefreshControl
-            refreshing={isPlanningLoading}
+            refreshing={isPlanningLoading || isHistoryLoading}
             onRefresh={onPullRefresh}
           />
         }
@@ -193,6 +220,7 @@ const PlanningLogbook = () => {
                   key={i}
                   defineFirstAndLastIndex={defineFirstAndLastIndex}
                   index={i}
+                  isFinished={finishedNavlogs.includes(navigationLog.id)}
                   itemColor={defineColour(navigationLog)}
                   lastScreen="planning"
                   navigationLog={navigationLog}
