@@ -1,5 +1,9 @@
 import React, {useEffect, useState} from 'react'
-import {KeyboardAvoidingView, ActivityIndicator} from 'react-native'
+import {
+  KeyboardAvoidingView,
+  ActivityIndicator,
+  TouchableOpacity,
+} from 'react-native'
 import {Box, Input, Text, Modal, FlatList, Pressable, VStack} from 'native-base'
 import {Colors} from '@bluecentury/styles'
 import {API} from '@bluecentury/api'
@@ -40,16 +44,17 @@ export default ({onBlur, onFocus, centerMapLocation, setSearchPin}: Props) => {
 
   const renderLocations = ({item, index}: any) => {
     return (
-      <Pressable
+      <TouchableOpacity
         key={index}
-        borderRadius={5}
-        mb={ms(5)}
-        px={ms(5)}
-        py={ms(5)}
+        // borderRadius={5}
+        // mb={ms(5)}
+        // px={ms(5)}
+        // py={ms(5)}
+        style={{marginBottom: ms(5), padding: ms(5)}}
         onPress={() => handleItemPress(item)}
       >
         <Text>{item?.label}</Text>
-      </Pressable>
+      </TouchableOpacity>
     )
   }
 

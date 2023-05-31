@@ -1,16 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useRef, useState} from 'react'
 import {AppState, StyleSheet, Dimensions, Keyboard} from 'react-native'
-import {
-  Box,
-  Text,
-  Button,
-  HStack,
-  Image,
-  Icon,
-  VStack,
-  KeyboardAvoidingView,
-} from 'native-base'
+import {Box, Text, Button, HStack, Image, Icon, VStack} from 'native-base'
 import {} from 'react-native'
 import MapView, {
   PROVIDER_GOOGLE,
@@ -41,7 +32,7 @@ import {
   NoInternetConnectionMessage,
   LoadingSlide,
 } from '@bluecentury/components'
-import {Icons} from '@bluecentury/assets'
+import {Icons, Animated} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
 import {useMap, useEntity, useNotif} from '@bluecentury/stores'
 import {
@@ -94,6 +85,7 @@ export default function Map({navigation}: Props) {
   const snapRef = useRef<boolean>(false)
   const mapRef = useRef<MapView>(null)
   const markerRef = useRef<Marker>(null)
+  const searchMarkerRef = useRef<Marker>(null)
   const appState = useRef(AppState.currentState)
   const [snapStatus, setSnapStatus] = useState(0)
   const [region, setRegion] = useState({
@@ -579,26 +571,49 @@ export default function Map({navigation}: Props) {
   }
 
   const renderSearchLocationMarker = () => {
+    // centerMapToLocation(52.40349, 4.78813)
     if (isSearchPin) {
+      if (zoomLevel && zoomLevel > 12) {
+        searchMarkerRef?.current?.showCallout()
+      } else {
+        searchMarkerRef?.current?.hideCallout()
+      }
       return (
         <Marker
+          ref={searchMarkerRef}
           coordinate={{
             latitude: Number(searchedCoords?.lat),
             longitude: Number(searchedCoords?.lng),
+            // latitude: Number(52.40349),
+            // longitude: Number(4.78813),
           }}
           anchor={{x: 0, y: 0.5}}
-          // image={Icons.ellipsis_marker}
-          // icon={Icons.ellipsis_marker}
           style={{justifyContent: 'center', alignItems: 'center'}}
           zIndex={1}
         >
-          <Text color={Colors.offlineWarning}>Get Directions...</Text>
-          {/*
-          <FontAwesome5Icon
-            color={Colors.offlineWarning}
-            name="map-marker-alt"
-            size={ms(25)}
-          /> */}
+          <Image
+            alt="searched-pin"
+            height={ms(40)}
+            source={Animated.searchedPin}
+            width={ms(30)}
+          />
+          <Callout
+            tooltip
+            onPress={() => {
+              console.log('test')
+            }}
+          >
+            <Box
+              alignItems={'center'}
+              backgroundColor={Colors.offlineWarning}
+              borderRadius={ms(5)}
+              justifyContent={'center'}
+              px={ms(5)}
+              width={ms(100)}
+            >
+              <Text color={Colors.white}>Get Directions</Text>
+            </Box>
+          </Callout>
         </Marker>
       )
     }
