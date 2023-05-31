@@ -1,4 +1,10 @@
-import {Location, NavigationLog} from '@bluecentury/models'
+import {Charter, Location, NavigationLog} from '@bluecentury/models'
+import {
+  CHARTER_CONTRACTOR_STATUS_ARCHIVED,
+  CHARTER_ORDERER_STATUS_COMPLETED,
+  ENTITY_TYPE_EXPLOITATION_GROUP,
+  ENTITY_TYPE_EXPLOITATION_VESSEL,
+} from './constants'
 
 // todo fix Types
 export function formatLocationLabel(location?: GeographicPoint | Location) {
@@ -183,4 +189,25 @@ export function getAvailableColors(): string[] {
     '#81E6D9',
     '#10B981',
   ]
+}
+
+export const getCharterStatus = (
+  charter: Charter,
+  selectedEntityType: string
+) => {
+  if (
+    charter.ordererStatus === CHARTER_ORDERER_STATUS_COMPLETED &&
+    charter.contractorStatus !== CHARTER_CONTRACTOR_STATUS_ARCHIVED
+  ) {
+    return CHARTER_ORDERER_STATUS_COMPLETED
+  }
+
+  if (charter.contractorStatus === CHARTER_CONTRACTOR_STATUS_ARCHIVED) {
+    return charter.contractorStatus
+  }
+
+  return selectedEntityType === ENTITY_TYPE_EXPLOITATION_VESSEL ||
+    selectedEntityType === ENTITY_TYPE_EXPLOITATION_GROUP
+    ? charter.contractorStatus
+    : charter.ordererStatus
 }
