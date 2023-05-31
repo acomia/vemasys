@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useRef, useState} from 'react'
 import {
   RefreshControl,
@@ -24,10 +26,13 @@ import {
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons'
-import IconFA5 from 'react-native-vector-icons/FontAwesome5'
 import Pdf from 'react-native-pdf'
 import {PDFDocument} from 'pdf-lib'
-import {Animated, Icons} from '@bluecentury/assets'
+import {decode as atob, encode as btoa} from 'base-64'
+import ReactNativeBlobUtil from 'react-native-blob-util'
+import {useTranslation} from 'react-i18next'
+import Signature, {SignatureViewRef} from 'react-native-signature-canvas'
+import {sortBy} from 'lodash'
 
 import {useCharters, useEntity, useSettings} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
@@ -36,18 +41,11 @@ import {
   LoadingAnimated,
   EditReferenceModal,
 } from '@bluecentury/components'
+import {Animated, Icons} from '@bluecentury/assets'
 import {
   CHARTER_CONTRACTOR_STATUS_ACCEPTED,
-  CHARTER_CONTRACTOR_STATUS_ARCHIVED,
   CHARTER_CONTRACTOR_STATUS_REFUSED,
-  CHARTER_ORDERER_STATUS_COMPLETED,
-  ENTITY_TYPE_EXPLOITATION_GROUP,
-  ENTITY_TYPE_EXPLOITATION_VESSEL,
 } from '@bluecentury/constants'
-import {decode as atob, encode as btoa} from 'base-64'
-import ReactNativeBlobUtil from 'react-native-blob-util'
-import {useTranslation} from 'react-i18next'
-import Signature, {SignatureViewRef} from 'react-native-signature-canvas'
 
 type SignatureLocation = {
   width?: number
@@ -63,6 +61,7 @@ export default function Charters({navigation, route}: any) {
   const {
     isCharterLoading,
     charters,
+    timeCharters,
     getCharters,
     viewPdf,
     updateCharterStatus,
@@ -78,14 +77,7 @@ export default function Charters({navigation, route}: any) {
   const {isMobileTracking} = useSettings()
   const [searchedValue, setSearchValue] = useState('')
   const [chartersData, setChartersData] = useState(
-    route === 'charters'
-      ? charters?.filter(c => c.children && c.children.length === 0)
-      : charters?.filter(
-          c =>
-            (c.children && c.children.length > 0) ||
-            (!c.parent && !c.navigationLogs) ||
-            c.navigationLogs.length === 0
-        )
+    route === 'charters' ? charters : timeCharters
   )
   const [path, setPath] = useState<string>('')
   const [selectedCharter, setSelectedCharter] = useState(null)
@@ -99,7 +91,6 @@ export default function Charters({navigation, route}: any) {
     {}
   )
   const [isPdfSigned, setIsPdfSigned] = useState(false)
-
   const source = {uri: path, cache: true}
   const [editReferenceOpen, setEditReferenceOpen] = useState(false)
   const [editCharter, setEditCharter] = useState(0)
@@ -192,34 +183,13 @@ export default function Charters({navigation, route}: any) {
     }
   }
 
-  const getStatus = (
-    charter: {ordererStatus: string; contractorStatus: string},
-    selectedEntityType: string
-  ) => {
-    if (
-      charter.ordererStatus === CHARTER_ORDERER_STATUS_COMPLETED &&
-      charter.contractorStatus !== CHARTER_CONTRACTOR_STATUS_ARCHIVED
-    ) {
-      return CHARTER_ORDERER_STATUS_COMPLETED
-    }
-
-    if (charter.contractorStatus === CHARTER_CONTRACTOR_STATUS_ARCHIVED) {
-      return charter.contractorStatus
-    }
-
-    return selectedEntityType === ENTITY_TYPE_EXPLOITATION_VESSEL ||
-      selectedEntityType === ENTITY_TYPE_EXPLOITATION_GROUP
-      ? charter.contractorStatus
-      : charter.ordererStatus
-  }
-
   const renderItem = ({item, index}: any) => {
     const charterCreator =
       item.charterContracts[0].contract.contractParties.find(
         entity => entity.creator
       )
     const isCreator = charterCreator.entity.id === entityId
-    const status = getStatus(item, entityType)
+    // const status = getCharterStatus(item, entityType)
     return (
       <TouchableOpacity
         activeOpacity={0.7}
@@ -227,10 +197,14 @@ export default function Charters({navigation, route}: any) {
       >
         <Box
           key={index}
-          borderStyle={
-            status === 'draft' || status === 'new' ? 'dashed' : 'solid'
+          borderColor={
+            item.status === 'completed' ? Colors.secondary : Colors.grey
           }
-          borderColor={status === 'completed' ? Colors.secondary : Colors.grey}
+          borderStyle={
+            item.status === 'draft' || item.status === 'new'
+              ? 'dashed'
+              : 'solid'
+          }
           borderRadius={ms(5)}
           borderWidth={1}
           mb={ms(10)}
@@ -243,7 +217,7 @@ export default function Charters({navigation, route}: any) {
             pr={ms(10)}
             py={ms(8)}
           >
-            <VStack maxWidth="72%">
+            <VStack flex="1">
               {renderRefNumber(item)}
               {item.navigationLogs &&
                 item.navigationLogs.map(
@@ -276,14 +250,10 @@ export default function Charters({navigation, route}: any) {
                   : 'TBD'}
               </Text>
             </VStack>
-            <CharterStatus
-              charter={item}
-              entityType={entityType}
-              isCreator={isCreator}
-            />
+            <CharterStatus charter={item} isCreator={isCreator} />
           </HStack>
           <Box
-            bg={status === 'completed' ? Colors.secondary : Colors.grey}
+            bg={item.status === 'completed' ? Colors.secondary : Colors.grey}
             bottom={0}
             left={0}
             position="absolute"
@@ -316,15 +286,7 @@ export default function Charters({navigation, route}: any) {
 
   const onSearchCharter = (value: string) => {
     setSearchValue(value)
-    const chartersTemp =
-      route === 'charters'
-        ? charters?.filter(c => c.children && c.children.length === 0)
-        : charters?.filter(
-            c =>
-              (c.children && c.children.length > 0) ||
-              (!c.parent && !c.navigationLogs) ||
-              c.navigationLogs.length === 0
-          )
+    const chartersTemp = route === 'charters' ? charters : timeCharters
     const searchedCharter = chartersTemp?.filter(charter => {
       const containsKey = value
         ? `${charter?.vesselReference?.toLowerCase()}`?.includes(
@@ -557,13 +519,8 @@ export default function Charters({navigation, route}: any) {
           searchedValue !== ''
             ? chartersData
             : route === 'charters'
-            ? charters.filter(c => c.children && c.children.length === 0)
-            : charters.filter(
-                c =>
-                  (c.children && c.children.length > 0) ||
-                  (!c.parent && !c.navigationLogs) ||
-                  c.navigationLogs.length === 0
-              )
+            ? sortBy(charters, 'status')
+            : sortBy(timeCharters, 'status')
         }
         refreshControl={
           <RefreshControl
@@ -617,7 +574,7 @@ export default function Charters({navigation, route}: any) {
                 width,
               })
             }}
-            onPageChanged={(page, numberOfPages) => {
+            onPageChanged={page => {
               console.log(`Current page: ${page}`)
             }}
             onPageSingleTap={(page, x, y) => {
