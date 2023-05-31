@@ -9,7 +9,7 @@ import {
 import {Box, HStack, Image, Text} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import {Colors} from '@bluecentury/styles'
-import moment from 'moment/moment'
+import moment, { Moment } from "moment/moment";
 import {Icons} from '@bluecentury/assets'
 import {NavigationLogType} from '@bluecentury/components'
 import {useNavigation} from '@react-navigation/native'
@@ -25,11 +25,12 @@ export const NavLogCard = (props: {
   defineFirstAndLastIndex: any[]
   itemColor: string
   lastScreen: StringOrNull
+  isFinished: boolean
 }) => {
   const {t} = useTranslation()
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>()
-  const {index, navigationLog, defineFirstAndLastIndex, itemColor} = props
+  const {index, navigationLog, defineFirstAndLastIndex, itemColor, isFinished} = props
   const key = index
   const currentItemType = defineFirstAndLastIndex.find(
     item => item?.charter?.id === navigationLog?.charter?.id
@@ -175,6 +176,88 @@ export const NavLogCard = (props: {
     }
   }
 
+  const timeframeToLabel = (
+    planned: Moment | null,
+    bookedETA: Moment | null,
+    start: Moment | null,
+    end: Moment | null,
+    current: Moment | null,
+    cargoType: string | undefined
+  ) => {
+    if (start) {
+      if (end) {
+        if (
+          start.isSame(end, 'day') &&
+          start.format('hh:mm ') === end.format('hh:mm A')
+        ) {
+          if (current && current.isSame(start, 'day')) {
+            return `${start.format('HH:mm')}`
+          } else {
+            return `${start.format('DD/MM/YYYY HH:mm')}`
+          }
+        } else {
+          const currentStartAndEndDayAreEqual =
+            current &&
+            current.isSame(start, 'day') &&
+            current.isSame(end, 'day')
+          if (currentStartAndEndDayAreEqual) {
+            // before
+            // return `${start.format('HH:mm')} - ${end.format('HH:mm')}`
+            // after
+            return start.format('HH:mm') === end.format('HH:mm')
+              ? start.format('HH:mm')
+              : `${start.format('HH:mm')} - ${end.format('HH:mm')}`
+          } else {
+            return `${start.format('DD/MM/YYYY HH:mm')} - ${end.format(
+              'DD/MM/YYYY HH:mm'
+            )}`
+          }
+        }
+      } else {
+        if (current && current.isSame(start, 'day')) {
+          return `${start.format('HH:mm')} - Present`
+        } else {
+          return `${start.format('DD/MM/YYYY HH:mm')} - Present`
+        }
+      }
+    }
+
+    if (cargoType === 'liquid_bulk') {
+      if (bookedETA) {
+        return `Laycan: ${bookedETA.format('DD/MM/YYYY')}`
+      }
+
+      return false
+    }
+
+    if (planned) {
+      if (current && current.isSame(planned, 'day')) {
+        return `Planned: ${moment(planned).format('DD MMM YYYY | HH:mm')}`
+      } else {
+        return `Planned: ${moment(planned).format('DD MMM YYYY | HH:mm')}`
+      }
+    }
+
+    return 'No date'
+  }
+
+  const itemDurationLabel = timeframeToLabel(
+    navigationLog?.plannedEta ? moment(navigationLog?.plannedEta) : null,
+    navigationLog?.bookedEta ? moment(navigationLog?.bookedEta) : null,
+    navigationLog?.arrivalDatetime
+      ? moment(navigationLog?.arrivalDatetime)
+      : null,
+    navigationLog?.departureDatetime
+      ? moment(navigationLog?.departureDatetime)
+      : null,
+    moment(
+      navigationLog.arrivalDatetime ||
+        navigationLog.plannedEta ||
+        navigationLog.arrivalZoneTwo
+    ),
+    navigationLog?.cargoType
+  )
+
   return (
     <TouchableOpacity
       key={navigationLog.id}
@@ -269,10 +352,14 @@ export const NavLogCard = (props: {
             <Text bold color={Colors.text} fontSize={ms(15)} noOfLines={1}>
               {formatLocationLabel(navigationLog?.location)}
             </Text>
-            <Text color={Colors.azure} fontWeight="medium">
-              {t('planned')}
-              {moment(navigationLog?.plannedEta).format('DD MMM YYYY | HH:mm')}
-            </Text>
+            {isFinished ? (
+              <Text>{`Finished: ${itemDurationLabel}`}</Text>
+            ) : (
+              <Text color={Colors.azure} fontWeight="medium">
+                {t('planned')}
+                {moment(navigationLog?.plannedEta).format('DD MMM YYYY | HH:mm')}
+              </Text>
+            )}
           </Box>
           {navigationLog?.type?.title
             ? typeIcon(navigationLog.type.title)
