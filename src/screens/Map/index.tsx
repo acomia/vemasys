@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useEffect, useMemo, useRef, useState} from 'react'
 import {AppState, StyleSheet, Dimensions, Keyboard} from 'react-native'
 import {Box, Text, Button, HStack, Image, Icon, VStack} from 'native-base'
 import {} from 'react-native'
@@ -137,10 +137,7 @@ export default function Map({navigation}: Props) {
       }
       appState.current = nextAppState
     })
-
-    // For testing purposes only
-    // API.getGeographicRoutes(1579100)
-    useMap.setState({geoGraphicRoutes: []})
+    unmountLocations()
 
     return () => {
       Keyboard.removeAllListeners('keyboardDidShow')
@@ -205,9 +202,15 @@ export default function Map({navigation}: Props) {
 
   useEffect(() => {
     if (vesselTracks.length) {
-      fitToAllMarkers()
+      fitToAllMarkers(uniqueVesselTracks)
     }
   }, [vesselTracks])
+
+  useEffect(() => {
+    if (geoGraphicRoutes?.length > 0) {
+      fitToAllMarkers(geoGraphicRoutes)
+    }
+  }, [geoGraphicRoutes])
 
   const handleKeyboardShow = () => {
     setKeyboardVisible(true)
@@ -505,10 +508,10 @@ export default function Map({navigation}: Props) {
     )
   }
 
-  const fitToAllMarkers = () => {
-    mapRef?.current?.fitToCoordinates(uniqueVesselTracks, {
+  const fitToAllMarkers = (tracks: any) => {
+    mapRef?.current?.fitToCoordinates(tracks, {
       animated: true,
-      edgePadding: {bottom: height * 0.3, top: 40, left: 50, right: 80},
+      edgePadding: {bottom: height * 0.3, top: 80, left: 50, right: 80},
     })
   }
 
@@ -516,18 +519,6 @@ export default function Map({navigation}: Props) {
     if (vesselStatus) {
       const {latitude, longitude}: VesselGeolocation = vesselStatus
       centerMapToLocation(latitude, longitude)
-      // const camera: Camera = {
-      //   center: {
-      //     latitude: Number(latitude),
-      //     longitude: Number(longitude),
-      //   },
-      //   zoom: 15,
-      //   heading: 0,
-      //   pitch: 0,
-      //   altitude: 5,
-      // }
-      // const duration = 1000 * 3
-      // mapRef.current?.animateCamera(camera, {duration: duration})
     }
   }
 
@@ -609,7 +600,7 @@ export default function Map({navigation}: Props) {
               px={ms(5)}
               width={ms(100)}
             >
-              <Text color={Colors.white}>Get Directions</Text>
+              <Text color={Colors.white}>{t('getDirections')}</Text>
             </Box>
           </Callout>
         </Marker>
@@ -630,7 +621,6 @@ export default function Map({navigation}: Props) {
   }
 
   const handleGetDirection = () => {
-    console.log('geographicLocation', geographicLocation?.id)
     API.getGeographicRoutes(geographicLocation?.id)
   }
 
@@ -679,7 +669,6 @@ export default function Map({navigation}: Props) {
             uniqueVesselTracks.length > 0 &&
             renderTrackLineBeginningMarker()}
           {renderSearchLocationMarker()}
-          {console.log('geoGraphicRoutes', geoGraphicRoutes)}
           {isSearchPin && geoGraphicRoutes.length > 0 && (
             <Polyline
               coordinates={geoGraphicRoutes}
@@ -700,6 +689,7 @@ export default function Map({navigation}: Props) {
         <Box justifyContent="flex-start" pt={ms(15)} px={ms(10)}>
           <Search
             handleItemAction={handleItemAction}
+            isKeyboardVisible={isKeyboardVisible}
             setIsSearchPin={setIsSearchPin}
             onBlur={() => setKeyboardVisible(false)}
             onFocus={() => setKeyboardVisible(true)}

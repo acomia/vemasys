@@ -17,9 +17,16 @@ type Props = {
   onFocus?: () => void
   setIsSearchPin?: (visible: boolean) => void
   handleItemAction?: (id: any) => void
+  isKeyboardVisible?: boolean
 }
 
-export default ({onBlur, onFocus, setIsSearchPin, handleItemAction}: Props) => {
+export default ({
+  onBlur,
+  onFocus,
+  setIsSearchPin,
+  handleItemAction,
+  isKeyboardVisible,
+}: Props) => {
   const {t} = useTranslation()
   const [searchValue, setSearchValue] = useState('')
   const [isItemPressed, setItemPressed] = useState(false)
@@ -46,10 +53,6 @@ export default ({onBlur, onFocus, setIsSearchPin, handleItemAction}: Props) => {
     return (
       <TouchableOpacity
         key={index}
-        // borderRadius={5}
-        // mb={ms(5)}
-        // px={ms(5)}
-        // py={ms(5)}
         style={{marginBottom: ms(5), padding: ms(5)}}
         onPress={() => handleItemPress(item)}
       >
@@ -72,13 +75,7 @@ export default ({onBlur, onFocus, setIsSearchPin, handleItemAction}: Props) => {
   }
 
   return (
-    <VStack
-      bgColor={Colors.white}
-      // maxHeight={'50%'}
-      borderRadius={5}
-      maxHeight={searchLocations.length > 0 ? '78%' : null}
-      space={ms(5)}
-    >
+    <Box bgColor={Colors.white} borderRadius={5}>
       <Input
         InputLeftElement={
           <IconFA5
@@ -110,7 +107,6 @@ export default ({onBlur, onFocus, setIsSearchPin, handleItemAction}: Props) => {
         placeholder={`${t('searchLocation')}`}
         value={searchValue}
         onBlur={() => {
-          // unmountLocations()
           onBlur()
         }}
         onChangeText={value => {
@@ -123,18 +119,16 @@ export default ({onBlur, onFocus, setIsSearchPin, handleItemAction}: Props) => {
         }}
         onSubmitEditing={() => API.searchMap(searchValue)}
       />
-      {searchLocations.length > 0 ? (
-        <Box>
-          <FlatList
-            data={searchLocations}
-            keyExtractor={(item, index) => index.toString()}
-            keyboardShouldPersistTaps="always"
-            px={ms(5)}
-            renderItem={renderLocations}
-            style={{height: ms(80)}}
-          />
-        </Box>
-      ) : null}
-    </VStack>
+      {searchLocations.length > 0 && (
+        <FlatList
+          data={searchLocations}
+          keyExtractor={(item, index) => index.toString()}
+          keyboardShouldPersistTaps="always"
+          px={ms(5)}
+          renderItem={renderLocations}
+          style={{height: isKeyboardVisible ? '100%' : '50%'}}
+        />
+      )}
+    </Box>
   )
 }

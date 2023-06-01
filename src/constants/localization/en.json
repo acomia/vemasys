@@ -397,5 +397,6 @@
   "language": "Language",
   "certificateLevel": "Certificate level",
   "search": "Search",
-  "searchLocation": "Search location..."
+  "searchLocation": "Search location...",
+  "getDirections": "Get Directions"
 }

@@ -361,7 +361,7 @@ export const useMap = create(
         })
       },
       unmountLocations: () => {
-        set({searchLocations: []})
+        set({searchLocations: [], geoGraphicRoutes: []})
       },
     }),
     {

@@ -324,7 +324,6 @@ export const geographicPoints = (id: string | number) => {
 
 export const getGeographicRoutes = (id: string | number) => {
   useMap.setState({isGeographicRoutesLoading: true})
-  const geographicRoutes = useMap.getState().geoGraphicRoutes
   return API.get(`v3/geographic_points/${id}/navigation`)
     .then(response => {
       if (response.status !== 200) {
@@ -339,7 +338,6 @@ export const getGeographicRoutes = (id: string | number) => {
           longitude: location.longitude,
         }))
       )
-      console.log('coordinates', coordinates)
       useMap.setState({
         isGeographicRoutesLoading: false,
         // geoGraphicRoutes: [...geographicRoutes, ...coordinates],

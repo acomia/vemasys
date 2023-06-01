@@ -397,5 +397,6 @@
   "searchLocation": "Search location...",
   "startDate": "Start date",
   "language": "Language",
-  "certificateLevel": "Certificate level"
+  "certificateLevel": "Certificate level",
+  "getDirections": "Get Directions"
 }
