@@ -2,7 +2,15 @@ import create from 'zustand'
 import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as API from '@bluecentury/api/vemasys'
-import { getSignature, linkSignPDFToCharter, uploadImgFile } from '@bluecentury/api/vemasys'
+import {
+  getSignature,
+  linkSignPDFToCharter,
+  uploadImgFile,
+} from '@bluecentury/api/vemasys'
+import {Charter} from '@bluecentury/models'
+import {getCharterStatus} from '@bluecentury/constants'
+import {useEntity} from '@bluecentury/stores/entity'
+
 interface IUpdateStatus {
   status?: string
   setContractorStatus?: boolean
@@ -27,7 +35,8 @@ interface SignedPDF {
 }
 
 type ChartersState = {
-  charters: [] | undefined
+  charters: Array<Charter>
+  timeCharters: Array<Charter>
   isCharterLoading: boolean
   pdfPath: string
   updateCharterStatusResponse: StringOrNull
@@ -65,6 +74,7 @@ export const useCharters = create(
     (set, get) => ({
       isCharterLoading: false,
       charters: [],
+      timeCharters: [],
       pdfPath: '',
       updateCharterStatusResponse: null,
       uploadCharterSignatureResponse: null,
@@ -78,14 +88,31 @@ export const useCharters = create(
         try {
           const response = await API.reloadVesselCharters()
           if (Array.isArray(response)) {
+            const chr = response.filter(
+              (c: Charter) => c.children && c.children.length === 0
+            )
+            chr.forEach(ch => {
+              ch.status = getCharterStatus(ch, useEntity.getState().entityType)
+              set({charters: chr})
+            })
+            const tchr = response.filter(
+              (c: Charter) =>
+                (c.children && c.children.length > 0) ||
+                (!c.parent && !c.navigationLogs) ||
+                c.navigationLogs.length === 0
+            )
+            tchr.forEach(ch => {
+              ch.status = getCharterStatus(ch, useEntity.getState().entityType)
+              set({timeCharters: tchr})
+            })
             set({
               isCharterLoading: false,
-              charters: response,
             })
           } else {
             set({
               isCharterLoading: false,
               charters: [],
+              timeCharters: [],
             })
           }
         } catch (error) {
@@ -187,7 +214,7 @@ export const useCharters = create(
           console.error('LINKING_SINGED_DOCUMENT_TO_CHARTER_ERROR', e)
           return 'FAILURE'
         }
-      }
+      },
     }),
     {
       name: 'charters-storage',

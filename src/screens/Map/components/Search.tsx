@@ -126,7 +126,7 @@ export default ({
           keyboardShouldPersistTaps="always"
           px={ms(5)}
           renderItem={renderLocations}
-          style={{height: isKeyboardVisible ? '100%' : '50%'}}
+          style={{height: isKeyboardVisible ? '70%' : '60%'}}
         />
       )}
     </Box>

@@ -56,6 +56,23 @@ const reloadVesselHistoryNavLogs = async (vesselId: string, page: number) => {
     })
 }
 
+const reloadWholeVesselHistoryNavLogs = async (vesselId: string) => {
+  return API.get(
+    `navigation_logs?exploitationVessel=${vesselId}&type=logbook`
+  )
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw new Error('Whole history navigation logs failed.')
+      }
+    })
+    .catch(error => {
+      console.log('Error: Whole history navigation logs', error)
+      return Promise.reject(error)
+    })
+}
+
 const getPlannedNavLog = async (vesselId: string) => {
   return API.get(`navigation_logs?exploitationVessel=${vesselId}&type=planned`)
     .then(response => {
@@ -369,4 +386,5 @@ export {
   sendCurrentPosition,
   getVesselStatus,
   getVesselTrack,
+  reloadWholeVesselHistoryNavLogs,
 }

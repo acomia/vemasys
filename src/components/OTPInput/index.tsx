@@ -166,7 +166,7 @@ export const OTPInput = ({
             defineInputStyle(initialValue, number, index, false)
               ? (lineIndex && lineIndex % 2 === 0) || lineIndex === 0
                 ? styles.disabled
-                : [styles.disabled, {backgroundColor: Colors.white}]
+                : [styles.disabled, {backgroundColor: Colors.light_grey}]
               : isDisabled
               ? styles.disabledWithNumber
               : styles.boxSmall
@@ -187,7 +187,7 @@ export const OTPInput = ({
                 defineInputStyle(initialValue, number, index, true)
                   ? (lineIndex && lineIndex % 2 === 0) || lineIndex === 0
                     ? styles.disabled
-                    : [styles.disabled, {backgroundColor: Colors.white}]
+                    : [styles.disabled, {backgroundColor: Colors.light_grey}]
                   : isDisabled
                   ? styles.disabledWithNumber
                   : styles.decimalBoxSmall
@@ -399,7 +399,7 @@ const styles = StyleSheet.create({
     height: '45%',
     aspectRatio: 1,
     textAlign: 'center',
-    backgroundColor: Colors.light_grey,
+    backgroundColor: Colors.white,
     fontSize: 14,
     color: Colors.disabled,
     paddingVertical: 0,
@@ -410,7 +410,7 @@ const styles = StyleSheet.create({
     height: '45%',
     aspectRatio: 1,
     textAlign: 'center',
-    backgroundColor: Colors.light_grey,
+    backgroundColor: Colors.white,
     fontSize: 14,
     color: Colors.black,
     paddingVertical: 0,

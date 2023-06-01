@@ -41,10 +41,13 @@ type PlanningState = {
   isTonnageCertificationLoading: boolean
   tonnageCertifications: TonnageCertifications[] | undefined
   isUpdateBulkCargoLoading: boolean
+  wholeVesselHistoryNavLogs: any[]
+  isHistoryLoading: boolean
 }
 
 type PlanningActions = {
   getVesselHistoryNavLogs: (vesselId: string, page: number) => void
+  getWholeVesselHistoryNavLogs: (vesselId: string) => void
   getVesselPlannedNavLogs: (vesselId: string) => void
   getNavigationLogDetails: (navLogId: string) => void
   getNavigationLogActions: (navLogId: string) => void
@@ -80,6 +83,7 @@ type PlanningActions = {
   reset?: () => void
   getVesselnavigationDetails: (id: string) => void
   getNavLogTonnageCertification: (id: number) => void
+  setPlannedNavigationLogs: (plannedNavigationLogs: NavigationLog[]) => void
 }
 
 export type PlanningStore = PlanningState & PlanningActions
@@ -112,6 +116,8 @@ const initialState: PlanningState = {
   isTonnageCertificationLoading: false,
   tonnageCertifications: [],
   isUpdateBulkCargoLoading: false,
+  wholeVesselHistoryNavLogs: [],
+  isHistoryLoading: false,
 }
 
 export const usePlanning = create(
@@ -596,6 +602,44 @@ export const usePlanning = create(
           }
         } catch (error) {
           set({isTonnageCertificationLoading: false})
+        }
+      },
+      getWholeVesselHistoryNavLogs: async (vesselId: string) => {
+        set({
+          isHistoryLoading: true,
+          hasErrorLoadingVesselHistoryNavLogs: false,
+        })
+        try {
+          const response = await API.reloadWholeVesselHistoryNavLogs(vesselId)
+          if (Array.isArray(response)) {
+            set({
+              wholeVesselHistoryNavLogs: response,
+              isHistoryLoading: false,
+            })
+          } else {
+            set({
+              isHistoryLoading: false,
+              wholeVesselHistoryNavLogs: [],
+            })
+          }
+        } catch (error) {
+          set({
+            isHistoryLoading: false,
+            hasErrorLoadingVesselHistoryNavLogs: true,
+          })
+        }
+      },
+      setPlannedNavigationLogs: historyNavigationLogs => {
+        const plannedNavigationLogs = get().plannedNavigationLogs
+        if (plannedNavigationLogs && plannedNavigationLogs.length) {
+          set({
+            plannedNavigationLogs: [
+              ...plannedNavigationLogs,
+              ...historyNavigationLogs,
+            ],
+          })
+        } else {
+          set({plannedNavigationLogs: []})
         }
       },
     }),

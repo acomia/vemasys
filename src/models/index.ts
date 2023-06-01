@@ -26,4 +26,8 @@ export * from './InvoiceStatistic'
 export * from './Routine'
 export * from './RoutineSection'
 export * from './Certificate'
+<<<<<<< HEAD
 export * from './GeographicPoint'
+=======
+export * from './Charter'
+>>>>>>> development
