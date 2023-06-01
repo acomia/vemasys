@@ -23,10 +23,7 @@ export const NavigationLogType = ({navigationLog}: INavlogType) => {
       actionType,
     } = navLog
 
-    const animatesIcon =
-      (isActive || !_.isNull(startActionDatetime)) && _.isNull(endActionDate)
-        ? true
-        : false
+    const animatesIcon = isActive || _.isNull(endActionDate)
 
     switch (location.type.title) {
       case 'Anchor':
