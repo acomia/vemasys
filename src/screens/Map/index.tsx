@@ -1,8 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useEffect, useMemo, useRef, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {AppState, StyleSheet, Dimensions, Keyboard} from 'react-native'
-import {Box, Text, Button, HStack, Image, Icon, VStack} from 'native-base'
 import {} from 'react-native'
+import {
+  Box,
+  Text,
+  Button,
+  HStack,
+  Image,
+  Icon,
+  VStack,
+  ChevronRightIcon,
+  IconButton as NativeBaseIconButton,
+} from 'native-base'
 import MapView, {
   PROVIDER_GOOGLE,
   Marker,
@@ -31,6 +41,7 @@ import {
   MapBottomSheetToggle,
   NoInternetConnectionMessage,
   LoadingSlide,
+  NavigationLogType,
 } from '@bluecentury/components'
 import {Icons, Animated} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
@@ -90,6 +101,7 @@ export default function Map({navigation}: Props) {
   const markerRef = useRef<Marker>(null)
   const searchMarkerRef = useRef<Marker>(null)
   const appState = useRef(AppState.currentState)
+  const currentPositionRef = useRef<Marker>(null)
   const [snapStatus, setSnapStatus] = useState(0)
   const [region, setRegion] = useState({
     latitude: LATITUDE,
@@ -106,6 +118,10 @@ export default function Map({navigation}: Props) {
   const [isLoadingMap, setLoadingMap] = useState(false)
   const [isKeyboardVisible, setKeyboardVisible] = useState(false)
   const [isSearchPin, setIsSearchPin] = useState(false)
+
+  useEffect(() => {
+    currentPositionRef?.current?.showCallout()
+  })
 
   const uniqueVesselTrack = vesselTracks?.filter(element => {
     const isDuplicate = uniqueTracks.includes(element.latitude)
@@ -402,18 +418,59 @@ export default function Map({navigation}: Props) {
     const {latitude, longitude, speed, heading}: VesselGeolocation =
       vesselStatus
     const rotate = heading >= 0 && Number(speed) > 1 ? `${heading}deg` : null
+    const navigationLog = plannedNavLogs.find(item => item.isActive)
 
     return (
       <Marker
         key={`Vessel-${currentNavLogs[0]?.location?.id}`}
+        ref={currentPositionRef}
         coordinate={{
           latitude: Number(latitude),
           longitude: Number(longitude),
         }}
         anchor={{x: 0, y: 0.2}}
-        tracksViewChanges={false}
+        tracksInfoWindowChanges={true}
+        tracksViewChanges={true}
         zIndex={1}
       >
+        {navigationLog ? (
+          <Callout
+            // tooltip={true}
+            onPress={() =>
+              navigation.navigate('PlanningDetails', {
+                navlog: navigationLog,
+                title: formatLocationLabel(navigationLog?.location) as string,
+              })
+            }
+          >
+            <HStack alignItems="center" backgroundColor={Colors.white} w="80">
+              <Box h={ms(48)} w={ms(48)}>
+                <NavigationLogType navigationLog={navigationLog} />
+              </Box>
+              <Box flex={1} marginLeft={ms(8)}>
+                <Text bold color={Colors.text} fontSize={ms(15)} noOfLines={1}>
+                  {formatLocationLabel(navigationLog?.location)}
+                </Text>
+                <Text color={Colors.azure} fontWeight="medium">
+                  {t('planned')}
+                  {moment(navigationLog?.plannedEta).format(
+                    'DD MMM YYYY | HH:mm'
+                  )}
+                </Text>
+              </Box>
+              <Box alignSelf="center">
+                <NativeBaseIconButton
+                  icon={
+                    <ChevronRightIcon bold color={Colors.disabled} size="4" />
+                  }
+                  onPress={() => {
+                    console.log(11)
+                  }}
+                />
+              </Box>
+            </HStack>
+          </Callout>
+        ) : null}
         {rotate ? (
           <Box style={{transform: [{rotate}]}}>
             <Image

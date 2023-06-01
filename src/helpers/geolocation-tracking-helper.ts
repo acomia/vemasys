@@ -3,12 +3,12 @@ import BackgroundGeolocation from 'react-native-background-geolocation'
 
 export const InitializeTrackingService = () => {
   const entityId = useEntity.getState().entityId as string
-  BackgroundGeolocation.onLocation((location) => {
+  BackgroundGeolocation.onLocation(location => {
     console.log('[onLocation]', location)
     useMap.getState().sendCurrentPosition(entityId, location.coords)
   })
 
-  BackgroundGeolocation.onMotionChange((event) => {
+  BackgroundGeolocation.onMotionChange(event => {
     console.log('[onMotionChange]', event)
   })
 
@@ -22,11 +22,11 @@ export const InitializeTrackingService = () => {
     })
   })
 
-  BackgroundGeolocation.onActivityChange((event) => {
+  BackgroundGeolocation.onActivityChange(event => {
     console.log('[onMotionChange]', event)
   })
 
-  BackgroundGeolocation.onProviderChange((event) => {
+  BackgroundGeolocation.onProviderChange(event => {
     console.log('[onProviderChange]', event)
   })
 

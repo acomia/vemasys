@@ -29,8 +29,7 @@ import {StyleSheet} from 'react-native'
 type Props = NativeStackScreenProps<RootStackParamList, 'CharterAcceptSign'>
 const CharterAcceptSign = ({navigation, route}: Props) => {
   const {t} = useTranslation()
-  const {charter, onCharterSelected, handleSingleTap, path} =
-    route.params
+  const {charter, onCharterSelected, handleSingleTap, path} = route.params
   const ref = useRef<SignatureViewRef>(null)
   const toast = useToast()
   const {
@@ -41,7 +40,7 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
     isDocumentSigning,
   } = useCharters()
 
-  const {user} = useEntity()
+  const {user, entityType} = useEntity()
   const {isMobileTracking} = useSettings()
   const [scrollEnabled, setScrollEnabled] = useState(true)
   // const [sign, setSign] = useState<StringOrNull>(null)
@@ -49,6 +48,7 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
   const [coords, setCoords] = useState({})
   const [pageWidth, setPageWidth] = useState(0)
   const [pageHeight, setPageHeight] = useState(0)
+  const isExploitationVessel = entityType === 'ExploitationVessel'
 
   useEffect(() => {
     console.log('SIGNAT_STATE', signat)
@@ -237,6 +237,7 @@ const CharterAcceptSign = ({navigation, route}: Props) => {
                 {t('activateTracking')}
               </Text>
               <Switch
+                disabled={!isExploitationVessel}
                 size="sm"
                 value={isMobileTracking}
                 onToggle={handleOnValueChange}

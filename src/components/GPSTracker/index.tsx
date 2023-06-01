@@ -29,8 +29,9 @@ export const GPSTracker = ({close}: Props) => {
   const isMobileTracking = useSettings(state => state.isMobileTracking)
   const vesselDetails = useEntity(state => state.vesselDetails)
   const netInfo = useNetInfo()
-  let refreshId = useRef<any>()
-  const {updateVesselDetails} = useEntity()
+  const refreshId = useRef<any>()
+  const {updateVesselDetails, entityType} = useEntity()
+  const isExploitationVessel = entityType === 'ExploitationVessel'
 
   useEffect(() => {
     refreshId.current = setInterval(() => {
@@ -167,6 +168,7 @@ export const GPSTracker = ({close}: Props) => {
             {t('deviceGps')}
           </Text>
           <Switch
+            disabled={!isExploitationVessel}
             size="md"
             value={isMobileTracking}
             onToggle={handleOnValueChange}

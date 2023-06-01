@@ -15,13 +15,13 @@ LogBox.ignoreLogs([
   '`Image`',
   '`new NativeEventEmitter()`',
   'Unsupported dashed',
-  'Task orphaned'
+  'Task orphaned',
 ])
 
 AppRegistry.registerComponent(appName, () => App)
-
-let HeadlessTask = async (event) => {
+let HeadlessTask = async event => {
   const entityId = useEntity.getState().entityId
+
   let params = event.params
   console.log('[BackgroundGeolocation HeadlessTask] EVENT', event)
 
@@ -32,7 +32,7 @@ let HeadlessTask = async (event) => {
 
 BackgroundGeolocation.registerHeadlessTask(HeadlessTask)
 
-let HeadlessTaskStationary = async (event) => {
+let HeadlessTaskStationary = async event => {
   console.log('[BackgroundFetch HeadlessTask] EVENT:', event)
   let taskId = event.taskId
   let isTimeout = event.timeout
@@ -45,10 +45,12 @@ let HeadlessTaskStationary = async (event) => {
   }
 
   const entityId = useEntity.getState().entityId
+
   console.log('[BackgroundFetch HeadlessTask] start: ', taskId)
 
   let location = await BackgroundGeolocation.getCurrentPosition()
   console.log('[BackgroundFetch HeadlessTask] - getCurrentPosition:', location)
+
   useMap.getState().sendCurrentPosition(entityId, location.coords)
   BackgroundFetch.finish(taskId)
 }
