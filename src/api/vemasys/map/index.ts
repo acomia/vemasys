@@ -57,9 +57,7 @@ const reloadVesselHistoryNavLogs = async (vesselId: string, page: number) => {
 }
 
 const reloadWholeVesselHistoryNavLogs = async (vesselId: string) => {
-  return API.get(
-    `navigation_logs?exploitationVessel=${vesselId}&type=logbook`
-  )
+  return API.get(`navigation_logs?exploitationVessel=${vesselId}&type=logbook`)
     .then(response => {
       if (response.data) {
         return response.data
@@ -318,7 +316,7 @@ export const searchMap = (searchValue: string) => {
 }
 
 export const geographicPoints = (id: string | number) => {
-  useMap.setState({isGeographicLoading: false})
+  useMap.setState({isGeographicLoading: true})
   return API.get(`v3/geographic_points/${id}`)
     .then(response => {
       if (response.status === 200) {
