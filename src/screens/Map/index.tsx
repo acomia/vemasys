@@ -45,6 +45,7 @@ import {
 } from '@bluecentury/types/nav.types'
 import {ExploitationVessel, NavigationLog} from '@bluecentury/models'
 import {Search} from './components'
+import {API} from '@bluecentury/api'
 
 const {width, height} = Dimensions.get('window')
 const ASPECT_RATIO = width / height
@@ -76,6 +77,8 @@ export default function Map({navigation}: Props) {
     trackViewMode,
     setTrackViewMode,
     unmountLocations,
+    geographicLocation,
+    geoGraphicRoutes,
   } = useMap()
   const {notifications, getAllNotifications, calculateBadge} = useNotif()
 
@@ -103,7 +106,6 @@ export default function Map({navigation}: Props) {
   const [isLoadingMap, setLoadingMap] = useState(false)
   const [isKeyboardVisible, setKeyboardVisible] = useState(false)
   const [isSearchPin, setIsSearchPin] = useState(false)
-  const [searchedCoords, setSearchedCoords] = useState<any>({})
 
   const uniqueVesselTrack = vesselTracks?.filter(element => {
     const isDuplicate = uniqueTracks.includes(element.latitude)
@@ -135,6 +137,10 @@ export default function Map({navigation}: Props) {
       }
       appState.current = nextAppState
     })
+
+    // For testing purposes only
+    // API.getGeographicRoutes(1579100)
+    useMap.setState({geoGraphicRoutes: []})
 
     return () => {
       Keyboard.removeAllListeners('keyboardDidShow')
@@ -571,7 +577,6 @@ export default function Map({navigation}: Props) {
   }
 
   const renderSearchLocationMarker = () => {
-    // centerMapToLocation(52.40349, 4.78813)
     if (isSearchPin) {
       if (zoomLevel && zoomLevel > 12) {
         searchMarkerRef?.current?.showCallout()
@@ -582,10 +587,8 @@ export default function Map({navigation}: Props) {
         <Marker
           ref={searchMarkerRef}
           coordinate={{
-            latitude: Number(searchedCoords?.lat),
-            longitude: Number(searchedCoords?.lng),
-            // latitude: Number(52.40349),
-            // longitude: Number(4.78813),
+            latitude: Number(geographicLocation?.latitude),
+            longitude: Number(geographicLocation?.longitude),
           }}
           anchor={{x: 0, y: 0.5}}
           style={{justifyContent: 'center', alignItems: 'center'}}
@@ -597,12 +600,7 @@ export default function Map({navigation}: Props) {
             source={Animated.searchedPin}
             width={ms(30)}
           />
-          <Callout
-            tooltip
-            onPress={() => {
-              console.log('test')
-            }}
-          >
+          <Callout tooltip onPress={() => handleGetDirection()}>
             <Box
               alignItems={'center'}
               backgroundColor={Colors.offlineWarning}
@@ -619,9 +617,21 @@ export default function Map({navigation}: Props) {
     }
   }
 
-  const setSearchPin = (lat: any, lng: any) => {
-    setSearchedCoords({lat, lng})
-    setIsSearchPin(true)
+  const handleItemAction = (item: any) => {
+    API.geographicPoints(item?.id).then((response: any) => {
+      if (response?.latitude && response?.longitude) {
+        centerMapToLocation(response?.latitude, response?.longitude)
+        setIsSearchPin(true)
+        unmountLocations()
+        Keyboard.dismiss()
+        return
+      }
+    })
+  }
+
+  const handleGetDirection = () => {
+    console.log('geographicLocation', geographicLocation?.id)
+    API.getGeographicRoutes(geographicLocation?.id)
   }
 
   return (
@@ -669,6 +679,14 @@ export default function Map({navigation}: Props) {
             uniqueVesselTracks.length > 0 &&
             renderTrackLineBeginningMarker()}
           {renderSearchLocationMarker()}
+          {console.log('geoGraphicRoutes', geoGraphicRoutes)}
+          {isSearchPin && geoGraphicRoutes.length > 0 && (
+            <Polyline
+              coordinates={geoGraphicRoutes}
+              strokeColor={Colors.azure}
+              strokeWidth={5}
+            />
+          )}
         </MapView>
         {isLoadingMap && (
           <LoadingSlide
@@ -681,15 +699,15 @@ export default function Map({navigation}: Props) {
         {/* search input */}
         <Box justifyContent="flex-start" pt={ms(15)} px={ms(10)}>
           <Search
-            centerMapLocation={centerMapToLocation}
-            setSearchPin={setSearchPin}
+            handleItemAction={handleItemAction}
+            setIsSearchPin={setIsSearchPin}
             onBlur={() => setKeyboardVisible(false)}
             onFocus={() => setKeyboardVisible(true)}
           />
         </Box>
       </Box>
 
-      <Box position="absolute" right="0" top={ms(50)}>
+      <Box position="absolute" right="0" top={ms(100)}>
         <VStack justifyContent="flex-start" m="4" space="5">
           {/*<Box bg={Colors.white} borderRadius="full" p="2" shadow={2}>*/}
           {/*  <IconButton*/}

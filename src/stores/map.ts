@@ -3,6 +3,12 @@ import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as API from '@bluecentury/api/vemasys'
 import {Coords} from 'react-native-background-geolocation'
+import {GeographicPoint} from '@bluecentury/models'
+
+interface LatLng {
+  latitude: number
+  longitude: number
+}
 
 type MapState = {
   vesselStatus: any
@@ -30,7 +36,9 @@ type MapState = {
   isSearchLoading: boolean
   searchLocations: any[]
   isGeographicLoading: boolean
-  geographicLocation: any[]
+  geographicLocation: GeographicPoint | null
+  isGeographicRoutesLoading: boolean
+  geoGraphicRoutes: LatLng[]
 }
 
 type MapActions = {
@@ -79,7 +87,9 @@ const initialMapState: MapState = {
   isSearchLoading: false,
   searchLocations: [],
   isGeographicLoading: false,
-  geographicLocation: [],
+  geographicLocation: null,
+  isGeographicRoutesLoading: false,
+  geoGraphicRoutes: [],
 }
 
 export const useMap = create(

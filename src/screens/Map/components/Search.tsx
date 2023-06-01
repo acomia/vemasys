@@ -15,11 +15,11 @@ import {useTranslation} from 'react-i18next'
 type Props = {
   onBlur?: () => void
   onFocus?: () => void
-  centerMapLocation?: (lat: any, lng: any) => void
-  setSearchPin: (lat: any, lng: any) => void
+  setIsSearchPin?: (visible: boolean) => void
+  handleItemAction?: (id: any) => void
 }
 
-export default ({onBlur, onFocus, centerMapLocation, setSearchPin}: Props) => {
+export default ({onBlur, onFocus, setIsSearchPin, handleItemAction}: Props) => {
   const {t} = useTranslation()
   const [searchValue, setSearchValue] = useState('')
   const [isItemPressed, setItemPressed] = useState(false)
@@ -61,20 +61,14 @@ export default ({onBlur, onFocus, centerMapLocation, setSearchPin}: Props) => {
   const handleItemPress = (item: any) => {
     setItemPressed(true)
     setSearchValue(item?.label)
-    API.geographicPoints(item?.id).then(response => {
-      if (response?.latitude && response?.longitude) {
-        centerMapLocation(response?.latitude, response?.longitude)
-        setSearchPin(response?.latitude, response?.longitude)
-        unmountLocations()
-        return
-      }
-    })
+    handleItemAction(item)
   }
 
   const clearInput = () => {
     setSearchValue('')
     unmountLocations()
     setItemPressed(false)
+    setIsSearchPin(false)
   }
 
   return (
@@ -130,12 +124,14 @@ export default ({onBlur, onFocus, centerMapLocation, setSearchPin}: Props) => {
         onSubmitEditing={() => API.searchMap(searchValue)}
       />
       {searchLocations.length > 0 ? (
-        <Box maxHeight={'80%'}>
+        <Box>
           <FlatList
             data={searchLocations}
             keyExtractor={(item, index) => index.toString()}
+            keyboardShouldPersistTaps="always"
             px={ms(5)}
             renderItem={renderLocations}
+            style={{height: ms(80)}}
           />
         </Box>
       ) : null}
