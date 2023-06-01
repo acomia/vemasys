@@ -5,7 +5,7 @@ import {Colors} from '@bluecentury/styles'
 import {Icons} from '@bluecentury/assets/icons'
 import {Screens} from '@bluecentury/constants'
 import {DrawerContentComponentProps} from '@react-navigation/drawer'
-import {useSettings} from '@bluecentury/stores'
+import {useSettings, useEntity} from '@bluecentury/stores'
 import {VersionBuildLabel} from '@bluecentury/components/version-build-label'
 import {useTranslation} from 'react-i18next'
 import {
@@ -34,6 +34,8 @@ const Settings = (props: DrawerContentComponentProps) => {
     setIsQrScanner,
     isQrScanner,
   } = useSettings()
+  const {entityType} = useEntity()
+  const isExploitationVessel = entityType === 'ExploitationVessel'
 
   const handleOnValueChange = () => {
     navigation.navigate('TrackingServiceDialog')
@@ -72,6 +74,7 @@ const Settings = (props: DrawerContentComponentProps) => {
       />
       <SettingsItem
         callback={handleOnValueChange}
+        disabled={!isExploitationVessel}
         iconSource={Icons.location}
         switchState={isMobileTracking}
         type="switch"
