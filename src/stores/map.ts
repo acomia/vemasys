@@ -3,6 +3,12 @@ import {persist} from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as API from '@bluecentury/api/vemasys'
 import {Coords} from 'react-native-background-geolocation'
+import {GeographicPoint} from '@bluecentury/models'
+
+interface LatLng {
+  latitude: number
+  longitude: number
+}
 
 type MapState = {
   vesselStatus: any
@@ -27,6 +33,12 @@ type MapState = {
   hasErrorLoadingNavigationLogs: boolean
   hasErrorLoadingVesselStatus: boolean
   trackViewMode: boolean
+  isSearchLoading: boolean
+  searchLocations: any[]
+  isGeographicLoading: boolean
+  geographicLocation: GeographicPoint | null
+  isGeographicRoutesLoading: boolean
+  geoGraphicRoutes: LatLng[]
 }
 
 type MapActions = {
@@ -44,6 +56,7 @@ type MapActions = {
   getVesselTrack: (vesselId: string, page: number) => void
   reset: () => void
   setTrackViewMode: (mode: boolean) => void
+  unmountLocations: () => void
 }
 
 type MapStore = MapState & MapActions
@@ -71,6 +84,12 @@ const initialMapState: MapState = {
   hasErrorLoadingVesselStatus: false,
   hasErrorLoadingVesselTrack: false,
   trackViewMode: false,
+  isSearchLoading: false,
+  searchLocations: [],
+  isGeographicLoading: false,
+  geographicLocation: null,
+  isGeographicRoutesLoading: false,
+  geoGraphicRoutes: [],
 }
 
 export const useMap = create(
@@ -340,6 +359,9 @@ export const useMap = create(
         set({
           trackViewMode: mode,
         })
+      },
+      unmountLocations: () => {
+        set({searchLocations: [], geoGraphicRoutes: []})
       },
     }),
     {

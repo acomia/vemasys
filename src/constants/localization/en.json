@@ -395,5 +395,8 @@
   "areYouSure": "This action will automatically update the actual amount of cargo to the computed Tonnage. Are you sure you want to End Loading?",
   "startDate": "Start date",
   "language": "Language",
-  "certificateLevel": "Certificate level"
+  "certificateLevel": "Certificate level",
+  "search": "Search",
+  "searchLocation": "Search location...",
+  "getDirections": "Get Directions"
 }

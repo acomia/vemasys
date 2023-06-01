@@ -1,6 +1,7 @@
 import {API} from '@bluecentury/api/apiService'
 import {queryString} from '@bluecentury/utils'
 import {Location} from 'react-native-background-geolocation'
+import {useMap} from '@bluecentury/stores'
 
 const getPreviousNavLog = async (
   vesselId: string,
@@ -21,7 +22,7 @@ const getPreviousNavLog = async (
     page: page || 1,
   }
 
-  let stringParams = queryString(params)
+  const stringParams = queryString(params)
 
   return API.get(`v3/navigation_logs${stringParams}`)
     .then(response => {
@@ -56,9 +57,7 @@ const reloadVesselHistoryNavLogs = async (vesselId: string, page: number) => {
 }
 
 const reloadWholeVesselHistoryNavLogs = async (vesselId: string) => {
-  return API.get(
-    `navigation_logs?exploitationVessel=${vesselId}&type=logbook`
-  )
+  return API.get(`navigation_logs?exploitationVessel=${vesselId}&type=logbook`)
     .then(response => {
       if (response.data) {
         return response.data
@@ -123,7 +122,7 @@ const getLastCompleteNavLogs = async (vesselId: string) => {
 }
 
 const getActiveFormations = async () => {
-  return API.get(`formations?exists[endedAt]=false`)
+  return API.get('formations?exists[endedAt]=false')
     .then(response => {
       if (response.data) {
         return response.data
@@ -156,7 +155,7 @@ const verifyTrackingDeviceToken = async (
 }
 
 const createVesselFormations = async (id: string, token: string) => {
-  return API.post(`formations`, {
+  return API.post('formations', {
     masterExploitationVessel: `/api/exploitation_vessels/${id}`,
   })
     .then(response => {
@@ -289,6 +288,83 @@ const getVesselTrack = async (vesselId: string, page: number) => {
     .catch(error => {
       console.log('Error: Vessel status', error)
       return Promise.reject(error)
+    })
+}
+
+export const searchMap = (searchValue: string) => {
+  useMap.setState({isSearchLoading: true, searchLocations: []})
+  return API.post('v2/search', {
+    entity: 'GeographicPoint',
+    query: searchValue,
+  })
+    .then(response => {
+      if (response?.status === 200) {
+        useMap.setState({
+          isSearchLoading: false,
+          searchLocations: response.data?.results,
+        })
+
+        return response.data
+      }
+      useMap.setState({isSearchLoading: false})
+      return false``
+    })
+    .catch(error => {
+      console.log('Error: Search', error)
+      useMap.setState({isSearchLoading: false})
+    })
+}
+
+export const geographicPoints = (id: string | number) => {
+  useMap.setState({isGeographicLoading: true})
+  return API.get(`v3/geographic_points/${id}`)
+    .then(response => {
+      if (response.status === 200) {
+        useMap.setState({
+          isGeographicLoading: false,
+          geographicLocation: response.data,
+        })
+        return response.data
+      }
+
+      return false
+    })
+    .catch(error => {
+      console.log('Error: Location', error)
+      useMap.setState({
+        isGeographicLoading: false,
+      })
+    })
+}
+
+export const getGeographicRoutes = (id: string | number) => {
+  useMap.setState({isGeographicRoutesLoading: true})
+  return API.get(`v3/geographic_points/${id}/navigation`)
+    .then(response => {
+      if (response.status !== 200) {
+        useMap.setState({isGeographicRoutesLoading: false})
+        return
+      }
+
+      const {routes} = response?.data
+      const coordinates = routes?.flatMap((route: any) =>
+        route.waypoints?.map(({location}) => ({
+          latitude: location.latitude,
+          longitude: location.longitude,
+        }))
+      )
+      useMap.setState({
+        isGeographicRoutesLoading: false,
+        // geoGraphicRoutes: [...geographicRoutes, ...coordinates],
+        geoGraphicRoutes: [
+          ...useMap.getState().geoGraphicRoutes,
+          ...coordinates,
+        ],
+      })
+    })
+    .catch(error => {
+      useMap.setState({isGeographicRoutesLoading: false})
+      console.log(`geographic_points/${id}/navigation`, error)
     })
 }
 

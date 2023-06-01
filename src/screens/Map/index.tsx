@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useRef, useState} from 'react'
-import {AppState, StyleSheet, Dimensions, Pressable} from 'react-native'
+import {AppState, StyleSheet, Dimensions, Keyboard} from 'react-native'
+import {} from 'react-native'
 import {
   Box,
   Text,
@@ -42,7 +43,7 @@ import {
   LoadingSlide,
   NavigationLogType,
 } from '@bluecentury/components'
-import {Icons} from '@bluecentury/assets'
+import {Icons, Animated} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
 import {useMap, useEntity, useNotif} from '@bluecentury/stores'
 import {
@@ -54,6 +55,8 @@ import {
   RootStackParamList,
 } from '@bluecentury/types/nav.types'
 import {ExploitationVessel, NavigationLog} from '@bluecentury/models'
+import {Search} from './components'
+import {API} from '@bluecentury/api'
 
 const {width, height} = Dimensions.get('window')
 const ASPECT_RATIO = width / height
@@ -84,6 +87,9 @@ export default function Map({navigation}: Props) {
     vesselTracks,
     trackViewMode,
     setTrackViewMode,
+    unmountLocations,
+    geographicLocation,
+    geoGraphicRoutes,
   } = useMap()
   const {notifications, getAllNotifications, calculateBadge} = useNotif()
 
@@ -93,6 +99,7 @@ export default function Map({navigation}: Props) {
   const snapRef = useRef<boolean>(false)
   const mapRef = useRef<MapView>(null)
   const markerRef = useRef<Marker>(null)
+  const searchMarkerRef = useRef<Marker>(null)
   const appState = useRef(AppState.currentState)
   const currentPositionRef = useRef<Marker>(null)
   const [snapStatus, setSnapStatus] = useState(0)
@@ -109,6 +116,8 @@ export default function Map({navigation}: Props) {
   const uniqueTracks: Array<VesselGeolocation> = []
   const uniqueVesselTracks: {latitude: number; longitude: number}[] = []
   const [isLoadingMap, setLoadingMap] = useState(false)
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false)
+  const [isSearchPin, setIsSearchPin] = useState(false)
 
   useEffect(() => {
     currentPositionRef?.current?.showCallout()
@@ -132,6 +141,9 @@ export default function Map({navigation}: Props) {
   const refreshId = useRef<any>()
 
   useEffect(() => {
+    Keyboard.addListener('keyboardDidShow', handleKeyboardShow)
+    Keyboard.addListener('keyboardDidHide', handleKeyboardHide)
+
     const subscription = AppState.addEventListener('change', nextAppState => {
       if (
         appState.current.match(/inactive|background/) &&
@@ -141,8 +153,11 @@ export default function Map({navigation}: Props) {
       }
       appState.current = nextAppState
     })
+    unmountLocations()
 
     return () => {
+      Keyboard.removeAllListeners('keyboardDidShow')
+      Keyboard.removeAllListeners('keyboardDidHide')
       subscription.remove()
     }
   }, [])
@@ -170,7 +185,13 @@ export default function Map({navigation}: Props) {
         updateMap()
       }, 30000)
     }
-    return () => clearInterval(refreshId.current)
+
+    unmountLocations()
+
+    return () => {
+      clearInterval(refreshId.current)
+      unmountLocations()
+    }
   }, [vesselId, focused])
 
   useEffect(() => {
@@ -185,19 +206,7 @@ export default function Map({navigation}: Props) {
 
   useEffect(() => {
     if (vesselStatus && !vesselUpdated) {
-      const {latitude, longitude}: VesselGeolocation = vesselStatus
-      const camera = {
-        center: {
-          latitude: Number(latitude),
-          longitude: Number(longitude),
-        },
-        zoom: 15,
-        heading: 0,
-        pitch: 0,
-        altitude: 5,
-      }
-      const duration = 1000 * 3
-      mapRef.current?.animateCamera(camera, {duration: duration})
+      centerMapToCurrentLocation()
     }
   }, [vesselStatus])
 
@@ -209,9 +218,23 @@ export default function Map({navigation}: Props) {
 
   useEffect(() => {
     if (vesselTracks.length) {
-      fitToAllMarkers()
+      fitToAllMarkers(uniqueVesselTracks)
     }
   }, [vesselTracks])
+
+  useEffect(() => {
+    if (geoGraphicRoutes?.length > 0) {
+      fitToAllMarkers(geoGraphicRoutes)
+    }
+  }, [geoGraphicRoutes])
+
+  const handleKeyboardShow = () => {
+    setKeyboardVisible(true)
+  }
+
+  const handleKeyboardHide = () => {
+    setKeyboardVisible(false)
+  }
 
   const updateMap = async () => {
     if (vesselId) {
@@ -437,7 +460,9 @@ export default function Map({navigation}: Props) {
               </Box>
               <Box alignSelf="center">
                 <NativeBaseIconButton
-                  icon={<ChevronRightIcon bold color={Colors.disabled} size="4" />}
+                  icon={
+                    <ChevronRightIcon bold color={Colors.disabled} size="4" />
+                  }
                   onPress={() => {
                     console.log(11)
                   }}
@@ -540,20 +565,26 @@ export default function Map({navigation}: Props) {
     )
   }
 
-  const fitToAllMarkers = () => {
-    mapRef?.current?.fitToCoordinates(uniqueVesselTracks, {
+  const fitToAllMarkers = (tracks: any) => {
+    mapRef?.current?.fitToCoordinates(tracks, {
       animated: true,
-      edgePadding: {bottom: height * 0.3, top: 40, left: 50, right: 80},
+      edgePadding: {bottom: height * 0.3, top: 80, left: 50, right: 80},
     })
   }
 
   const centerMapToCurrentLocation = () => {
     if (vesselStatus) {
       const {latitude, longitude}: VesselGeolocation = vesselStatus
+      centerMapToLocation(latitude, longitude)
+    }
+  }
+
+  const centerMapToLocation = (lat: any, lng: any) => {
+    if (lat && lng) {
       const camera: Camera = {
         center: {
-          latitude: Number(latitude),
-          longitude: Number(longitude),
+          latitude: Number(lat),
+          longitude: Number(lng),
         },
         zoom: 15,
         heading: 0,
@@ -593,8 +624,65 @@ export default function Map({navigation}: Props) {
     getVesselTrack(vesselId, page + 1)
   }
 
+  const renderSearchLocationMarker = () => {
+    if (isSearchPin) {
+      if (zoomLevel && zoomLevel > 12) {
+        searchMarkerRef?.current?.showCallout()
+      } else {
+        searchMarkerRef?.current?.hideCallout()
+      }
+      return (
+        <Marker
+          ref={searchMarkerRef}
+          coordinate={{
+            latitude: Number(geographicLocation?.latitude),
+            longitude: Number(geographicLocation?.longitude),
+          }}
+          anchor={{x: 0, y: 0.5}}
+          style={{justifyContent: 'center', alignItems: 'center'}}
+          zIndex={1}
+        >
+          <Image
+            alt="searched-pin"
+            height={ms(40)}
+            source={Animated.searchedPin}
+            width={ms(30)}
+          />
+          <Callout tooltip onPress={() => handleGetDirection()}>
+            <Box
+              alignItems={'center'}
+              backgroundColor={Colors.offlineWarning}
+              borderRadius={ms(5)}
+              justifyContent={'center'}
+              px={ms(5)}
+              width={ms(100)}
+            >
+              <Text color={Colors.white}>{t('getDirections')}</Text>
+            </Box>
+          </Callout>
+        </Marker>
+      )
+    }
+  }
+
+  const handleItemAction = (item: any) => {
+    API.geographicPoints(item?.id).then((response: any) => {
+      if (response?.latitude && response?.longitude) {
+        centerMapToLocation(response?.latitude, response?.longitude)
+        setIsSearchPin(true)
+        unmountLocations()
+        Keyboard.dismiss()
+        return
+      }
+    })
+  }
+
+  const handleGetDirection = () => {
+    API.getGeographicRoutes(geographicLocation?.id)
+  }
+
   return (
-    <Box bg={Colors.light} flex="1">
+    <Box bg={Colors.light} height={'full'}>
       {entityType === ENTITY_TYPE_EXPLOITATION_GROUP && (
         <FleetHeader
           onPress={(index: number, vessel: ExploitationVessel) =>
@@ -603,7 +691,7 @@ export default function Map({navigation}: Props) {
         />
       )}
       <NoInternetConnectionMessage />
-      <Box flex="1">
+      <Box height={'full'}>
         <MapView
           ref={mapRef}
           initialRegion={region} // remove if not using Google Maps
@@ -637,6 +725,14 @@ export default function Map({navigation}: Props) {
           {trackViewMode &&
             uniqueVesselTracks.length > 0 &&
             renderTrackLineBeginningMarker()}
+          {renderSearchLocationMarker()}
+          {isSearchPin && geoGraphicRoutes.length > 0 && (
+            <Polyline
+              coordinates={geoGraphicRoutes}
+              strokeColor={Colors.azure}
+              strokeWidth={5}
+            />
+          )}
         </MapView>
         {isLoadingMap && (
           <LoadingSlide
@@ -645,49 +741,64 @@ export default function Map({navigation}: Props) {
             loading={true}
           />
         )}
-        <Box position="absolute" right="0">
-          <VStack justifyContent="flex-start" m="4" space="5">
-            {/*<Box bg={Colors.white} borderRadius="full" p="2" shadow={2}>*/}
-            {/*  <IconButton*/}
-            {/*    source={Icons.compass}*/}
-            {/*    size={ms(30)}*/}
-            {/*    onPress={centerMapToCurrentLocation}*/}
-            {/*  />*/}
-            {/*</Box>*/}
-            <Box bg={Colors.white} borderRadius="full" p="2" shadow={2}>
-              <IconButton
-                size={ms(30)}
-                source={Icons.location}
-                onPress={centerMapToCurrentLocation}
-              />
-            </Box>
-            <Box bg={Colors.white} borderRadius="full" p="2" shadow={2}>
-              <IconButton
-                size={ms(30)}
-                source={Icons.navigating_route}
-                onPress={() => {
-                  if (trackViewMode) {
-                    centerMapToCurrentLocation()
-                  } else {
-                    getVesselTrack(vesselId, page)
-                  }
-                  setTrackViewMode(!trackViewMode)
-                }}
-              />
-            </Box>
-          </VStack>
+
+        {/* search input */}
+        <Box justifyContent="flex-start" pt={ms(15)} px={ms(10)}>
+          <Search
+            handleItemAction={handleItemAction}
+            isKeyboardVisible={isKeyboardVisible}
+            setIsSearchPin={setIsSearchPin}
+            onBlur={() => setKeyboardVisible(false)}
+            onFocus={() => setKeyboardVisible(true)}
+          />
         </Box>
-        <Box
-          bgColor={Colors.light}
-          h={ms(1)}
-          left={0}
-          position="absolute"
-          right={0}
-          shadow={2}
-          top={0}
-        />
+      </Box>
+
+      <Box position="absolute" right="0" top={ms(100)}>
+        <VStack justifyContent="flex-start" m="4" space="5">
+          {/*<Box bg={Colors.white} borderRadius="full" p="2" shadow={2}>*/}
+          {/*  <IconButton*/}
+          {/*    source={Icons.compass}*/}
+          {/*    size={ms(30)}*/}
+          {/*    onPress={centerMapToCurrentLocation}*/}
+          {/*  />*/}
+          {/*</Box>*/}
+          <Box bg={Colors.white} borderRadius="full" p="2" shadow={2}>
+            <IconButton
+              size={ms(30)}
+              source={Icons.location}
+              onPress={centerMapToCurrentLocation}
+            />
+          </Box>
+          <Box bg={Colors.white} borderRadius="full" p="2" shadow={2}>
+            <IconButton
+              size={ms(30)}
+              source={Icons.navigating_route}
+              onPress={() => {
+                if (trackViewMode) {
+                  centerMapToCurrentLocation()
+                } else {
+                  getVesselTrack(vesselId, page)
+                }
+                setTrackViewMode(!trackViewMode)
+              }}
+            />
+          </Box>
+        </VStack>
+      </Box>
+      <Box
+        bgColor={Colors.light}
+        h={ms(1)}
+        left={0}
+        position="absolute"
+        right={0}
+        shadow={2}
+        top={0}
+      />
+      {!isKeyboardVisible ? (
         <BottomSheet
           ref={sheetRef}
+          enabledBottomClamp
           borderRadius={20}
           enabledGestureInteraction={false}
           initialSnap={1}
@@ -696,7 +807,7 @@ export default function Map({navigation}: Props) {
           onCloseEnd={() => setSnapStatus(0)}
           onOpenEnd={() => setSnapStatus(1)}
         />
-      </Box>
+      ) : null}
     </Box>
   )
 }
