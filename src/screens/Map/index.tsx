@@ -741,19 +741,26 @@ export default function Map({navigation}: Props) {
             loading={true}
           />
         )}
-
-        {/* search input */}
-        <Box justifyContent="flex-start" pt={ms(15)} px={ms(10)}>
-          <Search
-            handleItemAction={handleItemAction}
-            isKeyboardVisible={isKeyboardVisible}
-            setIsSearchPin={setIsSearchPin}
-            onBlur={() => setKeyboardVisible(false)}
-            onFocus={() => setKeyboardVisible(true)}
-          />
-        </Box>
       </Box>
-      <Box position="absolute" right="0" top={ms(100)}>
+      {/* search input */}
+      <Box
+        left={0}
+        position="absolute"
+        pt={ms(15)}
+        px={ms(10)}
+        right={0}
+        top={ms(isLoadingMap ? 40 : 0)}
+        zIndex={1}
+      >
+        <Search
+          handleItemAction={handleItemAction}
+          isKeyboardVisible={isKeyboardVisible}
+          setIsSearchPin={setIsSearchPin}
+          onBlur={() => setKeyboardVisible(false)}
+          onFocus={() => setKeyboardVisible(true)}
+        />
+      </Box>
+      <Box position="absolute" right="0" top={ms(isLoadingMap ? 80 : 40)}>
         <VStack justifyContent="flex-start" m="4" space="5">
           {/*<Box bg={Colors.white} borderRadius="full" p="2" shadow={2}>*/}
           {/*  <IconButton*/}
@@ -786,7 +793,7 @@ export default function Map({navigation}: Props) {
         </VStack>
       </Box>
       {vesselStatus && vesselStatus?.speed > 1 ? (
-        <Box left="2" position="absolute" top="3">
+        <Box left="2" position="absolute" top={ms(isLoadingMap ? 95 : 55)}>
           <Box
             alignItems="center"
             bg={Colors.white}
