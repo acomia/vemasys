@@ -622,6 +622,28 @@ export default function Map({navigation}: Props) {
             </Box>
           </VStack>
         </Box>
+        {vesselStatus && vesselStatus.speed > 1 ? (
+          <Box left="2" position="absolute" top="3">
+            <Box
+              alignItems="center"
+              bg={Colors.white}
+              borderColor={Colors.dark_blue}
+              borderRadius={50}
+              borderWidth={3}
+              h={53}
+              justifyContent="center"
+              p={ms(3)}
+              w={53}
+            >
+              <Text bold fontSize={ms(14)}>
+                {vesselStatus.speed}
+              </Text>
+              <Text fontSize={ms(10)} fontWeight="medium" mt={-1}>
+                km/h
+              </Text>
+            </Box>
+          </Box>
+        ) : null}
         <Box
           bgColor={Colors.light}
           h={ms(1)}
