@@ -12,4 +12,5 @@ export const Animated = {
   invoice: require('./invoice.gif'),
   signature: require('./signature.gif'),
   cleaning: require('./cleaning.gif'),
+  searchedPin: require('./map-with-pin-animation.gif'),
 }

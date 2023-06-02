@@ -9,7 +9,7 @@ import {
 import {Box, HStack, Image, Text} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import {Colors} from '@bluecentury/styles'
-import moment, { Moment } from "moment/moment";
+import moment, {Moment} from 'moment/moment'
 import {Icons} from '@bluecentury/assets'
 import {NavigationLogType} from '@bluecentury/components'
 import {useNavigation} from '@react-navigation/native'
