@@ -95,7 +95,7 @@ const Actions = () => {
   }
 
   const confirmStopAction = (action: any) => {
-    setConfirmModal(true)
+    // setConfirmModal(true)
     setSelectedAction({
       ...selectedAction,
       id: action.id,
@@ -110,6 +110,7 @@ const Actions = () => {
         },
       ],
     })
+    onStopAction()
   }
 
   const onStopAction = () => {
@@ -206,6 +207,9 @@ const Actions = () => {
           </Button>
         </HStack>
       </Shadow>
+      {/* Modal below was removed
+          only the changed the setting of open
+      */}
       <Modal
         animationPreset="slide"
         isOpen={confirmModal}
