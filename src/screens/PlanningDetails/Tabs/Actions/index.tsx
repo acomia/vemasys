@@ -208,7 +208,7 @@ const Actions = () => {
         </HStack>
       </Shadow>
       {/* Modal below was removed
-          only the changed the open
+          only the changed the setting of open
       */}
       <Modal
         animationPreset="slide"
