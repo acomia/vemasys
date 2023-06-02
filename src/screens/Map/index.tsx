@@ -445,7 +445,7 @@ export default function Map({navigation}: Props) {
           >
             <HStack alignItems="center" backgroundColor={Colors.white} w="80">
               <Box h={ms(48)} w={ms(48)}>
-                <NavigationLogType navigationLog={navigationLog} />
+                <NavigationLogType isLotty navigationLog={navigationLog} />
               </Box>
               <Box flex={1} marginLeft={ms(8)}>
                 <Text bold color={Colors.text} fontSize={ms(15)} noOfLines={1}>
