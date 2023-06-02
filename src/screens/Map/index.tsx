@@ -433,6 +433,26 @@ export default function Map({navigation}: Props) {
         tracksViewChanges={true}
         zIndex={1}
       >
+        {rotate ? (
+          <Box style={{transform: [{rotate}]}}>
+            <Image
+              alt="map-navigating-arrow-img"
+              resizeMode="contain"
+              source={Icons.navigating}
+            />
+          </Box>
+        ) : (
+          <Box bgColor={Colors.white} borderRadius={50}>
+            <FontAwesome5Icon
+              style={{
+                padding: 7,
+              }}
+              color={Colors.azure}
+              name="anchor"
+              size={ms(15)}
+            />
+          </Box>
+        )}
         {navigationLog ? (
           <Callout
             // tooltip={true}
@@ -471,26 +491,6 @@ export default function Map({navigation}: Props) {
             </HStack>
           </Callout>
         ) : null}
-        {rotate ? (
-          <Box style={{transform: [{rotate}]}}>
-            <Image
-              alt="map-navigating-arrow-img"
-              resizeMode="contain"
-              source={Icons.navigating}
-            />
-          </Box>
-        ) : (
-          <Box bgColor={Colors.white} borderRadius={50}>
-            <FontAwesome5Icon
-              style={{
-                padding: 7,
-              }}
-              color={Colors.azure}
-              name="anchor"
-              size={ms(15)}
-            />
-          </Box>
-        )}
       </Marker>
     )
   }
