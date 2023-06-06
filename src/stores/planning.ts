@@ -43,6 +43,7 @@ type PlanningState = {
   isUpdateBulkCargoLoading: boolean
   wholeVesselHistoryNavLogs: any[]
   isHistoryLoading: boolean
+  isNavLogDetailsLoading: boolean
 }
 
 type PlanningActions = {
@@ -118,6 +119,7 @@ const initialState: PlanningState = {
   isUpdateBulkCargoLoading: false,
   wholeVesselHistoryNavLogs: [],
   isHistoryLoading: false,
+  isNavLogDetailsLoading: false,
 }
 
 export const usePlanning = create(
@@ -203,21 +205,47 @@ export const usePlanning = create(
       },
       getNavigationLogDetails: async (navLogId: string) => {
         set({
+          isNavLogDetailsLoading: true,
           isPlanningDetailsLoading: true,
           navigationLogDetails: undefined,
         })
         try {
           const response = await API.reloadNavigationLogDetails(navLogId)
           if (typeof response === 'object') {
+            const act = await API.reloadNavigationLogActions(response.id)
+            if (act?.length > 0) {
+              const activeActions = act?.filter(action => action?.end === null)
+              if (activeActions.length) {
+                response.navlogActions = activeActions
+                response.hasActiveActions = true
+              } else {
+                response.navlogActions = act
+                response.hasActiveActions = false
+              }
+
+              response.endActionDate = act[0]?.end
+              response.actionType = act[0]?.type
+            } else {
+              response.navlogActions = []
+              response.endActionDate = null
+              response.actionType = ''
+            }
+
             set({
               isPlanningDetailsLoading: false,
               navigationLogDetails: response,
+
+              isNavLogDetailsLoading: false,
             })
+            return response
           } else {
             set({
               isPlanningDetailsLoading: false,
               navigationLogDetails: undefined,
+
+              isNavLogDetailsLoading: false,
             })
+            return null
           }
         } catch (error) {
           set({

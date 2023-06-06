@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useEffect, useRef, useState, useCallback} from 'react'
+import React, {useEffect, useRef, useState, useCallback, useMemo} from 'react'
 import {AppState, StyleSheet, Dimensions, Keyboard} from 'react-native'
 import {} from 'react-native'
 import {
@@ -12,6 +12,7 @@ import {
   VStack,
   ChevronRightIcon,
   IconButton as NativeBaseIconButton,
+  ScrollView,
 } from 'native-base'
 import MapView, {
   PROVIDER_GOOGLE,
@@ -20,8 +21,7 @@ import MapView, {
   Camera,
   Polyline,
 } from 'react-native-maps'
-// import BottomSheet from 'reanimated-bottom-sheet'
-import BottomSheet from '@gorhom/bottom-sheet'
+import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
@@ -46,7 +46,7 @@ import {
 } from '@bluecentury/components'
 import {Icons, Animated} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
-import {useMap, useEntity, useNotif} from '@bluecentury/stores'
+import {useMap, useEntity, useNotif, usePlanning} from '@bluecentury/stores'
 import {
   ENTITY_TYPE_EXPLOITATION_GROUP,
   formatLocationLabel,
@@ -56,7 +56,7 @@ import {
   RootStackParamList,
 } from '@bluecentury/types/nav.types'
 import {ExploitationVessel, NavigationLog} from '@bluecentury/models'
-import {Search} from './components'
+import {Search, MapNavLog} from './components'
 import {API} from '@bluecentury/api'
 
 const {width, height} = Dimensions.get('window')
@@ -93,6 +93,11 @@ export default function Map({navigation}: Props) {
     geoGraphicRoutes,
   } = useMap()
   const {notifications, getAllNotifications, calculateBadge} = useNotif()
+  const {
+    isNavLogDetailsLoading,
+    getNavigationLogDetails,
+    navigationLogDetails,
+  } = usePlanning()
 
   const LATITUDE = 50.503887
   const LONGITUDE = 4.469936
@@ -120,6 +125,9 @@ export default function Map({navigation}: Props) {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false)
   const [isSearchPin, setIsSearchPin] = useState(false)
   const [isFitToMarkers, setFitToMarkers] = useState(false)
+  const [plannedNavLog, setPlannedNavLog] = useState(null)
+  const [currentNavLog, setCurrentNavLog] = useState(null)
+  const [prevNavLog, setPrevNavLog] = useState(null)
 
   useEffect(() => {
     currentPositionRef?.current?.showCallout()
@@ -205,8 +213,39 @@ export default function Map({navigation}: Props) {
         latitude: currentNavLogs[0]?.location?.latitude,
         longitude: currentNavLogs[0]?.location?.longitude,
       })
+      if (currentNavLogs[currentNavLogs?.length - 1]) {
+        getNavigationLogDetails(
+          currentNavLogs[currentNavLogs?.length - 1]?.id
+        ).then(response => {
+          if (response) setCurrentNavLog(response)
+        })
+      }
     }
   }, [currentNavLogs])
+
+  useEffect(() => {
+    if (prevNavLogs && prevNavLogs.length > 0) {
+      const navLog = prevNavLogs?.find((prev: any) => prev.plannedEta !== null)
+      if (navLog) {
+        getNavigationLogDetails(navLog?.id).then(response => {
+          if (response) setPrevNavLog(response)
+        })
+      }
+    }
+  }, [prevNavLogs])
+
+  useEffect(() => {
+    if (plannedNavLogs && plannedNavLogs.length > 0) {
+      const navLog = plannedNavLogs?.find(
+        (prev: any) => prev.plannedEta !== null
+      )
+      if (navLog) {
+        getNavigationLogDetails(navLog?.id).then(response => {
+          if (response) setPlannedNavLog(response)
+        })
+      }
+    }
+  }, [plannedNavLogs])
 
   useEffect(() => {
     if (vesselStatus && !vesselUpdated) {
@@ -260,8 +299,12 @@ export default function Map({navigation}: Props) {
   }
 
   const renderBottomContent = () => {
+    if (plannedNavLog?.id === currentNavLog?.id && snapStatus === 1) {
+      // sheetRef?.current?.snapToPosition('60%')
+    }
+
     return (
-      <Box backgroundColor={Colors.white} height="full" px={ms(30)}>
+      <Box backgroundColor={Colors.white} height="full">
         {/* <MapBottomSheetToggle
           snapRef={snapRef}
           onPress={handleOnPressBottomSheetArrow}
@@ -270,20 +313,51 @@ export default function Map({navigation}: Props) {
           color={Colors.azure}
           fontSize={ms(18)}
           fontWeight="700"
-          my={ms(10)}
+          my={ms(5)}
           textAlign="center"
         >
           {selectedVessel?.alias || null}
         </Text>
 
         {snapStatus === 1 ? (
-          <>
-            <PlannedNavLogInfo logs={plannedNavLogs} />
+          <BottomSheetScrollView>
+            {/* <PlannedNavLogInfo logs={plannedNavLogs} />
             <CurrentNavLogInfo />
-            <PreviousNavLogInfo logs={prevNavLogs} />
-          </>
+            <PreviousNavLogInfo logs={prevNavLogs} /> */}
+            {plannedNavLog && (
+              <MapNavLog
+                key={2}
+                itemColor={Colors.navLogItemBlue}
+                navigationLog={plannedNavLog}
+              />
+            )}
+            {
+              // plannedNavLog?.id === currentNavLog?.id
+              //   ? null
+              //   :
+              currentNavLog && (
+                <MapNavLog
+                  key={3}
+                  itemColor={Colors.navLogItemGreen}
+                  navigationLog={currentNavLog}
+                />
+              )
+            }
+            {prevNavLog && (
+              <MapNavLog
+                key={4}
+                itemColor={Colors.navLogItemPink}
+                navigationLog={prevNavLog}
+              />
+            )}
+          </BottomSheetScrollView>
         ) : (
-          <CurrentNavLogInfo />
+          // <CurrentNavLogInfo />
+          <MapNavLog
+            key={1}
+            itemColor={Colors.navLogItemGreen}
+            navigationLog={currentNavLog ? currentNavLog : plannedNavLog}
+          />
         )}
       </Box>
     )
@@ -836,11 +910,11 @@ export default function Map({navigation}: Props) {
       {!isKeyboardVisible ? (
         <BottomSheet
           ref={sheetRef}
-          borderRadius={20}
           handleIndicatorStyle={{display: 'none'}}
-          initialSnap={1}
-          renderContent={renderBottomContent}
-          snapPoints={['25%', '50%']}
+          handleStyle={{display: 'none'}}
+          initialSnap={0}
+          snapPoints={useMemo(() => ['32%', '80%'], [])}
+          style={{borderRadius: 40, overflow: 'hidden'}}
           onChange={handleSheetChanges}
         >
           {renderBottomContent()}

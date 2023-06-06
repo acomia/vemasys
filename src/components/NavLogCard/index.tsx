@@ -70,21 +70,24 @@ export const NavLogCard = (props: {
   const [selectedType, setSelectedType] = useState('')
   const [openDatePicker, setOpenDatePicker] = useState(false)
   const [dates, setDates] = useState<Dates>({
-    plannedETA: navigationLog.plannedEta,
-    captainDatetimeETA: navigationLog.captainDatetimeEta,
-    announcedDatetime: navigationLog.announcedDatetime,
-    arrivalDatetime: navigationLog.arrivalDatetime,
-    terminalApprovedDeparture: navigationLog.terminalApprovedDeparture,
-    departureDatetime: navigationLog.departureDatetime,
+    plannedETA: navigationLog?.plannedEta,
+    captainDatetimeETA: navigationLog?.captainDatetimeEta,
+    announcedDatetime: navigationLog?.announcedDatetime,
+    arrivalDatetime: navigationLog?.arrivalDatetime,
+    terminalApprovedDeparture: navigationLog?.terminalApprovedDeparture,
+    departureDatetime: navigationLog?.departureDatetime,
   })
   const key = index
-  const currentItemType = defineFirstAndLastIndex.find(
+  const currentItemType = defineFirstAndLastIndex?.find(
     item => item?.charter?.id === navigationLog?.charter?.id
   )
-  const currentItemIndex = defineFirstAndLastIndex.findIndex(
+  const currentItemIndex = defineFirstAndLastIndex?.findIndex(
     item => item?.charter?.id === navigationLog?.charter?.id
   )
-  const previousItemType = defineFirstAndLastIndex[currentItemIndex - 1]
+  const previousItemType =
+    defineFirstAndLastIndex?.length > 0
+      ? defineFirstAndLastIndex[currentItemIndex - 1]
+      : 0
   let displayLeftLine = false
   let displayRightLine = false
 
@@ -344,9 +347,9 @@ export const NavLogCard = (props: {
       ? moment(navigationLog?.departureDatetime)
       : null,
     moment(
-      navigationLog.arrivalDatetime ||
-        navigationLog.plannedEta ||
-        navigationLog.arrivalZoneTwo
+      navigationLog?.arrivalDatetime ||
+        navigationLog?.plannedEta ||
+        navigationLog?.arrivalZoneTwo
     ),
     navigationLog?.cargoType
   )
@@ -481,7 +484,7 @@ export const NavLogCard = (props: {
 
   return (
     <TouchableOpacity
-      key={navigationLog.id}
+      key={navigationLog?.id}
       activeOpacity={0.7}
       style={styles.navLogItemWrapper}
       onPress={() =>
@@ -496,7 +499,7 @@ export const NavLogCard = (props: {
         flexDirection={'row'}
         h={'100%'}
         justifyContent={'space-between'}
-        px={ms(4)}
+        px={ms(2)}
         w={ms(16)}
       >
         <Box
@@ -514,7 +517,7 @@ export const NavLogCard = (props: {
               ? ms(0)
               : currentItemIndex % 2 !== 0 && previousItemType.lastIndex === key
               ? 0
-              : currentItemType.lastIndex === currentItemType.firstIndex
+              : currentItemType?.lastIndex === currentItemType?.firstIndex
               ? 0
               : ms(-7)
           }
@@ -550,9 +553,9 @@ export const NavLogCard = (props: {
       </Box>
       <Box
         style={
-          navigationLog.isActive ||
-          (!_.isNull(navigationLog.startActionDatetime) &&
-            _.isNull(navigationLog.endActionDate))
+          navigationLog?.isActive ||
+          (!_.isNull(navigationLog?.startActionDatetime) &&
+            _.isNull(navigationLog?.endActionDate))
             ? styles.navLogActiveItem
             : null
         }
@@ -581,8 +584,8 @@ export const NavLogCard = (props: {
                 )}
               </Text>
             )}
-            {navigationLog?.bulkCargo.length > 0 &&
-              navigationLog?.bulkCargo.map((cargo: BulkCargo, i: number) => {
+            {navigationLog?.bulkCargo?.length > 0 &&
+              navigationLog?.bulkCargo?.map((cargo: BulkCargo, i: number) => {
                 return (
                   <HStack
                     key={`bulkCargo-${i}`}
@@ -610,7 +613,6 @@ export const NavLogCard = (props: {
             : null}
         </HStack>
         {/* End of Header */}
-
         {navigationLog?.type?.title === 'Loading/Unloading' &&
         props?.lastScreen === 'planning' ? (
           <Box
