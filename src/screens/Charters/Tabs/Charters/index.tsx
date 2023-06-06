@@ -6,7 +6,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   Platform,
-  Dimensions,
 } from 'react-native'
 import {
   Text,
@@ -32,7 +31,7 @@ import {decode as atob, encode as btoa} from 'base-64'
 import ReactNativeBlobUtil from 'react-native-blob-util'
 import {useTranslation} from 'react-i18next'
 import Signature, {SignatureViewRef} from 'react-native-signature-canvas'
-import {orderBy, sortBy} from 'lodash'
+import {sortBy} from 'lodash'
 
 import {useCharters, useEntity, useSettings} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
@@ -46,7 +45,6 @@ import {
   CHARTER_CONTRACTOR_STATUS_ACCEPTED,
   CHARTER_CONTRACTOR_STATUS_REFUSED,
 } from '@bluecentury/constants'
-import {Charter} from '@bluecentury/models'
 
 type SignatureLocation = {
   width?: number
@@ -74,7 +72,7 @@ export default function Charters({navigation, route}: any) {
     uploadSignedPDF,
     linkSignPDFToCharter,
   } = useCharters()
-  const {entityId, entityType, vesselId} = useEntity()
+  const {entityId, vesselId} = useEntity()
   const {isMobileTracking} = useSettings()
   const [searchedValue, setSearchValue] = useState('')
   const [chartersData, setChartersData] = useState(
