@@ -105,9 +105,9 @@ export const PreviousNavLogInfo = ({logs, tracking = false}: Props) => {
           </Box>
           <Box
             backgroundColor={Colors.azure}
-            bottom={ms(-35)}
             height={ms(50)}
             position="absolute"
+            top={ms(-35)}
             width={ms(2)}
           />
         </>
