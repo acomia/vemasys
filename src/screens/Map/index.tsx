@@ -433,6 +433,26 @@ export default function Map({navigation}: Props) {
         tracksViewChanges={true}
         zIndex={1}
       >
+        {rotate ? (
+          <Box style={{transform: [{rotate}]}}>
+            <Image
+              alt="map-navigating-arrow-img"
+              resizeMode="contain"
+              source={Icons.navigating}
+            />
+          </Box>
+        ) : (
+          <Box bgColor={Colors.white} borderRadius={50}>
+            <FontAwesome5Icon
+              style={{
+                padding: 7,
+              }}
+              color={Colors.azure}
+              name="anchor"
+              size={ms(15)}
+            />
+          </Box>
+        )}
         {navigationLog ? (
           <Callout
             // tooltip={true}
@@ -445,7 +465,7 @@ export default function Map({navigation}: Props) {
           >
             <HStack alignItems="center" backgroundColor={Colors.white} w="80">
               <Box h={ms(48)} w={ms(48)}>
-                <NavigationLogType navigationLog={navigationLog} />
+                <NavigationLogType isLotty navigationLog={navigationLog} />
               </Box>
               <Box flex={1} marginLeft={ms(8)}>
                 <Text bold color={Colors.text} fontSize={ms(15)} noOfLines={1}>
@@ -471,26 +491,6 @@ export default function Map({navigation}: Props) {
             </HStack>
           </Callout>
         ) : null}
-        {rotate ? (
-          <Box style={{transform: [{rotate}]}}>
-            <Image
-              alt="map-navigating-arrow-img"
-              resizeMode="contain"
-              source={Icons.navigating}
-            />
-          </Box>
-        ) : (
-          <Box bgColor={Colors.white} borderRadius={50}>
-            <FontAwesome5Icon
-              style={{
-                padding: 7,
-              }}
-              color={Colors.azure}
-              name="anchor"
-              size={ms(15)}
-            />
-          </Box>
-        )}
       </Marker>
     )
   }
