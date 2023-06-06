@@ -46,7 +46,7 @@ import {
 } from '@bluecentury/components'
 import {Icons, Animated} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
-import {useMap, useEntity, useNotif} from '@bluecentury/stores'
+import {useMap, useEntity, useNotif, usePlanning} from '@bluecentury/stores'
 import {
   ENTITY_TYPE_EXPLOITATION_GROUP,
   formatLocationLabel,
@@ -56,7 +56,7 @@ import {
   RootStackParamList,
 } from '@bluecentury/types/nav.types'
 import {ExploitationVessel, NavigationLog} from '@bluecentury/models'
-import {Search} from './components'
+import {Search, MapNavLog} from './components'
 import {API} from '@bluecentury/api'
 
 const {width, height} = Dimensions.get('window')
@@ -93,6 +93,11 @@ export default function Map({navigation}: Props) {
     geoGraphicRoutes,
   } = useMap()
   const {notifications, getAllNotifications, calculateBadge} = useNotif()
+  const {
+    isNavLogDetailsLoading,
+    getNavigationLogDetails,
+    navigationLogDetails,
+  } = usePlanning()
 
   const LATITUDE = 50.503887
   const LONGITUDE = 4.469936
@@ -141,6 +146,10 @@ export default function Map({navigation}: Props) {
     })
   })
   const refreshId = useRef<any>()
+  const plannedNavLog = plannedNavLogs?.find(
+    (plan: any) => plan.plannedETA !== null
+  )
+  const prevNavLog = prevNavLogs?.find((prev: any) => prev.plannedEta !== null)
 
   useEffect(() => {
     Keyboard.addListener('keyboardDidShow', handleKeyboardShow)
@@ -205,6 +214,9 @@ export default function Map({navigation}: Props) {
         latitude: currentNavLogs[0]?.location?.latitude,
         longitude: currentNavLogs[0]?.location?.longitude,
       })
+      if (currentNavLogs[currentNavLogs?.length - 1]) {
+        getNavigationLogDetails(currentNavLogs[currentNavLogs?.length - 1]?.id)
+      }
     }
   }, [currentNavLogs])
 
@@ -281,9 +293,25 @@ export default function Map({navigation}: Props) {
             <PlannedNavLogInfo logs={plannedNavLogs} />
             <CurrentNavLogInfo />
             <PreviousNavLogInfo logs={prevNavLogs} />
+            {/* <MapNavLog
+              itemColor={Colors.navLogItemBlue}
+              navigationLog={plannedNavLog}
+            />
+            <MapNavLog
+              itemColor={Colors.navLogItemGreen}
+              navigationLog={navigationLogDetails || plannedNavLog}
+            />
+            <MapNavLog
+              itemColor={Colors.navLogItemPink}
+              navigationLog={prevNavLog}
+            /> */}
           </>
         ) : (
-          <CurrentNavLogInfo />
+          // <CurrentNavLogInfo />
+          <MapNavLog
+            itemColor={Colors.navLogItemGreen}
+            navigationLog={navigationLogDetails || plannedNavLog}
+          />
         )}
       </Box>
     )
@@ -839,8 +867,7 @@ export default function Map({navigation}: Props) {
           borderRadius={20}
           handleIndicatorStyle={{display: 'none'}}
           initialSnap={1}
-          renderContent={renderBottomContent}
-          snapPoints={['25%', '50%']}
+          snapPoints={['37%', '50%']}
           onChange={handleSheetChanges}
         >
           {renderBottomContent()}
