@@ -280,15 +280,6 @@ export default function Map({navigation}: Props) {
         ) : (
           <CurrentNavLogInfo />
         )}
-
-        {/* {snapStatus === 1 && (
-          <Button
-            bg={Colors.azure}
-            onPress={() => navigation.navigate('Planning')}
-          >
-            {t('viewNavlog')}
-          </Button>
-        )} */}
       </Box>
     )
   }
@@ -837,17 +828,6 @@ export default function Map({navigation}: Props) {
         top={0}
       />
       {!isKeyboardVisible ? (
-        // <BottomSheet
-        //   ref={sheetRef}
-        //   enabledBottomClamp
-        //   borderRadius={20}
-        //   enabledGestureInteraction={false}
-        //   initialSnap={1}
-        //   renderContent={renderBottomContent}
-        //   snapPoints={['63%', '30%']}
-        //   onCloseEnd={() => setSnapStatus(0)}
-        //   onOpenEnd={() => setSnapStatus(1)}
-        // />
         <BottomSheet
           ref={sheetRef}
           borderRadius={20}
