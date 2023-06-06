@@ -8,8 +8,9 @@ import {NavigationLog} from '@bluecentury/models'
 
 interface INavlogType {
   navigationLog: NavigationLog
+  isFinished: boolean
 }
-export const NavigationLogType = ({navigationLog}: INavlogType) => {
+export const NavigationLogType = ({navigationLog, isFinished}: INavlogType) => {
   const renderType = (navLog: NavigationLog) => {
     const {
       location,
@@ -111,6 +112,14 @@ export const NavigationLogType = ({navigationLog}: INavlogType) => {
               resizeMode="contain"
               source={animatesIcon ? Animated.cleaning : Icons.broom}
               w={animatesIcon ? ms(60) : null}
+            />
+          )
+        } else if (isFinished) {
+          return (
+            <Image
+              alt="navlog-type-img"
+              resizeMode="contain"
+              source={Icons.completed}
             />
           )
         } else if (bulkCargo.some(cargo => cargo.isLoading === false)) {
