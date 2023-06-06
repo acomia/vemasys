@@ -162,19 +162,31 @@ export const usePlanning = create(
         try {
           const response = await API.getPlannedNavLog(vesselId)
           if (Array.isArray(response) && response.length > 0) {
-            response.forEach(async (plan, index) => {
+            response.forEach(async plan => {
               const act = await API.reloadNavigationLogActions(plan.id)
               if (act?.length > 0) {
+                const activeActions = act?.filter(
+                  action => action?.end === null
+                )
+                if (activeActions.length) {
+                  plan.navlogActions = activeActions
+                  plan.hasActiveActions = true
+                } else {
+                  plan.navlogActions = act
+                  plan.hasActiveActions = false
+                }
+
                 plan.endActionDate = act[0]?.end
                 plan.actionType = act[0]?.type
               } else {
-                plan.endActionDate = undefined
+                plan.navlogActions = []
+                plan.endActionDate = null
                 plan.actionType = ''
               }
-            })
-            set({
-              plannedNavigationLogs: response,
-              isPlanningLoading: false,
+              set({
+                plannedNavigationLogs: response,
+                isPlanningLoading: false,
+              })
             })
           } else {
             set({

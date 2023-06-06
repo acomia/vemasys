@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useLayoutEffect, useState} from 'react'
 import {RefreshControl} from 'react-native'
 import {Box, Center, ScrollView, Text, View} from 'native-base'
 import {ms} from 'react-native-size-matters'
@@ -10,6 +10,7 @@ import {useTranslation} from 'react-i18next'
 import {NavLogCard, NavLogDivider} from '@bluecentury/components'
 import {NavigationLog} from '@bluecentury/models'
 import findLastIndex from 'lodash/findLastIndex'
+import _ from 'lodash'
 
 const PlanningLogbook = () => {
   const {t} = useTranslation()

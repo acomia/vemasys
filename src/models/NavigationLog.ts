@@ -77,4 +77,6 @@ export type NavigationLog = {
   isActive: boolean
   endActionDate: StringOrNull
   actionType: string
+  navlogActions: Array<any>
+  hasActiveActions: boolean
 }
