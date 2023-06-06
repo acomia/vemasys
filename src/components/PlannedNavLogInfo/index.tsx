@@ -33,19 +33,18 @@ export const PlannedNavLogInfo = ({logs}: Props) => {
     >
       <Box ml={ms(15)}>
         {navigationLog === undefined ? (
-          <Text fontWeight="700" color="#ADADAD">
+          <Text color="#ADADAD" fontWeight="700">
             {t('noUpcomingPlanYet')}
           </Text>
         ) : (
           <>
             <Text fontWeight="700">
-              {t('to')}{formatLocationLabel(navigationLog?.location)}
+              {t('to')}
+              {formatLocationLabel(navigationLog?.location)}
             </Text>
             <Text color="#ADADAD">
               {t('planned')}
-              {moment(navigationLog?.plannedEta).format(
-                'DD MMM YYYY | HH:mm'
-              )}
+              {moment(navigationLog?.plannedEta).format('DD MMM YYYY | HH:mm')}
             </Text>
           </>
         )}
@@ -53,30 +52,30 @@ export const PlannedNavLogInfo = ({logs}: Props) => {
       {navigationLog === undefined ? null : (
         <>
           <Box
-            position="absolute"
-            left={ms(-20)}
-            width={ms(40)}
-            height={ms(40)}
-            borderRadius={ms(20)}
-            backgroundColor="#F0F0F0"
             alignItems="center"
+            backgroundColor="#F0F0F0"
+            borderRadius={ms(20)}
+            height={ms(40)}
             justifyContent="center"
+            left={ms(-20)}
+            position="absolute"
+            width={ms(40)}
             zIndex={1}
           >
             <Image
               alt="planned-nav-log-img"
-              source={Animated.nav_unloading}
-              width={ms(30)}
               height={ms(30)}
               resizeMode="contain"
+              source={Animated.nav_unloading}
+              width={ms(30)}
             />
           </Box>
           <Box
-            position="absolute"
-            top={ms(-35)}
-            width={ms(2)}
-            height={ms(50)}
             backgroundColor="#23475C"
+            bottom={ms(-35)}
+            height={ms(50)}
+            position="absolute"
+            width={ms(2)}
           />
         </>
       )}

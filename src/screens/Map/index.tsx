@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useEffect, useRef, useState, useCallback} from 'react'
 import {AppState, StyleSheet, Dimensions, Keyboard} from 'react-native'
 import {} from 'react-native'
 import {
@@ -20,7 +20,8 @@ import MapView, {
   Camera,
   Polyline,
 } from 'react-native-maps'
-import BottomSheet from 'reanimated-bottom-sheet'
+// import BottomSheet from 'reanimated-bottom-sheet'
+import BottomSheet from '@gorhom/bottom-sheet'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
@@ -255,11 +256,11 @@ export default function Map({navigation}: Props) {
 
   const renderBottomContent = () => {
     return (
-      <Box backgroundColor={Colors.white} height="full" px={ms(30)} py={ms(20)}>
-        <MapBottomSheetToggle
+      <Box backgroundColor={Colors.white} height="full" px={ms(30)}>
+        {/* <MapBottomSheetToggle
           snapRef={snapRef}
           onPress={handleOnPressBottomSheetArrow}
-        />
+        /> */}
         <Text
           color={Colors.azure}
           fontSize={ms(18)}
@@ -269,20 +270,32 @@ export default function Map({navigation}: Props) {
         >
           {selectedVessel?.alias || null}
         </Text>
-        {snapStatus === 1 && <PreviousNavLogInfo logs={prevNavLogs} />}
-        <CurrentNavLogInfo />
-        {snapStatus === 1 && <PlannedNavLogInfo logs={plannedNavLogs} />}
-        {snapStatus === 1 && (
+
+        {snapStatus === 1 ? (
+          <>
+            <PlannedNavLogInfo logs={plannedNavLogs} />
+            <CurrentNavLogInfo />
+            <PreviousNavLogInfo logs={prevNavLogs} />
+          </>
+        ) : (
+          <CurrentNavLogInfo />
+        )}
+
+        {/* {snapStatus === 1 && (
           <Button
             bg={Colors.azure}
             onPress={() => navigation.navigate('Planning')}
           >
             {t('viewNavlog')}
           </Button>
-        )}
+        )} */}
       </Box>
     )
   }
+
+  const handleSheetChanges = useCallback((index: number) => {
+    setSnapStatus(index)
+  }, [])
 
   const renderMarkerFrom = () => {
     const previousLocation = prevNavLogs?.find(
@@ -824,17 +837,28 @@ export default function Map({navigation}: Props) {
         top={0}
       />
       {!isKeyboardVisible ? (
+        // <BottomSheet
+        //   ref={sheetRef}
+        //   enabledBottomClamp
+        //   borderRadius={20}
+        //   enabledGestureInteraction={false}
+        //   initialSnap={1}
+        //   renderContent={renderBottomContent}
+        //   snapPoints={['63%', '30%']}
+        //   onCloseEnd={() => setSnapStatus(0)}
+        //   onOpenEnd={() => setSnapStatus(1)}
+        // />
         <BottomSheet
           ref={sheetRef}
-          enabledBottomClamp
           borderRadius={20}
-          enabledGestureInteraction={false}
+          handleIndicatorStyle={{display: 'none'}}
           initialSnap={1}
           renderContent={renderBottomContent}
-          snapPoints={['63%', '30%']}
-          onCloseEnd={() => setSnapStatus(0)}
-          onOpenEnd={() => setSnapStatus(1)}
-        />
+          snapPoints={['25%', '50%']}
+          onChange={handleSheetChanges}
+        >
+          {renderBottomContent()}
+        </BottomSheet>
       ) : null}
     </Box>
   )
