@@ -118,6 +118,7 @@ export default function Map({navigation}: Props) {
   const [isLoadingMap, setLoadingMap] = useState(false)
   const [isKeyboardVisible, setKeyboardVisible] = useState(false)
   const [isSearchPin, setIsSearchPin] = useState(false)
+  const [isFitToMarkers, setFitToMarkers] = useState(false)
 
   useEffect(() => {
     currentPositionRef?.current?.showCallout()
@@ -172,6 +173,8 @@ export default function Map({navigation}: Props) {
         await getPlannedNavigationLogs(vesselId)
         await getCurrentNavigationLogs(vesselId)
         await getLastCompleteNavigationLogs(vesselId)
+
+        getVesselTrack(vesselId, page)
         setLoadingMap(false)
       }
 
@@ -217,10 +220,11 @@ export default function Map({navigation}: Props) {
   }, [notifications])
 
   useEffect(() => {
-    if (vesselTracks.length) {
+    if (vesselTracks.length > 0 && isFitToMarkers) {
       fitToAllMarkers(uniqueVesselTracks)
+      setFitToMarkers(false)
     }
-  }, [vesselTracks])
+  }, [vesselTracks, isFitToMarkers])
 
   useEffect(() => {
     if (geoGraphicRoutes?.length > 0) {
@@ -244,6 +248,7 @@ export default function Map({navigation}: Props) {
       await getPlannedNavigationLogs(vesselId)
       await getCurrentNavigationLogs(vesselId)
       await getVesselStatus(vesselId)
+      getVesselTrack(vesselId, page)
       setLoadingMap(false)
     }
   }
@@ -785,6 +790,7 @@ export default function Map({navigation}: Props) {
                   centerMapToCurrentLocation()
                 } else {
                   getVesselTrack(vesselId, page)
+                  setFitToMarkers(true)
                 }
                 setTrackViewMode(!trackViewMode)
               }}
