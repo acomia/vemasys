@@ -6,7 +6,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   Platform,
-  Dimensions,
 } from 'react-native'
 import {
   Text,
@@ -73,7 +72,7 @@ export default function Charters({navigation, route}: any) {
     uploadSignedPDF,
     linkSignPDFToCharter,
   } = useCharters()
-  const {entityId, entityType, vesselId} = useEntity()
+  const {entityId, vesselId} = useEntity()
   const {isMobileTracking} = useSettings()
   const [searchedValue, setSearchValue] = useState('')
   const [chartersData, setChartersData] = useState(
@@ -198,15 +197,26 @@ export default function Charters({navigation, route}: any) {
         <Box
           key={index}
           borderColor={
-            item.status === 'completed' ? Colors.secondary : Colors.grey
+            item.status === 'completed'
+              ? Colors.secondary
+              : index === 1 && item.status === 'accepted'
+              ? Colors.primary_light
+              : Colors.grey
           }
           borderStyle={
             item.status === 'draft' || item.status === 'new'
               ? 'dashed'
               : 'solid'
           }
+          borderWidth={
+            index === 1 ||
+            item.status === 'accepted' ||
+            item.status === 'draft' ||
+            item.status === 'new'
+              ? 2
+              : 1
+          }
           borderRadius={ms(5)}
-          borderWidth={1}
           mb={ms(10)}
           overflow="hidden"
         >
@@ -461,6 +471,22 @@ export default function Charters({navigation, route}: any) {
     resetState()
   }
 
+  const getSortedData = () => {
+    const first =
+      route === 'charters'
+        ? charters.filter(c => c?.status === 'new')
+        : timeCharters.filter(c => c?.status === 'new')
+
+    const rest =
+      route === 'charters'
+        ? charters.filter(c => c?.status !== 'new')
+        : timeCharters.filter(c => c?.status !== 'new')
+
+    const chrs = [...first, ...sortBy(rest, 'status')]
+
+    return chrs
+  }
+
   if (isCharterLoading) return <LoadingAnimated />
 
   if (isDocumentSigning) {
@@ -515,19 +541,13 @@ export default function Charters({navigation, route}: any) {
             {t('noCharters')}
           </Text>
         )}
-        data={
-          searchedValue !== ''
-            ? chartersData
-            : route === 'charters'
-            ? sortBy(charters, 'status')
-            : sortBy(timeCharters, 'status')
-        }
         refreshControl={
           <RefreshControl
             refreshing={isCharterLoading}
             onRefresh={onPullToReload}
           />
         }
+        data={searchedValue !== '' ? chartersData : getSortedData()}
         keyExtractor={item => `Charter-${item.id}`}
         renderItem={renderItem}
         showsVerticalScrollIndicator={false}
