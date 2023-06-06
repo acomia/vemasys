@@ -9,7 +9,7 @@ import Lottie from 'lottie-react-native'
 
 interface INavlogType {
   navigationLog: NavigationLog
-  isFinished: boolean
+  isFinished?: boolean
   isLotty?: boolean
 }
 export const NavigationLogType = ({
@@ -36,7 +36,7 @@ export const NavigationLogType = ({
       case 'Anchor':
         return isLotty && animatesIcon ? (
           <Lottie
-            ref={animationRef}
+            // ref={animationRef}
             loop
             autoPlay={true}
             source={require('@bluecentury/assets/animated/lottie/waiting.json')}
@@ -53,7 +53,7 @@ export const NavigationLogType = ({
       case 'Berth':
         return isLotty && animatesIcon ? (
           <Lottie
-            ref={animationRef}
+            // ref={animationRef}
             loop
             autoPlay={true}
             source={require('@bluecentury/assets/animated/lottie/waiting.json')}
@@ -70,7 +70,7 @@ export const NavigationLogType = ({
       case 'Bridge':
         return isLotty && animatesIcon ? (
           <Lottie
-            ref={animationRef}
+            // ref={animationRef}
             loop
             autoPlay={true}
             source={require('@bluecentury/assets/animated/lottie/bridge.json')}
@@ -87,7 +87,7 @@ export const NavigationLogType = ({
       case 'Checkpoint':
         return isLotty && animatesIcon ? (
           <Lottie
-            ref={animationRef}
+            // ref={animationRef}
             loop
             autoPlay={true}
             source={require('@bluecentury/assets/animated/lottie/checkpoint.json')}
@@ -104,7 +104,7 @@ export const NavigationLogType = ({
       case 'Junction':
         return isLotty && animatesIcon ? (
           <Lottie
-            ref={animationRef}
+            // ref={animationRef}
             loop
             autoPlay={true}
             source={require('@bluecentury/assets/animated/lottie/junction.json')}
@@ -121,7 +121,7 @@ export const NavigationLogType = ({
       case 'Sluice':
         return isLotty && animatesIcon ? (
           <Lottie
-            ref={animationRef}
+            // ref={animationRef}
             loop
             autoPlay={true}
             source={require('@bluecentury/assets/animated/lottie/sluice.json')}
@@ -144,7 +144,7 @@ export const NavigationLogType = ({
         ) {
           return isLotty && animatesIcon ? (
             <Lottie
-              ref={animationRef}
+              // ref={animationRef}
               loop
               autoPlay={true}
               source={require('@bluecentury/assets/animated/lottie/waiting.json')}
@@ -161,7 +161,7 @@ export const NavigationLogType = ({
         } else if (actionType === 'Cleaning') {
           return isLotty && animatesIcon ? (
             <Lottie
-              ref={animationRef}
+              // ref={animationRef}
               loop
               autoPlay={true}
               source={require('@bluecentury/assets/animated/lottie/cleaning.json')}
@@ -187,7 +187,7 @@ export const NavigationLogType = ({
         } else if (bulkCargo.some(cargo => cargo.isLoading === false)) {
           return isLotty && animatesIcon ? (
             <Lottie
-              ref={animationRef}
+              // ref={animationRef}
               loop
               autoPlay={true}
               source={require('@bluecentury/assets/animated/lottie/unloading.json')}
@@ -205,7 +205,7 @@ export const NavigationLogType = ({
         } else {
           return isLotty && animatesIcon ? (
             <Lottie
-              ref={animationRef}
+              // ref={animationRef}
               loop
               autoPlay={true}
               source={require('@bluecentury/assets/animated/lottie/nav_loading.json')}
