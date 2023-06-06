@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useEffect, useRef, useState, useCallback} from 'react'
+import React, {useEffect, useRef, useState, useCallback, useMemo} from 'react'
 import {AppState, StyleSheet, Dimensions, Keyboard} from 'react-native'
 import {} from 'react-native'
 import {
@@ -12,6 +12,7 @@ import {
   VStack,
   ChevronRightIcon,
   IconButton as NativeBaseIconButton,
+  ScrollView,
 } from 'native-base'
 import MapView, {
   PROVIDER_GOOGLE,
@@ -20,8 +21,7 @@ import MapView, {
   Camera,
   Polyline,
 } from 'react-native-maps'
-// import BottomSheet from 'reanimated-bottom-sheet'
-import BottomSheet from '@gorhom/bottom-sheet'
+import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
@@ -125,6 +125,9 @@ export default function Map({navigation}: Props) {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false)
   const [isSearchPin, setIsSearchPin] = useState(false)
   const [isFitToMarkers, setFitToMarkers] = useState(false)
+  const [plannedNavLog, setPlannedNavLog] = useState(null)
+  const [currentNavLog, setCurrentNavLog] = useState(null)
+  const [prevNavLog, setPrevNavLog] = useState(null)
 
   useEffect(() => {
     currentPositionRef?.current?.showCallout()
@@ -146,10 +149,6 @@ export default function Map({navigation}: Props) {
     })
   })
   const refreshId = useRef<any>()
-  const plannedNavLog = plannedNavLogs?.find(
-    (plan: any) => plan.plannedETA !== null
-  )
-  const prevNavLog = prevNavLogs?.find((prev: any) => prev.plannedEta !== null)
 
   useEffect(() => {
     Keyboard.addListener('keyboardDidShow', handleKeyboardShow)
@@ -215,10 +214,38 @@ export default function Map({navigation}: Props) {
         longitude: currentNavLogs[0]?.location?.longitude,
       })
       if (currentNavLogs[currentNavLogs?.length - 1]) {
-        getNavigationLogDetails(currentNavLogs[currentNavLogs?.length - 1]?.id)
+        getNavigationLogDetails(
+          currentNavLogs[currentNavLogs?.length - 1]?.id
+        ).then(response => {
+          if (response) setCurrentNavLog(response)
+        })
       }
     }
   }, [currentNavLogs])
+
+  useEffect(() => {
+    if (prevNavLogs && prevNavLogs.length > 0) {
+      const navLog = prevNavLogs?.find((prev: any) => prev.plannedEta !== null)
+      if (navLog) {
+        getNavigationLogDetails(navLog?.id).then(response => {
+          if (response) setPrevNavLog(response)
+        })
+      }
+    }
+  }, [prevNavLogs])
+
+  useEffect(() => {
+    if (plannedNavLogs && plannedNavLogs.length > 0) {
+      const navLog = plannedNavLogs?.find(
+        (prev: any) => prev.plannedEta !== null
+      )
+      if (navLog) {
+        getNavigationLogDetails(navLog?.id).then(response => {
+          if (response) setPlannedNavLog(response)
+        })
+      }
+    }
+  }, [plannedNavLogs])
 
   useEffect(() => {
     if (vesselStatus && !vesselUpdated) {
@@ -272,8 +299,12 @@ export default function Map({navigation}: Props) {
   }
 
   const renderBottomContent = () => {
+    if (plannedNavLog?.id === currentNavLog?.id && snapStatus === 1) {
+      // sheetRef?.current?.snapToPosition('60%')
+    }
+
     return (
-      <Box backgroundColor={Colors.white} height="full" px={ms(30)}>
+      <Box backgroundColor={Colors.white} height="full" px={ms(10)}>
         {/* <MapBottomSheetToggle
           snapRef={snapRef}
           onPress={handleOnPressBottomSheetArrow}
@@ -289,28 +320,43 @@ export default function Map({navigation}: Props) {
         </Text>
 
         {snapStatus === 1 ? (
-          <>
-            <PlannedNavLogInfo logs={plannedNavLogs} />
+          <BottomSheetScrollView>
+            {/* <PlannedNavLogInfo logs={plannedNavLogs} />
             <CurrentNavLogInfo />
-            <PreviousNavLogInfo logs={prevNavLogs} />
-            {/* <MapNavLog
-              itemColor={Colors.navLogItemBlue}
-              navigationLog={plannedNavLog}
-            />
-            <MapNavLog
-              itemColor={Colors.navLogItemGreen}
-              navigationLog={navigationLogDetails || plannedNavLog}
-            />
-            <MapNavLog
-              itemColor={Colors.navLogItemPink}
-              navigationLog={prevNavLog}
-            /> */}
-          </>
+            <PreviousNavLogInfo logs={prevNavLogs} /> */}
+            {plannedNavLog && (
+              <MapNavLog
+                key={2}
+                itemColor={Colors.navLogItemBlue}
+                navigationLog={plannedNavLog}
+              />
+            )}
+            {
+              // plannedNavLog?.id === currentNavLog?.id
+              //   ? null
+              //   :
+              currentNavLog && (
+                <MapNavLog
+                  key={3}
+                  itemColor={Colors.navLogItemGreen}
+                  navigationLog={currentNavLog}
+                />
+              )
+            }
+            {prevNavLog && (
+              <MapNavLog
+                key={4}
+                itemColor={Colors.navLogItemPink}
+                navigationLog={prevNavLog}
+              />
+            )}
+          </BottomSheetScrollView>
         ) : (
           // <CurrentNavLogInfo />
           <MapNavLog
+            key={1}
             itemColor={Colors.navLogItemGreen}
-            navigationLog={navigationLogDetails || plannedNavLog}
+            navigationLog={currentNavLog ? currentNavLog : plannedNavLog}
           />
         )}
       </Box>
@@ -866,8 +912,8 @@ export default function Map({navigation}: Props) {
           ref={sheetRef}
           borderRadius={20}
           handleIndicatorStyle={{display: 'none'}}
-          initialSnap={1}
-          snapPoints={['37%', '50%']}
+          initialSnap={0}
+          snapPoints={useMemo(() => ['40%', '85%'], [])}
           onChange={handleSheetChanges}
         >
           {renderBottomContent()}

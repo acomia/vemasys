@@ -499,7 +499,7 @@ export const NavLogCard = (props: {
         flexDirection={'row'}
         h={'100%'}
         justifyContent={'space-between'}
-        px={ms(4)}
+        px={ms(2)}
         w={ms(16)}
       >
         <Box
@@ -613,7 +613,6 @@ export const NavLogCard = (props: {
             : null}
         </HStack>
         {/* End of Header */}
-        {console.log('navLogCard type title', navigationLog?.type)}
         {navigationLog?.type?.title === 'Loading/Unloading' &&
         props?.lastScreen === 'planning' ? (
           <Box

@@ -237,6 +237,7 @@ export const usePlanning = create(
 
               isNavLogDetailsLoading: false,
             })
+            return response
           } else {
             set({
               isPlanningDetailsLoading: false,
@@ -244,6 +245,7 @@ export const usePlanning = create(
 
               isNavLogDetailsLoading: false,
             })
+            return null
           }
         } catch (error) {
           set({

@@ -9,15 +9,16 @@ import {ms} from 'react-native-size-matters'
 const MapNavLog = (props: {
   navigationLog: NavigationLog
   itemColor: string
+  key: number
 }) => {
-  const {navigationLog, itemColor} = props
+  const {navigationLog, itemColor, key} = props
 
   return navigationLog ? (
     <Box right={ms(7)} width={'full'}>
       <NavLogCard
-        key={0}
+        key={key}
         defineFirstAndLastIndex={[]}
-        index={2}
+        index={key}
         isFinished={false}
         itemColor={itemColor}
         lastScreen={'planning'}
