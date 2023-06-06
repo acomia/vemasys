@@ -304,7 +304,7 @@ export default function Map({navigation}: Props) {
     }
 
     return (
-      <Box backgroundColor={Colors.white} height="full" px={ms(10)}>
+      <Box backgroundColor={Colors.white} height="full">
         {/* <MapBottomSheetToggle
           snapRef={snapRef}
           onPress={handleOnPressBottomSheetArrow}
@@ -313,7 +313,7 @@ export default function Map({navigation}: Props) {
           color={Colors.azure}
           fontSize={ms(18)}
           fontWeight="700"
-          my={ms(10)}
+          my={ms(5)}
           textAlign="center"
         >
           {selectedVessel?.alias || null}
@@ -910,10 +910,11 @@ export default function Map({navigation}: Props) {
       {!isKeyboardVisible ? (
         <BottomSheet
           ref={sheetRef}
-          borderRadius={20}
           handleIndicatorStyle={{display: 'none'}}
+          handleStyle={{display: 'none'}}
           initialSnap={0}
-          snapPoints={useMemo(() => ['40%', '85%'], [])}
+          snapPoints={useMemo(() => ['32%', '80%'], [])}
+          style={{borderRadius: 40, overflow: 'hidden'}}
           onChange={handleSheetChanges}
         >
           {renderBottomContent()}

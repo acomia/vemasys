@@ -29,7 +29,6 @@ export const NavigationLogType = ({
       endActionDate,
       actionType,
     } = navLog
-    const animationRef = useRef<any>(null)
     const animatesIcon = isActive || _.isNull(endActionDate)
 
     switch (location.type.title) {
