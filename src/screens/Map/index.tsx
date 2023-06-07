@@ -5,15 +5,12 @@ import {} from 'react-native'
 import {
   Box,
   Text,
-  Button,
   HStack,
   Image,
   Icon,
   VStack,
   ChevronRightIcon,
   IconButton as NativeBaseIconButton,
-  ScrollView,
-  Pressable,
 } from 'native-base'
 import MapView, {
   PROVIDER_GOOGLE,
@@ -94,11 +91,7 @@ export default function Map({navigation}: Props) {
     geoGraphicRoutes,
   } = useMap()
   const {notifications, getAllNotifications, calculateBadge} = useNotif()
-  const {
-    isNavLogDetailsLoading,
-    getNavigationLogDetails,
-    navigationLogDetails,
-  } = usePlanning()
+  const {getNavigationLogDetails} = usePlanning()
 
   const LATITUDE = 50.503887
   const LONGITUDE = 4.469936
@@ -117,7 +110,6 @@ export default function Map({navigation}: Props) {
     longitudeDelta: LONGITUDE_DELTA,
   })
   const [zoomLevel, setZoomLevel] = useState<number | null>(null)
-  // const [trackViewMode, setTrackViewMode] = useState(false)
   const [page, setPage] = useState(1)
   const [vesselUpdated, setVesselUpdated] = useState(false)
   const uniqueTracks: Array<VesselGeolocation> = []
@@ -306,10 +298,6 @@ export default function Map({navigation}: Props) {
 
     return (
       <Box backgroundColor={Colors.white} height="full">
-        {/* <MapBottomSheetToggle
-          snapRef={snapRef}
-          onPress={handleOnPressBottomSheetArrow}
-        /> */}
         <Text
           color={Colors.azure}
           fontSize={ms(18)}
@@ -322,9 +310,6 @@ export default function Map({navigation}: Props) {
 
         {snapStatus === 1 ? (
           <BottomSheetScrollView>
-            {/* <PlannedNavLogInfo logs={plannedNavLogs} />
-            <CurrentNavLogInfo />
-            <PreviousNavLogInfo logs={prevNavLogs} /> */}
             {plannedNavLog && (
               <MapNavLog
                 key={2}
@@ -332,18 +317,13 @@ export default function Map({navigation}: Props) {
                 navigationLog={plannedNavLog}
               />
             )}
-            {
-              // plannedNavLog?.id === currentNavLog?.id
-              //   ? null
-              //   :
-              currentNavLog && (
-                <MapNavLog
-                  key={3}
-                  itemColor={Colors.navLogItemGreen}
-                  navigationLog={currentNavLog}
-                />
-              )
-            }
+            {currentNavLog && (
+              <MapNavLog
+                key={3}
+                itemColor={Colors.navLogItemGreen}
+                navigationLog={currentNavLog}
+              />
+            )}
             {prevNavLog && (
               <MapNavLog
                 key={4}
@@ -353,7 +333,6 @@ export default function Map({navigation}: Props) {
             )}
           </BottomSheetScrollView>
         ) : (
-          // <CurrentNavLogInfo />
           <MapNavLog
             key={1}
             itemColor={Colors.navLogItemGreen}
@@ -497,9 +476,6 @@ export default function Map({navigation}: Props) {
       </Marker>
     )
   }
-  useCallback(() => {
-    currentPositionRef.current?.showCallout()
-  }, [currentPositionRef])
 
   const renderMarkerVessel2 = useMemo(() => {
     if (!vesselStatus) return null
