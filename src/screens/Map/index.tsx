@@ -13,6 +13,7 @@ import {
   ChevronRightIcon,
   IconButton as NativeBaseIconButton,
   ScrollView,
+  Pressable,
 } from 'native-base'
 import MapView, {
   PROVIDER_GOOGLE,
@@ -129,9 +130,9 @@ export default function Map({navigation}: Props) {
   const [currentNavLog, setCurrentNavLog] = useState(null)
   const [prevNavLog, setPrevNavLog] = useState(null)
 
-  useEffect(() => {
-    currentPositionRef?.current?.showCallout()
-  })
+  // useEffect(() => {
+  //   // currentPositionRef?.current?.showCallout()
+  // })
 
   const uniqueVesselTrack = vesselTracks?.filter(element => {
     const isDuplicate = uniqueTracks.includes(element.latitude)
@@ -496,8 +497,87 @@ export default function Map({navigation}: Props) {
       </Marker>
     )
   }
+  useCallback(() => {
+    currentPositionRef.current?.showCallout()
+  }, [currentPositionRef])
+
+  const renderMarkerVessel2 = useMemo(() => {
+    if (!vesselStatus) return null
+    const {latitude, longitude, speed, heading}: VesselGeolocation =
+      vesselStatus
+    const rotate = heading >= 0 && Number(speed) > 1 ? `${heading}deg` : null
+    const navigationLog = plannedNavLogs.find(item => item.isActive)
+    return (
+      <Marker
+        key={`Vessel-${vesselStatus?.vessel?.id}`}
+        ref={currentPositionRef}
+        coordinate={{
+          latitude: Number(latitude),
+          longitude: Number(longitude),
+        }}
+        onPress={() =>
+          navigation.navigate('PlanningDetails', {
+            navlog: navigationLog,
+            title: formatLocationLabel(navigationLog?.location) as string,
+          })
+        }
+      >
+        <Box alignItems={'center'}>
+          <HStack alignItems="center" backgroundColor={Colors.white} w="80">
+            <Box h={ms(48)} w={ms(48)}>
+              <NavigationLogType isLotty navigationLog={navigationLog} />
+            </Box>
+            <Box flex={1} marginLeft={ms(8)}>
+              <Text bold color={Colors.text} fontSize={ms(15)} noOfLines={1}>
+                {formatLocationLabel(navigationLog?.location)}
+              </Text>
+              <Text color={Colors.azure} fontWeight="medium">
+                {t('planned')}
+                {moment(navigationLog?.plannedEta).format(
+                  'DD MMM YYYY | HH:mm'
+                )}
+              </Text>
+            </Box>
+            <Box alignSelf="center">
+              <NativeBaseIconButton
+                icon={
+                  <ChevronRightIcon bold color={Colors.disabled} size="4" />
+                }
+                onPress={() => {
+                  console.log(11)
+                }}
+              />
+            </Box>
+          </HStack>
+          <Box width={ms(30)}>
+            {rotate ? (
+              <Box style={{transform: [{rotate}]}}>
+                <Image
+                  alt="map-navigating-arrow-img"
+                  resizeMode="contain"
+                  source={Icons.navigating}
+                />
+              </Box>
+            ) : (
+              <Box bgColor={Colors.white} borderRadius={50}>
+                <FontAwesome5Icon
+                  style={{
+                    padding: 7,
+                  }}
+                  color={Colors.azure}
+                  name="anchor"
+                  size={ms(15)}
+                />
+              </Box>
+            )}
+          </Box>
+        </Box>
+      </Marker>
+    )
+  }, [vesselStatus])
 
   const renderMarkerVessel = () => {
+    if (!vesselStatus) return null
     const {latitude, longitude, speed, heading}: VesselGeolocation =
       vesselStatus
     const rotate = heading >= 0 && Number(speed) > 1 ? `${heading}deg` : null
@@ -536,8 +616,9 @@ export default function Map({navigation}: Props) {
             />
           </Box>
         )}
-        {navigationLog ? (
+        {navigationLog && (
           <Callout
+            tooltip
             // tooltip={true}
             onPress={() =>
               navigation.navigate('PlanningDetails', {
@@ -573,7 +654,7 @@ export default function Map({navigation}: Props) {
               </Box>
             </HStack>
           </Callout>
-        ) : null}
+        )}
       </Marker>
     )
   }
@@ -788,7 +869,8 @@ export default function Map({navigation}: Props) {
               (plan: NavigationLog) => plan.plannedEta !== null
             ) !== undefined &&
             renderMarkerFrom()}
-          {vesselStatus && renderMarkerVessel()}
+          {/* {vesselStatus && renderMarkerVessel()} */}
+          {renderMarkerVessel2}
           {plannedNavLogs?.length > 0 &&
             plannedNavLogs.find(
               (plan: NavigationLog) => plan.plannedEta !== null
