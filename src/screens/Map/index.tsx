@@ -592,9 +592,8 @@ export default function Map({navigation}: Props) {
             />
           </Box>
         )}
-        {navigationLog && (
+        {navigationLog ? (
           <Callout
-            tooltip
             // tooltip={true}
             onPress={() =>
               navigation.navigate('PlanningDetails', {
@@ -630,7 +629,7 @@ export default function Map({navigation}: Props) {
               </Box>
             </HStack>
           </Callout>
-        )}
+        ) : null}
       </Marker>
     )
   }
