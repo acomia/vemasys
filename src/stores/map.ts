@@ -58,6 +58,7 @@ type MapActions = {
   setTrackViewMode: (mode: boolean) => void
   unmountLocations: () => void
   getSearchLocations: (value: string) => void
+  getDirections: (id: string) => void
 }
 
 type MapStore = MapState & MapActions
@@ -365,7 +366,11 @@ export const useMap = create(
         set({searchLocations: [], geoGraphicRoutes: []})
       },
       getSearchLocations: async (value: string) => {
-        set({searchLocations: [], isSearchLoading: true})
+        set({
+          isGeographicRoutesLoading: false,
+          searchLocations: [],
+          isSearchLoading: true,
+        })
 
         try {
           const response = await API.searchMap(value)
@@ -376,6 +381,31 @@ export const useMap = create(
           set({isSearchLoading: false})
         } catch (error) {
           set({isSearchLoading: false})
+        }
+      },
+      getDirections: async (id: string) => {
+        set({isGeographicRoutesLoading: true, geoGraphicRoutes: []})
+
+        try {
+          const response = await API.getGeographicRoutes(id)
+
+          if (response !== null) {
+            if (response.routes && response.routes.length) {
+              const coordinates = response.routes?.flatMap((route: any) =>
+                route.waypoints?.map(({location}) => ({
+                  latitude: location.latitude,
+                  longitude: location.longitude,
+                }))
+              )
+
+              set({geoGraphicRoutes: coordinates})
+            }
+
+            set({isGeographicLoading: false})
+          }
+        } catch (error) {
+          console.log('Get Directions error', error)
+          set({isGeographicRoutesLoading: false})
         }
       },
     }),

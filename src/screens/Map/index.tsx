@@ -91,6 +91,8 @@ export default function Map({navigation}: Props) {
     unmountLocations,
     geographicLocation,
     geoGraphicRoutes,
+    getDirections,
+    isGeographicRoutesLoading,
   } = useMap()
   const {notifications, getAllNotifications, calculateBadge} = useNotif()
   const {
@@ -701,7 +703,6 @@ export default function Map({navigation}: Props) {
     setPage(page + 1)
     getVesselTrack(vesselId, page + 1)
   }
-
   const renderSearchLocationMarker = useMemo(() => {
     if (isSearchPin) {
       if (zoomLevel && zoomLevel > 12) {
@@ -731,6 +732,7 @@ export default function Map({navigation}: Props) {
             >
               <Text color={Colors.white}>{t('getDirections')}</Text>
             </Box>
+
             <Box>
               <Image
                 alt="searched-pin"
@@ -758,7 +760,7 @@ export default function Map({navigation}: Props) {
   }
 
   const handleGetDirection = () => {
-    API.getGeographicRoutes(geographicLocation?.id)
+    getDirections(geographicLocation?.id?.toString())
   }
 
   return (

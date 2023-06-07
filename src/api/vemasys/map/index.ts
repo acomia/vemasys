@@ -331,33 +331,17 @@ export const geographicPoints = (id: string | number) => {
 }
 
 export const getGeographicRoutes = (id: string | number) => {
-  useMap.setState({isGeographicRoutesLoading: true})
   return API.get(`v3/geographic_points/${id}/navigation`)
     .then(response => {
-      if (response.status !== 200) {
-        useMap.setState({isGeographicRoutesLoading: false})
-        return
+      if (response.status === 200) {
+        return response.data
       }
 
-      const {routes} = response?.data
-      const coordinates = routes?.flatMap((route: any) =>
-        route.waypoints?.map(({location}) => ({
-          latitude: location.latitude,
-          longitude: location.longitude,
-        }))
-      )
-      useMap.setState({
-        isGeographicRoutesLoading: false,
-        // geoGraphicRoutes: [...geographicRoutes, ...coordinates],
-        geoGraphicRoutes: [
-          ...useMap.getState().geoGraphicRoutes,
-          ...coordinates,
-        ],
-      })
+      return null
     })
     .catch(error => {
-      useMap.setState({isGeographicRoutesLoading: false})
       console.log(`geographic_points/${id}/navigation`, error)
+      return null
     })
 }
 
