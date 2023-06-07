@@ -151,9 +151,6 @@ export default function Map({navigation}: Props) {
   const refreshId = useRef<any>()
 
   useEffect(() => {
-    Keyboard.addListener('keyboardDidShow', handleKeyboardShow)
-    Keyboard.addListener('keyboardDidHide', handleKeyboardHide)
-
     const subscription = AppState.addEventListener('change', nextAppState => {
       if (
         appState.current.match(/inactive|background/) &&
@@ -166,8 +163,6 @@ export default function Map({navigation}: Props) {
     unmountLocations()
 
     return () => {
-      Keyboard.removeAllListeners('keyboardDidShow')
-      Keyboard.removeAllListeners('keyboardDidHide')
       subscription.remove()
     }
   }, [])
@@ -651,7 +646,7 @@ export default function Map({navigation}: Props) {
   const fitToAllMarkers = (tracks: any) => {
     mapRef?.current?.fitToCoordinates(tracks, {
       animated: true,
-      edgePadding: {bottom: height * 0.3, top: 80, left: 50, right: 80},
+      edgePadding: {bottom: height * 0.3, top: 130, left: 50, right: 80},
     })
   }
 
@@ -707,7 +702,7 @@ export default function Map({navigation}: Props) {
     getVesselTrack(vesselId, page + 1)
   }
 
-  const renderSearchLocationMarker = () => {
+  const renderSearchLocationMarker = useMemo(() => {
     if (isSearchPin) {
       if (zoomLevel && zoomLevel > 12) {
         searchMarkerRef?.current?.showCallout()
@@ -716,22 +711,16 @@ export default function Map({navigation}: Props) {
       }
       return (
         <Marker
+          key={`search-${geographicLocation?.id}`}
           ref={searchMarkerRef}
           coordinate={{
             latitude: Number(geographicLocation?.latitude),
             longitude: Number(geographicLocation?.longitude),
           }}
-          anchor={{x: 0, y: 0.5}}
-          style={{justifyContent: 'center', alignItems: 'center'}}
           zIndex={1}
+          onPress={() => handleGetDirection()}
         >
-          <Image
-            alt="searched-pin"
-            height={ms(40)}
-            source={Animated.searchedPin}
-            width={ms(30)}
-          />
-          <Callout tooltip onPress={() => handleGetDirection()}>
+          <Box alignItems={'center'}>
             <Box
               alignItems={'center'}
               backgroundColor={Colors.offlineWarning}
@@ -742,11 +731,19 @@ export default function Map({navigation}: Props) {
             >
               <Text color={Colors.white}>{t('getDirections')}</Text>
             </Box>
-          </Callout>
+            <Box>
+              <Image
+                alt="searched-pin"
+                height={ms(40)}
+                source={Animated.searchedPin}
+                width={ms(30)}
+              />
+            </Box>
+          </Box>
         </Marker>
       )
     }
-  }
+  }, [geographicLocation, isSearchPin])
 
   const handleItemAction = (item: any) => {
     API.geographicPoints(item?.id).then((response: any) => {
@@ -808,7 +805,7 @@ export default function Map({navigation}: Props) {
           {trackViewMode &&
             uniqueVesselTracks.length > 0 &&
             renderTrackLineBeginningMarker()}
-          {renderSearchLocationMarker()}
+          {renderSearchLocationMarker}
           {isSearchPin && geoGraphicRoutes.length > 0 && (
             <Polyline
               coordinates={geoGraphicRoutes}
@@ -907,19 +904,17 @@ export default function Map({navigation}: Props) {
         shadow={2}
         top={0}
       />
-      {!isKeyboardVisible ? (
-        <BottomSheet
-          ref={sheetRef}
-          handleIndicatorStyle={{display: 'none'}}
-          handleStyle={{display: 'none'}}
-          initialSnap={0}
-          snapPoints={useMemo(() => ['32%', '80%'], [])}
-          style={{borderRadius: 40, overflow: 'hidden'}}
-          onChange={handleSheetChanges}
-        >
-          {renderBottomContent()}
-        </BottomSheet>
-      ) : null}
+      <BottomSheet
+        ref={sheetRef}
+        handleIndicatorStyle={{display: 'none'}}
+        handleStyle={{display: 'none'}}
+        // initialSnap={0}
+        snapPoints={useMemo(() => ['32%', '80%'], [])}
+        style={{borderRadius: 40, overflow: 'hidden'}}
+        onChange={handleSheetChanges}
+      >
+        {renderBottomContent()}
+      </BottomSheet>
     </Box>
   )
 }

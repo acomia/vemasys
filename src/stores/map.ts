@@ -57,6 +57,7 @@ type MapActions = {
   reset: () => void
   setTrackViewMode: (mode: boolean) => void
   unmountLocations: () => void
+  getSearchLocations: (value: string) => void
 }
 
 type MapStore = MapState & MapActions
@@ -362,6 +363,20 @@ export const useMap = create(
       },
       unmountLocations: () => {
         set({searchLocations: [], geoGraphicRoutes: []})
+      },
+      getSearchLocations: async (value: string) => {
+        set({searchLocations: [], isSearchLoading: true})
+
+        try {
+          const response = await API.searchMap(value)
+          console.log('response', response)
+          if (typeof response === 'object' && response?.results) {
+            set({searchLocations: response.results})
+          }
+          set({isSearchLoading: false})
+        } catch (error) {
+          set({isSearchLoading: false})
+        }
       },
     }),
     {

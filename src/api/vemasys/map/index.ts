@@ -292,26 +292,19 @@ const getVesselTrack = async (vesselId: string, page: number) => {
 }
 
 export const searchMap = (searchValue: string) => {
-  useMap.setState({isSearchLoading: true, searchLocations: []})
   return API.post('v2/search', {
     entity: 'GeographicPoint',
     query: searchValue,
   })
     .then(response => {
       if (response?.status === 200) {
-        useMap.setState({
-          isSearchLoading: false,
-          searchLocations: response.data?.results,
-        })
-
         return response.data
       }
-      useMap.setState({isSearchLoading: false})
-      return false``
+      return null
     })
     .catch(error => {
       console.log('Error: Search', error)
-      useMap.setState({isSearchLoading: false})
+      return null
     })
 }
 
