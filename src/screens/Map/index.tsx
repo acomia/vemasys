@@ -1,6 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useRef, useState, useCallback, useMemo} from 'react'
-import {AppState, StyleSheet, Dimensions, Keyboard} from 'react-native'
+import {
+  AppState,
+  StyleSheet,
+  Dimensions,
+  Keyboard,
+  ActivityIndicator,
+} from 'react-native'
 import {} from 'react-native'
 import {
   Box,
@@ -55,7 +61,6 @@ import {
 } from '@bluecentury/types/nav.types'
 import {ExploitationVessel, NavigationLog} from '@bluecentury/models'
 import {Search, MapNavLog} from './components'
-import {API} from '@bluecentury/api'
 
 const {width, height} = Dimensions.get('window')
 const ASPECT_RATIO = width / height
@@ -91,6 +96,7 @@ export default function Map({navigation}: Props) {
     geoGraphicRoutes,
     getDirections,
     isGeographicRoutesLoading,
+    getGeographicPoints,
   } = useMap()
   const {notifications, getAllNotifications, calculateBadge} = useNotif()
   const {getNavigationLogDetails} = usePlanning()
@@ -146,6 +152,9 @@ export default function Map({navigation}: Props) {
   const refreshId = useRef<any>()
 
   useEffect(() => {
+    Keyboard.addListener('keyboardDidShow', handleKeyboardShow)
+    Keyboard.addListener('keyboardDidHide', handleKeyboardHide)
+
     const subscription = AppState.addEventListener('change', nextAppState => {
       if (
         appState.current.match(/inactive|background/) &&
@@ -158,6 +167,8 @@ export default function Map({navigation}: Props) {
     unmountLocations()
 
     return () => {
+      Keyboard.removeAllListeners('keyboardDidShow')
+      Keyboard.removeAllListeners('keyboardDidHide')
       subscription.remove()
     }
   }, [])
@@ -759,7 +770,7 @@ export default function Map({navigation}: Props) {
     getVesselTrack(vesselId, page + 1)
   }
   const renderSearchLocationMarker = useMemo(() => {
-    if (isSearchPin) {
+    if (isSearchPin && geographicLocation) {
       if (zoomLevel && zoomLevel > 12) {
         searchMarkerRef?.current?.showCallout()
       } else {
@@ -785,7 +796,11 @@ export default function Map({navigation}: Props) {
               px={ms(5)}
               width={ms(100)}
             >
-              <Text color={Colors.white}>{t('getDirections')}</Text>
+              {isGeographicRoutesLoading ? (
+                <ActivityIndicator size={ms(20)} />
+              ) : (
+                <Text color={Colors.white}>{t('getDirections')}</Text>
+              )}
             </Box>
 
             <Box>
@@ -800,18 +815,18 @@ export default function Map({navigation}: Props) {
         </Marker>
       )
     }
-  }, [geographicLocation, isSearchPin])
+  }, [geographicLocation, isSearchPin, isGeographicRoutesLoading])
 
-  const handleItemAction = (item: any) => {
-    API.geographicPoints(item?.id).then((response: any) => {
+  const handleItemAction = async (item: any) => {
+    const response = await getGeographicPoints(item?.id)
+    if (response !== null) {
+      Keyboard.dismiss()
+      unmountLocations()
+      setIsSearchPin(true)
       if (response?.latitude && response?.longitude) {
         centerMapToLocation(response?.latitude, response?.longitude)
-        setIsSearchPin(true)
-        unmountLocations()
-        Keyboard.dismiss()
-        return
       }
-    })
+    }
   }
 
   const handleGetDirection = () => {

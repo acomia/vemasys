@@ -59,6 +59,7 @@ type MapActions = {
   unmountLocations: () => void
   getSearchLocations: (value: string) => void
   getDirections: (id: string) => void
+  getGeographicPoints: (id: string) => void
 }
 
 type MapStore = MapState & MapActions
@@ -306,6 +307,7 @@ export const useMap = create(
         set({
           isLoadingVesselStatus: true,
           hasErrorLoadingVesselStatus: false,
+          isGeographicRoutesLoading: false,
         })
         try {
           const response: any = await API.getVesselStatus(vesselId)
@@ -374,7 +376,6 @@ export const useMap = create(
 
         try {
           const response = await API.searchMap(value)
-          console.log('response', response)
           if (typeof response === 'object' && response?.results) {
             set({searchLocations: response.results})
           }
@@ -401,11 +402,29 @@ export const useMap = create(
               set({geoGraphicRoutes: coordinates})
             }
 
-            set({isGeographicLoading: false})
+            set({isGeographicRoutesLoading: false})
           }
         } catch (error) {
           console.log('Get Directions error', error)
           set({isGeographicRoutesLoading: false})
+        }
+      },
+      getGeographicPoints: async (id: string) => {
+        set({isGeographicLoading: true, geographicLocation: null})
+
+        try {
+          const response = await API.geographicPoints(id)
+          if (response !== null) {
+            set({isGeographicLoading: false, geographicLocation: response})
+            return response
+          }
+          set({isGeographicLoading: false})
+
+          return null
+        } catch (error) {
+          console.log('Get geographic points failed', error)
+          set({isGeographicLoading: false})
+          return null
         }
       },
     }),

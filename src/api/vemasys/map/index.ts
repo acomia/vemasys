@@ -309,24 +309,16 @@ export const searchMap = (searchValue: string) => {
 }
 
 export const geographicPoints = (id: string | number) => {
-  useMap.setState({isGeographicLoading: true})
   return API.get(`v3/geographic_points/${id}`)
     .then(response => {
       if (response.status === 200) {
-        useMap.setState({
-          isGeographicLoading: false,
-          geographicLocation: response.data,
-        })
         return response.data
       }
-
-      return false
+      return null
     })
     .catch(error => {
       console.log('Error: Location', error)
-      useMap.setState({
-        isGeographicLoading: false,
-      })
+      return null
     })
 }
 
@@ -336,7 +328,6 @@ export const getGeographicRoutes = (id: string | number) => {
       if (response.status === 200) {
         return response.data
       }
-
       return null
     })
     .catch(error => {
