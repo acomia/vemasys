@@ -553,7 +553,6 @@ export default function Map({navigation}: Props) {
   }, [vesselStatus])
 
   const renderMarkerVessel = () => {
-    if (!vesselStatus) return null
     const {latitude, longitude, speed, heading}: VesselGeolocation =
       vesselStatus
     const rotate = heading >= 0 && Number(speed) > 1 ? `${heading}deg` : null
@@ -820,6 +819,8 @@ export default function Map({navigation}: Props) {
     API.getGeographicRoutes(geographicLocation?.id)
   }
 
+  const snapPoints = useMemo(() => ['32%', '80%'], [])
+
   return (
     <Box bg={Colors.light} height={'full'}>
       {entityType === ENTITY_TYPE_EXPLOITATION_GROUP && (
@@ -969,8 +970,7 @@ export default function Map({navigation}: Props) {
           ref={sheetRef}
           handleIndicatorStyle={{display: 'none'}}
           handleStyle={{display: 'none'}}
-          initialSnap={0}
-          snapPoints={useMemo(() => ['32%', '80%'], [])}
+          snapPoints={snapPoints}
           style={{borderRadius: 40, overflow: 'hidden'}}
           onChange={handleSheetChanges}
         >
