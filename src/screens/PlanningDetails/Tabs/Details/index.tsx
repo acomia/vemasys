@@ -81,6 +81,7 @@ const Details = () => {
     updateNavigationLogAction,
     isUpdateNavLogActionSuccess,
     isCreateNavLogActionSuccess,
+    isUpdateNavlogDatesLoading,
     reset,
   } = usePlanning()
   const {
@@ -573,6 +574,7 @@ const Details = () => {
             navigation.navigate('AddEditNavlogAction', {
               method: 'add',
               actionType: buttonActionLabel,
+              navlogId: navigationLogDetails?.id.toString(),
             })
           }
         >
@@ -590,6 +592,7 @@ const Details = () => {
             navigation.navigate('AddEditNavlogAction', {
               method: 'add',
               actionType: 'Cleaning',
+              navlogId: navigationLogDetails?.id.toString(),
             })
           }
         >
@@ -736,7 +739,8 @@ const Details = () => {
     isPlanningDetailsLoading ||
     isPlanningActionsLoading ||
     isPlanningCommentsLoading ||
-    isLoadingEntityUsers
+    isLoadingEntityUsers ||
+    isUpdateNavlogDatesLoading
   ) {
     return <LoadingAnimated />
   }

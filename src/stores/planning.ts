@@ -17,6 +17,17 @@ type PlanningState = {
   isPlanningCommentsLoading: boolean
   isPlanningDocumentsLoading: boolean
   isPlanningRoutesLoading: boolean
+  isCreateNavLogActionSuccess: boolean
+  isUpdateNavLogActionSuccess: boolean
+  isDeleteNavLogActionSuccess: boolean
+  isVesselNavigationLoading: boolean
+  isSavingNavBulkLoading: boolean
+  isSavingNavBulkSuccess: boolean
+  isTonnageCertificationLoading: boolean
+  isUpdateBulkCargoLoading: boolean
+  isHistoryLoading: boolean
+  isNavLogDetailsLoading: boolean
+  isUpdateNavlogDatesLoading: boolean
   plannedNavigationLogs: NavigationLog[] | undefined
   historyNavigationLogs: any[]
   navigationLogDetails: NavigationLog | undefined
@@ -28,22 +39,13 @@ type PlanningState = {
   bulkTypes?: []
   hasErrorLoadingPlannedNavigationLogs: boolean
   hasErrorLoadingVesselHistoryNavLogs: boolean
-  isCreateNavLogActionSuccess: boolean
-  isUpdateNavLogActionSuccess: boolean
-  isDeleteNavLogActionSuccess: boolean
   updateNavlogDatesSuccess: string
   updateNavlogDatesFailed: string
   updateNavlogDatesMessage: string
-  isVesselNavigationLoading: boolean
   vesselNavigationDetails: Vessel | undefined
-  isSavingNavBulkLoading: boolean
-  isSavingNavBulkSuccess: boolean
-  isTonnageCertificationLoading: boolean
   tonnageCertifications: TonnageCertifications[] | undefined
-  isUpdateBulkCargoLoading: boolean
   wholeVesselHistoryNavLogs: any[]
-  isHistoryLoading: boolean
-  isNavLogDetailsLoading: boolean
+  createdNavlogAction: NavigationLogAction | Record<string, never>
 }
 
 type PlanningActions = {
@@ -95,13 +97,22 @@ const initialState: PlanningState = {
   isPlanningActionsLoading: false,
   isPlanningCommentsLoading: false,
   isPlanningDocumentsLoading: false,
+  isPlanningRoutesLoading: false,
+  isCreateNavLogActionSuccess: false,
+  isUpdateNavLogActionSuccess: false,
+  isDeleteNavLogActionSuccess: false,
+  isVesselNavigationLoading: false,
+  isSavingNavBulkLoading: false,
+  isSavingNavBulkSuccess: false,
+  isTonnageCertificationLoading: false,
+  isUpdateBulkCargoLoading: false,
+  isHistoryLoading: false,
+  isNavLogDetailsLoading: false,
+  isUpdateNavlogDatesLoading: false,
   plannedNavigationLogs: undefined,
   historyNavigationLogs: [],
   hasErrorLoadingPlannedNavigationLogs: false,
   hasErrorLoadingVesselHistoryNavLogs: false,
-  isCreateNavLogActionSuccess: false,
-  isUpdateNavLogActionSuccess: false,
-  isDeleteNavLogActionSuccess: false,
   updateNavlogDatesSuccess: '',
   updateNavlogDatesFailed: '',
   updateNavlogDatesMessage: '',
@@ -110,16 +121,11 @@ const initialState: PlanningState = {
   navigationLogCargoHolds: [],
   navigationLogComments: [],
   navigationLogDocuments: [],
-  isVesselNavigationLoading: false,
+  navigationLogRoutes: [],
   vesselNavigationDetails: undefined,
-  isSavingNavBulkLoading: false,
-  isSavingNavBulkSuccess: false,
-  isTonnageCertificationLoading: false,
   tonnageCertifications: [],
-  isUpdateBulkCargoLoading: false,
   wholeVesselHistoryNavLogs: [],
-  isHistoryLoading: false,
-  isNavLogDetailsLoading: false,
+  createdNavlogAction: {},
 }
 
 export const usePlanning = create(
@@ -164,7 +170,12 @@ export const usePlanning = create(
         try {
           const response = await API.getPlannedNavLog(vesselId)
           if (Array.isArray(response) && response.length > 0) {
-            response.forEach(async plan => {
+            set({
+              plannedNavigationLogs: response,
+              isPlanningLoading: false,
+            })
+            response.forEach(async (plan, index) => {
+              set({isPlanningActionsLoading: true})
               const act = await API.reloadNavigationLogActions(plan.id)
               if (act?.length > 0) {
                 const activeActions = act?.filter(
@@ -177,7 +188,6 @@ export const usePlanning = create(
                   plan.navlogActions = act
                   plan.hasActiveActions = false
                 }
-
                 plan.endActionDate = act[0]?.end
                 plan.actionType = act[0]?.type
               } else {
@@ -187,8 +197,10 @@ export const usePlanning = create(
               }
               set({
                 plannedNavigationLogs: response,
-                isPlanningLoading: false,
               })
+              if (index === response.length - 1) {
+                set({isPlanningActionsLoading: false})
+              }
             })
           } else {
             set({
@@ -376,26 +388,28 @@ export const usePlanning = create(
         }
       },
       updateNavlogDates: async (navLogId: string, dates: object) => {
-        set({isPlanningLoading: true})
+        set({isUpdateNavlogDatesLoading: true})
         try {
           const response = await API.updateNavigationLogDatetimeFields(
             navLogId,
             dates
           )
-          if (response === 'SUCCESS') {
+          if (response.id) {
             set({
-              isPlanningLoading: false,
-              updateNavlogDatesSuccess: response,
+              isUpdateNavlogDatesLoading: false,
+              updateNavlogDatesSuccess: 'SUCCESS',
+              updatedNavlogByID: response,
             })
           } else {
             set({
-              isPlanningLoading: false,
+              isUpdateNavlogDatesLoading: false,
               updateNavlogDatesFailed: 'FAILED',
-              updateNavlogDatesMessage: response,
+              updateNavlogDatesMessage: 'Update failed.',
+              updatedNavlogByID: {},
             })
           }
         } catch (error) {
-          set({isPlanningLoading: false})
+          set({isUpdateNavlogDatesLoading: false})
         }
       },
       createNavlogComment: async (
@@ -531,7 +545,11 @@ export const usePlanning = create(
         try {
           const response = await API.createNavigationLogAction(body)
           if (typeof response === 'object' && response?.id) {
-            set({isCreateNavLogActionSuccess: true})
+            set({
+              isCreateNavLogActionSuccess: true,
+              isPlanningActionsLoading: false,
+              createdNavlogAction: response,
+            })
           } else {
             set({
               isPlanningActionsLoading: false,
@@ -568,7 +586,10 @@ export const usePlanning = create(
         try {
           const response = await API.updateNavigationLogAction(id, body)
           if (typeof response === 'object' && response?.id) {
-            set({isUpdateNavLogActionSuccess: true})
+            set({
+              isUpdateNavLogActionSuccess: true,
+              isPlanningActionsLoading: false,
+            })
           } else {
             set({
               isPlanningActionsLoading: false,

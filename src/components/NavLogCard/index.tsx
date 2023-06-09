@@ -1,42 +1,27 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useEffect, useState} from 'react'
+import React from 'react'
 import {StyleSheet, TouchableOpacity} from 'react-native'
 import _ from 'lodash'
 import {formatLocationLabel, titleCase} from '@bluecentury/constants'
-import {Box, Button, HStack, Image, Modal, Text, useToast} from 'native-base'
+import {Box, HStack, Image, Text} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import {Colors} from '@bluecentury/styles'
 import moment, {Moment} from 'moment/moment'
 import {useTranslation} from 'react-i18next'
-
-import {Animated, Icons} from '@bluecentury/assets'
-import {NavigationLogType} from '@bluecentury/components'
-import {useIsFocused, useNavigation} from '@react-navigation/native'
+import {useNavigation} from '@react-navigation/native'
 import {NativeStackNavigationProp} from '@react-navigation/native-stack'
+
+import {Icons} from '@bluecentury/assets'
+import {NavigationLogType} from '@bluecentury/components'
 import {RootStackParamList} from '@bluecentury/types/nav.types'
 import {BulkCargo, NavigationLog} from '@bluecentury/models'
-import {Vemasys} from '@bluecentury/helpers'
-import {useEntity, usePlanning} from '@bluecentury/stores'
-import DatePicker from 'react-native-date-picker'
-
-interface IActionCard {
-  action: {
-    type: string
-    start: Date
-    end: Date
-  }
-  onActionPress: () => void
-  onActionStopPress: () => void
-}
-
-type Dates = {
-  plannedETA: Date | undefined | StringOrNull
-  captainDatetimeETA: Date | undefined | StringOrNull
-  announcedDatetime: Date | undefined | StringOrNull
-  arrivalDatetime: Date | undefined | StringOrNull
-  terminalApprovedDeparture: Date | undefined | StringOrNull
-  departureDatetime: Date | undefined | StringOrNull
-}
+import {usePlanning} from '@bluecentury/stores'
+import {
+  NavlogActionCard,
+  EtaNorButtons,
+  SingleButton,
+  Completed,
+} from './components'
 
 export const NavLogCard = (props: {
   key: number
@@ -46,37 +31,28 @@ export const NavLogCard = (props: {
   itemColor: string
   lastScreen: StringOrNull
   isFinished: boolean
+  onDateButtonPress: (type: string, navlogId: string) => void
+  onNavlogStopActionPress: (action: any, id: string) => void
+  onNavlogActionPress: (action: any, id: string) => void
+  onStartActionPress: (id: string) => void
+  selectedNavlogID: string
 }) => {
   const {t} = useTranslation()
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>()
-  const {index, navigationLog, defineFirstAndLastIndex, itemColor, isFinished} =
-    props
   const {
-    getVesselPlannedNavLogs,
-    updateNavigationLogAction,
-    updateNavlogDates,
-    updateNavlogDatesSuccess,
-    updateNavlogDatesFailed,
-    updateNavlogDatesMessage,
-    reset,
-  } = usePlanning()
-  const {vesselId} = useEntity()
-  const focused = useIsFocused()
-  const toast = useToast()
-  const [confirmModal, setConfirmModal] = useState(false)
-  const [selectedAction, setSelectedAction] = useState<NavigationLogAction>({})
-  const [selectedNavlogID, setSelectedNavlogID] = useState('')
-  const [selectedType, setSelectedType] = useState('')
-  const [openDatePicker, setOpenDatePicker] = useState(false)
-  const [dates, setDates] = useState<Dates>({
-    plannedETA: navigationLog?.plannedEta,
-    captainDatetimeETA: navigationLog?.captainDatetimeEta,
-    announcedDatetime: navigationLog?.announcedDatetime,
-    arrivalDatetime: navigationLog?.arrivalDatetime,
-    terminalApprovedDeparture: navigationLog?.terminalApprovedDeparture,
-    departureDatetime: navigationLog?.departureDatetime,
-  })
+    index,
+    navigationLog,
+    defineFirstAndLastIndex,
+    itemColor,
+    isFinished,
+    onDateButtonPress,
+    onNavlogActionPress,
+    onNavlogStopActionPress,
+    onStartActionPress,
+    selectedNavlogID,
+  } = props
+  const {isPlanningActionsLoading, isUpdateNavlogDatesLoading} = usePlanning()
   const key = index
   const currentItemType = defineFirstAndLastIndex?.find(
     item => item?.charter?.id === navigationLog?.charter?.id
@@ -113,52 +89,10 @@ export const NavLogCard = (props: {
     }
   }
 
-  useEffect(() => {
-    if (selectedNavlogID !== '') {
-      updateNavlogDates(selectedNavlogID, dates)
-    }
-  }, [dates])
-
-  useEffect(() => {
-    if (updateNavlogDatesSuccess === 'SUCCESS' && focused) {
-      showToast('Updates saved.', 'success')
-    }
-    if (updateNavlogDatesFailed === 'FAILED') {
-      showToast(updateNavlogDatesMessage, 'failed')
-    }
-  }, [
-    updateNavlogDatesSuccess,
-    updateNavlogDatesFailed,
-    updateNavlogDatesMessage,
-  ])
-
-  const showToast = (text: string, res: string) => {
-    toast.show({
-      duration: 1000,
-      render: () => {
-        return (
-          <Text
-            bg={res === 'success' ? 'emerald.500' : 'red.500'}
-            color={Colors.white}
-            mb={5}
-            px="2"
-            py="1"
-            rounded="sm"
-          >
-            {text}
-          </Text>
-        )
-      },
-      onCloseComplete() {
-        res === 'success' ? onSuccess() : reset()
-      },
-    })
-  }
-
-  const onSuccess = () => {
-    getVesselPlannedNavLogs(vesselId as string)
-    reset()
-  }
+  const isCardLoading = isPlanningActionsLoading || isUpdateNavlogDatesLoading
+  const isSelectedCardLoading =
+    selectedNavlogID === navigationLog.id.toString() &&
+    (isPlanningActionsLoading || isUpdateNavlogDatesLoading)
 
   const typeIcon = (type: string) => {
     switch (type) {
@@ -354,134 +288,6 @@ export const NavLogCard = (props: {
     navigationLog?.cargoType
   )
 
-  const ActionCard = ({
-    action,
-    onActionPress,
-    onActionStopPress,
-  }: IActionCard) => {
-    const renderAnimatedIcon = (type: string, end: Date) => {
-      switch (type.toLowerCase()) {
-        case 'unloading':
-          return _.isNull(end) ? Animated.nav_unloading : Icons.unloading
-        case 'loading':
-          return _.isNull(end) ? Animated.nav_loading : Icons.loading
-        case 'cleaning':
-          return _.isNull(end) ? Animated.cleaning : Icons.broom
-        default:
-          break
-      }
-    }
-
-    return (
-      <TouchableOpacity activeOpacity={0.7} onPress={onActionPress}>
-        <HStack alignItems="center" bg={Colors.white}>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            disabled={_.isNull(action.end) ? false : true}
-            style={{marginRight: ms(10)}}
-            onPress={onActionStopPress}
-          >
-            <Image
-              alt="navlog-action-icon"
-              height={ms(30)}
-              resizeMode="contain"
-              source={_.isNull(action.end) ? Icons.stop : null}
-              width={ms(30)}
-            />
-          </TouchableOpacity>
-          <Box flex="1">
-            <HStack alignItems="center">
-              <Text bold color={Colors.text} fontSize={ms(15)}>
-                {titleCase(action.type)}
-              </Text>
-            </HStack>
-            <Text
-              color={Colors.secondary}
-              fontSize={ms(11)}
-              fontWeight="medium"
-            >
-              {t('start')}
-              {moment(action.start).format('D MMM YYYY | HH:mm')}
-            </Text>
-          </Box>
-          <Box
-            alignItems="center"
-            display="flex"
-            height={ms(50)}
-            justifyContent="center"
-            width={ms(50)}
-          >
-            <Image
-              height={
-                action?.type === 'Cleaning' && !_.isNull(action.end)
-                  ? '70%'
-                  : '100%'
-              }
-              width={
-                action?.type === 'Cleaning' && !_.isNull(action.end)
-                  ? '70%'
-                  : '100%'
-              }
-              alt="navlog-action-animated"
-              mr={ms(10)}
-              resizeMode="contain"
-              source={renderAnimatedIcon(action.type, action.end)}
-            />
-          </Box>
-        </HStack>
-      </TouchableOpacity>
-    )
-  }
-
-  const confirmStopAction = (action: any, id: string) => {
-    setConfirmModal(true)
-    setSelectedNavlogID(id)
-    setSelectedAction({
-      ...selectedAction,
-      id: action.id,
-      type: titleCase(action.type),
-      start: action.start,
-      estimatedEnd: action.estimatedEnd,
-      end: Vemasys.defaultDatetime(),
-      cargoHoldActions: [
-        {
-          navigationBulk: action?.navigationBulk?.id,
-          amount: action?.navigationBulk?.amount.toString(),
-        },
-      ],
-    })
-  }
-
-  const onStopAction = () => {
-    setConfirmModal(false)
-    updateNavigationLogAction(
-      selectedAction?.id,
-      selectedNavlogID,
-      selectedAction
-    )
-  }
-
-  const onDatesChange = (id: string, date: Date) => {
-    setSelectedNavlogID(id)
-    const formattedDate = Vemasys.formatDate(date)
-    switch (selectedType) {
-      case 'ETA':
-        setDates({...dates, captainDatetimeETA: formattedDate})
-        break
-      case 'NOR':
-        setDates({...dates, announcedDatetime: formattedDate})
-        break
-      case 'ARR':
-        setDates({...dates, arrivalDatetime: formattedDate})
-        break
-      case 'DEP':
-        setDates({...dates, departureDatetime: formattedDate})
-        break
-      default:
-        break
-    }
-  }
-
   return (
     <TouchableOpacity
       key={navigationLog?.id}
@@ -591,9 +397,9 @@ export const NavLogCard = (props: {
                     key={`bulkCargo-${i}`}
                     bg={Colors.white}
                     borderRadius={4}
+                    maxW="3/4"
                     mt={ms(5)}
                     px={ms(6)}
-                    w="65%"
                   >
                     <Text color={Colors.text} fontSize={ms(12)}>
                       {`${Math.ceil(cargo?.actualAmount)} MT `}
@@ -601,8 +407,12 @@ export const NavLogCard = (props: {
                     <Text bold color={Colors.disabled} fontSize={ms(12)}>
                       {`(${Math.ceil(cargo?.tonnage)} MT) `}
                     </Text>
-                    <Text color={Colors.text} fontSize={ms(12)}>
-                      Split
+                    <Text
+                      color={Colors.text}
+                      fontSize={ms(12)}
+                      fontWeight="medium"
+                    >
+                      {titleCase(cargo?.type?.type)}
                     </Text>
                   </HStack>
                 )
@@ -634,170 +444,113 @@ export const NavLogCard = (props: {
               <Box flex="1">
                 {/* Contextual Buttons */}
                 {_.isNull(navigationLog.announcedDatetime) ? (
-                  <HStack>
-                    <Button
-                      bg={
-                        _.isNull(navigationLog.captainDatetimeEta)
-                          ? Colors.primary
-                          : Colors.disabled
-                      }
-                      colorScheme={Colors.disabled}
-                      flex="1"
-                      size="sm"
-                      onPress={() => {
-                        setSelectedType('ETA')
-                        !_.isNull(navigationLog.captainDatetimeEta)
-                          ? null
-                          : setOpenDatePicker(true)
-                      }}
-                    >
-                      ETA
-                    </Button>
-                    <Box w={3} />
-                    <Button
-                      bg={Colors.primary}
-                      flex="1"
-                      size="sm"
-                      onPress={() => {
-                        setSelectedType('NOR')
-                        setOpenDatePicker(true)
-                      }}
-                    >
-                      NOR
-                    </Button>
-                  </HStack>
+                  <EtaNorButtons
+                    isLoading={
+                      selectedNavlogID === ''
+                        ? !isCardLoading
+                        : !isSelectedCardLoading
+                    }
+                    navigationLog={navigationLog}
+                    onETAPress={() =>
+                      !_.isNull(navigationLog.captainDatetimeEta)
+                        ? null
+                        : onDateButtonPress('ETA', navigationLog.id.toString())
+                    }
+                    onNORPress={() =>
+                      onDateButtonPress('NOR', navigationLog.id.toString())
+                    }
+                  />
                 ) : _.isNull(navigationLog.arrivalDatetime) ? (
-                  <Button
-                    bg={Colors.primary}
-                    size="sm"
-                    onPress={() => {
-                      setSelectedType('ARR')
-                      setOpenDatePicker(true)
-                    }}
-                  >
-                    Arrived
-                  </Button>
+                  <SingleButton
+                    isLoading={
+                      selectedNavlogID === ''
+                        ? !isCardLoading
+                        : !isSelectedCardLoading
+                    }
+                    btnColor={Colors.primary}
+                    label="Arrival"
+                    onPress={() =>
+                      onDateButtonPress('ARR', navigationLog.id.toString())
+                    }
+                  />
                 ) : navigationLog.navlogActions?.length &&
                   navigationLog.hasActiveActions ? (
                   navigationLog.navlogActions?.map((action: any, i: number) => (
-                    <ActionCard
+                    <NavlogActionCard
                       key={i}
+                      isLoading={
+                        selectedNavlogID === ''
+                          ? !isCardLoading
+                          : !isSelectedCardLoading
+                      }
                       action={action}
                       onActionPress={() =>
-                        navigation.navigate('AddEditNavlogAction', {
-                          method: 'edit',
-                          navlogAction: action,
-                          actionType: action.type,
-                        })
+                        onNavlogActionPress(action, navigationLog.id.toString())
                       }
                       onActionStopPress={() =>
-                        confirmStopAction(action, navigationLog.id.toString())
+                        onNavlogStopActionPress(
+                          action,
+                          navigationLog.id.toString()
+                        )
                       }
                     />
                   ))
                 ) : navigationLog.navlogActions?.length === 0 &&
                   !navigationLog.hasActiveActions ? (
-                  <Button
-                    bg={Colors.primary}
-                    size="sm"
-                    onPress={() =>
-                      navigation.navigate('AddEditNavlogAction', {
-                        method: 'add',
-                        actionType: navigationLog?.bulkCargo?.some(
-                          cargo => cargo.isLoading === false
-                        )
-                          ? 'Unloading'
-                          : 'Loading',
-                      })
+                  <SingleButton
+                    isLoading={
+                      selectedNavlogID === ''
+                        ? !isCardLoading
+                        : !isSelectedCardLoading
                     }
-                  >
-                    {`Start ${
+                    label={`Start ${
                       navigationLog?.bulkCargo?.some(
                         cargo => cargo.isLoading === false
                       )
                         ? 'Unloading'
                         : 'Loading'
                     }`}
-                  </Button>
+                    btnColor={Colors.primary}
+                    onPress={() =>
+                      onStartActionPress(navigationLog.id.toString())
+                    }
+                  />
                 ) : _.isNull(navigationLog.departureDatetime) &&
                   navigationLog.navlogActions?.length ? (
-                  <Button
-                    bg={Colors.secondary}
-                    size="sm"
-                    onPress={() => {
-                      setSelectedType('DEP')
-                      setOpenDatePicker(true)
-                    }}
-                  >
-                    Departure
-                  </Button>
-                ) : isFinished ? (
-                  <Text bold color={Colors.secondary} fontSize={ms(16)}>
-                    Completed
-                  </Text>
+                  <SingleButton
+                    isLoading={
+                      selectedNavlogID === ''
+                        ? !isCardLoading
+                        : !isSelectedCardLoading
+                    }
+                    btnColor={Colors.secondary}
+                    label="Departure"
+                    onPress={() =>
+                      onDateButtonPress('DEP', navigationLog.id.toString())
+                    }
+                  />
+                ) : !_.isNull(navigationLog.arrivalDatetime) &&
+                  !_.isNull(navigationLog.departureDatetime) ? (
+                  <Completed
+                    isLoading={
+                      selectedNavlogID === ''
+                        ? !isCardLoading
+                        : !isSelectedCardLoading
+                    }
+                    label="Completed"
+                  />
                 ) : null}
               </Box>
-              {!_.isNull(navigationLog.announcedDatetime) &&
-              !_.isNull(navigationLog.arrivalDatetime) &&
-              !_.isNull(navigationLog.departureDatetime) &&
-              isFinished ? (
-                <NavigationLogType
-                  isFinished={isFinished}
-                  navigationLog={navigationLog}
-                />
-              ) : null}
+              {/* {!_.isNull(navigationLog.arrivalDatetime) &&
+              !_.isNull(navigationLog.departureDatetime) ? (
+                <Skeleton.Text isLoaded={!isCardLoading}>
+                  <NavigationLogType navigationLog={navigationLog} />
+                </Skeleton.Text>
+              ) : null} */}
             </HStack>
           </Box>
         ) : null}
       </Box>
-      <DatePicker
-        modal
-        date={new Date()}
-        mode="datetime"
-        open={openDatePicker}
-        onCancel={() => {
-          setOpenDatePicker(false)
-        }}
-        onConfirm={date => {
-          setOpenDatePicker(false)
-          onDatesChange(navigationLog.id.toString(), date)
-        }}
-      />
-      <Modal
-        animationPreset="slide"
-        isOpen={confirmModal}
-        px={ms(12)}
-        size="full"
-      >
-        <Modal.Content>
-          <Modal.Header>{t('confirmation')}</Modal.Header>
-          <Text fontWeight="medium" mx={ms(12)} my={ms(20)}>
-            {t('areYouSure')}
-          </Text>
-          <HStack>
-            <Button
-              bg={Colors.grey}
-              flex="1"
-              m={ms(12)}
-              onPress={() => setConfirmModal(false)}
-            >
-              <Text color={Colors.disabled} fontWeight="medium">
-                {t('cancel')}
-              </Text>
-            </Button>
-            <Button
-              bg={Colors.danger}
-              flex="1"
-              m={ms(12)}
-              onPress={onStopAction}
-            >
-              <Text color={Colors.white} fontWeight="medium">
-                {t('stop')}
-              </Text>
-            </Button>
-          </HStack>
-        </Modal.Content>
-      </Modal>
     </TouchableOpacity>
   )
 }

@@ -112,7 +112,7 @@ const updateNavigationLogDatetimeFields = async (
     if (!res?.data) {
       throw new Error('Update navlog datetime failed.')
     }
-    return res?.data?.id ? 'SUCCESS' : 'Update failed.'
+    return res?.data
   } catch (error: any) {
     return error?.response?.data
       ? error?.response?.data?.violations[0]?.message
