@@ -288,6 +288,87 @@ export const NavLogCard = (props: {
     navigationLog?.cargoType
   )
 
+  const drawTheLines = (item) => {
+    const itemType = defineFirstAndLastIndex?.find(
+      typeItem => typeItem?.charter?.id === item?.charter?.id
+    )
+    const crossingsQuantity = defineFirstAndLastIndex.filter(
+      typeItem => typeItem?.lastIndex >= index && typeItem?.firstIndex <= index
+    )
+
+    const previousItemType = defineFirstAndLastIndex.find(
+      prevItem =>
+        prevItem?.lastIndex >= index &&
+        prevItem?.firstIndex <= index &&
+        prevItem?.charter?.id !== item?.charter?.id
+    )
+
+    if (crossingsQuantity.length > 2) {
+      return
+    }
+
+    if (crossingsQuantity.length === 2) {
+      return (
+        <>
+          <Box
+            borderColor={
+              previousItemType && previousItemType.isLeft
+                ? previousItemType.colour
+                : itemType.colour
+            }
+            mb={
+              index !==
+              defineFirstAndLastIndex[defineFirstAndLastIndex.length - 1]
+                .lastIndex
+                ? ms(-7)
+                : ms(0)
+            }
+            borderRadius={5}
+            borderWidth={2}
+            mt={index !== 0 ? ms(-7) : ms(0)}
+          />
+          <Box
+            borderColor={
+              previousItemType && !previousItemType.isLeft
+                ? previousItemType.colour
+                : itemType.colour
+            }
+            mb={
+              index !==
+              defineFirstAndLastIndex[defineFirstAndLastIndex.length - 1]
+                .lastIndex
+                ? ms(-7)
+                : ms(0)
+            }
+            borderRadius={5}
+            borderWidth={2}
+            mt={index !== 0 ? ms(-7) : ms(0)}
+          />
+        </>
+      )
+    }
+
+    if (crossingsQuantity.length === 1) {
+      return (
+        <>
+          <Box
+            borderColor={itemType.colour}
+            borderRadius={5}
+            borderWidth={2}
+            mb={
+              index !==
+              defineFirstAndLastIndex[defineFirstAndLastIndex.length - 1]
+                .lastIndex
+                ? ms(-7)
+                : ms(0)
+            }
+            mt={index !== 0 ? ms(-7) : ms(0)}
+          />
+        </>
+      )
+    }
+  }
+
   return (
     <TouchableOpacity
       key={navigationLog?.id}
@@ -308,54 +389,7 @@ export const NavLogCard = (props: {
         px={ms(2)}
         w={ms(16)}
       >
-        <Box
-          borderColor={
-            !displayLeftLine
-              ? 'rgba(52, 52, 52, 0)'
-              : currentItemIndex === 0
-              ? currentItemType?.colour
-              : previousItemType.lastIndex < key
-              ? itemColor
-              : previousItemType.colour
-          }
-          mb={
-            currentItemType?.lastIndex === key
-              ? ms(0)
-              : currentItemIndex % 2 !== 0 && previousItemType.lastIndex === key
-              ? 0
-              : currentItemType?.lastIndex === currentItemType?.firstIndex
-              ? 0
-              : ms(-7)
-          }
-          mt={
-            currentItemIndex % 2 === 0 && currentItemType?.firstIndex === key
-              ? ms(0)
-              : currentItemIndex !== 0 ||
-                (currentItemIndex % 2 !== 0 &&
-                  previousItemType?.firstIndex < key &&
-                  previousItemType.lastIndex > key)
-              ? ms(-7)
-              : currentItemIndex === 0 && key !== 0
-              ? ms(-7)
-              : 0
-          }
-          borderRadius={5}
-          borderWidth={2}
-        />
-        <Box
-          borderColor={
-            !displayRightLine
-              ? 'rgba(52, 52, 52, 0)'
-              : previousItemType.lastIndex < key && !displayLeftLine
-              ? currentItemType?.colour
-              : previousItemType.lastIndex < key && displayLeftLine
-              ? previousItemType.colour
-              : currentItemType?.colour
-          }
-          borderWidth={2}
-          mb={currentItemType?.lastIndex === key ? ms(0) : ms(-7)}
-          mt={currentItemType?.firstIndex === key ? ms(0) : ms(-7)}
-        />
+        {drawTheLines(navigationLog)}
       </Box>
       <Box
         style={
