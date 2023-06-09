@@ -489,7 +489,7 @@ export default function Map({navigation}: Props) {
     if (!vesselStatus) return null
     const {latitude, longitude, speed, heading}: VesselGeolocation =
       vesselStatus
-    const rotate = heading >= 0 && Number(speed) > 1 ? `${heading}deg` : null
+    const rotate = heading >= 0 && Number(speed) > 3 ? `${heading}deg` : null
     const navigationLog = plannedNavLogs.find(item => item.isActive)
     return (
       <Marker
@@ -534,7 +534,7 @@ export default function Map({navigation}: Props) {
             </Box>
           </HStack>
           <Box width={ms(30)}>
-            {rotate ? (
+            {rotate && !navigationLog ? (
               <Box style={{transform: [{rotate}]}}>
                 <Image
                   alt="map-navigating-arrow-img"
