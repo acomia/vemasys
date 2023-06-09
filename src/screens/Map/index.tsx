@@ -526,32 +526,34 @@ export default function Map({navigation}: Props) {
         }
       >
         <Box alignItems={'center'}>
-          <HStack alignItems="center" backgroundColor={Colors.white} w="80">
-            <Box h={ms(48)} w={ms(48)}>
-              <NavigationLogType isLotty navigationLog={navigationLog} />
-            </Box>
-            <Box flex={1} marginLeft={ms(8)}>
-              <Text bold color={Colors.text} fontSize={ms(15)} noOfLines={1}>
-                {formatLocationLabel(navigationLog?.location)}
-              </Text>
-              <Text color={Colors.azure} fontWeight="medium">
-                {t('planned')}
-                {moment(navigationLog?.plannedEta).format(
-                  'DD MMM YYYY | HH:mm'
-                )}
-              </Text>
-            </Box>
-            <Box alignSelf="center">
-              <NativeBaseIconButton
-                icon={
-                  <ChevronRightIcon bold color={Colors.disabled} size="4" />
-                }
-                onPress={() => {
-                  console.log(11)
-                }}
-              />
-            </Box>
-          </HStack>
+          {navigationLog ? (
+            <HStack alignItems="center" backgroundColor={Colors.white} w="80">
+              <Box h={ms(48)} w={ms(48)}>
+                <NavigationLogType isLotty navigationLog={navigationLog} />
+              </Box>
+              <Box flex={1} marginLeft={ms(8)}>
+                <Text bold color={Colors.text} fontSize={ms(15)} noOfLines={1}>
+                  {formatLocationLabel(navigationLog?.location)}
+                </Text>
+                <Text color={Colors.azure} fontWeight="medium">
+                  {t('planned')}
+                  {moment(navigationLog?.plannedEta).format(
+                    'DD MMM YYYY | HH:mm'
+                  )}
+                </Text>
+              </Box>
+              <Box alignSelf="center">
+                <NativeBaseIconButton
+                  icon={
+                    <ChevronRightIcon bold color={Colors.disabled} size="4" />
+                  }
+                  onPress={() => {
+                    console.log(11)
+                  }}
+                />
+              </Box>
+            </HStack>
+          ) : null}
           <Box width={ms(30)}>
             {(rotate && !navigationLog) || isFilterLocations ? (
               <Box style={{transform: [{rotate}]}}>
