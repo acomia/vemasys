@@ -214,18 +214,20 @@ export default function Map({navigation}: Props) {
         latitude: currentNavLogs[0]?.location?.latitude,
         longitude: currentNavLogs[0]?.location?.longitude,
       })
-      if (currentNavLogs[currentNavLogs?.length - 1]) {
-        getNavigationLogDetails(
-          currentNavLogs[currentNavLogs?.length - 1]?.id
-        ).then(response => {
-          if (response) setCurrentNavLog(response)
-        })
+      if (focused) {
+        if (currentNavLogs[currentNavLogs?.length - 1]) {
+          getNavigationLogDetails(
+            currentNavLogs[currentNavLogs?.length - 1]?.id
+          ).then(response => {
+            if (response) setCurrentNavLog(response)
+          })
+        }
       }
     }
-  }, [currentNavLogs])
+  }, [currentNavLogs, focused])
 
   useEffect(() => {
-    if (prevNavLogs && prevNavLogs.length > 0) {
+    if (prevNavLogs && prevNavLogs.length > 0 && focused) {
       const navLog = prevNavLogs?.find((prev: any) => prev.plannedEta !== null)
       if (navLog) {
         getNavigationLogDetails(navLog?.id).then(response => {
@@ -233,10 +235,10 @@ export default function Map({navigation}: Props) {
         })
       }
     }
-  }, [prevNavLogs])
+  }, [prevNavLogs, focused])
 
   useEffect(() => {
-    if (plannedNavLogs && plannedNavLogs.length > 0) {
+    if (plannedNavLogs && plannedNavLogs.length > 0 && focused) {
       const navLog = plannedNavLogs?.find(
         (prev: any) => prev.plannedEta !== null
       )
@@ -246,7 +248,7 @@ export default function Map({navigation}: Props) {
         })
       }
     }
-  }, [plannedNavLogs])
+  }, [plannedNavLogs, focused])
 
   useEffect(() => {
     if (vesselStatus && !vesselUpdated) {

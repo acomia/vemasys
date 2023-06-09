@@ -53,8 +53,7 @@ const MapNavLog = (props: {
     isLoadingPreviousNavLogs,
   } = useMap()
 
-  const {vesselId, selectedVessel, entityType, selectFleetVessel, entityUsers} =
-    useEntity()
+  const {vesselId} = useEntity()
 
   const [dates, setDates] = useState<Dates>({
     plannedETA: null,
@@ -80,17 +79,18 @@ const MapNavLog = (props: {
       isLoadingPreviousNavLogs)
 
   useEffect(() => {
-    if (
-      (updateNavlogDatesSuccess === 'SUCCESS' || isPlanningActionsLoading) &&
-      (!isNavLogDetailsLoading ||
-        !isLoadingCurrentNavLogs ||
-        !isLoadingPlannedNavLogs ||
-        !isLoadingPreviousNavLogs)
-    ) {
-      reset()
+    if (focused) {
+      if (
+        (updateNavlogDatesSuccess === 'SUCCESS' || isPlanningActionsLoading) &&
+        (!isNavLogDetailsLoading ||
+          !isLoadingCurrentNavLogs ||
+          !isLoadingPlannedNavLogs ||
+          !isLoadingPreviousNavLogs)
+      ) {
+        reset()
+      }
     }
-  }, [updateNavlogDatesSuccess, isNavLogDetailsLoading])
-  isLoadingCurrentNavLogs
+  }, [updateNavlogDatesSuccess, isNavLogDetailsLoading, focused])
 
   useEffect(() => {
     if (selectedNavlogID !== '') {
@@ -99,21 +99,23 @@ const MapNavLog = (props: {
   }, [dates])
 
   useEffect(() => {
-    if (updateNavlogDatesSuccess === 'SUCCESS' && focused) {
-      updateNavLogs()
-      showToast('Updates saved.', 'success')
-    }
-    if (updateNavlogDatesFailed === 'FAILED') {
-      showToast(updateNavlogDatesMessage, 'failed')
-    }
+    if (focused) {
+      if (updateNavlogDatesSuccess === 'SUCCESS' && focused) {
+        updateNavLogs()
+        // showToast('Updates saved.', 'success')
+      }
+      if (updateNavlogDatesFailed === 'FAILED') {
+        // showToast(updateNavlogDatesMessage, 'failed')
+      }
 
-    if (isCreateNavLogActionSuccess) {
-      appendCreatedActionToNavlog()
-      updateNavLogs()
-    }
-    if (isUpdateNavLogActionSuccess && focused) {
-      showToast('Action ended.', 'end')
-      stopActionFromSelectedNavlog()
+      if (isCreateNavLogActionSuccess) {
+        appendCreatedActionToNavlog()
+        updateNavLogs()
+      }
+      if (isUpdateNavLogActionSuccess && focused) {
+        showToast('Action ended.', 'end')
+        stopActionFromSelectedNavlog()
+      }
     }
   }, [
     updateNavlogDatesSuccess,
@@ -121,6 +123,7 @@ const MapNavLog = (props: {
     updateNavlogDatesMessage,
     isUpdateNavLogActionSuccess,
     isCreateNavLogActionSuccess,
+    focused,
   ])
 
   const updateNavLogs = async () => {
