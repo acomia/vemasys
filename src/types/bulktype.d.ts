@@ -11,4 +11,5 @@ type BulkType = {
   id?: string
   adnListItem?: AdnListItem
   euralCode?: string
+  type?: string
 }

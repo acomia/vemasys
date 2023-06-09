@@ -39,11 +39,12 @@ import {
 import {Icons} from '@bluecentury/assets'
 import {Vemasys} from '@bluecentury/helpers'
 import {useTranslation} from 'react-i18next'
+import {RootStackParamList} from '@bluecentury/types/nav.types'
 
-type Props = NativeStackScreenProps<RootStackParamList>
+type Props = NativeStackScreenProps<RootStackParamList, 'AddEditNavlogAction'>
 const AddEditNavlogAction = ({navigation, route}: Props) => {
   const {t} = useTranslation()
-  const {method, actionType, navlogAction}: any = route.params
+  const {method, actionType, navlogAction, navlogId} = route.params
   const toast = useToast()
   const {
     isPlanningDetailsLoading,
@@ -148,7 +149,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
         })
       )
     }
-    if (navigationLogActions.length > 0) {
+    if (navigationLogActions?.length > 0) {
       earliest = navigationLogActions?.reduce((previous, current) => {
         return new Date(current.start) < new Date(previous.start)
           ? current
@@ -423,13 +424,9 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
       isLoading: bulkCargo?.isLoading ? '1' : '0',
     })
     if (method === 'add') {
-      createNavigationLogAction(navigationLogDetails?.id, navActionDetails)
+      createNavigationLogAction(navlogId, navActionDetails)
     } else {
-      updateNavigationLogAction(
-        navlogAction?.id,
-        navigationLogDetails?.id,
-        navActionDetails
-      )
+      updateNavigationLogAction(navlogAction?.id, navlogId, navActionDetails)
     }
   }
 

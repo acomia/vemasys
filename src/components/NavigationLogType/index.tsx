@@ -175,14 +175,6 @@ export const NavigationLogType = ({
               w={animatesIcon ? ms(60) : null}
             />
           )
-        } else if (isFinished) {
-          return (
-            <Image
-              alt="navlog-type-img"
-              resizeMode="contain"
-              source={Icons.completed}
-            />
-          )
         } else if (bulkCargo.some(cargo => cargo.isLoading === false)) {
           return isLotty && animatesIcon ? (
             <Lottie

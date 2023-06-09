@@ -1,6 +1,16 @@
 import React, {useEffect, useLayoutEffect, useState} from 'react'
 import {RefreshControl} from 'react-native'
-import {Box, Center, ScrollView, Text, View} from 'native-base'
+import {
+  Box,
+  Button,
+  Center,
+  HStack,
+  Modal,
+  ScrollView,
+  Text,
+  View,
+  useToast,
+} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import {Colors} from '@bluecentury/styles'
@@ -11,9 +21,27 @@ import {NavLogCard, NavLogDivider} from '@bluecentury/components'
 import {NavigationLog} from '@bluecentury/models'
 import findLastIndex from 'lodash/findLastIndex'
 import _ from 'lodash'
+import DatePicker from 'react-native-date-picker'
+import {useIsFocused, useNavigation} from '@react-navigation/native'
+import {NativeStackNavigationProp} from '@react-navigation/native-stack'
+import {RootStackParamList} from '@bluecentury/types/nav.types'
+import {Vemasys} from '@bluecentury/helpers'
+import {titleCase} from '@bluecentury/constants'
+
+type Dates = {
+  plannedETA: Date | undefined | StringOrNull
+  captainDatetimeETA: Date | undefined | StringOrNull
+  announcedDatetime: Date | undefined | StringOrNull
+  arrivalDatetime: Date | undefined | StringOrNull
+  terminalApprovedDeparture: Date | undefined | StringOrNull
+  departureDatetime: Date | undefined | StringOrNull
+}
 
 const PlanningLogbook = () => {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>()
   const {t} = useTranslation()
+  const focused = useIsFocused()
   const {
     isPlanningLoading,
     isHistoryLoading,
@@ -21,16 +49,37 @@ const PlanningLogbook = () => {
     getVesselPlannedNavLogs,
     hasErrorLoadingPlannedNavigationLogs,
     isUpdateNavLogActionSuccess,
-    isDeleteNavLogActionSuccess,
     isCreateNavLogActionSuccess,
     getWholeVesselHistoryNavLogs,
     wholeVesselHistoryNavLogs,
     setPlannedNavigationLogs,
+    updateNavigationLogAction,
+    updateNavlogDates,
+    updateNavlogDatesSuccess,
+    updateNavlogDatesFailed,
+    updateNavlogDatesMessage,
+    createdNavlogAction,
+    reset,
   } = usePlanning()
   const {vesselId} = useEntity()
+  const {isOnline} = useSettings()
+  const toast = useToast()
   const [display, setDisplay] = useState(null)
   const [finishedNavlogs, setFinishedNavlogs] = useState<number[]>([])
-  const {isOnline} = useSettings()
+  const [openDatePicker, setOpenDatePicker] = useState(false)
+  const [dates, setDates] = useState<Dates>({
+    plannedETA: null,
+    captainDatetimeETA: null,
+    announcedDatetime: null,
+    arrivalDatetime: null,
+    terminalApprovedDeparture: null,
+    departureDatetime: null,
+  })
+  const [confirmModal, setConfirmModal] = useState(false)
+  const [selectedAction, setSelectedAction] = useState<NavigationLogAction>({})
+  const [selectedNavlogID, setSelectedNavlogID] = useState('')
+  const [selectedType, setSelectedType] = useState('')
+  const [plannedData, setPlannedData] = useState<Array<NavigationLog>>([])
 
   useEffect(() => {
     if (isOnline) {
@@ -39,12 +88,7 @@ const PlanningLogbook = () => {
     }
     /* eslint-disable react-hooks/exhaustive-deps */
     /* eslint-disable react-native/no-inline-styles */
-  }, [
-    vesselId,
-    isCreateNavLogActionSuccess,
-    isUpdateNavLogActionSuccess,
-    isDeleteNavLogActionSuccess,
-  ])
+  }, [vesselId])
 
   useEffect(() => {
     if (wholeVesselHistoryNavLogs.length && plannedNavigationLogs?.length) {
@@ -66,14 +110,9 @@ const PlanningLogbook = () => {
     }
   }, [wholeVesselHistoryNavLogs])
 
-  plannedNavigationLogs?.sort(
-    (a: any, b: any) =>
-      moment(a.arrivalDatetime || a.plannedEta || a.arrivalZoneTwo).valueOf() -
-      moment(b.arrivalDatetime || b.plannedEta || b.arrivalZoneTwo).valueOf()
-  )
-
   useEffect(() => {
     if (plannedNavigationLogs) {
+      setPlannedData(plannedNavigationLogs)
       let tempIndex = null // used the temp to prevent the updating in useState
       // used the map function to get the index of the first condition
       // to display divider
@@ -95,6 +134,178 @@ const PlanningLogbook = () => {
       setDisplay(tempIndex)
     }
   }, [plannedNavigationLogs])
+
+  useEffect(() => {
+    if (selectedNavlogID !== '') {
+      updateNavlogDates(selectedNavlogID, dates)
+    }
+  }, [dates])
+
+  useEffect(() => {
+    if (updateNavlogDatesSuccess === 'SUCCESS' && focused) {
+      showToast('Updates saved.', 'success')
+    }
+    if (updateNavlogDatesFailed === 'FAILED') {
+      showToast(updateNavlogDatesMessage, 'failed')
+    }
+
+    if (isCreateNavLogActionSuccess) {
+      appendCreatedActionToNavlog()
+    }
+    if (isUpdateNavLogActionSuccess && focused) {
+      showToast('Action ended.', 'end')
+      stopActionFromSelectedNavlog()
+    }
+  }, [
+    updateNavlogDatesSuccess,
+    updateNavlogDatesFailed,
+    updateNavlogDatesMessage,
+    isUpdateNavLogActionSuccess,
+    isCreateNavLogActionSuccess,
+  ])
+
+  plannedNavigationLogs?.sort(
+    (a: any, b: any) =>
+      moment(a.arrivalDatetime || a.plannedEta || a.arrivalZoneTwo).valueOf() -
+      moment(b.arrivalDatetime || b.plannedEta || b.arrivalZoneTwo).valueOf()
+  )
+
+  const showToast = (text: string, res: string) => {
+    toast.show({
+      duration: 1000,
+      render: () => {
+        return (
+          <Text
+            bg={res === 'success' ? 'emerald.500' : 'red.500'}
+            color={Colors.white}
+            mb={5}
+            px="2"
+            py="1"
+            rounded="sm"
+          >
+            {text}
+          </Text>
+        )
+      },
+      onCloseComplete() {
+        res === 'success' ? onSuccess() : reset()
+      },
+    })
+  }
+
+  const onSuccess = () => {
+    const plnIndex = plannedData.findIndex(
+      pln => pln.id.toString() === selectedNavlogID
+    )
+    // Create a new object with the updated properties
+    const updatedObject = {
+      ...plannedData[plnIndex],
+      captainDatetimeEta: dates.captainDatetimeETA,
+      announcedDatetime: dates.announcedDatetime,
+      arrivalDatetime: dates.arrivalDatetime,
+      departureDatetime: dates.departureDatetime,
+    }
+    if (plnIndex !== -1) {
+      // Create a new array with the updated object
+      const updatedData = [
+        ...plannedData.slice(0, plnIndex),
+        updatedObject,
+        ...plannedData.slice(plnIndex + 1),
+      ]
+      // Update the state with the new array
+      setPlannedData(updatedData)
+    }
+    setSelectedNavlogID('')
+    reset()
+  }
+
+  const confirmStopAction = (action: any, id: string) => {
+    setConfirmModal(true)
+    setSelectedNavlogID(id)
+    setSelectedAction({
+      ...selectedAction,
+      id: action.id,
+      type: titleCase(action.type),
+      start: action.start,
+      estimatedEnd: action.estimatedEnd,
+      end: Vemasys.defaultDatetime(),
+      cargoHoldActions: [
+        {
+          navigationBulk: action?.navigationBulk?.id,
+          amount: action?.navigationBulk?.amount.toString(),
+        },
+      ],
+    })
+  }
+
+  const onStopAction = () => {
+    setConfirmModal(false)
+    updateNavigationLogAction(
+      selectedAction?.id,
+      selectedNavlogID,
+      selectedAction
+    )
+  }
+
+  const onDatesChange = (id: string, date: Date) => {
+    const formattedDate = Vemasys.formatDate(date)
+    const selectedNavlogDates = plannedData?.filter(
+      plan => plan.id.toString() === id
+    )
+
+    switch (selectedType) {
+      case 'ETA':
+        setDates({
+          ...dates,
+          plannedETA: selectedNavlogDates[0]?.plannedEta,
+          captainDatetimeETA: formattedDate,
+          announcedDatetime: selectedNavlogDates[0]?.announcedDatetime,
+          arrivalDatetime: selectedNavlogDates[0]?.arrivalDatetime,
+          terminalApprovedDeparture:
+            selectedNavlogDates[0]?.terminalApprovedDeparture,
+          departureDatetime: selectedNavlogDates[0]?.departureDatetime,
+        })
+        break
+      case 'NOR':
+        setDates({
+          ...dates,
+          plannedETA: selectedNavlogDates[0]?.plannedEta,
+          captainDatetimeETA: selectedNavlogDates[0]?.captainDatetimeEta,
+          announcedDatetime: formattedDate,
+          arrivalDatetime: selectedNavlogDates[0]?.arrivalDatetime,
+          terminalApprovedDeparture:
+            selectedNavlogDates[0]?.terminalApprovedDeparture,
+          departureDatetime: selectedNavlogDates[0]?.departureDatetime,
+        })
+        break
+      case 'ARR':
+        setDates({
+          ...dates,
+          plannedETA: selectedNavlogDates[0]?.plannedEta,
+          captainDatetimeETA: selectedNavlogDates[0]?.captainDatetimeEta,
+          announcedDatetime: selectedNavlogDates[0]?.announcedDatetime,
+          arrivalDatetime: formattedDate,
+          terminalApprovedDeparture:
+            selectedNavlogDates[0]?.terminalApprovedDeparture,
+          departureDatetime: selectedNavlogDates[0]?.departureDatetime,
+        })
+        break
+      case 'DEP':
+        setDates({
+          ...dates,
+          plannedETA: selectedNavlogDates[0]?.plannedEta,
+          captainDatetimeETA: selectedNavlogDates[0]?.captainDatetimeEta,
+          announcedDatetime: selectedNavlogDates[0]?.announcedDatetime,
+          arrivalDatetime: selectedNavlogDates[0]?.arrivalDatetime,
+          terminalApprovedDeparture:
+            selectedNavlogDates[0]?.terminalApprovedDeparture,
+          departureDatetime: formattedDate,
+        })
+        break
+      default:
+        break
+    }
+  }
 
   const onPullRefresh = () => {
     getVesselPlannedNavLogs(vesselId as string)
@@ -180,6 +391,50 @@ const PlanningLogbook = () => {
     }
   })
 
+  const onDateButtonPress = (type: string, id: string) => {
+    setSelectedNavlogID(id)
+    setSelectedType(type)
+    setOpenDatePicker(true)
+  }
+
+  const appendCreatedActionToNavlog = () => {
+    const plnIndex = plannedData.findIndex(
+      pln => pln.id.toString() === selectedNavlogID
+    )
+    // Create a new array with the updated object
+    const updatedArray = plannedData.map((pln, index) => {
+      if (index === plnIndex) {
+        // Update the items field of the object
+        return {
+          ...pln,
+          navlogActions: [createdNavlogAction],
+          hasActiveActions: true,
+        }
+      }
+      return pln
+    })
+    setPlannedData(updatedArray)
+  }
+
+  const stopActionFromSelectedNavlog = () => {
+    const plnIndex = plannedData.findIndex(
+      pln => pln.id.toString() === selectedNavlogID
+    )
+    // Create a new array with the updated object
+    const updatedArray = plannedData.map((pln, index) => {
+      if (index === plnIndex) {
+        return {
+          ...pln,
+          navlogActions: [selectedAction],
+          hasActiveActions: false,
+        }
+      }
+      return pln
+    })
+    setPlannedData(updatedArray)
+    setSelectedNavlogID('')
+  }
+
   if (isPlanningLoading || isHistoryLoading) return <LoadingAnimated />
 
   return (
@@ -214,7 +469,7 @@ const PlanningLogbook = () => {
             </Center>
           </Box>
         ) : (
-          plannedNavigationLogs?.map((navigationLog, i: number) => {
+          plannedData?.map((navigationLog, i: number) => {
             return (
               <View key={i}>
                 <NavLogCard
@@ -225,12 +480,86 @@ const PlanningLogbook = () => {
                   itemColor={defineColour(navigationLog)}
                   lastScreen="planning"
                   navigationLog={navigationLog}
+                  selectedNavlogID={selectedNavlogID}
+                  onNavlogActionPress={(action, id) =>
+                    navigation.navigate('AddEditNavlogAction', {
+                      method: 'edit',
+                      navlogAction: action,
+                      actionType: action.type,
+                      navlogId: id,
+                    })
+                  }
+                  onNavlogStopActionPress={(action, id) =>
+                    confirmStopAction(action, id)
+                  }
+                  onStartActionPress={(id: string) => {
+                    setSelectedNavlogID(id)
+                    navigation.navigate('AddEditNavlogAction', {
+                      method: 'add',
+                      navlogId: id,
+                      actionType: navigationLog?.bulkCargo?.some(
+                        cargo => cargo.isLoading === false
+                      )
+                        ? 'Unloading'
+                        : 'Loading',
+                    })
+                  }}
+                  onDateButtonPress={(type, id) => onDateButtonPress(type, id)}
                 />
                 {display && i === display ? <NavLogDivider /> : null}
               </View>
             )
           })
         )}
+        <DatePicker
+          modal
+          date={new Date()}
+          mode="datetime"
+          open={openDatePicker}
+          onCancel={() => {
+            setOpenDatePicker(false)
+            setSelectedNavlogID('')
+          }}
+          onConfirm={date => {
+            setOpenDatePicker(false)
+            onDatesChange(selectedNavlogID, date)
+          }}
+        />
+        <Modal
+          animationPreset="slide"
+          isOpen={confirmModal}
+          px={ms(12)}
+          size="full"
+        >
+          <Modal.Content>
+            <Modal.Header>{t('confirmation')}</Modal.Header>
+            <Text fontWeight="medium" mx={ms(12)} my={ms(20)}>
+              {t('areYouSure')}
+            </Text>
+            <HStack>
+              <Button
+                bg={Colors.grey}
+                flex="1"
+                m={ms(12)}
+                onPress={() => setConfirmModal(false)}
+              >
+                <Text color={Colors.disabled} fontWeight="medium">
+                  {t('cancel')}
+                </Text>
+              </Button>
+              <Button
+                bg={Colors.danger}
+                flex="1"
+                m={ms(12)}
+                onPress={onStopAction}
+              >
+                <Text color={Colors.white} fontWeight="medium">
+                  {t('stop')}
+                </Text>
+              </Button>
+            </HStack>
+          </Modal.Content>
+        </Modal>
       </ScrollView>
     </Box>
   )

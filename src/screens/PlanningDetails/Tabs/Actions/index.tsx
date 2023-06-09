@@ -27,6 +27,7 @@ import {titleCase} from '@bluecentury/constants'
 import {LoadingAnimated} from '@bluecentury/components'
 import {Vemasys} from '@bluecentury/helpers'
 import {ActionCard} from '../../components'
+import {RootStackParamList} from '@bluecentury/types/nav.types'
 
 const Actions = () => {
   const {t} = useTranslation()
@@ -181,6 +182,7 @@ const Actions = () => {
               navigation.navigate('AddEditNavlogAction', {
                 method: 'add',
                 actionType: buttonActionLabel,
+                navlogId: navigationLogDetails?.id.toString(),
               })
             }
           >
@@ -198,6 +200,7 @@ const Actions = () => {
               navigation.navigate('AddEditNavlogAction', {
                 method: 'add',
                 actionType: 'Cleaning',
+                navlogId: navigationLogDetails?.id.toString(),
               })
             }
           >
