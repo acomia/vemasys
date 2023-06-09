@@ -17,6 +17,7 @@ export const NavigationLogType = ({
   isFinished,
   isLotty,
 }: INavlogType) => {
+  if (!navigationLog?.location) return null
   const renderType = (navLog: NavigationLog) => {
     const {
       location,

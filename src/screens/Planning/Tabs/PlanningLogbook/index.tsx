@@ -435,6 +435,57 @@ const PlanningLogbook = () => {
     setSelectedNavlogID('')
   }
 
+  const navlogsWithLinePositionData = defineFirstAndLastIndex?.map(
+    (item, index) => {
+      if (defineFirstAndLastIndex.length && item) {
+        if (index === 0) {
+          return {
+            ...item,
+            isLeft: true,
+          }
+        }
+        if (
+          item &&
+          defineFirstAndLastIndex[0] &&
+          index !== 0 &&
+          item.firstIndex <= defineFirstAndLastIndex[0].lastIndex
+        ) {
+          return {
+            ...item,
+            isLeft: false,
+          }
+        }
+        const previousItem = defineFirstAndLastIndex.find(prevItem => {
+          return (
+            prevItem.lastIndex >= item.firstIndex &&
+            item?.charter?.id !== prevItem?.charter?.id
+          )
+        })
+
+        if (!previousItem) {
+          return {
+            ...item,
+            isLeft: true,
+          }
+        }
+
+        if (previousItem && previousItem.isLeft) {
+          return {
+            ...item,
+            isLeft: false,
+          }
+        }
+
+        if (previousItem && !previousItem?.isLeft) {
+          return {
+            ...item,
+            isLeft: true,
+          }
+        }
+      }
+    }
+  )
+
   if (isPlanningLoading || isHistoryLoading) return <LoadingAnimated />
 
   return (
@@ -474,7 +525,7 @@ const PlanningLogbook = () => {
               <View key={i}>
                 <NavLogCard
                   key={i}
-                  defineFirstAndLastIndex={defineFirstAndLastIndex}
+                  defineFirstAndLastIndex={navlogsWithLinePositionData}
                   index={i}
                   isFinished={finishedNavlogs.includes(navigationLog.id)}
                   itemColor={defineColour(navigationLog)}
