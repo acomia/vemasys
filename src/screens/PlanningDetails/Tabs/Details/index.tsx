@@ -93,7 +93,7 @@ const Details = () => {
   } = useEntity()
   const {trackViewMode, currentNavLogs} = useMap()
   const {navlog, title}: any = route.params
-  console.log('navlog', navlog)
+
   const [dates, setDates] = useState<Dates>({
     plannedETA: navigationLogDetails?.plannedEta,
     captainDatetimeETA: navigationLogDetails?.captainDatetimeEta,
