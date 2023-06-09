@@ -90,7 +90,7 @@ export const NavLogCard = (props: {
       displayRightLine = false
     }
   }
-  // console.log('isLoading', isLoading)
+
   const isCardLoading =
     isPlanningActionsLoading || isUpdateNavlogDatesLoading || isLoading
   const isSelectedCardLoading =
