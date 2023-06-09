@@ -41,6 +41,7 @@ const MapNavLog = (props: {
     isUpdateNavLogActionSuccess,
     isCreateNavLogActionSuccess,
     isNavLogDetailsLoading,
+    isPlanningActionsLoading,
     reset,
   } = usePlanning()
   const {
@@ -79,7 +80,13 @@ const MapNavLog = (props: {
       isLoadingPreviousNavLogs)
 
   useEffect(() => {
-    if (updateNavlogDatesSuccess === 'SUCCESS' && !isNavLogDetailsLoading) {
+    if (
+      (updateNavlogDatesSuccess === 'SUCCESS' || isPlanningActionsLoading) &&
+      (!isNavLogDetailsLoading ||
+        !isLoadingCurrentNavLogs ||
+        !isLoadingPlannedNavLogs ||
+        !isLoadingPreviousNavLogs)
+    ) {
       reset()
     }
   }, [updateNavlogDatesSuccess, isNavLogDetailsLoading])
