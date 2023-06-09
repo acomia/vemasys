@@ -35,12 +35,13 @@ export default ({
     searchLocations,
     geographicLocation,
     unmountLocations,
+    getSearchLocations,
   } = useMap()
 
   useEffect(() => {
     const timer = setTimeout(() => {
       if (searchValue && !isItemPressed) {
-        API.searchMap(searchValue)
+        getSearchLocations(searchValue)
       }
     }, 1000)
 

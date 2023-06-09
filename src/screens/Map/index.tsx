@@ -1,6 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useRef, useState, useCallback, useMemo} from 'react'
-import {AppState, StyleSheet, Dimensions, Keyboard} from 'react-native'
+import {
+  AppState,
+  StyleSheet,
+  Dimensions,
+  Keyboard,
+  ActivityIndicator,
+} from 'react-native'
 import {} from 'react-native'
 import {
   Box,
@@ -55,7 +61,6 @@ import {
 } from '@bluecentury/types/nav.types'
 import {ExploitationVessel, NavigationLog} from '@bluecentury/models'
 import {Search, MapNavLog} from './components'
-import {API} from '@bluecentury/api'
 
 const {width, height} = Dimensions.get('window')
 const ASPECT_RATIO = width / height
@@ -89,6 +94,9 @@ export default function Map({navigation}: Props) {
     unmountLocations,
     geographicLocation,
     geoGraphicRoutes,
+    getDirections,
+    isGeographicRoutesLoading,
+    getGeographicPoints,
   } = useMap()
   const {notifications, getAllNotifications, calculateBadge} = useNotif()
   const {getNavigationLogDetails} = usePlanning()
@@ -706,7 +714,7 @@ export default function Map({navigation}: Props) {
   const fitToAllMarkers = (tracks: any) => {
     mapRef?.current?.fitToCoordinates(tracks, {
       animated: true,
-      edgePadding: {bottom: height * 0.3, top: 80, left: 50, right: 80},
+      edgePadding: {bottom: height * 0.3, top: 130, left: 50, right: 80},
     })
   }
 
@@ -761,9 +769,8 @@ export default function Map({navigation}: Props) {
     setPage(page + 1)
     getVesselTrack(vesselId, page + 1)
   }
-
-  const renderSearchLocationMarker = () => {
-    if (isSearchPin) {
+  const renderSearchLocationMarker = useMemo(() => {
+    if (isSearchPin && geographicLocation) {
       if (zoomLevel && zoomLevel > 12) {
         searchMarkerRef?.current?.showCallout()
       } else {
@@ -771,22 +778,16 @@ export default function Map({navigation}: Props) {
       }
       return (
         <Marker
+          key={`search-${geographicLocation?.id}`}
           ref={searchMarkerRef}
           coordinate={{
             latitude: Number(geographicLocation?.latitude),
             longitude: Number(geographicLocation?.longitude),
           }}
-          anchor={{x: 0, y: 0.5}}
-          style={{justifyContent: 'center', alignItems: 'center'}}
           zIndex={1}
+          onPress={() => handleGetDirection()}
         >
-          <Image
-            alt="searched-pin"
-            height={ms(40)}
-            source={Animated.searchedPin}
-            width={ms(30)}
-          />
-          <Callout tooltip onPress={() => handleGetDirection()}>
+          <Box alignItems={'center'}>
             <Box
               alignItems={'center'}
               backgroundColor={Colors.offlineWarning}
@@ -795,28 +796,41 @@ export default function Map({navigation}: Props) {
               px={ms(5)}
               width={ms(100)}
             >
-              <Text color={Colors.white}>{t('getDirections')}</Text>
+              {isGeographicRoutesLoading ? (
+                <ActivityIndicator size={ms(20)} />
+              ) : (
+                <Text color={Colors.white}>{t('getDirections')}</Text>
+              )}
             </Box>
-          </Callout>
+
+            <Box>
+              <Image
+                alt="searched-pin"
+                height={ms(40)}
+                source={Animated.searchedPin}
+                width={ms(30)}
+              />
+            </Box>
+          </Box>
         </Marker>
       )
     }
-  }
+  }, [geographicLocation, isSearchPin, isGeographicRoutesLoading])
 
-  const handleItemAction = (item: any) => {
-    API.geographicPoints(item?.id).then((response: any) => {
+  const handleItemAction = async (item: any) => {
+    const response = await getGeographicPoints(item?.id)
+    if (response !== null) {
+      Keyboard.dismiss()
+      unmountLocations()
+      setIsSearchPin(true)
       if (response?.latitude && response?.longitude) {
         centerMapToLocation(response?.latitude, response?.longitude)
-        setIsSearchPin(true)
-        unmountLocations()
-        Keyboard.dismiss()
-        return
       }
-    })
+    }
   }
 
   const handleGetDirection = () => {
-    API.getGeographicRoutes(geographicLocation?.id)
+    getDirections(geographicLocation?.id?.toString())
   }
 
   const snapPoints = useMemo(() => ['32%', '80%'], [])
@@ -866,7 +880,7 @@ export default function Map({navigation}: Props) {
           {trackViewMode &&
             uniqueVesselTracks.length > 0 &&
             renderTrackLineBeginningMarker()}
-          {renderSearchLocationMarker()}
+          {renderSearchLocationMarker}
           {isSearchPin && geoGraphicRoutes.length > 0 && (
             <Polyline
               coordinates={geoGraphicRoutes}

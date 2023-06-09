@@ -57,6 +57,9 @@ type MapActions = {
   reset: () => void
   setTrackViewMode: (mode: boolean) => void
   unmountLocations: () => void
+  getSearchLocations: (value: string) => void
+  getDirections: (id: string) => void
+  getGeographicPoints: (id: string) => void
 }
 
 type MapStore = MapState & MapActions
@@ -304,6 +307,7 @@ export const useMap = create(
         set({
           isLoadingVesselStatus: true,
           hasErrorLoadingVesselStatus: false,
+          isGeographicRoutesLoading: false,
         })
         try {
           const response: any = await API.getVesselStatus(vesselId)
@@ -362,6 +366,66 @@ export const useMap = create(
       },
       unmountLocations: () => {
         set({searchLocations: [], geoGraphicRoutes: []})
+      },
+      getSearchLocations: async (value: string) => {
+        set({
+          isGeographicRoutesLoading: false,
+          searchLocations: [],
+          isSearchLoading: true,
+        })
+
+        try {
+          const response = await API.searchMap(value)
+          if (typeof response === 'object' && response?.results) {
+            set({searchLocations: response.results})
+          }
+          set({isSearchLoading: false})
+        } catch (error) {
+          set({isSearchLoading: false})
+        }
+      },
+      getDirections: async (id: string) => {
+        set({isGeographicRoutesLoading: true, geoGraphicRoutes: []})
+
+        try {
+          const response = await API.getGeographicRoutes(id)
+
+          if (response !== null) {
+            if (response.routes && response.routes.length) {
+              const coordinates = response.routes?.flatMap((route: any) =>
+                route.waypoints?.map(({location}) => ({
+                  latitude: location.latitude,
+                  longitude: location.longitude,
+                }))
+              )
+
+              set({geoGraphicRoutes: coordinates})
+            }
+
+            set({isGeographicRoutesLoading: false})
+          }
+        } catch (error) {
+          console.log('Get Directions error', error)
+          set({isGeographicRoutesLoading: false})
+        }
+      },
+      getGeographicPoints: async (id: string) => {
+        set({isGeographicLoading: true, geographicLocation: null})
+
+        try {
+          const response = await API.geographicPoints(id)
+          if (response !== null) {
+            set({isGeographicLoading: false, geographicLocation: response})
+            return response
+          }
+          set({isGeographicLoading: false})
+
+          return null
+        } catch (error) {
+          console.log('Get geographic points failed', error)
+          set({isGeographicLoading: false})
+          return null
+        }
       },
     }),
     {
