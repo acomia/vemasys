@@ -88,7 +88,7 @@ const PlanningLogbook = () => {
     }
     /* eslint-disable react-hooks/exhaustive-deps */
     /* eslint-disable react-native/no-inline-styles */
-  }, [vesselId])
+  }, [vesselId, focused])
 
   useEffect(() => {
     if (wholeVesselHistoryNavLogs.length && plannedNavigationLogs?.length) {

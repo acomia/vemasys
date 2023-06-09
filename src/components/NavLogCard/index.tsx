@@ -36,6 +36,7 @@ export const NavLogCard = (props: {
   onNavlogActionPress: (action: any, id: string) => void
   onStartActionPress: (id: string) => void
   selectedNavlogID: string
+  isLoading?: boolean
 }) => {
   const {t} = useTranslation()
   const navigation =
@@ -51,6 +52,7 @@ export const NavLogCard = (props: {
     onNavlogStopActionPress,
     onStartActionPress,
     selectedNavlogID,
+    isLoading,
   } = props
   const {isPlanningActionsLoading, isUpdateNavlogDatesLoading} = usePlanning()
   const key = index
@@ -89,10 +91,11 @@ export const NavLogCard = (props: {
     }
   }
 
-  const isCardLoading = isPlanningActionsLoading || isUpdateNavlogDatesLoading
+  const isCardLoading =
+    isPlanningActionsLoading || isUpdateNavlogDatesLoading || isLoading
   const isSelectedCardLoading =
     selectedNavlogID === navigationLog.id.toString() &&
-    (isPlanningActionsLoading || isUpdateNavlogDatesLoading)
+    (isPlanningActionsLoading || isUpdateNavlogDatesLoading || isLoading)
 
   const typeIcon = (type: string) => {
     switch (type) {

@@ -214,18 +214,20 @@ export default function Map({navigation}: Props) {
         latitude: currentNavLogs[0]?.location?.latitude,
         longitude: currentNavLogs[0]?.location?.longitude,
       })
-      if (currentNavLogs[currentNavLogs?.length - 1]) {
-        getNavigationLogDetails(
-          currentNavLogs[currentNavLogs?.length - 1]?.id
-        ).then(response => {
-          if (response) setCurrentNavLog(response)
-        })
+      if (focused) {
+        if (currentNavLogs[currentNavLogs?.length - 1]) {
+          getNavigationLogDetails(
+            currentNavLogs[currentNavLogs?.length - 1]?.id
+          ).then(response => {
+            if (response) setCurrentNavLog(response)
+          })
+        }
       }
     }
-  }, [currentNavLogs])
+  }, [currentNavLogs, focused])
 
   useEffect(() => {
-    if (prevNavLogs && prevNavLogs.length > 0) {
+    if (prevNavLogs && prevNavLogs.length > 0 && focused) {
       const navLog = prevNavLogs?.find((prev: any) => prev.plannedEta !== null)
       if (navLog) {
         getNavigationLogDetails(navLog?.id).then(response => {
@@ -233,10 +235,10 @@ export default function Map({navigation}: Props) {
         })
       }
     }
-  }, [prevNavLogs])
+  }, [prevNavLogs, focused])
 
   useEffect(() => {
-    if (plannedNavLogs && plannedNavLogs.length > 0) {
+    if (plannedNavLogs && plannedNavLogs.length > 0 && focused) {
       const navLog = plannedNavLogs?.find(
         (prev: any) => prev.plannedEta !== null
       )
@@ -246,7 +248,7 @@ export default function Map({navigation}: Props) {
         })
       }
     }
-  }, [plannedNavLogs])
+  }, [plannedNavLogs, focused])
 
   useEffect(() => {
     if (vesselStatus && !vesselUpdated) {
@@ -485,12 +487,31 @@ export default function Map({navigation}: Props) {
     )
   }
 
+  const processLocations = (location: string): boolean => {
+    switch (location) {
+      case 'Bridge':
+        // Process bridge location
+        return true
+      case 'Waypoint':
+        // Process waypoint location
+        return true
+      case 'Junction':
+        // Process junction location
+        return true
+      default:
+        // Handle other/custom location
+        return false
+    }
+  }
+
   const renderMarkerVessel2 = useMemo(() => {
     if (!vesselStatus) return null
     const {latitude, longitude, speed, heading}: VesselGeolocation =
       vesselStatus
     const rotate = heading >= 0 && Number(speed) > 3 ? `${heading}deg` : null
     const navigationLog = plannedNavLogs.find(item => item.isActive)
+    const isFilterLocations = processLocations(navigationLog?.location?.title)
+
     return (
       <Marker
         key={`Vessel-${vesselStatus?.vessel?.id}`}
@@ -507,34 +528,36 @@ export default function Map({navigation}: Props) {
         }
       >
         <Box alignItems={'center'}>
-          <HStack alignItems="center" backgroundColor={Colors.white} w="80">
-            <Box h={ms(48)} w={ms(48)}>
-              <NavigationLogType isLotty navigationLog={navigationLog} />
-            </Box>
-            <Box flex={1} marginLeft={ms(8)}>
-              <Text bold color={Colors.text} fontSize={ms(15)} noOfLines={1}>
-                {formatLocationLabel(navigationLog?.location)}
-              </Text>
-              <Text color={Colors.azure} fontWeight="medium">
-                {t('planned')}
-                {moment(navigationLog?.plannedEta).format(
-                  'DD MMM YYYY | HH:mm'
-                )}
-              </Text>
-            </Box>
-            <Box alignSelf="center">
-              <NativeBaseIconButton
-                icon={
-                  <ChevronRightIcon bold color={Colors.disabled} size="4" />
-                }
-                onPress={() => {
-                  console.log(11)
-                }}
-              />
-            </Box>
-          </HStack>
+          {navigationLog ? (
+            <HStack alignItems="center" backgroundColor={Colors.white} w="80">
+              <Box h={ms(48)} w={ms(48)}>
+                <NavigationLogType isLotty navigationLog={navigationLog} />
+              </Box>
+              <Box flex={1} marginLeft={ms(8)}>
+                <Text bold color={Colors.text} fontSize={ms(15)} noOfLines={1}>
+                  {formatLocationLabel(navigationLog?.location)}
+                </Text>
+                <Text color={Colors.azure} fontWeight="medium">
+                  {t('planned')}
+                  {moment(navigationLog?.plannedEta).format(
+                    'DD MMM YYYY | HH:mm'
+                  )}
+                </Text>
+              </Box>
+              <Box alignSelf="center">
+                <NativeBaseIconButton
+                  icon={
+                    <ChevronRightIcon bold color={Colors.disabled} size="4" />
+                  }
+                  onPress={() => {
+                    console.log(11)
+                  }}
+                />
+              </Box>
+            </HStack>
+          ) : null}
           <Box width={ms(30)}>
-            {rotate && !navigationLog ? (
+            {(rotate && !navigationLog) || isFilterLocations ? (
               <Box style={{transform: [{rotate}]}}>
                 <Image
                   alt="map-navigating-arrow-img"
