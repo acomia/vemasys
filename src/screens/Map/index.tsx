@@ -485,12 +485,31 @@ export default function Map({navigation}: Props) {
     )
   }
 
+  const processLocations = (location: string): boolean => {
+    switch (location) {
+      case 'Bridge':
+        // Process bridge location
+        return true
+      case 'Waypoint':
+        // Process waypoint location
+        return true
+      case 'Junction':
+        // Process junction location
+        return true
+      default:
+        // Handle other/custom location
+        return false
+    }
+  }
+
   const renderMarkerVessel2 = useMemo(() => {
     if (!vesselStatus) return null
     const {latitude, longitude, speed, heading}: VesselGeolocation =
       vesselStatus
     const rotate = heading >= 0 && Number(speed) > 3 ? `${heading}deg` : null
     const navigationLog = plannedNavLogs.find(item => item.isActive)
+    const isFilterLocations = processLocations(navigationLog?.location?.title)
+
     return (
       <Marker
         key={`Vessel-${vesselStatus?.vessel?.id}`}
@@ -534,7 +553,7 @@ export default function Map({navigation}: Props) {
             </Box>
           </HStack>
           <Box width={ms(30)}>
-            {rotate && !navigationLog ? (
+            {(rotate && !navigationLog) || isFilterLocations ? (
               <Box style={{transform: [{rotate}]}}>
                 <Image
                   alt="map-navigating-arrow-img"
