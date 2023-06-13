@@ -215,10 +215,9 @@ export default function Map({navigation}: Props) {
         longitude: currentNavLogs[0]?.location?.longitude,
       })
       if (focused) {
-        if (currentNavLogs[currentNavLogs?.length - 1]) {
-          getNavigationLogDetails(
-            currentNavLogs[currentNavLogs?.length - 1]?.id
-          ).then(response => {
+        const activeNavLog = plannedNavLogs.find(item => item.isActive)
+        if (activeNavLog) {
+          getNavigationLogDetails(activeNavLog.id).then(response => {
             if (response) setCurrentNavLog(response)
           })
         }
@@ -228,9 +227,8 @@ export default function Map({navigation}: Props) {
 
   useEffect(() => {
     if (prevNavLogs && prevNavLogs.length > 0 && focused) {
-      const navLog = prevNavLogs?.find((prev: any) => prev.plannedEta !== null)
-      if (navLog) {
-        getNavigationLogDetails(navLog?.id).then(response => {
+      if (prevNavLogs[0]) {
+        getNavigationLogDetails(prevNavLogs[0].id).then(response => {
           if (response) setPrevNavLog(response)
         })
       }
@@ -239,9 +237,12 @@ export default function Map({navigation}: Props) {
 
   useEffect(() => {
     if (plannedNavLogs && plannedNavLogs.length > 0 && focused) {
-      const navLog = plannedNavLogs?.find(
-        (prev: any) => prev.plannedEta !== null
+      const plannedNavLogIndex = plannedNavLogs.findIndex(
+        planned => planned.isActive
       )
+      const navLog = plannedNavLogIndex
+        ? plannedNavLogs[plannedNavLogIndex - 1]
+        : null
       if (navLog) {
         getNavigationLogDetails(navLog?.id).then(response => {
           if (response) setPlannedNavLog(response)
@@ -354,9 +355,10 @@ export default function Map({navigation}: Props) {
     )
   }
 
-  const handleSheetChanges = useCallback((index: number) => {
+  const handleSheetChanges = (index: number) => {
+    console.log(index)
     setSnapStatus(index)
-  }, [])
+  }
 
   const renderMarkerFrom = () => {
     const previousLocation = prevNavLogs?.find(
@@ -582,7 +584,7 @@ export default function Map({navigation}: Props) {
         </Box>
       </Marker>
     )
-  }, [vesselStatus])
+  }, [vesselStatus, plannedNavLogs])
 
   const renderMarkerVessel = () => {
     const {latitude, longitude, speed, heading}: VesselGeolocation =
@@ -857,7 +859,7 @@ export default function Map({navigation}: Props) {
     getDirections(geographicLocation?.id?.toString())
   }
 
-  const snapPoints = useMemo(() => ['32%', '80%'], [])
+  const snapPoints = ['32%', '80%']
 
   return (
     <Box bg={Colors.light} height={'full'}>
@@ -1003,17 +1005,36 @@ export default function Map({navigation}: Props) {
         shadow={2}
         top={0}
       />
-      {!isKeyboardVisible ? (
+      {!isKeyboardVisible && currentNavLog ? (
         <BottomSheet
           ref={sheetRef}
           handleIndicatorStyle={{display: 'none'}}
           handleStyle={{display: 'none'}}
           snapPoints={snapPoints}
           style={{borderRadius: 40, overflow: 'hidden'}}
-          onChange={handleSheetChanges}
+          onChange={index => setSnapStatus(index)}
         >
           {renderBottomContent()}
         </BottomSheet>
+      ) : !isKeyboardVisible && !currentNavLog ? (
+        <Box
+          backgroundColor={'#fff'}
+          borderTopRadius={25}
+          bottom={0}
+          h="50"
+          position="absolute"
+          w="100%"
+        >
+          <Text
+            color={Colors.azure}
+            fontSize={ms(18)}
+            fontWeight="700"
+            my={ms(5)}
+            textAlign="center"
+          >
+            {selectedVessel?.alias || null}
+          </Text>
+        </Box>
       ) : null}
     </Box>
   )
