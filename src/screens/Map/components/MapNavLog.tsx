@@ -26,10 +26,11 @@ const MapNavLog = (props: {
   navigationLog: NavigationLog
   itemColor: string
   key: number
+  isFinished?: boolean
 }) => {
   const {t} = useTranslation()
   const navigation = useNavigation()
-  const {navigationLog, itemColor, key} = props
+  const {navigationLog, itemColor, key, isFinished = false} = props
   const focused = useIsFocused()
   const toast = useToast()
   const {
@@ -78,34 +79,43 @@ const MapNavLog = (props: {
       isLoadingPlannedNavLogs ||
       isLoadingPreviousNavLogs)
 
-  useEffect(() => {
-    if (focused) {
-      if (
-        (updateNavlogDatesSuccess === 'SUCCESS' || isPlanningActionsLoading) &&
-        (!isNavLogDetailsLoading ||
-          !isLoadingCurrentNavLogs ||
-          !isLoadingPlannedNavLogs ||
-          !isLoadingPreviousNavLogs)
-      ) {
-        reset()
-      }
-    }
-  }, [updateNavlogDatesSuccess, isNavLogDetailsLoading, focused])
+  // useEffect(() => {
+  //   if (focused) {
+  //     if (
+  //       (updateNavlogDatesSuccess === 'SUCCESS' || isPlanningActionsLoading) &&
+  //       (!isNavLogDetailsLoading ||
+  //         !isLoadingCurrentNavLogs ||
+  //         !isLoadingPlannedNavLogs ||
+  //         !isLoadingPreviousNavLogs)
+  //     ) {
+  //       reset()
+  //     }
+  //   }
+  // }, [updateNavlogDatesSuccess, isNavLogDetailsLoading, focused])
 
-  useEffect(() => {
-    if (selectedNavlogID !== '') {
-      updateNavlogDates(selectedNavlogID, dates)
-    }
-  }, [dates])
+  // useEffect(() => {
+  //   if (selectedNavlogID !== '') {
+  //     // updateNavlogDates(selectedNavlogID, dates)
+  //   }
+  // }, [dates])
 
   useEffect(() => {
     if (focused) {
       if (updateNavlogDatesSuccess === 'SUCCESS' && focused) {
         updateNavLogs()
-        // showToast('Updates saved.', 'success')
+        showToast('Updates saved.', 'success')
       }
+      if (
+        updateNavlogDatesSuccess === 'SUCCESS' &&
+        (!isPlanningActionsLoading || !isLoadingPlannedNavLogs)
+      ) {
+        reset()
+      }
+
       if (updateNavlogDatesFailed === 'FAILED') {
-        // showToast(updateNavlogDatesMessage, 'failed')
+        showToast(updateNavlogDatesMessage, 'failed')
+
+        reset()
       }
 
       if (isCreateNavLogActionSuccess) {
@@ -292,7 +302,7 @@ const MapNavLog = (props: {
         key={key}
         defineFirstAndLastIndex={[]}
         index={key}
-        isFinished={false}
+        isFinished={isFinished}
         isLoading={isLoading}
         itemColor={itemColor}
         lastScreen={'planning'}
@@ -333,6 +343,7 @@ const MapNavLog = (props: {
         onConfirm={date => {
           setOpenDatePicker(false)
           onDatesChange(selectedNavlogID, date)
+          updateNavlogDates(selectedNavlogID, dates)
         }}
       />
       <Modal
