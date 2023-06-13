@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useLayoutEffect, useState} from 'react'
 import {Alert, TouchableOpacity} from 'react-native'
 import {
   Avatar,
@@ -85,6 +85,15 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
   const [imgFile, setImgFile] = useState<ImageFile | null>(null)
   const [openStatuses, setOpenStatuses] = useState(false)
 
+  useLayoutEffect(() => {
+    getVesselTaskDetails(task?.id)
+    if (taskUpdateStatus === 'SUCCESS') {
+      resetStatuses()
+      getVesselTasksByCategory(vesselId, category)
+      showToast('Task update successfully.', 'success')
+    }
+  }, [taskUpdateStatus])
+
   useEffect(() => {
     const uploadFile = async (id: number, imageFile: ImageFile) => {
       await uploadFileBySubject('Task', imageFile, 'shared_within_company', id)
@@ -134,15 +143,6 @@ const TechnicalTaskDetails = ({navigation, route}: Props) => {
       ),
     })
   }, [navigation, flaggedUpdated, isTechnicalLoading])
-
-  useEffect(() => {
-    getVesselTaskDetails(task?.id)
-    if (taskUpdateStatus === 'SUCCESS') {
-      resetStatuses()
-      getVesselTasksByCategory(vesselId, category)
-      showToast('Task update successfully.', 'success')
-    }
-  }, [taskUpdateStatus])
 
   useEffect(() => {
     if (task?.vesselPart?.type) {

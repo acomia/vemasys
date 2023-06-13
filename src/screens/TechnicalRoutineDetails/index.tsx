@@ -1,19 +1,14 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useEffect, useState} from 'react'
-import {Alert, TouchableOpacity} from 'react-native'
+import React, {useLayoutEffect, useState} from 'react'
 import {
   Avatar,
   Box,
-  Button,
   Divider,
   HStack,
-  Icon,
   Pressable,
   ScrollView,
-  Select,
   Text,
-  useToast,
 } from 'native-base'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import moment from 'moment'
@@ -22,30 +17,26 @@ import _ from 'lodash'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 
 import {
-  IconButton,
   LoadingAnimated,
   NoInternetConnectionMessage,
   TechnicalBottomModal,
 } from '@bluecentury/components'
 import {Colors} from '@bluecentury/styles'
 import {PROD_URL} from '@vemasys/env'
-import {
-  hasSelectedEntityUserPermission,
-  ROLE_PERMISSION_TASK_MANAGE,
-  titleCase,
-  VEMASYS_PRODUCTION_FILE_URL,
-} from '@bluecentury/constants'
+import {titleCase} from '@bluecentury/constants'
 import {useEntity, useTechnical} from '@bluecentury/stores'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import {useTranslation} from 'react-i18next'
 import {showToast} from '@bluecentury/hooks'
 import {RootStackParamList} from '@bluecentury/types/nav.types'
 
-type Props = NativeStackScreenProps<RootStackParamList>
-const TechnicalRoutineDetails = ({navigation, route}: Props) => {
+type Props = NativeStackScreenProps<
+  RootStackParamList,
+  'TechnicalRoutineDetails'
+>
+const TechnicalRoutineDetails = ({route}: Props) => {
   const {t} = useTranslation()
   const {id} = route.params
-  const {selectedEntity} = useEntity()
   const {
     isTechnicalLoading,
     routineDetails,
@@ -64,7 +55,7 @@ const TechnicalRoutineDetails = ({navigation, route}: Props) => {
     {value: 'done', label: 'Done'},
   ]
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     getVesselRoutineDetails(id)
     if (taskUpdateStatus === 'SUCCESS') {
       resetStatuses()

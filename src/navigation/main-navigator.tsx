@@ -173,7 +173,9 @@ export default function MainNavigator({navigation}: Props) {
               <IconButton
                 size={ms(20)}
                 source={Icons.menu}
-                onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
+                onPress={() =>
+                  navigation.dispatch(DrawerActions.toggleDrawer())
+                }
               />
             </Box>
           ),
