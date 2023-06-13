@@ -29,7 +29,13 @@ import {
   Crew,
   Settings,
 } from '@bluecentury/screens'
-import {useAuth, useEntity, useMap, useSettings} from '@bluecentury/stores'
+import {
+  useAuth,
+  useCharters,
+  useEntity,
+  useMap,
+  useSettings,
+} from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
 import {navigationRef} from './navigationRef'
 import {InitializeTrackingService} from '@bluecentury/helpers'
@@ -46,6 +52,7 @@ export default function MainNavigator({navigation}: Props) {
   const token = useAuth(state => state.token)
   const activeFormations = useMap(state => state.activeFormations)
   const getActiveFormations = useMap(state => state.getActiveFormations)
+  const {getCharters} = useCharters()
   const [isGPSOpen, setIsGPSOpen] = useState(false)
 
   useFocusEffect(
@@ -54,6 +61,10 @@ export default function MainNavigator({navigation}: Props) {
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
   )
+
+  useEffect(() => {
+    getCharters()
+  }, [])
 
   useEffect(() => {
     if (isMobileTracking) {
