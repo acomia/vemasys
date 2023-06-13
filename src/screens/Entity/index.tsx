@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react'
+import React, {useEffect, useLayoutEffect, useRef, useState} from 'react'
 import {
   Box,
   FlatList,
@@ -11,7 +11,7 @@ import {
   Modal,
   useToast,
 } from 'native-base'
-import {CommonActions, useFocusEffect} from '@react-navigation/native'
+import {CommonActions, useIsFocused} from '@react-navigation/native'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {ms} from 'react-native-size-matters'
 import {useEntity, useAuth, useSettings} from '@bluecentury/stores'
@@ -36,6 +36,7 @@ type Props = NativeStackScreenProps<RootStackParamList>
 export default function Entity({route, navigation}: Props) {
   const {t} = useTranslation()
   const toast = useToast()
+  const focused = useIsFocused()
   const insets = useSafeAreaInsets()
   const paddingTop = route.name === 'ChangeRole' ? 2 : insets.top
   const borderTopRadius = route.name === 'ChangeRole' ? '3xl' : 0
@@ -64,14 +65,12 @@ export default function Entity({route, navigation}: Props) {
   const [acceptRoleData, setAcceptRoleData] = useState({id: '', accept: false})
   const logoutCancelRef = useRef<any>(null)
 
-  useFocusEffect(
-    useCallback(() => {
-      getUserInfo()
-      getRoleForAccept()
-      getEntityUsers()
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-  )
+  useLayoutEffect(() => {
+    getUserInfo()
+    getRoleForAccept()
+    getEntityUsers()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focused])
 
   useEffect(() => {
     let uniqPendingRoles: any[] = []

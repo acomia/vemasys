@@ -12,13 +12,14 @@ import {
   Screens,
 } from '@bluecentury/constants'
 import {Icons, Images} from '@bluecentury/assets'
-import {useEntity, useNotif} from '@bluecentury/stores'
+import {useCharters, useEntity, useNotif} from '@bluecentury/stores'
 
 const Sidebar = (props: DrawerContentComponentProps) => {
   const {t} = useTranslation()
   const {state, navigation} = props
   const {pendingRoles, entityUsers, selectedEntity, entityRole} = useEntity()
   const {notificationBadge} = useNotif()
+  const {chartersBadge} = useCharters()
   let uniqPendingRoles: any[] = []
   if (pendingRoles) {
     uniqPendingRoles = pendingRoles?.filter(
@@ -75,6 +76,7 @@ const Sidebar = (props: DrawerContentComponentProps) => {
           {hasCharterPermission ? (
             <MenuButton
               active={currentRoute === Screens.Charters}
+              badge={chartersBadge}
               iconSource={Icons.fileContract}
               onPress={() => handlePressMenu(Screens.Charters)}
             >
