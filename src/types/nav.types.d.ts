@@ -26,6 +26,7 @@ type RootStackParamList = {
     actionType: string
     navlogAction?: {} | undefined
     navlogId?: string
+    navlog?: NavigationLog | undefined
   }
   TechnicalTasksList: {category: string; title: string}
   TechnicalTaskDetails: {task: Task; category: string}

@@ -44,7 +44,7 @@ import {RootStackParamList} from '@bluecentury/types/nav.types'
 type Props = NativeStackScreenProps<RootStackParamList, 'AddEditNavlogAction'>
 const AddEditNavlogAction = ({navigation, route}: Props) => {
   const {t} = useTranslation()
-  const {method, actionType, navlogAction, navlogId} = route.params
+  const {method, actionType, navlogAction, navlogId, navlog} = route.params
   const toast = useToast()
   const {
     isPlanningDetailsLoading,
@@ -300,14 +300,15 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
   }
 
   const renderCargoHoldActions = () => {
-    const {nameEn, nameNl}: BulkType = navigationLogDetails?.bulkCargo[0]?.type
+    const cargo =
+      navlog !== undefined ? navlog.bulkCargo : navigationLogDetails?.bulkCargo
     return (
       <HStack alignItems="center" mb={ms(10)}>
         <Box flex="1">
           <Text color={Colors.disabled} fontWeight="medium" mb={ms(6)}>
             {t('cargo')}
           </Text>
-          {navigationLogDetails?.bulkCargo?.length > 1 ? (
+          {cargo?.length > 1 ? (
             <Select
               bg={Colors.light_grey}
               flex="1"
@@ -325,7 +326,7 @@ const AddEditNavlogAction = ({navigation, route}: Props) => {
           ) : (
             <Box bg={Colors.light_grey} borderRadius={ms(5)} px="1" py="3">
               <Text color={Colors.text} ellipsizeMode="tail" numberOfLines={1}>
-                {nameEn || nameNl}
+                {formatBulkTypeLabel(cargo[0].type)}
               </Text>
             </Box>
           )}
