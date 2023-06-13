@@ -219,6 +219,18 @@ export default function Entity({route, navigation}: Props) {
           <LoadingAnimated />
         ) : (
           <FlatList
+            ListEmptyComponent={() => (
+              <Text
+                bold
+                color={Colors.azure}
+                fontSize={ms(13)}
+                mt={10}
+                textAlign="center"
+              >
+                No linked entities yet, contact Administrator or wait for
+                requests to be accepted.
+              </Text>
+            )}
             renderItem={({item}) => {
               return (
                 <EntityCard
