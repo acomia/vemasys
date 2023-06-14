@@ -20,4 +20,5 @@ export enum Screens {
   Formations = 'Formations',
   PDFView = 'PDFView',
   MeasurementTable = 'MeasurementTable',
+  UserRequests = 'UserRequests',
 }

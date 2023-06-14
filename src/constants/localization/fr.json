@@ -398,5 +398,7 @@
   "startDate": "Start date",
   "language": "Language",
   "certificateLevel": "Certificate level",
-  "getDirections": "Get Directions"
+  "getDirections": "Get Directions",
+  "users": "Users",
+  "userRequests": "User Requests"
 }

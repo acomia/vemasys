@@ -108,6 +108,15 @@ const Settings = (props: DrawerContentComponentProps) => {
         type="navigation"
         value={t('measurementTable')}
       />
+      {/*<SettingsItem*/}
+      {/*  callback={() => {*/}
+      {/*    navigation.navigate(Screens.UserRequests)*/}
+      {/*  }}*/}
+      {/*  iconSource={Icons.ruler}*/}
+      {/*  isEntireBlockPressable={true}*/}
+      {/*  type="navigation"*/}
+      {/*  value="User requests" //TODO: change to translation*/}
+      {/*/>*/}
       <HStack justifyContent="center">
         <Center>
           <VersionBuildLabel />
