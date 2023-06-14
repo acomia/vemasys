@@ -330,14 +330,14 @@ export default function Map({navigation}: Props) {
             )}
             {currentNavLog && (
               <MapNavLog
-                key={3}
+                key={1}
                 itemColor={Colors.navLogItemGreen}
                 navigationLog={currentNavLog}
               />
             )}
             {prevNavLog && (
               <MapNavLog
-                key={4}
+                key={3}
                 isFinished={true}
                 itemColor={Colors.navLogItemPink}
                 navigationLog={prevNavLog}
