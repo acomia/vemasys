@@ -38,6 +38,7 @@ import {
   SignUpVerification,
   SignupFinish,
   MeasurementTable,
+  UserRequests,
 } from '@bluecentury/screens'
 import {Colors} from '@bluecentury/styles'
 import {useTranslation} from 'react-i18next'
@@ -317,6 +318,14 @@ export default function RootNavigator() {
           }}
           component={MeasurementTable}
           name={'MeasurementTable'}
+        />
+        <Screen
+          options={{
+            headerShown: true,
+            title: t('userRequests'),
+          }}
+          component={UserRequests}
+          name={'UserRequests'}
         />
       </Group>
       <Group

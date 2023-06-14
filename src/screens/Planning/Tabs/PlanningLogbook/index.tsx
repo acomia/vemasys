@@ -88,7 +88,7 @@ const PlanningLogbook = () => {
     }
     /* eslint-disable react-hooks/exhaustive-deps */
     /* eslint-disable react-native/no-inline-styles */
-  }, [vesselId, focused])
+  }, [vesselId])
 
   useEffect(() => {
     if (wholeVesselHistoryNavLogs.length && plannedNavigationLogs?.length) {
@@ -553,6 +553,7 @@ const PlanningLogbook = () => {
                       )
                         ? 'Unloading'
                         : 'Loading',
+                      navlog: navigationLog,
                     })
                   }}
                   onDateButtonPress={(type, id) => onDateButtonPress(type, id)}

@@ -46,6 +46,7 @@ type ChartersState = {
   isCharterUpdateLoading: boolean
   isCharterUpdateSuccess: boolean
   isDocumentSigning: boolean
+  chartersBadge: number
 }
 
 type ChartersActions = {
@@ -83,6 +84,7 @@ export const useCharters = create(
       isCharterUpdateLoading: false,
       isCharterUpdateSuccess: false,
       isDocumentSigning: false,
+      chartersBadge: 0,
       getCharters: async () => {
         set({isCharterLoading: true, charters: []})
         try {
@@ -93,7 +95,13 @@ export const useCharters = create(
             )
             chr.forEach(ch => {
               ch.status = getCharterStatus(ch, useEntity.getState().entityType)
-              set({charters: chr})
+
+              set({
+                charters: chr,
+                chartersBadge: get().charters.filter(
+                  charter => charter.status === 'new'
+                ).length,
+              })
             })
             const tchr = response.filter(
               (c: Charter) =>

@@ -10,7 +10,7 @@ const getPreviousNavLog = async (
 ) => {
   itemsPerPage = itemsPerPage || 5
   page = page || 1
-
+  console.log('VID', vesselId)
   const params = {
     isCompleted: 1,
     'exists[plannedETA]': 1,

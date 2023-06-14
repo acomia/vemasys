@@ -398,5 +398,7 @@
   "certificateLevel": "Certificate level",
   "search": "Search",
   "searchLocation": "Search location...",
-  "getDirections": "Get Directions"
+  "getDirections": "Get Directions",
+  "users": "Users",
+  "userRequests": "User Requests"
 }
