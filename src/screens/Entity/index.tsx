@@ -145,6 +145,7 @@ export default function Entity({route, navigation}: Props) {
   }
 
   const onSelectEntityUser = (entity: EntityUser) => {
+    resetAllStates()
     if (isMobileTracking && entityId) {
       setIsOpenAlertIsMobileTracking(true)
       return
