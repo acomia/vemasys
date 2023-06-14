@@ -784,6 +784,22 @@ const Details = () => {
         <Divider bg={Colors.light} h={ms(2)} my={ms(8)} />
         {renderNavlogActions()}
         {/* End of Actions Section */}
+        <Button
+          bg={Colors.primary}
+          flex="1"
+          leftIcon={<Icon as={Ionicons} name="add" size="sm" />}
+          mt={ms(10)}
+          size="xs"
+          onPress={() =>
+            navigation.navigate('AddEditBulkCargo', {
+              method: 'add',
+            })
+          }
+        >
+          <Text color={Colors.white} fontWeight="medium">
+            {t('addCargo')}
+          </Text>
+        </Button>
         {/* Announcing&Arrival dates Section */}
         <Text bold color={Colors.azure} fontSize={ms(20)} mt={ms(20)}>
           Departure

@@ -44,7 +44,8 @@ const AddEditBulkCargo = ({navigation, route}: Props) => {
     isLoading: cargo !== undefined ? (cargo?.isLoading ? '1' : '0') : '0',
   })
   const [bulkTypesData, setBulkTypesData] = useState([])
-  const defaultType = cargo !== undefined ? formatBulkTypeLabel(cargo.type) : ''
+  const defaultType =
+    cargo !== undefined ? formatBulkTypeLabel(cargo.type) : cargoData.typeId
   useEffect(() => {
     navigation.setOptions({
       headerRight: () =>
