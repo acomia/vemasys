@@ -97,7 +97,7 @@ const PlanningLogbook = () => {
       plannedNavigationLogs.map((item: NavigationLog) => {
         const filteredByCharter = wholeVesselHistoryNavLogs.filter(
           historyItem => {
-            return historyItem.charter?.id === item.charter.id
+            return historyItem?.charter?.id === item?.charter?.id
           }
         )
         filteredHistory.push(...filteredByCharter)
