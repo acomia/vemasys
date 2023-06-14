@@ -586,7 +586,7 @@ const PlanningLogbook = () => {
           <Modal.Content>
             <Modal.Header>{t('confirmation')}</Modal.Header>
             <Text fontWeight="medium" mx={ms(12)} my={ms(20)}>
-              {t('areYouSure')}
+              {t('stopActionPrompt')}
             </Text>
             <HStack>
               <Button

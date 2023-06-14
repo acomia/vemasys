@@ -400,5 +400,7 @@
   "searchLocation": "Search location...",
   "getDirections": "Get Directions",
   "users": "Users",
-  "userRequests": "User Requests"
+  "userRequests": "User Requests",
+  "addCargo": "Add Cargo List",
+  "stopActionPrompt": "Are you sure you want to stop this action?"
 }
