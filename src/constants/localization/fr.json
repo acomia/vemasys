@@ -400,5 +400,6 @@
   "certificateLevel": "Certificate level",
   "getDirections": "Get Directions",
   "users": "Users",
-  "userRequests": "User Requests"
+  "userRequests": "User Requests",
+  "updateFailed": "Update Failed"
 }

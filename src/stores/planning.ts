@@ -41,6 +41,7 @@ type PlanningState = {
   hasErrorLoadingVesselHistoryNavLogs: boolean
   updateNavlogDatesSuccess: string
   updateNavlogDatesFailed: string
+  updateNavlogDatesError: string
   updateNavlogDatesMessage: string
   vesselNavigationDetails: Vessel | undefined
   tonnageCertifications: TonnageCertifications[] | undefined
@@ -115,6 +116,7 @@ const initialState: PlanningState = {
   hasErrorLoadingVesselHistoryNavLogs: false,
   updateNavlogDatesSuccess: '',
   updateNavlogDatesFailed: '',
+  updateNavlogDatesError: '',
   updateNavlogDatesMessage: '',
   navigationLogDetails: undefined,
   navigationLogActions: undefined,
@@ -388,7 +390,7 @@ export const usePlanning = create(
         }
       },
       updateNavlogDates: async (navLogId: string, dates: object) => {
-        set({isUpdateNavlogDatesLoading: true})
+        set({isUpdateNavlogDatesLoading: true, updateNavlogDatesError: ''})
         try {
           const response = await API.updateNavigationLogDatetimeFields(
             navLogId,
@@ -405,6 +407,7 @@ export const usePlanning = create(
               isUpdateNavlogDatesLoading: false,
               updateNavlogDatesFailed: 'FAILED',
               updateNavlogDatesMessage: 'Update failed.',
+              updateNavlogDatesError: response,
               updatedNavlogByID: {},
             })
           }
