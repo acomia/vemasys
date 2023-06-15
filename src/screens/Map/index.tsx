@@ -17,6 +17,8 @@ import {
   VStack,
   ChevronRightIcon,
   IconButton as NativeBaseIconButton,
+  AlertDialog,
+  Button,
 } from 'native-base'
 import MapView, {
   PROVIDER_GOOGLE,
@@ -101,7 +103,12 @@ export default function Map({navigation}: Props) {
     getGeographicPoints,
   } = useMap()
   const {notifications, getAllNotifications, calculateBadge} = useNotif()
-  const {getNavigationLogDetails} = usePlanning()
+  const {
+    getNavigationLogDetails,
+    updateNavlogDatesError,
+    updateNavlogDatesFailed,
+    reset,
+  } = usePlanning()
 
   const LATITUDE = 50.503887
   const LONGITUDE = 4.469936
@@ -112,6 +119,7 @@ export default function Map({navigation}: Props) {
   const searchMarkerRef = useRef<Marker>(null)
   const appState = useRef(AppState.currentState)
   const currentPositionRef = useRef<Marker>(null)
+  const alertRef = useRef<any>(null)
   const [snapStatus, setSnapStatus] = useState(0)
   const [region, setRegion] = useState({
     latitude: LATITUDE,
@@ -131,6 +139,7 @@ export default function Map({navigation}: Props) {
   const [plannedNavLog, setPlannedNavLog] = useState(null)
   const [currentNavLog, setCurrentNavLog] = useState(null)
   const [prevNavLog, setPrevNavLog] = useState(null)
+  const [isAlertOpen, setIsAlertOpen] = useState(false)
 
   // useEffect(() => {
   //   // currentPositionRef?.current?.showCallout()
@@ -277,6 +286,13 @@ export default function Map({navigation}: Props) {
       fitToAllMarkers(geoGraphicRoutes)
     }
   }, [geoGraphicRoutes])
+
+  useEffect(() => {
+    if (updateNavlogDatesFailed === 'FAILED') {
+      reset()
+      setIsAlertOpen(true)
+    }
+  }, [updateNavlogDatesFailed])
 
   const handleKeyboardShow = () => {
     setKeyboardVisible(true)
@@ -1038,6 +1054,28 @@ export default function Map({navigation}: Props) {
           </Text>
         </Box>
       ) : null}
+      <AlertDialog
+        isOpen={isAlertOpen}
+        leastDestructiveRef={alertRef}
+        onClose={() => {
+          setIsAlertOpen(false)
+        }}
+      >
+        <AlertDialog.Content>
+          <AlertDialog.CloseButton />
+          <AlertDialog.Header>{t('updateFailed')}</AlertDialog.Header>
+          <AlertDialog.Body>{updateNavlogDatesError}</AlertDialog.Body>
+          <AlertDialog.Footer>
+            <Button
+              onPress={() => {
+                setIsAlertOpen(false)
+              }}
+            >
+              <Text color={Colors.white}>{t('OK')}</Text>
+            </Button>
+          </AlertDialog.Footer>
+        </AlertDialog.Content>
+      </AlertDialog>
     </Box>
   )
 }
