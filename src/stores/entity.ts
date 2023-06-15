@@ -39,6 +39,8 @@ type EntityState = {
   rejectedComments: CommentWaitingForUpload[]
   areCommentsUploading: boolean
   uploadingCommentNumber: number
+  usersWaitingForApprove: Array<EntityUser>
+  loadingUsersWaitingForApprove: boolean
 }
 
 type EntityActions = {
@@ -58,6 +60,8 @@ type EntityActions = {
   setRejectedComments: (comment: CommentWaitingForUpload | string) => void
   setAreCommentsUploading: (value: boolean) => void
   setUploadingCommentNumber: (value: number) => void
+  getUsersWaitingForApprove: (entityId: number | string) => void
+  updatePendingUser: (id: number, accept: boolean) => void
 }
 
 type EntityStore = EntityState & EntityActions
@@ -89,6 +93,8 @@ const initialEntityState: EntityState = {
   rejectedComments: [],
   areCommentsUploading: false,
   uploadingCommentNumber: 0,
+  usersWaitingForApprove: [],
+  loadingUsersWaitingForApprove: false,
 }
 
 export const useEntity = create(
@@ -115,7 +121,6 @@ export const useEntity = create(
           hasErrorLoadingCurrentUser: false,
         })
         try {
-          console.log('getUserInfo')
           const response = await API.getUserInfo()
           const setLanguage = useSettings.getState().setLanguage
           const currentLanguage = useSettings.getState().language
@@ -272,6 +277,16 @@ export const useEntity = create(
           set({isLoadingPendingRoles: false})
         }
       },
+      updatePendingUser: async (id: number, accept: boolean) => {
+        try {
+          const response = accept
+            ? await API.acceptPendingUser(id)
+            : await API.rejectPendingUser(id)
+          set({acceptRoleStatus: response})
+        } catch (error) {
+          console.log(error)
+        }
+      },
       getLinkEntityInfo: async (id: string) => {
         set({isLoadingEntityUsers: true})
         try {
@@ -307,6 +322,14 @@ export const useEntity = create(
       },
       setUploadingCommentNumber: value => {
         set({uploadingCommentNumber: value})
+      },
+      getUsersWaitingForApprove: async entityId => {
+        set({loadingUsersWaitingForApprove: true})
+        const response = await API.getUsersWaitingForApprove(entityId)
+        set({
+          usersWaitingForApprove: response,
+          loadingUsersWaitingForApprove: false,
+        })
       },
       reset: () => {
         set({

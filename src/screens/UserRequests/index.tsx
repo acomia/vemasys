@@ -1,25 +1,25 @@
 import React from 'react'
-import {
-  Avatar,
-  Box,
-  Button,
-  Center,
-  HStack,
-  Spacer,
-  Text,
-  VStack,
-} from 'native-base'
-import {ScrollView, TouchableOpacity} from 'react-native'
+import {Avatar, Box, Button, HStack, Spacer, Text, VStack} from 'native-base'
+import {ScrollView} from 'react-native'
 import {Divider} from 'native-base'
 import {Colors} from '@bluecentury/styles'
 import {ms} from 'react-native-size-matters'
-import {IconButton} from '@bluecentury/components'
+import {IconButton, LoadingAnimated} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {useTranslation} from 'react-i18next'
+import {useEntity} from '@bluecentury/stores'
+import {PROD_URL} from '@vemasys/env'
 
 const UserRequests = () => {
   const {t} = useTranslation()
-  const renderItem = () => {
+  const {
+    entityId,
+    usersWaitingForApprove,
+    updatePendingUser,
+    getUsersWaitingForApprove,
+    loadingUsersWaitingForApprove,
+  } = useEntity()
+  const renderItem = (name: string, role: string, id: number, icon: any) => {
     return (
       <Box
         // key={item?.id}
@@ -34,45 +34,49 @@ const UserRequests = () => {
         py="2"
         shadow={5}
       >
-        <TouchableOpacity activeOpacity={0.7} onPress={() => {}}>
-          <HStack justifyContent="space-between" space={3}>
-            <Avatar
-              size="48px"
-              source={{uri: 'https://picsum.photos/200/300'}}
-              // source={{
-              //   uri: item?.entity?.icon
-              //     ? `${PROD_URL}/upload/documents/${item?.entity?.icon?.path}`
-              //     : '',
-              // }}
+        <HStack justifyContent="space-between" space={3}>
+          <Avatar
+            source={{
+              uri: icon ? `${PROD_URL}/upload/documents/${icon.path}` : '',
+            }}
+            size="48px"
+          />
+          <VStack>
+            <Text bold>{name}</Text>
+            <Text color={Colors.primary} fontWeight="medium">
+              {role}
+            </Text>
+          </VStack>
+          <Spacer />
+          <HStack>
+            <IconButton
+              size={ms(30)}
+              source={Icons.status_x}
+              styles={{marginRight: 10}}
+              onPress={() => {
+                updatePendingUser(id, false)
+                if (entityId) {
+                  getUsersWaitingForApprove(entityId)
+                }
+              }}
             />
-            <VStack>
-              <Text bold>
-                {/*{item?.entity?.alias}*/}
-                Name
-              </Text>
-              <Text color={Colors.primary} fontWeight="medium">
-                {/*{titleCase(item?.role?.title)}*/}
-                Role
-              </Text>
-            </VStack>
-            <Spacer />
-            <HStack>
-              <IconButton
-                size={ms(30)}
-                source={Icons.status_x}
-                styles={{marginRight: 10}}
-                onPress={() => {}}
-              />
-              <IconButton
-                size={ms(30)}
-                source={Icons.status_check}
-                onPress={() => {}}
-              />
-            </HStack>
+            <IconButton
+              size={ms(30)}
+              source={Icons.status_check}
+              onPress={() => {
+                updatePendingUser(id, true)
+                if (entityId) {
+                  getUsersWaitingForApprove(entityId)
+                }
+              }}
+            />
           </HStack>
-        </TouchableOpacity>
+        </HStack>
       </Box>
     )
+  }
+  if (loadingUsersWaitingForApprove) {
+    return <LoadingAnimated />
   }
   return (
     <Box
@@ -84,14 +88,36 @@ const UserRequests = () => {
     >
       <HStack justifyContent={'space-between'}>
         <Text bold>{t('users')}</Text>
-        <Button m={0} p={0} variant="link" onPress={() => {}}>
+        <Button
+          m={0}
+          p={0}
+          variant="link"
+          onPress={() => {
+            if (entityId) {
+              getUsersWaitingForApprove(entityId)
+            }
+          }}
+        >
           {t('clickToRefresh')}
         </Button>
       </HStack>
       <Divider mb="5" mt="2" />
-      <ScrollView>
-        {renderItem()}
-      </ScrollView>
+      {usersWaitingForApprove.length ? (
+        <ScrollView>
+          {usersWaitingForApprove.map(user => {
+            return renderItem(
+              `${user.user.firstname} ${user.user.lastname}`,
+              user.role.title,
+              user.id,
+              user.user.icon
+            )
+          })}
+        </ScrollView>
+      ) : (
+        <Text bold alignSelf="center">
+          There's no users waiting for approve
+        </Text>
+      )}
     </Box>
   )
 }

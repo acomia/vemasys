@@ -16,6 +16,16 @@ import {
 const Settings = (props: DrawerContentComponentProps) => {
   const {t} = useTranslation()
   const {navigation} = props
+  const {
+    entityType,
+    entityId,
+    entityUsers,
+    entityUserId,
+    getUsersWaitingForApprove,
+    usersWaitingForApprove,
+  } = useEntity()
+  const [hasPermissionToManageUsers, setHasPermissionToManageUsers] =
+    useState(false)
   // const isDarkMode = useSettings(state => state.isDarkMode)
   // const isMobileTracking = useSettings(state => state.isMobileTracking)
   // const language = useSettings(state => state.language)
@@ -34,8 +44,29 @@ const Settings = (props: DrawerContentComponentProps) => {
     setIsQrScanner,
     isQrScanner,
   } = useSettings()
-  const {entityType} = useEntity()
   const isExploitationVessel = entityType === 'ExploitationVessel'
+
+  useEffect(() => {
+    if (entityId) {
+      getUsersWaitingForApprove(entityId)
+    }
+  }, [entityId])
+
+  useEffect(() => {
+    if (entityUsers && entityUserId) {
+      const currentEntityUser = entityUsers.find(
+        user => user.id === entityUserId
+      )
+
+      if (currentEntityUser) {
+        setHasPermissionToManageUsers(
+          currentEntityUser.role.permissions.includes(
+            'ROLE_PERMISSION_USER_MANAGE'
+          )
+        )
+      }
+    }
+  }, [entityUsers, entityUserId])
 
   const handleOnValueChange = () => {
     navigation.navigate('TrackingServiceDialog')
@@ -108,15 +139,18 @@ const Settings = (props: DrawerContentComponentProps) => {
         type="navigation"
         value={t('measurementTable')}
       />
-      {/*<SettingsItem*/}
-      {/*  callback={() => {*/}
-      {/*    navigation.navigate(Screens.UserRequests)*/}
-      {/*  }}*/}
-      {/*  iconSource={Icons.ruler}*/}
-      {/*  isEntireBlockPressable={true}*/}
-      {/*  type="navigation"*/}
-      {/*  value="User requests" //TODO: change to translation*/}
-      {/*/>*/}
+      {hasPermissionToManageUsers ? (
+        <SettingsItem
+          callback={() => {
+            navigation.navigate(Screens.UserRequests)
+          }}
+          badgeValue={usersWaitingForApprove.length}
+          iconSource={Icons.userRequest}
+          isEntireBlockPressable={true}
+          type="navigation"
+          value={t('userRequests')}
+        />
+      ) : null}
       <HStack justifyContent="center">
         <Center>
           <VersionBuildLabel />
