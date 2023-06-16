@@ -37,6 +37,7 @@ export const NavLogCard = (props: {
   onStartActionPress: (id: string) => void
   selectedNavlogID: string
   isLoading?: boolean
+  label?: string
 }) => {
   const {t} = useTranslation()
   const navigation =
@@ -53,6 +54,7 @@ export const NavLogCard = (props: {
     onStartActionPress,
     selectedNavlogID,
     isLoading,
+    label = '',
   } = props
   const {isPlanningActionsLoading, isUpdateNavlogDatesLoading} = usePlanning()
   const key = index
@@ -291,7 +293,7 @@ export const NavLogCard = (props: {
     navigationLog?.cargoType
   )
 
-  const drawTheLines = (item) => {
+  const drawTheLines = item => {
     const itemType = defineFirstAndLastIndex?.find(
       typeItem => typeItem?.charter?.id === item?.charter?.id
     )
@@ -355,9 +357,6 @@ export const NavLogCard = (props: {
       return (
         <>
           <Box
-            borderColor={itemType.colour}
-            borderRadius={5}
-            borderWidth={2}
             mb={
               index !==
               defineFirstAndLastIndex[defineFirstAndLastIndex.length - 1]
@@ -365,6 +364,9 @@ export const NavLogCard = (props: {
                 ? ms(-7)
                 : ms(0)
             }
+            borderColor={itemType.colour}
+            borderRadius={5}
+            borderWidth={2}
             mt={index !== 0 ? ms(-7) : ms(0)}
           />
         </>
@@ -414,9 +416,23 @@ export const NavLogCard = (props: {
           py={ms(10)}
         >
           <Box flex="1">
-            <Text bold color={Colors.text} fontSize={ms(15)} noOfLines={1}>
-              {formatLocationLabel(navigationLog?.location)}
-            </Text>
+            <HStack space={ms(5)}>
+              {label ? (
+                <Box
+                  backgroundColor={Colors.primary}
+                  borderRadius={5}
+                  px={ms(5)}
+                  py={ms(3)}
+                >
+                  <Text bold color={Colors.white}>
+                    {label}
+                  </Text>
+                </Box>
+              ) : null}
+              <Text bold color={Colors.text} fontSize={ms(15)} noOfLines={1}>
+                {formatLocationLabel(navigationLog?.location, label)}
+              </Text>
+            </HStack>
             {isFinished ? (
               <Text>{`Finished: ${itemDurationLabel}`}</Text>
             ) : (

@@ -401,5 +401,7 @@
   "getDirections": "Get Directions",
   "users": "Users",
   "userRequests": "User Requests",
-  "updateFailed": "Update Failed"
+  "updateFailed": "Update Failed",
+  "current": "Current",
+  "previous": "Previous"
 }
