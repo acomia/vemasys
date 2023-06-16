@@ -1,6 +1,6 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import {ActivityIndicator} from 'react-native'
-import {Box, Modal, HStack, Text, Button, useToast} from 'native-base'
+import {Box, Modal, HStack, Text, Button} from 'native-base'
 import {NavLogCard} from '@bluecentury/components'
 import {NavigationLog} from '@bluecentury/models'
 import {Colors} from '@bluecentury/styles'
@@ -32,7 +32,7 @@ const MapNavLog = (props: {
   const navigation = useNavigation()
   const {navigationLog, itemColor, key, isFinished = false} = props
   const focused = useIsFocused()
-  const toast = useToast()
+
   const {
     updateNavlogDates,
     updateNavigationLogAction,
@@ -72,32 +72,13 @@ const MapNavLog = (props: {
   const [confirmModal, setConfirmModal] = useState(false)
   const [plannedData, setPlannedData] = useState<Array<NavigationLog>>([])
   const [openDatePicker, setOpenDatePicker] = useState(false)
+
   const isLoading =
     updateNavlogDatesSuccess === 'SUCCESS' &&
     (isNavLogDetailsLoading ||
       isLoadingCurrentNavLogs ||
       isLoadingPlannedNavLogs ||
       isLoadingPreviousNavLogs)
-
-  // useEffect(() => {
-  //   if (focused) {
-  //     if (
-  //       (updateNavlogDatesSuccess === 'SUCCESS' || isPlanningActionsLoading) &&
-  //       (!isNavLogDetailsLoading ||
-  //         !isLoadingCurrentNavLogs ||
-  //         !isLoadingPlannedNavLogs ||
-  //         !isLoadingPreviousNavLogs)
-  //     ) {
-  //       reset()
-  //     }
-  //   }
-  // }, [updateNavlogDatesSuccess, isNavLogDetailsLoading, focused])
-
-  // useEffect(() => {
-  //   if (selectedNavlogID !== '') {
-  //     // updateNavlogDates(selectedNavlogID, dates)
-  //   }
-  // }, [dates])
 
   useEffect(() => {
     if (focused) {
@@ -109,12 +90,6 @@ const MapNavLog = (props: {
         updateNavlogDatesSuccess === 'SUCCESS' &&
         (!isPlanningActionsLoading || !isLoadingPlannedNavLogs)
       ) {
-        reset()
-      }
-
-      if (updateNavlogDatesFailed === 'FAILED') {
-        showToast(updateNavlogDatesMessage, 'failed')
-
         reset()
       }
 
@@ -167,63 +142,35 @@ const MapNavLog = (props: {
     })
   }
 
-  const onDatesChange = (id: string, date: Date) => {
+  const onDatesChange = (date: Date) => {
     const formattedDate = Vemasys.formatDate(date)
-    const selectedNavlogDates = plannedData?.filter(
-      plan => plan.id.toString() === id
-    )
+    const objDates = {
+      plannedETA: navigationLog?.plannedEta,
+      captainDatetimeETA: navigationLog?.captainDatetimeEta,
+      announcedDatetime: navigationLog?.announcedDatetime,
+      arrivalDatetime: navigationLog?.arrivalDatetime,
+      terminalApprovedDeparture: navigationLog?.terminalApprovedDeparture,
+      departureDatetime: navigationLog?.departureDatetime,
+    }
+
     switch (selectedType) {
       case 'ETA':
-        setDates({
-          ...dates,
-          plannedETA: selectedNavlogDates[0]?.plannedEta,
-          captainDatetimeETA: formattedDate,
-          announcedDatetime: selectedNavlogDates[0]?.announcedDatetime,
-          arrivalDatetime: selectedNavlogDates[0]?.arrivalDatetime,
-          terminalApprovedDeparture:
-            selectedNavlogDates[0]?.terminalApprovedDeparture,
-          departureDatetime: selectedNavlogDates[0]?.departureDatetime,
-        })
+        objDates.captainDatetimeETA = formattedDate
         break
       case 'NOR':
-        setDates({
-          ...dates,
-          plannedETA: selectedNavlogDates[0]?.plannedEta,
-          captainDatetimeETA: selectedNavlogDates[0]?.captainDatetimeEta,
-          announcedDatetime: formattedDate,
-          arrivalDatetime: selectedNavlogDates[0]?.arrivalDatetime,
-          terminalApprovedDeparture:
-            selectedNavlogDates[0]?.terminalApprovedDeparture,
-          departureDatetime: selectedNavlogDates[0]?.departureDatetime,
-        })
+        objDates.announcedDatetime = formattedDate
         break
       case 'ARR':
-        setDates({
-          ...dates,
-          plannedETA: selectedNavlogDates[0]?.plannedEta,
-          captainDatetimeETA: selectedNavlogDates[0]?.captainDatetimeEta,
-          announcedDatetime: selectedNavlogDates[0]?.announcedDatetime,
-          arrivalDatetime: formattedDate,
-          terminalApprovedDeparture:
-            selectedNavlogDates[0]?.terminalApprovedDeparture,
-          departureDatetime: selectedNavlogDates[0]?.departureDatetime,
-        })
+        objDates.arrivalDatetime = formattedDate
         break
       case 'DEP':
-        setDates({
-          ...dates,
-          plannedETA: selectedNavlogDates[0]?.plannedEta,
-          captainDatetimeETA: selectedNavlogDates[0]?.captainDatetimeEta,
-          announcedDatetime: selectedNavlogDates[0]?.announcedDatetime,
-          arrivalDatetime: selectedNavlogDates[0]?.arrivalDatetime,
-          terminalApprovedDeparture:
-            selectedNavlogDates[0]?.terminalApprovedDeparture,
-          departureDatetime: formattedDate,
-        })
+        objDates.departureDatetime = formattedDate
         break
       default:
         break
     }
+
+    updateNavlogDates(selectedNavlogID, dates)
   }
 
   const onStopAction = () => {
@@ -253,29 +200,6 @@ const MapNavLog = (props: {
     })
     setPlannedData(updatedArray)
   }
-
-  // const showToast = (text: string, res: string) => {
-  //   toast.show({
-  //     duration: 1000,
-  //     render: () => {
-  //       return (
-  //         <Text
-  //           bg={res === 'success' ? 'emerald.500' : 'red.500'}
-  //           color={Colors.white}
-  //           mb={5}
-  //           px="2"
-  //           py="1"
-  //           rounded="sm"
-  //         >
-  //           {text}
-  //         </Text>
-  //       )
-  //     },
-  //     // onCloseComplete() {
-  //     //   res === 'success' ? null : reset()
-  //     // },
-  //   })
-  // }
 
   const stopActionFromSelectedNavlog = () => {
     const plnIndex = plannedData.findIndex(
@@ -342,8 +266,7 @@ const MapNavLog = (props: {
         }}
         onConfirm={date => {
           setOpenDatePicker(false)
-          onDatesChange(selectedNavlogID, date)
-          updateNavlogDates(selectedNavlogID, dates)
+          onDatesChange(date)
         }}
       />
       <Modal

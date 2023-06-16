@@ -17,6 +17,8 @@ import {
   VStack,
   ChevronRightIcon,
   IconButton as NativeBaseIconButton,
+  AlertDialog,
+  Button,
 } from 'native-base'
 import MapView, {
   PROVIDER_GOOGLE,
@@ -61,6 +63,7 @@ import {
 } from '@bluecentury/types/nav.types'
 import {ExploitationVessel, NavigationLog} from '@bluecentury/models'
 import {Search, MapNavLog} from './components'
+import {useWindowDimensions} from 'react-native'
 
 const {width, height} = Dimensions.get('window')
 const ASPECT_RATIO = width / height
@@ -74,6 +77,7 @@ type Props = CompositeScreenProps<
 export default function Map({navigation}: Props) {
   const {t} = useTranslation()
   const focused = useIsFocused()
+  const screenWidth = useWindowDimensions().width
   const {vesselId, selectedVessel, entityType, selectFleetVessel, entityUsers} =
     useEntity()
   const {
@@ -99,7 +103,12 @@ export default function Map({navigation}: Props) {
     getGeographicPoints,
   } = useMap()
   const {notifications, getAllNotifications, calculateBadge} = useNotif()
-  const {getNavigationLogDetails} = usePlanning()
+  const {
+    getNavigationLogDetails,
+    updateNavlogDatesError,
+    updateNavlogDatesFailed,
+    reset,
+  } = usePlanning()
 
   const LATITUDE = 50.503887
   const LONGITUDE = 4.469936
@@ -110,6 +119,7 @@ export default function Map({navigation}: Props) {
   const searchMarkerRef = useRef<Marker>(null)
   const appState = useRef(AppState.currentState)
   const currentPositionRef = useRef<Marker>(null)
+  const alertRef = useRef<any>(null)
   const [snapStatus, setSnapStatus] = useState(0)
   const [region, setRegion] = useState({
     latitude: LATITUDE,
@@ -129,6 +139,7 @@ export default function Map({navigation}: Props) {
   const [plannedNavLog, setPlannedNavLog] = useState(null)
   const [currentNavLog, setCurrentNavLog] = useState(null)
   const [prevNavLog, setPrevNavLog] = useState(null)
+  const [isAlertOpen, setIsAlertOpen] = useState(false)
 
   // useEffect(() => {
   //   // currentPositionRef?.current?.showCallout()
@@ -275,6 +286,13 @@ export default function Map({navigation}: Props) {
       fitToAllMarkers(geoGraphicRoutes)
     }
   }, [geoGraphicRoutes])
+
+  useEffect(() => {
+    if (updateNavlogDatesFailed === 'FAILED') {
+      reset()
+      setIsAlertOpen(true)
+    }
+  }, [updateNavlogDatesFailed])
 
   const handleKeyboardShow = () => {
     setKeyboardVisible(true)
@@ -941,7 +959,7 @@ export default function Map({navigation}: Props) {
           onFocus={() => setKeyboardVisible(true)}
         />
       </Box>
-      <Box position="absolute" right="0" top={ms(isLoadingMap ? 80 : 40)}>
+      <Box position="absolute" right="0" top={isLoadingMap ? '13%' : '8%'}>
         <VStack justifyContent="flex-start" m="4" space="5">
           {/*<Box bg={Colors.white} borderRadius="full" p="2" shadow={2}>*/}
           {/*  <IconButton*/}
@@ -975,17 +993,17 @@ export default function Map({navigation}: Props) {
         </VStack>
       </Box>
       {vesselStatus && vesselStatus?.speed > 1 ? (
-        <Box left="2" position="absolute" top={ms(isLoadingMap ? 95 : 55)}>
+        <Box left="2" position="absolute" top={isLoadingMap ? '15%' : '10%'}>
           <Box
             alignItems="center"
             bg={Colors.white}
             borderColor={Colors.dark_blue}
             borderRadius={50}
             borderWidth={3}
-            h={53}
+            h={screenWidth > 500 ? ms(51) : ms(54)}
             justifyContent="center"
             p={ms(3)}
-            w={53}
+            w={screenWidth > 500 ? ms(51) : ms(54)}
           >
             <Text bold fontSize={ms(14)}>
               {vesselStatus?.speed}
@@ -1036,6 +1054,28 @@ export default function Map({navigation}: Props) {
           </Text>
         </Box>
       ) : null}
+      <AlertDialog
+        isOpen={isAlertOpen}
+        leastDestructiveRef={alertRef}
+        onClose={() => {
+          setIsAlertOpen(false)
+        }}
+      >
+        <AlertDialog.Content>
+          <AlertDialog.CloseButton />
+          <AlertDialog.Header>{t('updateFailed')}</AlertDialog.Header>
+          <AlertDialog.Body>{updateNavlogDatesError}</AlertDialog.Body>
+          <AlertDialog.Footer>
+            <Button
+              onPress={() => {
+                setIsAlertOpen(false)
+              }}
+            >
+              <Text color={Colors.white}>{t('OK')}</Text>
+            </Button>
+          </AlertDialog.Footer>
+        </AlertDialog.Content>
+      </AlertDialog>
     </Box>
   )
 }
