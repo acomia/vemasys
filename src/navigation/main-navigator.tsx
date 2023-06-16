@@ -243,9 +243,7 @@ export default function MainNavigator({navigation}: Props) {
         />
         <Screen component={Settings} name={Screens.Settings} />
       </Navigator>
-      {isGPSOpen ? (
-        <GPSTracker close={() => setIsGPSOpen(false)} navigation={navigation} />
-      ) : null}
+      <GPSTracker close={() => setIsGPSOpen(false)} isOpen={isGPSOpen} />
     </>
   )
 }

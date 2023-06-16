@@ -8,6 +8,7 @@ import {
   Switch,
   Icon,
   Divider,
+  Modal,
 } from 'native-base'
 import {ms} from 'react-native-size-matters'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
@@ -20,10 +21,11 @@ import {useTranslation} from 'react-i18next'
 import {useNavigation} from '@react-navigation/native'
 
 type Props = {
+  isOpen: boolean
   close: () => void
 }
 
-export const GPSTracker = ({close}: Props) => {
+export const GPSTracker = ({isOpen, close}: Props) => {
   const {t} = useTranslation()
   const navigation = useNavigation()
   const isMobileTracking = useSettings(state => state.isMobileTracking)
@@ -69,20 +71,23 @@ export const GPSTracker = ({close}: Props) => {
   }
 
   return (
-    <Box
+    <Modal
       backgroundColor="rgba(0,0,0,0.5)"
       bottom={0}
       height="50%"
+      isOpen={isOpen}
       position="absolute"
-      width="100%"
+      width="full"
+      onClose={close}
     >
-      <Box
+      <Modal.Content
         backgroundColor="#fff"
         borderTopLeftRadius={15}
         borderTopRightRadius={15}
         mb={ms(0)}
         mt="auto"
         p={ms(15)}
+        width={'full'}
       >
         <Text bold fontSize={ms(16)} mb={ms(10)} mt={ms(5)}>
           {t('gps')}
@@ -245,7 +250,7 @@ export const GPSTracker = ({close}: Props) => {
         >
           {t('dismiss')}
         </Button>
-      </Box>
-    </Box>
+      </Modal.Content>
+    </Modal>
   )
 }
