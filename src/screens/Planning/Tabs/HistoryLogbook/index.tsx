@@ -286,10 +286,9 @@ const HistoryLogbook = () => {
                                       `}
                                     </Text>
                                     <TextTicker
-                                      animationType={'bounce'}
-                                      bounce={false}
-                                      bounceSpeed={40}
-                                      scroll={true}
+                                      animationType={'scroll'}
+                                      scrollSpeed={30}
+                                      // scroll={true}
                                       useNativeDriver={true}
                                     >
                                       {cargo?.type
