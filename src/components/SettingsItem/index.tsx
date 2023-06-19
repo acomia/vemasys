@@ -10,6 +10,7 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
   Menu,
+  Box,
 } from 'native-base'
 import {ms} from 'react-native-size-matters'
 import {Colors} from '@bluecentury/styles'
@@ -21,11 +22,12 @@ interface Props {
   type: string
   value: string
   iconSource: ImageSourcePropType
-  callback: (val?: string) => void
+  callback: (val?: any) => void
   switchState?: boolean
   language?: string
-  isEntireBlockPressable: boolean
+  isEntireBlockPressable?: boolean
   disabled?: boolean
+  badgeValue?: number
 }
 
 const SettingsItem = (props: Props) => {
@@ -38,6 +40,7 @@ const SettingsItem = (props: Props) => {
     switchState,
     language,
     isEntireBlockPressable,
+    badgeValue,
   } = props
   const [isSelection, setIsSelection] = useState(false)
 
@@ -208,9 +211,21 @@ const SettingsItem = (props: Props) => {
               w={ms(17)}
             />
           )}
-          <Text color={Colors.text} fontWeight="500" w="70%">
+          <Text color={Colors.text} fontWeight="500">
             {type === 'select' ? languageName(language) : value}
           </Text>
+          {badgeValue && badgeValue > 0 ? (
+            <Box
+              backgroundColor={Colors.azure}
+              borderRadius={50}
+              minW={ms(10)}
+              ml={ms(6)}
+              px={ms(7)}
+              py={ms(0)}
+            >
+              <Text color={Colors.white}>{badgeValue}</Text>
+            </Box>
+          ) : null}
         </HStack>
         {renderItem(type)}
       </HStack>

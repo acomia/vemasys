@@ -78,6 +78,28 @@ const rejectPendingRole = async (id: string) => {
     })
 }
 
+const acceptPendingUser = async (id: number) => {
+  return API.put(`entity_users/${id}/accept_by_entity`, {})
+    .then(response => {
+      return Promise.resolve(response.data.id ? 'SUCCESS' : 'FAILED')
+    })
+    .catch(error => {
+      console.error('Error: API Role for accept', error)
+      return Promise.reject('')
+    })
+}
+
+const rejectPendingUser = async (id: number) => {
+  return API.put(`entity_users/${id}/reject_by_entity`, {})
+    .then(response => {
+      return Promise.resolve(response.data.id ? 'REJECTED' : 'FAILED')
+    })
+    .catch(error => {
+      console.error('Error: API Role for accept', error)
+      return Promise.reject('')
+    })
+}
+
 const createSignUpRequest = async (userInfo: any, docs: Array<any>) => {
   let signUpRequest
   signUpRequest = Object.assign({}, userInfo, {
@@ -122,6 +144,23 @@ const getEntityInfo = async (id: string) => {
     })
 }
 
+const getUsersWaitingForApprove = async (entityId: number | string) => {
+  return API.get(`entity_users?entity.id=${entityId}&hasEntityAccepted=0`)
+    .then(response => {
+      if (response.data) {
+        return response.data
+      } else {
+        throw Error('Users waiting for approve Request Failed')
+      }
+    })
+    .catch(error => {
+      console.error(
+        'Error: API Users waiting for approve ',
+        JSON.stringify(error)
+      )
+    })
+}
+
 export {
   reloadEntityUsers,
   getVesselNavigationDetails,
@@ -129,6 +168,9 @@ export {
   getRoleForAccept,
   acceptPendingRole,
   rejectPendingRole,
+  acceptPendingUser,
+  rejectPendingUser,
   createSignUpRequest,
   getEntityInfo,
+  getUsersWaitingForApprove,
 }
