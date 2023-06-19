@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useState} from 'react'
 import {RefreshControl, StyleSheet, TouchableOpacity} from 'react-native'
-import {Box, Center, HStack, Image, ScrollView, Text} from 'native-base'
+import {Box, Center, HStack, Image, ScrollView, Text, VStack} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import moment, {Moment} from 'moment'
 import {useNavigation} from '@react-navigation/native'
@@ -9,14 +9,15 @@ import {useTranslation} from 'react-i18next'
 import Svg, {Circle} from 'react-native-svg'
 import _ from 'lodash'
 import {NativeStackNavigationProp} from '@react-navigation/native-stack'
+import TextTicker from 'react-native-text-ticker'
 
 import {Colors} from '@bluecentury/styles'
-import {Icons} from '@bluecentury/assets'
 import {useEntity, usePlanning} from '@bluecentury/stores'
 import {
   calculateTotalIn,
   calculateTotalOut,
   formatLocationLabel,
+  titleCase,
 } from '@bluecentury/constants'
 import {
   LoadingAnimated,
@@ -134,6 +135,17 @@ const HistoryLogbook = () => {
     currentDate,
     dateChanged,
   }: INavlogCard) => {
+    let actualAmount = 0
+    let bookedAmount = 0
+    navigationLog?.bulkCargo.forEach(item => {
+      if (item.amount) {
+        bookedAmount += item.amount
+      }
+      if (item.actualAmount) {
+        actualAmount += item.actualAmount
+      }
+    })
+    // console.log('navigationLog', navigationLog)
     const itemDurationLabel = timeframeToLabel(
       navigationLog?.plannedEta ? moment(navigationLog?.plannedEta) : null,
       navigationLog?.bookedEta ? moment(navigationLog?.bookedEta) : null,
@@ -182,6 +194,24 @@ const HistoryLogbook = () => {
           }
         >
           <Box
+            backgroundColor={
+              navigationLog?.isActive
+                ? Colors.secondary
+                : navigationLog?.departureDatetime ===
+                  navigationLog?.arrivalDatetime
+                ? Colors.dark_border
+                : Colors.border
+            }
+            borderColor={
+              navigationLog?.bulkCargo && navigationLog?.bulkCargo.length > 0
+                ? Colors.primary_light
+                : null
+            }
+            borderWidth={
+              navigationLog?.bulkCargo && navigationLog?.bulkCargo.length > 0
+                ? 3
+                : 0
+            }
             borderRadius={ms(5)}
             overflow="hidden"
             style={isOngoing ? styles.navLogActiveItem : null}
@@ -189,26 +219,107 @@ const HistoryLogbook = () => {
             {/* Navlog Header */}
 
             <Box
-              backgroundColor={
-                navigationLog?.isActive
-                  ? Colors.secondary
-                  : navigationLog?.departureDatetime ===
-                    navigationLog?.arrivalDatetime
-                  ? Colors.dark_border
-                  : Colors.border
-              }
+              // backgroundColor={
+              //   navigationLog?.isActive
+              //     ? Colors.secondary
+              //     : navigationLog?.departureDatetime ===
+              //       navigationLog?.arrivalDatetime
+              //     ? Colors.dark_border
+              //     : Colors.border
+              // }
               px={ms(16)}
               py={ms(10)}
             >
               <HStack alignItems="center">
-                <Text
-                  bold
-                  color={navigationLog?.isActive ? Colors.white : Colors.text}
-                  flex="1"
-                  fontSize={ms(15)}
-                >
-                  {formatLocationLabel(navigationLog?.location)}
-                </Text>
+                <VStack w="100%">
+                  <Text
+                    bold
+                    color={navigationLog?.isActive ? Colors.white : Colors.text}
+                    flex="1"
+                    fontSize={ms(15)}
+                  >
+                    {formatLocationLabel(navigationLog?.location)}
+                  </Text>
+                  {navigationLog.bulkCargo.length < 1 ? null : (
+                    <Box
+                      borderColor={Colors.border}
+                      borderStyle="dashed"
+                      borderTopWidth={0}
+                      borderWidth={isOngoing ? null : 3}
+                    >
+                      <HStack
+                        alignItems="center"
+                        justifyContent="space-between"
+                        my={ms(5)}
+                      >
+                        <Box flex="1">
+                          {navigationLog?.bulkCargo &&
+                            navigationLog?.bulkCargo.length > 0 &&
+                            navigationLog?.bulkCargo.map(
+                              (cargo: BulkCargo, i: number) => {
+                                return (
+                                  <Box
+                                    key={`bulkCargo-${i}`}
+                                    backgroundColor={Colors.white}
+                                    borderRadius={4}
+                                    maxW="3/4"
+                                    mb={ms(5)}
+                                    // py={ms(5)}
+                                    px={ms(6)}
+                                  >
+                                    <Text
+                                      key={i}
+                                      // bold
+                                      color={Colors.black}
+                                      ellipsizeMode="tail"
+                                      numberOfLines={1}
+                                    >
+                                      {`${
+                                        cargo.actualAmount
+                                          ? Math.ceil(cargo.actualAmount)
+                                          : 0
+                                      } MT (${
+                                        cargo.amount
+                                          ? Math.ceil(cargo.amount)
+                                          : 0
+                                      } MT) - 
+                                      `}
+                                    </Text>
+                                    <TextTicker
+                                      animationType={'bounce'}
+                                      bounce={false}
+                                      bounceSpeed={40}
+                                      scroll={true}
+                                      useNativeDriver={true}
+                                    >
+                                      {cargo?.type
+                                        ? cargo?.type?.nameEn ||
+                                          cargo?.type?.nameNl
+                                        : t('unknown')}
+                                    </TextTicker>
+                                  </Box>
+                                )
+                              }
+                            )}
+                        </Box>
+                        <Box
+                          alignItems="center"
+                          backgroundColor={Colors.white}
+                          borderRadius={50}
+                          h={ms(40)}
+                          justifyContent="center"
+                          w={ms(40)}
+                        >
+                          <NavigationLogType
+                            isSmall
+                            navigationLog={navigationLog}
+                          />
+                        </Box>
+                      </HStack>
+                    </Box>
+                  )}
+                </VStack>
+
                 {isOngoing ? (
                   <HStack alignItems="center">
                     <Text color={Colors.secondary} fontSize={ms(12)} mr={1}>
@@ -228,78 +339,21 @@ const HistoryLogbook = () => {
                   </HStack>
                 ) : null}
               </HStack>
-              <Text
-                color={navigationLog?.isActive ? Colors.white : Colors.azure}
-                fontWeight="medium"
-              >
-                {itemDurationLabel}
-              </Text>
-              {renderDuration(
-                navigationLog?.departureDatetime,
-                navigationLog?.arrivalDatetime,
-                navigationLog?.isActive
-              )}
+              <HStack justifyContent="space-between" w="100%">
+                <Text
+                  color={navigationLog?.isActive ? Colors.white : Colors.azure}
+                  fontWeight="medium"
+                >
+                  {itemDurationLabel}
+                </Text>
+                {renderDuration(
+                  navigationLog?.departureDatetime,
+                  navigationLog?.arrivalDatetime,
+                  navigationLog?.isActive
+                )}
+              </HStack>
             </Box>
             {/* End of Header */}
-            {navigationLog.bulkCargo.length < 1 ? null : (
-              <Box
-                borderColor={Colors.border}
-                borderStyle="dashed"
-                borderTopWidth={0}
-                borderWidth={isOngoing ? null : 3}
-                px={ms(16)}
-                py={ms(5)}
-              >
-                <HStack alignItems="center" my={ms(5)}>
-                  <Box flex="1">
-                    {navigationLog?.bulkCargo &&
-                      navigationLog?.bulkCargo.length > 0 && (
-                        <Box>
-                          {navigationLog?.bulkCargo.map(
-                            (cargo: BulkCargo, i: number) => {
-                              return (
-                                <Text
-                                  key={i}
-                                  bold
-                                  color={Colors.highlighted_text}
-                                >
-                                  {`${Math.ceil(cargo?.tonnage)} MT - ${
-                                    cargo?.type
-                                      ? cargo?.type?.nameEn ||
-                                        cargo?.type?.nameNl
-                                      : t('unknown')
-                                  }  `}
-                                  <Image
-                                    alt="navlogs-tags"
-                                    mx={ms(5)}
-                                    resizeMode="contain"
-                                    source={Icons.tags}
-                                  />
-                                </Text>
-                              )
-                            }
-                          )}
-                        </Box>
-                      )}
-                    <HStack alignItems="center" mt={ms(5)}>
-                      <Text bold color={Colors.highlighted_text}>
-                        {calculateTotalOut(navigationLog)} MT
-                      </Text>
-                      <Image
-                        alt="triple-arrow-navlogs"
-                        mx={ms(5)}
-                        resizeMode="contain"
-                        source={Icons.triple_arrow}
-                      />
-                      <Text bold color={Colors.highlighted_text}>
-                        {calculateTotalIn(navigationLog)} MT
-                      </Text>
-                    </HStack>
-                  </Box>
-                  <NavigationLogType navigationLog={navigationLog} />
-                </HStack>
-              </Box>
-            )}
           </Box>
         </TouchableOpacity>
       </Box>
@@ -319,7 +373,7 @@ const HistoryLogbook = () => {
     return (
       <Text
         color={isActive ? Colors.white : Colors.azure}
-        fontWeight="bold"
+        // fontWeight="bold"
         textAlign="right"
       >
         {navigationDuration.days() ? `${navigationDuration.days()}d` : ''}
