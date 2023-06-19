@@ -227,10 +227,14 @@ export default function Map({navigation}: Props) {
       })
       if (focused) {
         const activeNavLog = plannedNavLogs.find(item => item.isActive)
-        if (activeNavLog) {
-          getNavigationLogDetails(activeNavLog.id).then(response => {
+        const currentNavigationLog = currentNavLogs[currentNavLogs?.length - 1]
+        if (currentNavigationLog) {
+          getNavigationLogDetails(currentNavigationLog?.id).then(response => {
+            console.log('currentNavLog', response)
             if (response) setCurrentNavLog(response)
           })
+        } else {
+          setCurrentNavLog(activeNavLog)
         }
       }
     }
@@ -255,9 +259,10 @@ export default function Map({navigation}: Props) {
         ? plannedNavLogs[plannedNavLogIndex - 1]
         : null
       if (navLog) {
-        getNavigationLogDetails(navLog?.id).then(response => {
-          if (response) setPlannedNavLog(response)
-        })
+        // getNavigationLogDetails(navLog?.id).then(response => {
+        // if (response) setPlannedNavLog(response)
+        // })
+        setPlannedNavLog(navLog)
       }
     }
   }, [plannedNavLogs, focused])
