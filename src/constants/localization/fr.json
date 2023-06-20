@@ -404,5 +404,7 @@
   "updateFailed": "Update Failed",
   "loadUponDeparture": "Load upon departure",
   "in": "In",
-  "out": "Out"
+  "out": "Out",
+  "current": "Current",
+  "previous": "Previous"
 }
