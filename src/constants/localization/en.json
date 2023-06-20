@@ -403,5 +403,7 @@
   "userRequests": "User Requests",
   "addCargo": "Add Cargo List",
   "stopActionPrompt": "Are you sure you want to stop this action?",
-  "updateFailed": "Update Failed"
+  "updateFailed": "Update Failed",
+  "current": "Current",
+  "previous": "Previous"
 }
