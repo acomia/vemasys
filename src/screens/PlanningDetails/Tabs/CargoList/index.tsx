@@ -208,37 +208,39 @@ const CargoList = () => {
             </Text>
           </HStack>
           {standardContainer?.map(container => {
-            return (
-              <TouchableOpacity
-                key={container.id}
-                onPress={() => {
-                  setSelectedContainer(() => container)
-                  setInputOpen(true)
-                }}
-              >
-                <HStack width={'full'}>
-                  <Text borderWidth={0.5} flex={2} p={ms(5)}>
-                    {container?.type?.title}
-                  </Text>
-                  <Text
-                    borderWidth={0.5}
-                    flex={1}
-                    p={ms(5)}
-                    textAlign={'center'}
-                  >
-                    {container?.nbOut ? container?.nbOut : null}
-                  </Text>
-                  <Text
-                    borderWidth={0.5}
-                    flex={1}
-                    p={ms(5)}
-                    textAlign={'center'}
-                  >
-                    {container?.nbIn ? container?.nbIn : null}
-                  </Text>
-                </HStack>
-              </TouchableOpacity>
-            )
+            if (container?.nbIn > 0 || container?.nbOut > 0) {
+              return (
+                <TouchableOpacity
+                  key={container.id}
+                  onPress={() => {
+                    setSelectedContainer(() => container)
+                    setInputOpen(true)
+                  }}
+                >
+                  <HStack width={'full'}>
+                    <Text borderWidth={0.5} flex={2} p={ms(5)}>
+                      {container?.type?.title}
+                    </Text>
+                    <Text
+                      borderWidth={0.5}
+                      flex={1}
+                      p={ms(5)}
+                      textAlign={'center'}
+                    >
+                      {container?.nbOut ? container?.nbOut : null}
+                    </Text>
+                    <Text
+                      borderWidth={0.5}
+                      flex={1}
+                      p={ms(5)}
+                      textAlign={'center'}
+                    >
+                      {container?.nbIn ? container?.nbIn : null}
+                    </Text>
+                  </HStack>
+                </TouchableOpacity>
+              )
+            }
           })}
           <HStack mt={ms(10)} padding={ms(5)} space={ms(10)}>
             <Text flex={2}>{t('loadUponDeparture')}</Text>
