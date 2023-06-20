@@ -182,58 +182,82 @@ const CargoList = () => {
     }
 
     return (
-      <Box>
-        <HStack width={'full'}>
-          <Text borderWidth={1} flex={2} p={ms(5)}>
-            {t('type')}
-          </Text>
-          <Text borderWidth={1} flex={1} p={ms(5)} textAlign={'center'}>
-            {t('out')}
-          </Text>
-          <Text borderWidth={1} flex={1} p={ms(5)} textAlign={'center'}>
-            {t('in')}
-          </Text>
-        </HStack>
-        {standardContainer?.map(container => {
-          return (
-            <TouchableOpacity
-              key={container.id}
-              onPress={() => {
-                setSelectedContainer(() => container)
-                setInputOpen(true)
-              }}
-            >
-              <HStack width={'full'}>
-                <Text borderWidth={0.5} flex={2} p={ms(5)}>
-                  {container?.type?.title}
-                </Text>
-                <Text borderWidth={0.5} flex={1} p={ms(5)} textAlign={'center'}>
-                  {container?.nbOut ? container?.nbOut : null}
-                </Text>
-                <Text borderWidth={0.5} flex={1} p={ms(5)} textAlign={'center'}>
-                  {container?.nbIn ? container?.nbIn : null}
-                </Text>
-              </HStack>
-            </TouchableOpacity>
-          )
-        })}
-        <HStack mt={ms(10)} padding={ms(5)} space={ms(10)}>
-          <Text flex={2}>{t('loadUponDeparture')}</Text>
-          <Text textAlign={'right'}>
-            {navigationLogDetails && navigationLogDetails?.loadUponDeparture
-              ? navigationLogDetails?.loadUponDeparture
-              : '---'}
-          </Text>
-        </HStack>
-        <InputModal
-          container={selectedContainer}
-          header={`Container: ${selectedContainer?.type?.title}`}
-          isLoading={isContainerUpdatedLoading}
-          isOpen={isInputOpen}
-          setOpen={() => setInputOpen(false)}
-          onAction={updateContainer}
-        />
-      </Box>
+      <VStack space={ms(10)}>
+        <Box alignSelf={'flex-end'}>
+          {/* <IconButton
+            size={ms(22)}
+            source={Icons.edit}
+            onPress={() =>
+              navigation.navigate('AddEditBulkCargo', {
+                cargo: cargo,
+                method: 'edit',
+              })
+            }
+          /> */}
+        </Box>
+        <Box>
+          <HStack width={'full'}>
+            <Text borderWidth={1} flex={2} p={ms(5)}>
+              {t('type')}
+            </Text>
+            <Text borderWidth={1} flex={1} p={ms(5)} textAlign={'center'}>
+              {t('out')}
+            </Text>
+            <Text borderWidth={1} flex={1} p={ms(5)} textAlign={'center'}>
+              {t('in')}
+            </Text>
+          </HStack>
+          {standardContainer?.map(container => {
+            return (
+              <TouchableOpacity
+                key={container.id}
+                onPress={() => {
+                  setSelectedContainer(() => container)
+                  setInputOpen(true)
+                }}
+              >
+                <HStack width={'full'}>
+                  <Text borderWidth={0.5} flex={2} p={ms(5)}>
+                    {container?.type?.title}
+                  </Text>
+                  <Text
+                    borderWidth={0.5}
+                    flex={1}
+                    p={ms(5)}
+                    textAlign={'center'}
+                  >
+                    {container?.nbOut ? container?.nbOut : null}
+                  </Text>
+                  <Text
+                    borderWidth={0.5}
+                    flex={1}
+                    p={ms(5)}
+                    textAlign={'center'}
+                  >
+                    {container?.nbIn ? container?.nbIn : null}
+                  </Text>
+                </HStack>
+              </TouchableOpacity>
+            )
+          })}
+          <HStack mt={ms(10)} padding={ms(5)} space={ms(10)}>
+            <Text flex={2}>{t('loadUponDeparture')}</Text>
+            <Text textAlign={'right'}>
+              {navigationLogDetails && navigationLogDetails?.loadUponDeparture
+                ? navigationLogDetails?.loadUponDeparture
+                : '---'}
+            </Text>
+          </HStack>
+          <InputModal
+            container={selectedContainer}
+            header={`Container: ${selectedContainer?.type?.title}`}
+            isLoading={isContainerUpdatedLoading}
+            isOpen={isInputOpen}
+            setOpen={() => setInputOpen(false)}
+            onAction={updateContainer}
+          />
+        </Box>
+      </VStack>
     )
   }
 
