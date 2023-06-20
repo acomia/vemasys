@@ -1,15 +1,25 @@
-import React from 'react'
-import {Alert, RefreshControl} from 'react-native'
-import {Box, Divider, HStack, ScrollView, Text, useToast} from 'native-base'
+import React, {useState} from 'react'
+import {Alert, RefreshControl, TouchableOpacity} from 'react-native'
+import {
+  Box,
+  Divider,
+  HStack,
+  ScrollView,
+  Text,
+  VStack,
+  useToast,
+} from 'native-base'
 import {useNavigation} from '@react-navigation/native'
 import {ms} from 'react-native-size-matters'
 
 import {Colors} from '@bluecentury/styles'
 import {usePlanning} from '@bluecentury/stores'
-import {IconButton, LoadingAnimated} from '@bluecentury/components'
+import {IconButton, LoadingAnimated, OTPInput} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {formatBulkTypeLabel, formatNumber} from '@bluecentury/constants'
 import {useTranslation} from 'react-i18next'
+import {BulkCargo, InputModal} from './components'
+import {StandardContainerCargo} from '@bluecentury/models'
 
 const CargoList = () => {
   const {t} = useTranslation()
@@ -20,7 +30,14 @@ const CargoList = () => {
     navigationLogDetails,
     getNavigationLogDetails,
     deleteBulkCargo,
+    containerCargo,
+    isContainerCargo,
   } = usePlanning()
+  const [isInputOpen, setInputOpen] = useState(false)
+  const [selectedContainer, setSelectedContainer] =
+    useState<StandardContainerCargo>({})
+
+  console.log('containerCargo', containerCargo, isContainerCargo)
 
   const showToast = (text: string, res: string) => {
     toast.show({
@@ -82,7 +99,129 @@ const CargoList = () => {
     getNavigationLogDetails(navigationLogDetails?.id)
   }
 
-  if (isPlanningDetailsLoading) return <LoadingAnimated />
+  const renderBulkCargo = () => {
+    if (!navigationLogDetails?.bulkCargo) return null
+
+    if (navigationLogDetails?.bulkCargo?.length <= 0) {
+      return (
+        <Box flex="1">
+          <Text color={Colors.disabled} fontWeight="medium" textAlign="center">
+            {t('navLogHasNoCargo')}
+          </Text>
+        </Box>
+      )
+    }
+
+    return navigationLogDetails?.bulkCargo?.map((cargo, index) => {
+      const fValue = cargo ? cargo.actualTonnage || cargo.tonnage : 0
+      return (
+        <HStack
+          key={index}
+          alignItems="center"
+          bg={Colors.white}
+          borderRadius={5}
+          justifyContent="space-between"
+          mb={ms(10)}
+          px={ms(16)}
+          py={ms(5)}
+          shadow={1}
+          width="100%"
+        >
+          <Box flex="1" mr={ms(5)}>
+            <Text fontWeight="medium">
+              {cargo.type ? formatBulkTypeLabel(cargo.type) : 'N.A.'}
+            </Text>
+            <Text color={Colors.disabled}>
+              {cargo.isLoading ? 'In: ' : 'Out: '}
+              {convertPeriodToComma(fValue?.toString())}
+            </Text>
+          </Box>
+          <IconButton
+            size={ms(22)}
+            source={Icons.edit}
+            onPress={() =>
+              navigation.navigate('AddEditBulkCargo', {
+                cargo: cargo,
+                method: 'edit',
+              })
+            }
+          />
+        </HStack>
+      )
+    })
+  }
+
+  const renderContainerCargo = () => {
+    const standardContainer = navigationLogDetails?.standardContainerCargo
+
+    if (standardContainer && standardContainer?.length <= 0) {
+      return (
+        <Box flex="1">
+          <Text color={Colors.disabled} fontWeight="medium" textAlign="center">
+            {t('navLogHasNoCargo')}
+          </Text>
+        </Box>
+      )
+    }
+
+    return (
+      <Box>
+        <HStack width={'full'}>
+          <Text borderWidth={1} flex={2} p={ms(5)}>
+            {t('type')}
+          </Text>
+          <Text borderWidth={1} flex={1} p={ms(5)} textAlign={'center'}>
+            {t('out')}
+          </Text>
+          <Text borderWidth={1} flex={1} p={ms(5)} textAlign={'center'}>
+            {t('in')}
+          </Text>
+        </HStack>
+        {standardContainer?.map(container => {
+          console.log('standardContainer', container)
+          return (
+            <TouchableOpacity
+              key={container.id}
+              onPress={() => {
+                setSelectedContainer(container)
+                setInputOpen(true)
+              }}
+            >
+              <HStack width={'full'}>
+                <Text borderWidth={0.5} flex={2} p={ms(5)}>
+                  {container?.type?.title}
+                </Text>
+                <Text borderWidth={0.5} flex={1} p={ms(5)} textAlign={'center'}>
+                  {container?.nbOut ? container?.nbOut : null}
+                </Text>
+                <Text borderWidth={0.5} flex={1} p={ms(5)} textAlign={'center'}>
+                  {container?.nbIn ? container?.nbIn : null}
+                </Text>
+              </HStack>
+            </TouchableOpacity>
+          )
+        })}
+        <HStack mt={ms(10)} padding={ms(5)} space={ms(10)}>
+          <Text flex={2}>{t('loadUponDeparture')}</Text>
+          <Text textAlign={'right'}>
+            {navigationLogDetails && navigationLogDetails?.loadUponDeparture
+              ? navigationLogDetails?.loadUponDeparture
+              : '---'}
+          </Text>
+        </HStack>
+        <InputModal
+          header={`Container: ${selectedContainer?.type?.title}`}
+          inValue={selectedContainer?.nbIn?.toString()}
+          isOpen={isInputOpen}
+          outValue={selectedContainer?.nbOut?.toString()}
+          setOpen={() => setInputOpen(false)}
+          onAction={() => console.log('test')}
+        />
+      </Box>
+    )
+  }
+
+  // if (isPlanningDetailsLoading) return <LoadingAnimated />
 
   return (
     <Box flex="1">
@@ -102,84 +241,12 @@ const CargoList = () => {
           {t('cargo')}
         </Text>
         <HStack justifyContent="flex-end" mt={ms(10)}>
-          {/* <Text fontSize={ms(16)} bold color={Colors.text}>
-            Inventory
-          </Text> */}
           <Text bold color={Colors.text} fontSize={ms(16)}>
             {t('actions')}
           </Text>
         </HStack>
         <Divider mb={ms(15)} mt={ms(5)} />
-        {navigationLogDetails?.bulkCargo?.length > 0 ? (
-          navigationLogDetails?.bulkCargo?.map((cargo, index) => {
-            const fValue = cargo ? cargo.actualTonnage || cargo.tonnage : 0
-            return (
-              <HStack
-                key={index}
-                alignItems="center"
-                bg={Colors.white}
-                borderRadius={5}
-                justifyContent="space-between"
-                mb={ms(10)}
-                px={ms(16)}
-                py={ms(5)}
-                shadow={1}
-                width="100%"
-              >
-                <Box flex="1" mr={ms(5)}>
-                  <Text fontWeight="medium">
-                    {cargo.type ? formatBulkTypeLabel(cargo.type) : 'N.A.'}
-                  </Text>
-                  <Text color={Colors.disabled}>
-                    {cargo.isLoading ? 'In: ' : 'Out: '}
-                    {/* {formatNumber(fValue, 0, ',')} */}
-                    {convertPeriodToComma(fValue?.toString())}
-                  </Text>
-                </Box>
-                <IconButton
-                  size={ms(22)}
-                  source={Icons.edit}
-                  onPress={() =>
-                    navigation.navigate('AddEditBulkCargo', {
-                      cargo: cargo,
-                      method: 'edit',
-                    })
-                  }
-                />
-                {/* <HStack alignItems="center">
-
-                  <Box w={ms(10)} />
-                  <IconButton
-                    source={Icons.trash}
-                    onPress={() => deleteBulkCargoConfirmation(cargo)}
-                    size={ms(22)}
-                  />
-                </HStack> */}
-              </HStack>
-            )
-          })
-        ) : (
-          <Box flex="1">
-            <Text
-              color={Colors.disabled}
-              fontWeight="medium"
-              textAlign="center"
-            >
-              {t('navLogHasNoCargo')}
-            </Text>
-          </Box>
-        )}
-        {/* <Box position="absolute" bottom={0} right={ms(12)}>
-          <IconButton
-            source={Icons.add}
-            size={ms(50)}
-            onPress={() =>
-              navigation.navigate('AddEditBulkCargo', {
-                method: 'add',
-              })
-            }
-          />
-        </Box> */}
+        {isContainerCargo ? renderContainerCargo() : renderBulkCargo()}
       </ScrollView>
     </Box>
   )

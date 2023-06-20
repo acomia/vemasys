@@ -8,6 +8,7 @@ import {
   TonnageCertifications,
   Vessel,
   Comments,
+  StandardContainerCargo,
 } from '@bluecentury/models'
 
 type PlanningState = {
@@ -47,6 +48,8 @@ type PlanningState = {
   tonnageCertifications: TonnageCertifications[] | undefined
   wholeVesselHistoryNavLogs: any[]
   createdNavlogAction: NavigationLogAction | Record<string, never>
+  containerCargo: StandardContainerCargo[]
+  isContainerCargo: boolean
 }
 
 type PlanningActions = {
@@ -128,6 +131,8 @@ const initialState: PlanningState = {
   tonnageCertifications: [],
   wholeVesselHistoryNavLogs: [],
   createdNavlogAction: {},
+  containerCargo: [],
+  isContainerCargo: false,
 }
 
 export const usePlanning = create(
@@ -143,6 +148,7 @@ export const usePlanning = create(
         try {
           const response = await API.reloadVesselHistoryNavLogs(vesselId, page)
           if (Array.isArray(response)) {
+            console.log(response.filter(data => data.cargoType === 'container'))
             set({
               historyNavigationLogs:
                 page === 1
@@ -222,6 +228,8 @@ export const usePlanning = create(
           isNavLogDetailsLoading: true,
           isPlanningDetailsLoading: true,
           navigationLogDetails: undefined,
+          containerCargo: [],
+          isContainerCargo: false,
         })
         try {
           const response = await API.reloadNavigationLogDetails(navLogId)
@@ -251,6 +259,13 @@ export const usePlanning = create(
 
               isNavLogDetailsLoading: false,
             })
+
+            if (response?.cargoType === 'container') {
+              set({
+                isContainerCargo: true,
+                // containerCargo: response?.standardContainerCargo,
+              })
+            }
             return response
           } else {
             set({
