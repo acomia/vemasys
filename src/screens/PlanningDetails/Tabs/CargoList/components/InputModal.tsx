@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import {Switch, Platform} from 'react-native'
+import {Switch, Platform, ActivityIndicator} from 'react-native'
 import {
   Modal,
   Text,
@@ -11,8 +11,9 @@ import {
 import {ms} from 'react-native-size-matters'
 import {Colors} from '@bluecentury/styles'
 import {useTranslation} from 'react-i18next'
-import {FormControl} from '@bluecentury/components'
+import {FormControl, LoadingAnimated} from '@bluecentury/components'
 import TextInput from './TextInput'
+import {StandardContainerCargo} from '@bluecentury/models'
 
 interface Props {
   header: string
@@ -20,8 +21,8 @@ interface Props {
   setOpen: () => void
   onAction?: (value: any) => void
   onCancel?: () => void
-  inValue: string
-  outValue: string
+  container: StandardContainerCargo
+  isLoading: boolean
 }
 
 export default ({
@@ -30,40 +31,37 @@ export default ({
   setOpen,
   onAction,
   onCancel,
-  inValue,
-  outValue,
+  container,
+  isLoading = false,
 }: Props) => {
-  const initialValues = {
-    freeboard: '',
-    draught: '',
-  }
-  const [formValues, setFormValues] = useState(initialValues)
+  const [formValues, setFormValues] =
+    useState<StandardContainerCargo>(container)
   const [errors, setErrors] = useState<any>({})
   const {t} = useTranslation()
-  const [isDraught, setIsDraught] = useState<boolean>(false)
+  const [isFIrstItem, setIsFIrstItem] = useState<boolean>(false)
 
   const renderToggle = () => {
     return (
       <HStack justifyContent={'space-evenly'} width={'100%'}>
         <Text
-          color={!isDraught ? Colors.primary : Colors.disabled}
+          color={!isFIrstItem ? Colors.primary : Colors.disabled}
           fontSize={ms(20)}
           fontWeight={'bold'}
-          onPress={() => setIsDraught(false)}
+          onPress={() => setIsFIrstItem(false)}
         >
           {t('out')}
         </Text>
         <Switch
           thumbColor={Colors.white}
           trackColor={{true: Colors.primary, false: Colors.primary}}
-          value={isDraught}
-          onValueChange={() => setIsDraught(prevValue => !prevValue)}
+          value={isFIrstItem}
+          onValueChange={() => setIsFIrstItem(prevValue => !prevValue)}
         />
         <Text
-          color={isDraught ? Colors.primary : Colors.disabled}
+          color={isFIrstItem ? Colors.primary : Colors.disabled}
           fontSize={ms(20)}
           fontWeight={'bold'}
-          onPress={() => setIsDraught(true)}
+          onPress={() => setIsFIrstItem(true)}
         >
           {t('in')}
         </Text>
@@ -72,23 +70,24 @@ export default ({
   }
 
   const handleSave = () => {
-    console.log('test')
-    handleOnClose()
+    onAction(formValues)
   }
 
   const handleOnClose = () => {
-    setFormValues(initialValues)
+    setFormValues(null)
     setErrors({})
     setOpen()
+    setIsFIrstItem(false)
   }
 
-  const handleOnChange = (value: string) => {
-    if (value === '') {
-      setFormValues(initialValues)
-      return
-    }
+  const handleOnChange = (name: string, value: string) => {
+    if (value === '') return
+    const objValue = Number(value)
 
-    console.log('test')
+    setFormValues({
+      ...container,
+      [name]: isNaN(objValue) ? 0 : objValue,
+    })
   }
 
   return (
@@ -103,7 +102,6 @@ export default ({
           setOpen()
         }}
       >
-        {console.log('', outValue, ' ', inValue)}
         <Modal.Content width={'full'}>
           <Modal.Header>
             <Text>{header}</Text>
@@ -112,29 +110,29 @@ export default ({
             <VStack space={ms(5)}>
               {renderToggle()}
               <FormControl
-                isDisabled={isDraught}
-                isInvalid={'freeboard' in errors}
+                isDisabled={isFIrstItem}
+                isInvalid={'nbOut' in errors}
               >
                 <TextInput
-                  isActive={!isDraught}
+                  isActive={!isFIrstItem}
                   label={t('out')}
                   maxLength={3}
-                  name="out_input"
-                  placeholder={outValue}
+                  name="nbOut"
+                  placeholder={container?.nbOut?.toString()}
                   // value={outValue}
                   onChange={handleOnChange}
                 />
               </FormControl>
               <FormControl
-                isDisabled={!isDraught}
-                isInvalid={'draught' in errors}
+                isDisabled={!isFIrstItem}
+                isInvalid={'inIn' in errors}
               >
                 <TextInput
-                  isActive={isDraught}
+                  isActive={isFIrstItem}
                   label={t('in')}
                   maxLength={3}
-                  name="in_input"
-                  placeholder={inValue}
+                  name="nbIn"
+                  placeholder={container?.nbIn?.toString()}
                   // value={inValue}
                   onChange={handleOnChange}
                 />
@@ -152,8 +150,19 @@ export default ({
               >
                 <Text color={Colors.disabled}>{t('cancel')}</Text>
               </Button>
-              <Button flex={1} onPress={() => handleSave()}>
-                <Text color={Colors.white}>{t('save')}</Text>
+              <Button
+                backgroundColor={
+                  formValues === null || isLoading ? Colors.disabled : null
+                }
+                disabled={formValues === null || isLoading}
+                flex={1}
+                onPress={() => handleSave()}
+              >
+                {isLoading ? (
+                  <ActivityIndicator size={ms(20)} />
+                ) : (
+                  <Text color={Colors.white}>{t('save')}</Text>
+                )}
               </Button>
             </HStack>
           </Modal.Footer>

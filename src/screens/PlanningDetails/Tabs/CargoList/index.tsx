@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import {Alert, RefreshControl, TouchableOpacity} from 'react-native'
 import {
   Box,
@@ -18,7 +18,7 @@ import {IconButton, LoadingAnimated, OTPInput} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {formatBulkTypeLabel, formatNumber} from '@bluecentury/constants'
 import {useTranslation} from 'react-i18next'
-import {BulkCargo, InputModal} from './components'
+import {InputModal} from './components'
 import {StandardContainerCargo} from '@bluecentury/models'
 
 const CargoList = () => {
@@ -32,12 +32,23 @@ const CargoList = () => {
     deleteBulkCargo,
     containerCargo,
     isContainerCargo,
+    updateContainerCargo,
+    isContainerUpdated,
+    isContainerUpdatedLoading,
+    resetContainerUpdate,
   } = usePlanning()
   const [isInputOpen, setInputOpen] = useState(false)
   const [selectedContainer, setSelectedContainer] =
     useState<StandardContainerCargo>({})
 
-  console.log('containerCargo', containerCargo, isContainerCargo)
+  useEffect(() => {
+    if (isContainerUpdated && !isContainerUpdatedLoading) {
+      getNavigationLogDetails(navigationLogDetails?.id)
+
+      setInputOpen(false)
+      resetContainerUpdate()
+    }
+  }, [isContainerUpdated, isContainerUpdatedLoading])
 
   const showToast = (text: string, res: string) => {
     toast.show({
@@ -151,6 +162,12 @@ const CargoList = () => {
     })
   }
 
+  const updateContainer = (cargo: StandardContainerCargo) => {
+    if (!selectedContainer && !value) return
+
+    updateContainerCargo(cargo)
+  }
+
   const renderContainerCargo = () => {
     const standardContainer = navigationLogDetails?.standardContainerCargo
 
@@ -178,12 +195,11 @@ const CargoList = () => {
           </Text>
         </HStack>
         {standardContainer?.map(container => {
-          console.log('standardContainer', container)
           return (
             <TouchableOpacity
               key={container.id}
               onPress={() => {
-                setSelectedContainer(container)
+                setSelectedContainer(() => container)
                 setInputOpen(true)
               }}
             >
@@ -210,18 +226,18 @@ const CargoList = () => {
           </Text>
         </HStack>
         <InputModal
+          container={selectedContainer}
           header={`Container: ${selectedContainer?.type?.title}`}
-          inValue={selectedContainer?.nbIn?.toString()}
+          isLoading={isContainerUpdatedLoading}
           isOpen={isInputOpen}
-          outValue={selectedContainer?.nbOut?.toString()}
           setOpen={() => setInputOpen(false)}
-          onAction={() => console.log('test')}
+          onAction={updateContainer}
         />
       </Box>
     )
   }
 
-  // if (isPlanningDetailsLoading) return <LoadingAnimated />
+  if (isPlanningDetailsLoading) return <LoadingAnimated />
 
   return (
     <Box flex="1">

@@ -32,11 +32,6 @@ export default ({
   )
 
   useEffect(() => {
-    // if (!isActive && value === '') {
-    //   setTextValue(Array(maxLength).fill(''))
-    // }
-
-    // if (!isActive && value.length > 0) {
     if (placeholder && placeholder.length > 0) {
       const paddedValue = placeholder?.padStart(maxLength, '0')
       setTextPlaceholder(paddedValue?.split(''))

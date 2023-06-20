@@ -50,6 +50,8 @@ type PlanningState = {
   createdNavlogAction: NavigationLogAction | Record<string, never>
   containerCargo: StandardContainerCargo[]
   isContainerCargo: boolean
+  isContainerUpdated: boolean
+  isContainerUpdatedLoading: boolean
 }
 
 type PlanningActions = {
@@ -91,6 +93,8 @@ type PlanningActions = {
   getVesselnavigationDetails: (id: string) => void
   getNavLogTonnageCertification: (id: number) => void
   setPlannedNavigationLogs: (plannedNavigationLogs: NavigationLog[]) => void
+  updateContainerCargo: (cargo: StandardContainerCargo) => void
+  resetContainerUpdate: () => void
 }
 
 export type PlanningStore = PlanningState & PlanningActions
@@ -133,6 +137,8 @@ const initialState: PlanningState = {
   createdNavlogAction: {},
   containerCargo: [],
   isContainerCargo: false,
+  isContainerUpdated: false,
+  isContainerUpdatedLoading: true,
 }
 
 export const usePlanning = create(
@@ -720,6 +726,24 @@ export const usePlanning = create(
         } else {
           set({plannedNavigationLogs: []})
         }
+      },
+      updateContainerCargo: async (cargo: StandardContainerCargo) => {
+        set({isContainerUpdated: false, isContainerUpdatedLoading: true})
+
+        try {
+          const response = await API.updateStandardContainers(cargo)
+
+          if (Object.values(response).length > 0) {
+            set({isContainerUpdated: true})
+          }
+
+          set({isContainerUpdatedLoading: false})
+        } catch (error) {
+          set({isContainerUpdated: false, isContainerUpdatedLoading: false})
+        }
+      },
+      resetContainerUpdate: () => {
+        set({isContainerUpdated: false, isContainerUpdatedLoading: false})
       },
     }),
     {

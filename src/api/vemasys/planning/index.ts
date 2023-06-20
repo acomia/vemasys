@@ -3,6 +3,7 @@ import {VESSEL_PART_CARGO_TYPE} from '@bluecentury/constants'
 import axios from 'axios'
 import {useAuth, useEntity, useSettings} from '@bluecentury/stores'
 import {Platform} from 'react-native'
+import {StandardContainerCargo} from '@bluecentury/models'
 
 const reloadNavigationLogDetails = async (navLogId: string) => {
   return API.get(`navigation_logs/${navLogId}`)
@@ -332,6 +333,22 @@ const deleteNavigationLogAction = async (id: string) => {
     })
     .catch(error => {
       console.error('Error:Delete navlog action data', error)
+    })
+}
+
+export const updateStandardContainers = async (
+  cargo: StandardContainerCargo
+) => {
+  return API.put(`navigation_standard_containers/${cargo?.id}`, cargo)
+    .then(response => {
+      if (response.status === 200) {
+        return response.data
+      }
+
+      throw new Error('Update Standard container')
+    })
+    .catch(error => {
+      console.error('Error: Update Standard contianers ', error)
     })
 }
 export {
