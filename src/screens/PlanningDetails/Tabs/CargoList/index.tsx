@@ -310,7 +310,7 @@ const CargoList = () => {
         {isContainerCargo ? renderContainerCargo() : renderBulkCargo()}
       </ScrollView>
       <Fab
-        icon={<IconAnt name="plus" size={ms(25)} />}
+        icon={<IconAnt color={Colors.white} name="plus" size={ms(25)} />}
         renderInPortal={false}
         shadow={2}
         size="sm"

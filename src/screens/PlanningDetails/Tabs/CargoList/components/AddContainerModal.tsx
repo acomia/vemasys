@@ -35,7 +35,7 @@ export default ({header, isOpen, setOpen, isLoading = false}: Props) => {
   const [errors, setErrors] = useState<any>({})
   const [containerValue, setContainerValue] = useState('')
   const {t} = useTranslation()
-  const [formValues, setFormValues] = useState<any>({})
+  const [formValues, setFormValues] = useState<any>(null)
 
   const handleSave = () => {
     const navContainer: NavigationContainer[] = navigationContainers.filter(
