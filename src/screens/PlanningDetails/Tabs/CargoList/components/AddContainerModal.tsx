@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import {Switch, Platform, ActivityIndicator} from 'react-native'
+import {Platform, ActivityIndicator} from 'react-native'
 import {
   Modal,
   Text,
@@ -13,33 +13,23 @@ import {
 import {ms} from 'react-native-size-matters'
 import {Colors} from '@bluecentury/styles'
 import {useTranslation} from 'react-i18next'
-import {FormControl, LoadingAnimated} from '@bluecentury/components'
+import {FormControl} from '@bluecentury/components'
 import TextInput from './TextInput'
-import {
-  StandardContainerCargo,
-  NavigationContainer,
-  CreateNavigationContainer,
-} from '@bluecentury/models'
+import {NavigationContainer} from '@bluecentury/models'
 import {usePlanning} from '@bluecentury/stores'
 
 interface Props {
   header: string
   isOpen: boolean
   setOpen: () => void
-  onAction?: (value: any) => void
   isLoading?: boolean
 }
 
-export default ({
-  header,
-  isOpen,
-  setOpen,
-  onAction,
-  isLoading = false,
-}: Props) => {
+export default ({header, isOpen, setOpen, isLoading = false}: Props) => {
   const {
     navigationContainers,
     navigationLogDetails,
+    isCreateContainerLoading,
     createNavigationContainer,
   } = usePlanning()
   const [errors, setErrors] = useState<any>({})
@@ -48,45 +38,24 @@ export default ({
   const [formValues, setFormValues] = useState<any>({})
 
   const handleSave = () => {
-    // onAction(formValues)
     const navContainer: NavigationContainer[] = navigationContainers.filter(
       navCon => navCon?.id?.toString() === formValues?.container
     )
-    let obj: CreateNavigationContainer
-    obj = {
-      type: {
-        title: navContainer[0]?.type?.title,
-        isoCode: navContainer[0]?.type?.isoCode,
-        sizeType: navContainer[0]?.type?.sizeType
-          ? navContainer[0]?.type?.sizeType
-          : null,
-      },
-      nbIn: formValues?.nbIn ? formValues?.nbIn : 0,
-      nbOut: formValues?.nbOut ? formValues?.nbIn : 0,
-      createdAt: new Date().toString(),
-      creationDate: new Date().toString(),
-    }
 
-    console.log('navContainer', navContainer)
-    console.log('formValues', formValues)
-    // createNavigationContainer({
-    //   // log: {...navigationLogDetails},
-    //   type: {
-    //     title: navContainer[0]?.type?.title,
-    //     isoCode: navContainer[0]?.type?.isoCode,
-    //     sizeType: navContainer[0]?.type?.sizeType,
-    //   },
-    //   nbIn: formValues?.nbIn ? formValues?.nbIn : 0,
-    //   nbOut: formValues?.nbOut ? formValues?.nbOut : 0,
-    // })
-    createNavigationContainer(obj)
+    if (navigationLogDetails && navContainer) {
+      createNavigationContainer({
+        log: navigationLogDetails?.id?.toString(),
+        type: containerValue?.toString(),
+
+        ...formValues,
+      })
+    }
   }
 
   const handleOnClose = () => {
-    // setFormValues(null)
     setErrors({})
     setOpen()
-    // setIsFIrstItem(false)
+    setContainerValue('')
   }
 
   const handleTextOnChange = (name: string, value: string) => {
@@ -97,11 +66,6 @@ export default ({
       ...formValues,
       [name]: isNaN(objValue) ? 0 : objValue,
     })
-
-    // setFormValues({
-    //   ...container,
-    //   [name]: isNaN(objValue) ? 0 : objValue,
-    // })
   }
 
   return (
@@ -122,13 +86,10 @@ export default ({
                   bg={Colors.light_grey}
                   minWidth="300"
                   mt={ms(3)}
-                  placeholder=""
-                  selectedValue={formValues?.container || null}
+                  placeholder="Choose Container"
+                  selectedValue={containerValue}
                   onValueChange={e => {
-                    setFormValues(prevValue => ({
-                      ...prevValue,
-                      ['container']: e,
-                    }))
+                    setContainerValue(e)
                   }}
                 >
                   {navigationContainers?.map((navContainer, index) => {
@@ -136,7 +97,7 @@ export default ({
                       <Select.Item
                         key={index}
                         label={`[${navContainer?.isoType}] ${navContainer?.type?.title}`}
-                        value={navContainer?.id?.toString()}
+                        value={navContainer?.type?.id?.toString()}
                       />
                     )
                   })}
@@ -180,14 +141,16 @@ export default ({
                 <Text color={Colors.disabled}>{t('cancel')}</Text>
               </Button>
               <Button
-                // backgroundColor={
-                //   formValues === null || isLoading ? Colors.disabled : null
-                // }
-                // disabled={formValues === null || isLoading}
+                backgroundColor={
+                  formValues === null || isCreateContainerLoading
+                    ? Colors.disabled
+                    : null
+                }
+                disabled={formValues === null || isCreateContainerLoading}
                 flex={1}
                 onPress={() => handleSave()}
               >
-                {isLoading ? (
+                {isCreateContainerLoading ? (
                   <ActivityIndicator size={ms(20)} />
                 ) : (
                   <Text color={Colors.white}>{t('save')}</Text>

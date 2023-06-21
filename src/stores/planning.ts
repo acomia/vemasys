@@ -102,6 +102,7 @@ type PlanningActions = {
   resetContainerUpdate: () => void
   getNavigationContainers: () => void
   createNavigationContainer: (containerCargo: any) => void
+  resetCreateStandardContainer: () => void
 }
 
 export type PlanningStore = PlanningState & PlanningActions
@@ -771,7 +772,6 @@ export const usePlanning = create(
       },
       createNavigationContainer: (containerCargo: any) => {
         set({isCreateContainerSuccess: false, isCreateContainerLoading: true})
-        console.log('containerCargo', containerCargo)
         return API.createStandardContainer(containerCargo)
           .then(response => {
             if (Object.values(response).length > 0) {
@@ -790,6 +790,9 @@ export const usePlanning = create(
           })
 
         return API
+      },
+      resetCreateStandardContainer: () => {
+        set({isCreateContainerSuccess: false, isCreateContainerLoading: false})
       },
     }),
     {

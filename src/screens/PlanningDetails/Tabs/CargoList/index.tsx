@@ -39,9 +39,12 @@ const CargoList = () => {
     isContainerUpdatedLoading,
     resetContainerUpdate,
     getNavigationContainers,
+    isCreateContainerSuccess,
+    isCreateContainerLoading,
+    resetCreateStandardContainer,
   } = usePlanning()
   const [isInputOpen, setInputOpen] = useState(false)
-  const [addIsOpen, setAddisOpen] = useState(false)
+  const [addIsOpen, setAddIsOpen] = useState(false)
   const [selectedContainer, setSelectedContainer] =
     useState<StandardContainerCargo>({})
 
@@ -53,12 +56,24 @@ const CargoList = () => {
 
   useEffect(() => {
     if (isContainerUpdated && !isContainerUpdatedLoading) {
-      getNavigationLogDetails(navigationLogDetails?.id)
-
       setInputOpen(false)
+      getNavigationLogDetails('134753') // this is for testing
+      // getNavigationLogDetails(navigationLogDetails?.id)
       resetContainerUpdate()
     }
-  }, [isContainerUpdated, isContainerUpdatedLoading])
+
+    if (isCreateContainerSuccess && !isCreateContainerLoading) {
+      setAddIsOpen(false)
+      getNavigationLogDetails('134753') // this is for testing
+      // getNavigationLogDetails(navigationLogDetails?.id)
+      resetCreateStandardContainer()
+    }
+  }, [
+    isContainerUpdated,
+    isContainerUpdatedLoading,
+    isCreateContainerLoading,
+    isCreateContainerSuccess,
+  ])
 
   const showToast = (text: string, res: string) => {
     toast.show({
@@ -201,7 +216,7 @@ const CargoList = () => {
           <IconButton
             size={ms(30)}
             source={Icons.add}
-            onPress={() => setAddisOpen(true)}
+            onPress={() => setAddIsOpen(true)}
           />
         </Box>
         <Box>
@@ -302,7 +317,7 @@ const CargoList = () => {
       <AddContainerModal
         header={'Create Standard Container'}
         isOpen={addIsOpen}
-        setOpen={() => setAddisOpen(false)}
+        setOpen={() => setAddIsOpen(false)}
         onAction={handleSaveContainer}
       />
     </Box>
