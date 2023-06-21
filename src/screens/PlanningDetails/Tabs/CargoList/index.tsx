@@ -4,21 +4,25 @@ import {
   Box,
   Divider,
   HStack,
+  Modal,
   ScrollView,
+  Select,
   Text,
   VStack,
   useToast,
+  Fab,
+  Image,
 } from 'native-base'
 import {useNavigation} from '@react-navigation/native'
 import {ms} from 'react-native-size-matters'
-
+import IconAnt from 'react-native-vector-icons/AntDesign'
 import {Colors} from '@bluecentury/styles'
 import {usePlanning} from '@bluecentury/stores'
 import {IconButton, LoadingAnimated, OTPInput} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {formatBulkTypeLabel, formatNumber} from '@bluecentury/constants'
 import {useTranslation} from 'react-i18next'
-import {InputModal} from './components'
+import {AddContainerModal, InputModal} from './components'
 import {StandardContainerCargo} from '@bluecentury/models'
 
 const CargoList = () => {
@@ -36,19 +40,43 @@ const CargoList = () => {
     isContainerUpdated,
     isContainerUpdatedLoading,
     resetContainerUpdate,
+    getNavigationContainers,
+    isCreateContainerSuccess,
+    isCreateContainerLoading,
+    resetCreateStandardContainer,
+    createNavigationContainer,
   } = usePlanning()
   const [isInputOpen, setInputOpen] = useState(false)
+  const [addIsOpen, setAddIsOpen] = useState(false)
   const [selectedContainer, setSelectedContainer] =
     useState<StandardContainerCargo>({})
 
   useEffect(() => {
-    if (isContainerUpdated && !isContainerUpdatedLoading) {
-      getNavigationLogDetails(navigationLogDetails?.id)
+    if (isContainerCargo) {
+      getNavigationContainers()
+    }
+  }, [isContainerCargo])
 
+  useEffect(() => {
+    if (isContainerUpdated && !isContainerUpdatedLoading) {
       setInputOpen(false)
+      // getNavigationLogDetails('134753') // this is for testing blueC
+      getNavigationLogDetails(navigationLogDetails?.id)
       resetContainerUpdate()
     }
-  }, [isContainerUpdated, isContainerUpdatedLoading])
+
+    if (isCreateContainerSuccess && !isCreateContainerLoading) {
+      setAddIsOpen(false)
+      // getNavigationLogDetails('134753') // this is for testing blueC
+      getNavigationLogDetails(navigationLogDetails?.id)
+      resetCreateStandardContainer()
+    }
+  }, [
+    isContainerUpdated,
+    isContainerUpdatedLoading,
+    isCreateContainerLoading,
+    isCreateContainerSuccess,
+  ])
 
   const showToast = (text: string, res: string) => {
     toast.show({
@@ -110,6 +138,28 @@ const CargoList = () => {
     getNavigationLogDetails(navigationLogDetails?.id)
   }
 
+  const updateContainer = async (cargo: StandardContainerCargo) => {
+    if (!selectedContainer && !cargo) return
+
+    const response = await updateContainerCargo(cargo)
+    if (response) {
+      showToast('Container created successfully', 'success')
+    } else {
+      showToast('Container created failed', 'failed')
+    }
+  }
+
+  const handleCreateContainer = async (values: any) => {
+    if (!values) return
+
+    const response = await createNavigationContainer(values)
+    if (response) {
+      showToast('Container created successfully', 'success')
+    } else {
+      showToast('Container created failed', 'failed')
+    }
+  }
+
   const renderBulkCargo = () => {
     if (!navigationLogDetails?.bulkCargo) return null
 
@@ -162,12 +212,6 @@ const CargoList = () => {
     })
   }
 
-  const updateContainer = (cargo: StandardContainerCargo) => {
-    if (!selectedContainer && !value) return
-
-    updateContainerCargo(cargo)
-  }
-
   const renderContainerCargo = () => {
     const standardContainer = navigationLogDetails?.standardContainerCargo
 
@@ -183,18 +227,6 @@ const CargoList = () => {
 
     return (
       <VStack space={ms(10)}>
-        <Box alignSelf={'flex-end'}>
-          {/* <IconButton
-            size={ms(22)}
-            source={Icons.edit}
-            onPress={() =>
-              navigation.navigate('AddEditBulkCargo', {
-                cargo: cargo,
-                method: 'edit',
-              })
-            }
-          /> */}
-        </Box>
         <Box>
           <HStack width={'full'}>
             <Text borderWidth={1} flex={2} p={ms(5)}>
@@ -290,6 +322,21 @@ const CargoList = () => {
         <Divider mb={ms(15)} mt={ms(5)} />
         {isContainerCargo ? renderContainerCargo() : renderBulkCargo()}
       </ScrollView>
+      {isContainerCargo && (
+        <Fab
+          icon={<IconAnt color={Colors.white} name="plus" size={ms(25)} />}
+          renderInPortal={false}
+          shadow={2}
+          size="sm"
+          onPress={() => setAddIsOpen(true)}
+        />
+      )}
+      <AddContainerModal
+        header={'Create Standard Container'}
+        isOpen={addIsOpen}
+        setOpen={() => setAddIsOpen(false)}
+        onAction={handleCreateContainer}
+      />
     </Box>
   )
 }

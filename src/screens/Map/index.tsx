@@ -231,7 +231,6 @@ export default function Map({navigation}: Props) {
         const currentNavigationLog = currentNavLogs[currentNavLogs?.length - 1]
         if (currentNavigationLog) {
           getNavigationLogDetails(currentNavigationLog?.id).then(response => {
-            console.log('currentNavLog', response)
             if (response) setCurrentNavLog(response)
           })
         } else {
