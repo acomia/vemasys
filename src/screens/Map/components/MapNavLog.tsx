@@ -40,14 +40,6 @@ const MapNavLog = (props: {
     label = '',
     isActionInProgress,
   } = props
-  // const {
-  //   navigationLog,
-  //   itemColor,
-  //   key,
-  //   isFinished = false,
-  //   label = '',
-  //   isActionInProgress,
-  // } = props
   const focused = useIsFocused()
 
   const {
