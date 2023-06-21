@@ -11,6 +11,11 @@ export type EntityUser = {
     title: string
     permissions: Array<string>
   }
-  user: string
+  user: {
+    id: number
+    firstname: string | null
+    lastname: string | null
+    icon: any
+  }
   entity: Entity
 }

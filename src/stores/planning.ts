@@ -8,6 +8,7 @@ import {
   TonnageCertifications,
   Vessel,
   Comments,
+  StandardContainerCargo,
 } from '@bluecentury/models'
 
 type PlanningState = {
@@ -47,6 +48,10 @@ type PlanningState = {
   tonnageCertifications: TonnageCertifications[] | undefined
   wholeVesselHistoryNavLogs: any[]
   createdNavlogAction: NavigationLogAction | Record<string, never>
+  containerCargo: StandardContainerCargo[]
+  isContainerCargo: boolean
+  isContainerUpdated: boolean
+  isContainerUpdatedLoading: boolean
 }
 
 type PlanningActions = {
@@ -88,6 +93,8 @@ type PlanningActions = {
   getVesselnavigationDetails: (id: string) => void
   getNavLogTonnageCertification: (id: number) => void
   setPlannedNavigationLogs: (plannedNavigationLogs: NavigationLog[]) => void
+  updateContainerCargo: (cargo: StandardContainerCargo) => void
+  resetContainerUpdate: () => void
 }
 
 export type PlanningStore = PlanningState & PlanningActions
@@ -128,6 +135,10 @@ const initialState: PlanningState = {
   tonnageCertifications: [],
   wholeVesselHistoryNavLogs: [],
   createdNavlogAction: {},
+  containerCargo: [],
+  isContainerCargo: false,
+  isContainerUpdated: false,
+  isContainerUpdatedLoading: true,
 }
 
 export const usePlanning = create(
@@ -143,6 +154,7 @@ export const usePlanning = create(
         try {
           const response = await API.reloadVesselHistoryNavLogs(vesselId, page)
           if (Array.isArray(response)) {
+            console.log(response.filter(data => data.cargoType === 'container'))
             set({
               historyNavigationLogs:
                 page === 1
@@ -222,6 +234,8 @@ export const usePlanning = create(
           isNavLogDetailsLoading: true,
           isPlanningDetailsLoading: true,
           navigationLogDetails: undefined,
+          containerCargo: [],
+          isContainerCargo: false,
         })
         try {
           const response = await API.reloadNavigationLogDetails(navLogId)
@@ -251,6 +265,13 @@ export const usePlanning = create(
 
               isNavLogDetailsLoading: false,
             })
+
+            if (response?.cargoType === 'container') {
+              set({
+                isContainerCargo: true,
+                // containerCargo: response?.standardContainerCargo,
+              })
+            }
             return response
           } else {
             set({
@@ -705,6 +726,24 @@ export const usePlanning = create(
         } else {
           set({plannedNavigationLogs: []})
         }
+      },
+      updateContainerCargo: async (cargo: StandardContainerCargo) => {
+        set({isContainerUpdated: false, isContainerUpdatedLoading: true})
+
+        try {
+          const response = await API.updateStandardContainers(cargo)
+
+          if (Object.values(response).length > 0) {
+            set({isContainerUpdated: true})
+          }
+
+          set({isContainerUpdatedLoading: false})
+        } catch (error) {
+          set({isContainerUpdated: false, isContainerUpdatedLoading: false})
+        }
+      },
+      resetContainerUpdate: () => {
+        set({isContainerUpdated: false, isContainerUpdatedLoading: false})
       },
     }),
     {

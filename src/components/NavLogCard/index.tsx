@@ -22,6 +22,7 @@ import {
   SingleButton,
   Completed,
 } from './components'
+import TextTicker from 'react-native-text-ticker'
 
 export const NavLogCard = (props: {
   key: number
@@ -37,6 +38,7 @@ export const NavLogCard = (props: {
   onStartActionPress: (id: string) => void
   selectedNavlogID: string
   isLoading?: boolean
+  label?: string
 }) => {
   const {t} = useTranslation()
   const navigation =
@@ -53,6 +55,7 @@ export const NavLogCard = (props: {
     onStartActionPress,
     selectedNavlogID,
     isLoading,
+    label = '',
   } = props
   const {isPlanningActionsLoading, isUpdateNavlogDatesLoading} = usePlanning()
   const key = index
@@ -291,7 +294,7 @@ export const NavLogCard = (props: {
     navigationLog?.cargoType
   )
 
-  const drawTheLines = (item) => {
+  const drawTheLines = item => {
     const itemType = defineFirstAndLastIndex?.find(
       typeItem => typeItem?.charter?.id === item?.charter?.id
     )
@@ -355,9 +358,6 @@ export const NavLogCard = (props: {
       return (
         <>
           <Box
-            borderColor={itemType.colour}
-            borderRadius={5}
-            borderWidth={2}
             mb={
               index !==
               defineFirstAndLastIndex[defineFirstAndLastIndex.length - 1]
@@ -365,6 +365,9 @@ export const NavLogCard = (props: {
                 ? ms(-7)
                 : ms(0)
             }
+            borderColor={itemType.colour}
+            borderRadius={5}
+            borderWidth={2}
             mt={index !== 0 ? ms(-7) : ms(0)}
           />
         </>
@@ -414,9 +417,23 @@ export const NavLogCard = (props: {
           py={ms(10)}
         >
           <Box flex="1">
-            <Text bold color={Colors.text} fontSize={ms(15)} noOfLines={1}>
-              {formatLocationLabel(navigationLog?.location)}
-            </Text>
+            <HStack space={ms(5)}>
+              {label ? (
+                <Box
+                  backgroundColor={Colors.primary}
+                  borderRadius={5}
+                  px={ms(5)}
+                  py={ms(3)}
+                >
+                  <Text bold color={Colors.white}>
+                    {label}
+                  </Text>
+                </Box>
+              ) : null}
+              <Text bold color={Colors.text} fontSize={ms(15)} noOfLines={1}>
+                {formatLocationLabel(navigationLog?.location, label)}
+              </Text>
+            </HStack>
             {isFinished ? (
               <Text>{`Finished: ${itemDurationLabel}`}</Text>
             ) : (
@@ -430,28 +447,34 @@ export const NavLogCard = (props: {
             {navigationLog?.bulkCargo?.length > 0 &&
               navigationLog?.bulkCargo?.map((cargo: BulkCargo, i: number) => {
                 return (
-                  <HStack
+                  <Box
                     key={`bulkCargo-${i}`}
-                    bg={Colors.white}
+                    backgroundColor={Colors.white}
                     borderRadius={4}
                     maxW="3/4"
-                    mt={ms(5)}
+                    mb={ms(5)}
+                    // py={ms(5)}
                     px={ms(6)}
                   >
-                    <Text color={Colors.text} fontSize={ms(12)}>
-                      {`${Math.ceil(cargo?.actualAmount)} MT `}
-                    </Text>
-                    <Text bold color={Colors.disabled} fontSize={ms(12)}>
-                      {`(${Math.ceil(cargo?.tonnage)} MT) `}
-                    </Text>
-                    <Text
-                      color={Colors.text}
-                      fontSize={ms(12)}
-                      fontWeight="medium"
+                    <HStack key={`bulkCargo-${i}`}>
+                      <Text color={Colors.text} fontSize={ms(12)}>
+                        {`${Math.ceil(cargo?.actualAmount)} MT `}
+                      </Text>
+                      <Text bold color={Colors.disabled} fontSize={ms(12)}>
+                        {`(${Math.ceil(cargo?.tonnage)} MT) `}
+                      </Text>
+                    </HStack>
+                    <TextTicker
+                      animationType={'scroll'}
+                      scrollSpeed={30}
+                      // scroll={true}
+                      useNativeDriver={true}
                     >
-                      {titleCase(cargo?.type?.type)}
-                    </Text>
-                  </HStack>
+                      {cargo?.type
+                        ? cargo?.type?.nameEn || cargo?.type?.nameNl
+                        : t('unknown')}
+                    </TextTicker>
+                  </Box>
                 )
               })}
           </Box>

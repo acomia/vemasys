@@ -11,11 +11,13 @@ interface INavlogType {
   navigationLog: NavigationLog
   isFinished?: boolean
   isLotty?: boolean
+  isSmall?: boolean
 }
 export const NavigationLogType = ({
   navigationLog,
   isFinished,
   isLotty,
+  isSmall,
 }: INavlogType) => {
   if (!navigationLog?.location) return null
   const renderType = (navLog: NavigationLog) => {
@@ -40,14 +42,15 @@ export const NavigationLogType = ({
             loop
             autoPlay={true}
             source={require('@bluecentury/assets/animated/lottie/waiting.json')}
+            speed={0.09}
           />
         ) : (
           <Image
             alt="navlog-type-img"
-            h={animatesIcon ? ms(48) : null}
+            h={animatesIcon ? ms(48) : isSmall ? ms(35) : null}
             resizeMode="contain"
             source={animatesIcon ? Animated.waiting : Icons.waiting}
-            w={animatesIcon ? ms(48) : null}
+            w={animatesIcon ? ms(48) : isSmall ? ms(35) : null}
           />
         )
       case 'Berth':
@@ -57,14 +60,15 @@ export const NavigationLogType = ({
             loop
             autoPlay={true}
             source={require('@bluecentury/assets/animated/lottie/waiting.json')}
+            speed={0.09}
           />
         ) : (
           <Image
             alt="navlog-type-img"
-            h={animatesIcon ? ms(48) : null}
+            h={animatesIcon ? ms(48) : isSmall ? ms(35) : null}
             resizeMode="contain"
             source={animatesIcon ? Animated.waiting : Icons.waiting}
-            w={animatesIcon ? ms(48) : null}
+            w={animatesIcon ? ms(48) : isSmall ? ms(35) : null}
           />
         )
       case 'Bridge':
@@ -74,14 +78,15 @@ export const NavigationLogType = ({
             loop
             autoPlay={true}
             source={require('@bluecentury/assets/animated/lottie/bridge.json')}
+            speed={0.09}
           />
         ) : (
           <Image
             alt="navlog-type-img"
-            h={animatesIcon ? ms(48) : null}
+            h={animatesIcon ? ms(48) : isSmall ? ms(35) : null}
             resizeMode="contain"
             source={animatesIcon ? Animated.bridge : Icons.bridge}
-            w={animatesIcon ? ms(48) : null}
+            w={animatesIcon ? ms(48) : isSmall ? ms(35) : null}
           />
         )
       case 'Checkpoint':
@@ -91,14 +96,15 @@ export const NavigationLogType = ({
             loop
             autoPlay={true}
             source={require('@bluecentury/assets/animated/lottie/checkpoint.json')}
+            speed={0.09}
           />
         ) : (
           <Image
             alt="navlog-type-img"
-            h={animatesIcon ? ms(48) : null}
+            h={animatesIcon ? ms(48) : isSmall ? ms(35) : null}
             resizeMode="contain"
             source={animatesIcon ? Animated.checkpoint : Icons.checkpoint}
-            w={animatesIcon ? ms(48) : null}
+            w={animatesIcon ? ms(48) : isSmall ? ms(35) : null}
           />
         )
       case 'Junction':
@@ -108,14 +114,15 @@ export const NavigationLogType = ({
             loop
             autoPlay={true}
             source={require('@bluecentury/assets/animated/lottie/junction.json')}
+            speed={0.09}
           />
         ) : (
           <Image
             alt="navlog-type-img"
-            h={animatesIcon ? ms(48) : null}
+            h={animatesIcon ? ms(48) : isSmall ? ms(35) : null}
             resizeMode="contain"
             source={animatesIcon ? Animated.junction : Icons.junction}
-            w={animatesIcon ? ms(48) : null}
+            w={animatesIcon ? ms(48) : isSmall ? ms(35) : null}
           />
         )
       case 'Sluice':
@@ -125,14 +132,15 @@ export const NavigationLogType = ({
             loop
             autoPlay={true}
             source={require('@bluecentury/assets/animated/lottie/sluice.json')}
+            speed={0.09}
           />
         ) : (
           <Image
             alt="navlog-type-img"
-            h={animatesIcon ? ms(48) : null}
+            h={animatesIcon ? ms(48) : isSmall ? ms(35) : null}
             resizeMode="contain"
             source={animatesIcon ? Animated.sluice : Icons.sluice}
-            w={animatesIcon ? ms(48) : null}
+            w={animatesIcon ? ms(48) : isSmall ? ms(35) : null}
           />
         )
       case 'Terminal':
@@ -148,14 +156,15 @@ export const NavigationLogType = ({
               loop
               autoPlay={true}
               source={require('@bluecentury/assets/animated/lottie/waiting.json')}
+              speed={0.09}
             />
           ) : (
             <Image
               alt="navlog-type-img"
-              h={animatesIcon ? ms(48) : null}
+              h={animatesIcon ? ms(48) : isSmall ? ms(35) : null}
               resizeMode="contain"
               source={animatesIcon ? Animated.waiting : Icons.waiting}
-              w={animatesIcon ? ms(48) : null}
+              w={animatesIcon ? ms(48) : isSmall ? ms(35) : null}
             />
           )
         } else if (actionType === 'Cleaning') {
@@ -165,15 +174,16 @@ export const NavigationLogType = ({
               loop
               autoPlay={true}
               source={require('@bluecentury/assets/animated/lottie/cleaning.json')}
+              speed={0.09}
             />
           ) : (
             <Image
               alt="navlog-type-img"
-              h={animatesIcon ? ms(60) : null}
+              h={animatesIcon ? ms(60) : isSmall ? ms(35) : null}
               mb={animatesIcon ? -3 : 0}
               resizeMode="contain"
               source={animatesIcon ? Animated.cleaning : Icons.broom}
-              w={animatesIcon ? ms(60) : null}
+              w={animatesIcon ? ms(60) : isSmall ? ms(35) : null}
             />
           )
         } else if (bulkCargo.some(cargo => cargo.isLoading === false)) {
@@ -183,15 +193,16 @@ export const NavigationLogType = ({
               loop
               autoPlay={true}
               source={require('@bluecentury/assets/animated/lottie/unloading.json')}
+              speed={0.09}
             />
           ) : (
             <Image
               alt="navlog-type-img"
-              h={animatesIcon ? ms(48) : null}
+              h={animatesIcon ? ms(48) : isSmall ? ms(35) : null}
               mb={animatesIcon ? -3 : 0}
               resizeMode="contain"
               source={animatesIcon ? Animated.nav_unloading : Icons.unloading}
-              w={animatesIcon ? ms(48) : null}
+              w={animatesIcon ? ms(48) : isSmall ? ms(35) : null}
             />
           )
         } else {
@@ -201,15 +212,16 @@ export const NavigationLogType = ({
               loop
               autoPlay={true}
               source={require('@bluecentury/assets/animated/lottie/nav_loading.json')}
+              speed={0.09}
             />
           ) : (
             <Image
               alt="navlog-type-img"
-              h={animatesIcon ? ms(48) : null}
+              h={animatesIcon ? ms(48) : isSmall ? ms(35) : null}
               mb={animatesIcon ? -3 : 0}
               resizeMode="contain"
               source={animatesIcon ? Animated.nav_loading : Icons.loading}
-              w={animatesIcon ? ms(48) : null}
+              w={animatesIcon ? ms(48) : isSmall ? ms(35) : null}
             />
           )
         }
