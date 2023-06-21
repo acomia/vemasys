@@ -410,10 +410,10 @@ const Measurements = ({navigation, route}: Props) => {
                   setNewMeasurement(val)
                 }
               }}
-              decimalLength={3}
+              decimalLength={0}
               errorMessage={'Too match'}
               initialValue={newMeasurement}
-              numberLength={4}
+              numberLength={5}
             />
             {inputInvalid && (
               <Text color={Colors.danger} textAlign="center">
