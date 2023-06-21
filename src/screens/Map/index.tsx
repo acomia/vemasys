@@ -141,6 +141,7 @@ export default function Map({navigation}: Props) {
   const [currentNavLog, setCurrentNavLog] = useState(null)
   const [prevNavLog, setPrevNavLog] = useState(null)
   const [isAlertOpen, setIsAlertOpen] = useState(false)
+  const [isScreenBlocked, setIsScreenBlocked] = useState(false)
 
   // useEffect(() => {
   //   // currentPositionRef?.current?.showCallout()
@@ -346,6 +347,8 @@ export default function Map({navigation}: Props) {
           <BottomSheetScrollView>
             {plannedNavLog && (
               <MapNavLog
+                key={2}
+                isActionInProgress={setIsScreenBlocked}
                 itemColor={Colors.navLogItemBlue}
                 keyIndex={2}
                 label={t('next').toString()}
@@ -354,6 +357,8 @@ export default function Map({navigation}: Props) {
             )}
             {currentNavLog && (
               <MapNavLog
+                key={1}
+                isActionInProgress={setIsScreenBlocked}
                 itemColor={Colors.navLogItemGreen}
                 keyIndex={1}
                 label={t('current').toString()}
@@ -362,6 +367,8 @@ export default function Map({navigation}: Props) {
             )}
             {prevNavLog && (
               <MapNavLog
+                key={3}
+                isActionInProgress={setIsScreenBlocked}
                 isFinished={true}
                 itemColor={Colors.navLogItemPink}
                 keyIndex={3}
@@ -372,6 +379,8 @@ export default function Map({navigation}: Props) {
           </BottomSheetScrollView>
         ) : (
           <MapNavLog
+            key={1}
+            isActionInProgress={setIsScreenBlocked}
             itemColor={Colors.navLogItemGreen}
             keyIndex={1}
             label={t('current').toString()}
@@ -1084,6 +1093,7 @@ export default function Map({navigation}: Props) {
           </AlertDialog.Footer>
         </AlertDialog.Content>
       </AlertDialog>
+      {isScreenBlocked && <Box h="100%" position="absolute" w="100%" />}
     </Box>
   )
 }
