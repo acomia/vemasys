@@ -228,10 +228,14 @@ export default function Map({navigation}: Props) {
       })
       if (focused) {
         const activeNavLog = plannedNavLogs.find(item => item.isActive)
-        if (activeNavLog) {
-          getNavigationLogDetails(activeNavLog.id).then(response => {
+        const currentNavigationLog = currentNavLogs[currentNavLogs?.length - 1]
+        if (currentNavigationLog) {
+          getNavigationLogDetails(currentNavigationLog?.id).then(response => {
+            console.log('currentNavLog', response)
             if (response) setCurrentNavLog(response)
           })
+        } else {
+          setCurrentNavLog(activeNavLog)
         }
       }
     }
@@ -256,9 +260,10 @@ export default function Map({navigation}: Props) {
         ? plannedNavLogs[plannedNavLogIndex - 1]
         : null
       if (navLog) {
-        getNavigationLogDetails(navLog?.id).then(response => {
-          if (response) setPlannedNavLog(response)
-        })
+        // getNavigationLogDetails(navLog?.id).then(response => {
+        // if (response) setPlannedNavLog(response)
+        // })
+        setPlannedNavLog(navLog)
       }
     }
   }, [plannedNavLogs, focused])
@@ -343,6 +348,7 @@ export default function Map({navigation}: Props) {
               <MapNavLog
                 itemColor={Colors.navLogItemBlue}
                 keyIndex={2}
+                label={t('next').toString()}
                 navigationLog={plannedNavLog}
               />
             )}
@@ -350,6 +356,7 @@ export default function Map({navigation}: Props) {
               <MapNavLog
                 itemColor={Colors.navLogItemGreen}
                 keyIndex={1}
+                label={t('current').toString()}
                 navigationLog={currentNavLog}
               />
             )}
@@ -358,6 +365,7 @@ export default function Map({navigation}: Props) {
                 isFinished={true}
                 itemColor={Colors.navLogItemPink}
                 keyIndex={3}
+                label={t('previous').toString()}
                 navigationLog={prevNavLog}
               />
             )}
@@ -366,6 +374,7 @@ export default function Map({navigation}: Props) {
           <MapNavLog
             itemColor={Colors.navLogItemGreen}
             keyIndex={1}
+            label={t('current').toString()}
             navigationLog={currentNavLog ? currentNavLog : plannedNavLog}
           />
         )}
@@ -876,7 +885,7 @@ export default function Map({navigation}: Props) {
     getDirections(geographicLocation?.id?.toString())
   }
 
-  const snapPoints = ['32%', '80%']
+  const snapPoints = ['35%', '80%']
 
   return (
     <Box bg={Colors.light} height={'full'}>

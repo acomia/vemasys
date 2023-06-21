@@ -27,10 +27,17 @@ const MapNavLog = (props: {
   itemColor: string
   keyIndex: number
   isFinished?: boolean
+  label?: string
 }) => {
   const {t} = useTranslation()
   const navigation = useNavigation()
-  const {navigationLog, itemColor, keyIndex, isFinished = false} = props
+  const {
+    navigationLog,
+    itemColor,
+    keyIndex,
+    isFinished = false,
+    label = '',
+  } = props
   const focused = useIsFocused()
 
   const {
@@ -229,6 +236,7 @@ const MapNavLog = (props: {
         isFinished={isFinished}
         isLoading={isLoading}
         itemColor={itemColor}
+        label={label}
         lastScreen={'planning'}
         navigationLog={navigationLog}
         selectedNavlogID={selectedNavlogID}
