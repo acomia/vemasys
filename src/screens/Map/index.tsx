@@ -38,6 +38,7 @@ import {
 } from '@react-navigation/native'
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5'
 import {useTranslation} from 'react-i18next'
+import Lottie from 'lottie-react-native'
 
 import {
   PreviousNavLogInfo,
@@ -341,30 +342,29 @@ export default function Map({navigation}: Props) {
         >
           {selectedVessel?.alias || null}
         </Text>
-
         {snapStatus === 1 ? (
           <BottomSheetScrollView>
             {plannedNavLog && (
               <MapNavLog
-                key={2}
                 itemColor={Colors.navLogItemBlue}
+                keyIndex={2}
                 label={t('next').toString()}
                 navigationLog={plannedNavLog}
               />
             )}
             {currentNavLog && (
               <MapNavLog
-                key={1}
                 itemColor={Colors.navLogItemGreen}
+                keyIndex={1}
                 label={t('current').toString()}
                 navigationLog={currentNavLog}
               />
             )}
             {prevNavLog && (
               <MapNavLog
-                key={3}
                 isFinished={true}
                 itemColor={Colors.navLogItemPink}
+                keyIndex={3}
                 label={t('previous').toString()}
                 navigationLog={prevNavLog}
               />
@@ -372,8 +372,8 @@ export default function Map({navigation}: Props) {
           </BottomSheetScrollView>
         ) : (
           <MapNavLog
-            key={1}
             itemColor={Colors.navLogItemGreen}
+            keyIndex={1}
             label={t('current').toString()}
             navigationLog={currentNavLog ? currentNavLog : plannedNavLog}
           />
@@ -850,18 +850,17 @@ export default function Map({navigation}: Props) {
               width={ms(100)}
             >
               {isGeographicRoutesLoading ? (
-                <ActivityIndicator size={ms(20)} />
+                <ActivityIndicator color={Colors.white} size={ms(20)} />
               ) : (
                 <Text color={Colors.white}>{t('getDirections')}</Text>
               )}
             </Box>
-
-            <Box>
-              <Image
-                alt="searched-pin"
-                height={ms(40)}
-                source={Animated.searchedPin}
-                width={ms(30)}
+            <Box h={ms(48)} w={ms(48)}>
+              <Lottie
+                loop
+                autoPlay={true}
+                source={require('@bluecentury/assets/animated/lottie/map_animation_pin.json')}
+                speed={0.7}
               />
             </Box>
           </Box>
