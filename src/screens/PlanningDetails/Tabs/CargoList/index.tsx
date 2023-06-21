@@ -322,13 +322,15 @@ const CargoList = () => {
         <Divider mb={ms(15)} mt={ms(5)} />
         {isContainerCargo ? renderContainerCargo() : renderBulkCargo()}
       </ScrollView>
-      <Fab
-        icon={<IconAnt color={Colors.white} name="plus" size={ms(25)} />}
-        renderInPortal={false}
-        shadow={2}
-        size="sm"
-        onPress={() => setAddIsOpen(true)}
-      />
+      {isContainerCargo && (
+        <Fab
+          icon={<IconAnt color={Colors.white} name="plus" size={ms(25)} />}
+          renderInPortal={false}
+          shadow={2}
+          size="sm"
+          onPress={() => setAddIsOpen(true)}
+        />
+      )}
       <AddContainerModal
         header={'Create Standard Container'}
         isOpen={addIsOpen}
