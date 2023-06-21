@@ -98,10 +98,10 @@ type PlanningActions = {
   getVesselnavigationDetails: (id: string) => void
   getNavLogTonnageCertification: (id: number) => void
   setPlannedNavigationLogs: (plannedNavigationLogs: NavigationLog[]) => void
-  updateContainerCargo: (cargo: StandardContainerCargo) => void
+  updateContainerCargo: (cargo: StandardContainerCargo) => {}
   resetContainerUpdate: () => void
   getNavigationContainers: () => void
-  createNavigationContainer: (containerCargo: any) => void
+  createNavigationContainer: (containerCargo: any) => {}
   resetCreateStandardContainer: () => void
 }
 
@@ -742,12 +742,15 @@ export const usePlanning = create(
           const response = await API.updateStandardContainers(cargo)
 
           if (Object.values(response).length > 0) {
-            set({isContainerUpdated: true})
+            set({isContainerUpdated: true, isContainerUpdatedLoading: false})
+            return true
           }
 
           set({isContainerUpdatedLoading: false})
+          return false
         } catch (error) {
           set({isContainerUpdated: false, isContainerUpdatedLoading: false})
+          return false
         }
       },
       resetContainerUpdate: () => {
@@ -774,22 +777,23 @@ export const usePlanning = create(
         set({isCreateContainerSuccess: false, isCreateContainerLoading: true})
         return API.createStandardContainer(containerCargo)
           .then(response => {
-            if (Object.values(response).length > 0) {
+            if (response?.status) {
               set({
                 isCreateContainerSuccess: true,
+                isCreateContainerLoading: false,
               })
+              return true
             }
             set({
               isCreateContainerLoading: false,
             })
+            return false
           })
           .catch(error => {
             set({
               isCreateContainerLoading: false,
             })
           })
-
-        return API
       },
       resetCreateStandardContainer: () => {
         set({isCreateContainerSuccess: false, isCreateContainerLoading: false})

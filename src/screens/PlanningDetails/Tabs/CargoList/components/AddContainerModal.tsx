@@ -23,9 +23,16 @@ interface Props {
   isOpen: boolean
   setOpen: () => void
   isLoading?: boolean
+  onAction: (container: any) => void
 }
 
-export default ({header, isOpen, setOpen, isLoading = false}: Props) => {
+export default ({
+  header,
+  isOpen,
+  setOpen,
+  onAction,
+  isLoading = false,
+}: Props) => {
   const {
     navigationContainers,
     navigationLogDetails,
@@ -43,7 +50,7 @@ export default ({header, isOpen, setOpen, isLoading = false}: Props) => {
     )
 
     if (navigationLogDetails && navContainer) {
-      createNavigationContainer({
+      onAction({
         log: navigationLogDetails?.id?.toString(),
         type: containerValue?.toString(),
 

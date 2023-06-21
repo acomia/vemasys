@@ -370,7 +370,7 @@ export const createStandardContainer = async (containerCargo: any) => {
   return API.post('navigation_standard_containers', containerCargo)
     .then(response => {
       if (response.status === 200 || response.status === 201) {
-        return response.data
+        return response
       }
 
       throw new Error('Create Standard containers Error')

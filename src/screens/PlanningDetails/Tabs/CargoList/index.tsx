@@ -44,6 +44,7 @@ const CargoList = () => {
     isCreateContainerSuccess,
     isCreateContainerLoading,
     resetCreateStandardContainer,
+    createNavigationContainer,
   } = usePlanning()
   const [isInputOpen, setInputOpen] = useState(false)
   const [addIsOpen, setAddIsOpen] = useState(false)
@@ -59,15 +60,15 @@ const CargoList = () => {
   useEffect(() => {
     if (isContainerUpdated && !isContainerUpdatedLoading) {
       setInputOpen(false)
-      getNavigationLogDetails('134753') // this is for testing
-      // getNavigationLogDetails(navigationLogDetails?.id)
+      // getNavigationLogDetails('134753') // this is for testing blueC
+      getNavigationLogDetails(navigationLogDetails?.id)
       resetContainerUpdate()
     }
 
     if (isCreateContainerSuccess && !isCreateContainerLoading) {
       setAddIsOpen(false)
-      getNavigationLogDetails('134753') // this is for testing
-      // getNavigationLogDetails(navigationLogDetails?.id)
+      // getNavigationLogDetails('134753') // this is for testing blueC
+      getNavigationLogDetails(navigationLogDetails?.id)
       resetCreateStandardContainer()
     }
   }, [
@@ -137,14 +138,26 @@ const CargoList = () => {
     getNavigationLogDetails(navigationLogDetails?.id)
   }
 
-  const updateContainer = (cargo: StandardContainerCargo) => {
-    if (!selectedContainer && !value) return
+  const updateContainer = async (cargo: StandardContainerCargo) => {
+    if (!selectedContainer && !cargo) return
 
-    updateContainerCargo(cargo)
+    const response = await updateContainerCargo(cargo)
+    if (response) {
+      showToast('Container created successfully', 'success')
+    } else {
+      showToast('Container created failed', 'failed')
+    }
   }
 
-  const handleSaveContainer = (values: any) => {
-    console.log('values', values)
+  const handleCreateContainer = async (values: any) => {
+    if (!values) return
+
+    const response = await createNavigationContainer(values)
+    if (response) {
+      showToast('Container created successfully', 'success')
+    } else {
+      showToast('Container created failed', 'failed')
+    }
   }
 
   const renderBulkCargo = () => {
@@ -320,6 +333,7 @@ const CargoList = () => {
         header={'Create Standard Container'}
         isOpen={addIsOpen}
         setOpen={() => setAddIsOpen(false)}
+        onAction={handleCreateContainer}
       />
     </Box>
   )
