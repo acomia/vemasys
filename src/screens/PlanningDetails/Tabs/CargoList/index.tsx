@@ -10,10 +10,12 @@ import {
   Text,
   VStack,
   useToast,
+  Fab,
+  Image,
 } from 'native-base'
 import {useNavigation} from '@react-navigation/native'
 import {ms} from 'react-native-size-matters'
-
+import IconAnt from 'react-native-vector-icons/AntDesign'
 import {Colors} from '@bluecentury/styles'
 import {usePlanning} from '@bluecentury/stores'
 import {IconButton, LoadingAnimated, OTPInput} from '@bluecentury/components'
@@ -212,13 +214,6 @@ const CargoList = () => {
 
     return (
       <VStack space={ms(10)}>
-        <Box alignSelf={'flex-end'}>
-          <IconButton
-            size={ms(30)}
-            source={Icons.add}
-            onPress={() => setAddIsOpen(true)}
-          />
-        </Box>
         <Box>
           <HStack width={'full'}>
             <Text borderWidth={1} flex={2} p={ms(5)}>
@@ -314,11 +309,17 @@ const CargoList = () => {
         <Divider mb={ms(15)} mt={ms(5)} />
         {isContainerCargo ? renderContainerCargo() : renderBulkCargo()}
       </ScrollView>
+      <Fab
+        icon={<IconAnt name="plus" size={ms(25)} />}
+        renderInPortal={false}
+        shadow={2}
+        size="sm"
+        onPress={() => setAddIsOpen(true)}
+      />
       <AddContainerModal
         header={'Create Standard Container'}
         isOpen={addIsOpen}
         setOpen={() => setAddIsOpen(false)}
-        onAction={handleSaveContainer}
       />
     </Box>
   )
