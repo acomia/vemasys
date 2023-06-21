@@ -42,6 +42,7 @@ export const NavigationLogType = ({
             loop
             autoPlay={true}
             source={require('@bluecentury/assets/animated/lottie/waiting.json')}
+            speed={0.09}
           />
         ) : (
           <Image
@@ -59,6 +60,7 @@ export const NavigationLogType = ({
             loop
             autoPlay={true}
             source={require('@bluecentury/assets/animated/lottie/waiting.json')}
+            speed={0.09}
           />
         ) : (
           <Image
@@ -76,6 +78,7 @@ export const NavigationLogType = ({
             loop
             autoPlay={true}
             source={require('@bluecentury/assets/animated/lottie/bridge.json')}
+            speed={0.09}
           />
         ) : (
           <Image
@@ -93,6 +96,7 @@ export const NavigationLogType = ({
             loop
             autoPlay={true}
             source={require('@bluecentury/assets/animated/lottie/checkpoint.json')}
+            speed={0.09}
           />
         ) : (
           <Image
@@ -110,6 +114,7 @@ export const NavigationLogType = ({
             loop
             autoPlay={true}
             source={require('@bluecentury/assets/animated/lottie/junction.json')}
+            speed={0.09}
           />
         ) : (
           <Image
@@ -127,6 +132,7 @@ export const NavigationLogType = ({
             loop
             autoPlay={true}
             source={require('@bluecentury/assets/animated/lottie/sluice.json')}
+            speed={0.09}
           />
         ) : (
           <Image
@@ -150,6 +156,7 @@ export const NavigationLogType = ({
               loop
               autoPlay={true}
               source={require('@bluecentury/assets/animated/lottie/waiting.json')}
+              speed={0.09}
             />
           ) : (
             <Image
@@ -167,6 +174,7 @@ export const NavigationLogType = ({
               loop
               autoPlay={true}
               source={require('@bluecentury/assets/animated/lottie/cleaning.json')}
+              speed={0.09}
             />
           ) : (
             <Image
@@ -185,6 +193,7 @@ export const NavigationLogType = ({
               loop
               autoPlay={true}
               source={require('@bluecentury/assets/animated/lottie/unloading.json')}
+              speed={0.09}
             />
           ) : (
             <Image
@@ -203,6 +212,7 @@ export const NavigationLogType = ({
               loop
               autoPlay={true}
               source={require('@bluecentury/assets/animated/lottie/nav_loading.json')}
+              speed={0.09}
             />
           ) : (
             <Image
