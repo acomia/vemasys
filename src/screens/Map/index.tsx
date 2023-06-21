@@ -102,8 +102,18 @@ export default function Map({navigation}: Props) {
     getDirections,
     isGeographicRoutesLoading,
     getGeographicPoints,
+    isLoadingVesselStatus,
+    isLoadingPreviousNavLogs,
+    isLoadingPlannedNavLogs,
+    isLoadingCurrentNavLogs,
+    isLoadingMap,
   } = useMap()
-  const {notifications, getAllNotifications, calculateBadge} = useNotif()
+  const {
+    notifications,
+    getAllNotifications,
+    calculateBadge,
+    isLoadingNotification,
+  } = useNotif()
   const {
     getNavigationLogDetails,
     updateNavlogDatesError,
@@ -133,7 +143,7 @@ export default function Map({navigation}: Props) {
   const [vesselUpdated, setVesselUpdated] = useState(false)
   const uniqueTracks: Array<VesselGeolocation> = []
   const uniqueVesselTracks: {latitude: number; longitude: number}[] = []
-  const [isLoadingMap, setLoadingMap] = useState(false)
+  const [isMapLoading, setMapLoading] = useState(false)
   const [isKeyboardVisible, setKeyboardVisible] = useState(false)
   const [isSearchPin, setIsSearchPin] = useState(false)
   const [isFitToMarkers, setFitToMarkers] = useState(false)
@@ -187,9 +197,29 @@ export default function Map({navigation}: Props) {
   }, [])
 
   useEffect(() => {
+    if (
+      !isLoadingNotification &&
+      !isLoadingVesselStatus &&
+      !isLoadingPreviousNavLogs &&
+      !isLoadingPlannedNavLogs &&
+      !isLoadingCurrentNavLogs &&
+      !isLoadingMap
+    ) {
+      setMapLoading(false)
+    }
+  }, [
+    isLoadingNotification,
+    isLoadingVesselStatus,
+    isLoadingPreviousNavLogs,
+    isLoadingPlannedNavLogs,
+    isLoadingCurrentNavLogs,
+    isLoadingMap,
+  ])
+
+  useEffect(() => {
     if (vesselId) {
       const init = async () => {
-        setLoadingMap(true)
+        setMapLoading(true)
         getAllNotifications()
         await getVesselStatus(vesselId)
         await getPreviousNavigationLogs(vesselId)
@@ -198,7 +228,7 @@ export default function Map({navigation}: Props) {
         await getLastCompleteNavigationLogs(vesselId)
 
         getVesselTrack(vesselId, page)
-        setLoadingMap(false)
+        // setLoadingMap(false)
       }
 
       init()
@@ -310,14 +340,14 @@ export default function Map({navigation}: Props) {
 
   const updateMap = async () => {
     if (vesselId) {
-      setLoadingMap(true)
+      setMapLoading(true)
       getAllNotifications()
-      await getPreviousNavigationLogs(vesselId)
-      await getPlannedNavigationLogs(vesselId)
-      await getCurrentNavigationLogs(vesselId)
-      await getVesselStatus(vesselId)
+      getPreviousNavigationLogs(vesselId)
+      getPlannedNavigationLogs(vesselId)
+      getCurrentNavigationLogs(vesselId)
+      getVesselStatus(vesselId)
       getVesselTrack(vesselId, page)
-      setLoadingMap(false)
+      // setLoadingMap(false)
     }
   }
 
@@ -949,7 +979,7 @@ export default function Map({navigation}: Props) {
             />
           )}
         </MapView>
-        {isLoadingMap && (
+        {isMapLoading && (
           <LoadingSlide
             color={Colors.primary}
             label={`${t('refreshing')}...`}
@@ -964,7 +994,7 @@ export default function Map({navigation}: Props) {
         pt={ms(15)}
         px={ms(10)}
         right={0}
-        top={ms(isLoadingMap ? 40 : 0)}
+        top={ms(isMapLoading ? 40 : 0)}
         zIndex={1}
       >
         <Search
@@ -975,7 +1005,7 @@ export default function Map({navigation}: Props) {
           onFocus={() => setKeyboardVisible(true)}
         />
       </Box>
-      <Box position="absolute" right="0" top={isLoadingMap ? '13%' : '8%'}>
+      <Box position="absolute" right="0" top={isMapLoading ? '13%' : '8%'}>
         <VStack justifyContent="flex-start" m="4" space="5">
           {/*<Box bg={Colors.white} borderRadius="full" p="2" shadow={2}>*/}
           {/*  <IconButton*/}
@@ -1009,7 +1039,7 @@ export default function Map({navigation}: Props) {
         </VStack>
       </Box>
       {vesselStatus && vesselStatus?.speed > 1 ? (
-        <Box left="2" position="absolute" top={isLoadingMap ? '15%' : '10%'}>
+        <Box left="2" position="absolute" top={isMapLoading ? '15%' : '10%'}>
           <Box
             alignItems="center"
             bg={Colors.white}
