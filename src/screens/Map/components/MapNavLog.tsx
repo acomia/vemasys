@@ -25,12 +25,12 @@ type Dates = {
 const MapNavLog = (props: {
   navigationLog: NavigationLog
   itemColor: string
-  key: number
+  keyIndex: number
   isFinished?: boolean
 }) => {
   const {t} = useTranslation()
   const navigation = useNavigation()
-  const {navigationLog, itemColor, key, isFinished = false} = props
+  const {navigationLog, itemColor, keyIndex, isFinished = false} = props
   const focused = useIsFocused()
 
   const {
@@ -221,11 +221,11 @@ const MapNavLog = (props: {
   }
 
   return navigationLog ? (
-    <Box key={key} right={ms(7)} width={'full'}>
+    <Box key={keyIndex} right={ms(7)} width={'full'}>
       <NavLogCard
-        key={key}
+        key={keyIndex}
         defineFirstAndLastIndex={[]}
-        index={key}
+        index={keyIndex}
         isFinished={isFinished}
         isLoading={isLoading}
         itemColor={itemColor}
