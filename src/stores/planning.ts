@@ -9,6 +9,7 @@ import {
   Vessel,
   Comments,
   StandardContainerCargo,
+  NavigationContainer,
 } from '@bluecentury/models'
 
 type PlanningState = {
@@ -52,6 +53,10 @@ type PlanningState = {
   isContainerCargo: boolean
   isContainerUpdated: boolean
   isContainerUpdatedLoading: boolean
+  navigationContainers: NavigationContainer[]
+  isNavigationContainersLoading: boolean
+  isCreateContainerSuccess: boolean
+  isCreateContainerLoading: boolean
 }
 
 type PlanningActions = {
@@ -95,6 +100,8 @@ type PlanningActions = {
   setPlannedNavigationLogs: (plannedNavigationLogs: NavigationLog[]) => void
   updateContainerCargo: (cargo: StandardContainerCargo) => void
   resetContainerUpdate: () => void
+  getNavigationContainers: () => void
+  createNavigationContainer: (containerCargo: any) => void
 }
 
 export type PlanningStore = PlanningState & PlanningActions
@@ -744,6 +751,45 @@ export const usePlanning = create(
       },
       resetContainerUpdate: () => {
         set({isContainerUpdated: false, isContainerUpdatedLoading: false})
+      },
+      getNavigationContainers: () => {
+        set({navigationContainers: [], isNavigationContainersLoading: true})
+
+        return API.getNavigationContainers()
+          .then(response => {
+            if (Object.values(response).length > 0) {
+              set({
+                navigationContainers: response,
+                isNavigationContainersLoading: false,
+              })
+              return
+            }
+          })
+          .catch(error => {
+            set({isNavigationContainersLoading: true})
+          })
+      },
+      createNavigationContainer: (containerCargo: any) => {
+        set({isCreateContainerSuccess: false, isCreateContainerLoading: true})
+        console.log('containerCargo', containerCargo)
+        return API.createStandardContainer(containerCargo)
+          .then(response => {
+            if (Object.values(response).length > 0) {
+              set({
+                isCreateContainerSuccess: true,
+              })
+            }
+            set({
+              isCreateContainerLoading: false,
+            })
+          })
+          .catch(error => {
+            set({
+              isCreateContainerLoading: false,
+            })
+          })
+
+        return API
       },
     }),
     {

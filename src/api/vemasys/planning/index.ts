@@ -351,6 +351,35 @@ export const updateStandardContainers = async (
       console.error('Error: Update Standard contianers ', error)
     })
 }
+
+export const getNavigationContainers = async () => {
+  return API.get('navigation_containers')
+    .then(response => {
+      if (response.status === 200) {
+        return response.data
+      }
+
+      throw new Error('Get Navigation containers')
+    })
+    .catch(error => {
+      console.error('Error: Get Navigation containers', error)
+    })
+}
+
+export const createStandardContainer = async (containerCargo: any) => {
+  return API.post('navigation_standard_containers', containerCargo)
+    .then(response => {
+      if (response.status === 200) {
+        return response.data
+      }
+
+      throw new Error('Create Standard containers Error')
+    })
+    .catch(error => {
+      console.error('Error Create Standard Container ', error)
+    })
+}
+
 export {
   reloadNavigationLogDetails,
   reloadNavigationLogActions,

@@ -187,11 +187,16 @@ const Details = () => {
   }, [focused])
 
   useEffect(() => {
-    getNavigationLogDetails(navlog?.id)
-    getNavigationLogActions(navlog?.id)
-    getNavigationLogComments(navlog?.id)
-    getNavigationLogRoutes(navlog?.id)
-    getNavigationLogDocuments(navlog?.id)
+    getNavigationLogDetails('134753')
+    getNavigationLogActions('134753')
+    getNavigationLogComments('134753')
+    getNavigationLogRoutes('134753')
+    getNavigationLogDocuments('134753')
+    // getNavigationLogDetails(navlog?.id)
+    // getNavigationLogActions(navlog?.id)
+    // getNavigationLogComments(navlog?.id)
+    // getNavigationLogRoutes(navlog?.id)
+    // getNavigationLogDocuments(navlog?.id)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

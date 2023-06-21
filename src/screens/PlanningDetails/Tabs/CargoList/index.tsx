@@ -4,7 +4,9 @@ import {
   Box,
   Divider,
   HStack,
+  Modal,
   ScrollView,
+  Select,
   Text,
   VStack,
   useToast,
@@ -18,7 +20,7 @@ import {IconButton, LoadingAnimated, OTPInput} from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {formatBulkTypeLabel, formatNumber} from '@bluecentury/constants'
 import {useTranslation} from 'react-i18next'
-import {InputModal} from './components'
+import {AddContainerModal, InputModal} from './components'
 import {StandardContainerCargo} from '@bluecentury/models'
 
 const CargoList = () => {
@@ -36,10 +38,18 @@ const CargoList = () => {
     isContainerUpdated,
     isContainerUpdatedLoading,
     resetContainerUpdate,
+    getNavigationContainers,
   } = usePlanning()
   const [isInputOpen, setInputOpen] = useState(false)
+  const [addIsOpen, setAddisOpen] = useState(false)
   const [selectedContainer, setSelectedContainer] =
     useState<StandardContainerCargo>({})
+
+  useEffect(() => {
+    if (isContainerCargo) {
+      getNavigationContainers()
+    }
+  }, [isContainerCargo])
 
   useEffect(() => {
     if (isContainerUpdated && !isContainerUpdatedLoading) {
@@ -110,6 +120,16 @@ const CargoList = () => {
     getNavigationLogDetails(navigationLogDetails?.id)
   }
 
+  const updateContainer = (cargo: StandardContainerCargo) => {
+    if (!selectedContainer && !value) return
+
+    updateContainerCargo(cargo)
+  }
+
+  const handleSaveContainer = (values: any) => {
+    console.log('values', values)
+  }
+
   const renderBulkCargo = () => {
     if (!navigationLogDetails?.bulkCargo) return null
 
@@ -162,12 +182,6 @@ const CargoList = () => {
     })
   }
 
-  const updateContainer = (cargo: StandardContainerCargo) => {
-    if (!selectedContainer && !value) return
-
-    updateContainerCargo(cargo)
-  }
-
   const renderContainerCargo = () => {
     const standardContainer = navigationLogDetails?.standardContainerCargo
 
@@ -184,16 +198,11 @@ const CargoList = () => {
     return (
       <VStack space={ms(10)}>
         <Box alignSelf={'flex-end'}>
-          {/* <IconButton
-            size={ms(22)}
-            source={Icons.edit}
-            onPress={() =>
-              navigation.navigate('AddEditBulkCargo', {
-                cargo: cargo,
-                method: 'edit',
-              })
-            }
-          /> */}
+          <IconButton
+            size={ms(30)}
+            source={Icons.add}
+            onPress={() => setAddisOpen(true)}
+          />
         </Box>
         <Box>
           <HStack width={'full'}>
@@ -290,6 +299,12 @@ const CargoList = () => {
         <Divider mb={ms(15)} mt={ms(5)} />
         {isContainerCargo ? renderContainerCargo() : renderBulkCargo()}
       </ScrollView>
+      <AddContainerModal
+        header={'Create Standard Container'}
+        isOpen={addIsOpen}
+        setOpen={() => setAddisOpen(false)}
+        onAction={handleSaveContainer}
+      />
     </Box>
   )
 }

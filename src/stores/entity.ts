@@ -104,7 +104,7 @@ export const useEntity = create(
       updateVesselDetails: async () => {
         try {
           const response = await API.getVesselNavigationDetails(get().vesselId)
-          console.log('VESSEL_UPDATE_RESPONSE', response)
+
           set({
             vesselDetails: response,
           })
