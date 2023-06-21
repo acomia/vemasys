@@ -28,6 +28,7 @@ const MapNavLog = (props: {
   keyIndex: number
   isFinished?: boolean
   label?: string
+  isActionInProgress?: (val: boolean) => void
 }) => {
   const {t} = useTranslation()
   const navigation = useNavigation()
@@ -37,6 +38,7 @@ const MapNavLog = (props: {
     keyIndex,
     isFinished = false,
     label = '',
+    isActionInProgress,
   } = props
   const focused = useIsFocused()
 
@@ -79,6 +81,12 @@ const MapNavLog = (props: {
   const [confirmModal, setConfirmModal] = useState(false)
   const [plannedData, setPlannedData] = useState<Array<NavigationLog>>([])
   const [openDatePicker, setOpenDatePicker] = useState(false)
+
+  useEffect(() => {
+    if (isActionInProgress) {
+      isActionInProgress(confirmModal || openDatePicker)
+    }
+  }, [confirmModal, openDatePicker])
 
   const isLoading =
     updateNavlogDatesSuccess === 'SUCCESS' &&
