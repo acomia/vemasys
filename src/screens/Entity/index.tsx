@@ -72,7 +72,7 @@ export default function Entity({route, navigation}: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focused])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     let uniqPendingRoles: any[] = []
     if (pendingRoles) {
       uniqPendingRoles = pendingRoles?.filter(
