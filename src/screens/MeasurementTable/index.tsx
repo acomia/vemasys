@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useLayoutEffect, useState} from 'react'
 import {
   Box,
   Text,
@@ -50,15 +50,7 @@ const MeasurementTable = () => {
   const [draughtError, setDraughtError] = useState<boolean>(false)
   const [tonnageError, setTonnageError] = useState<boolean>(false)
 
-  useEffect(() => {
-    console.log('DATA_FOR_TABLE', dataForTable)
-  }, [dataForTable])
-
-  useEffect(() => {
-    console.log('DRAUGHT_ERROR', draughtError)
-  }, [draughtError])
-
-  useEffect(() => {
+  useLayoutEffect(() => {
     getDraughtTable(vesselId)
     if (uploadedTableData.length > 2) {
       const userChangedData = uploadedTableData.filter(
