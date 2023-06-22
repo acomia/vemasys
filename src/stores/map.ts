@@ -109,15 +109,14 @@ export const useMap = create(
           if (Array.isArray(response)) {
             set({
               prevNavLogs: response,
+              isLoadingPreviousNavLogs: false,
             })
           } else {
             set({
               prevNavLogs: [],
+              isLoadingPreviousNavLogs: false,
             })
           }
-          set({
-            isLoadingPreviousNavLogs: false,
-          })
         } catch (error) {
           set({
             isLoadingPreviousNavLogs: false,
@@ -135,15 +134,14 @@ export const useMap = create(
           if (Array.isArray(response)) {
             set({
               plannedNavLogs: response,
+              isLoadingPlannedNavLogs: false,
             })
           } else {
             set({
               plannedNavLogs: [],
+              isLoadingPlannedNavLogs: false,
             })
           }
-          set({
-            isLoadingPlannedNavLogs: false,
-          })
         } catch (error) {
           set({
             isLoadingPlannedNavLogs: false,
@@ -161,15 +159,14 @@ export const useMap = create(
           if (Array.isArray(response)) {
             set({
               currentNavLogs: response,
+              isLoadingCurrentNavLogs: false,
             })
           } else {
             set({
               currentNavLogs: [],
+              isLoadingCurrentNavLogs: false,
             })
           }
-          set({
-            isLoadingCurrentNavLogs: false,
-          })
         } catch (error) {
           set({
             isLoadingCurrentNavLogs: false,
@@ -314,15 +311,14 @@ export const useMap = create(
           if (Array.isArray(response)) {
             set({
               vesselStatus: response[0],
+              isLoadingVesselStatus: false,
             })
           } else {
             set({
               vesselStatus: undefined,
+              isLoadingVesselStatus: false,
             })
           }
-          set({
-            isLoadingVesselStatus: false,
-          })
         } catch (error) {
           set({
             isLoadingVesselStatus: false,
@@ -338,15 +334,14 @@ export const useMap = create(
             set({
               vesselTracks:
                 page === 1 ? response : [...get().vesselTracks, ...response],
+              isLoadingVesselTrack: false,
             })
           } else {
             set({
               vesselTracks: [],
+              isLoadingVesselTrack: false,
             })
           }
-          set({
-            isLoadingVesselTrack: false,
-          })
         } catch (error) {
           set({
             isLoadingVesselTrack: false,
