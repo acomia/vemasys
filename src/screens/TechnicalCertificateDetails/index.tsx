@@ -76,7 +76,18 @@ const TechnicalCertificateDetails = ({navigation, route}: Props) => {
   }, [selectedImg])
 
   const renderDocumentsSections = (file: any, index: number) => (
-    <TouchableOpacity key={index}>
+    <TouchableOpacity
+      key={index}
+      onPress={() => {
+        if (file.path.split('.')[1] === 'pdf') {
+          navigation.navigate('PDFView', {
+            path: `${VEMASYS_PRODUCTION_FILE_URL}/${file.path}`,
+          })
+        } else {
+          setSelectedImg(file.path)
+        }
+      }}
+    >
       <HStack
         alignItems="center"
         bg={Colors.white}
