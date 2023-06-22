@@ -64,7 +64,6 @@ export default function BunkeringDetails({route, navigation}: Props) {
 
   useEffect(() => {
     setCurrentBunkeringId(bunk.id)
-    console.log('BUNK', bunk)
   }, [bunk])
 
   useEffect(() => {
@@ -232,7 +231,19 @@ export default function BunkeringDetails({route, navigation}: Props) {
             {bunkering
               ?.find(item => item.id === bunk.id)
               .fileGroup?.files?.map((file: any, index: number) => (
-                <TouchableOpacity key={index}>
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => {
+                    if (file.path.split('.')[1] === 'pdf') {
+                      navigation.navigate('PDFView', {
+                        // path: `${VEMASYS_PRODUCTION_FILE_URL}/${file.path}`,
+                        path: `${UAT_URL}upload/documents/${file.path}`,
+                      })
+                    } else {
+                      setSelectedImg(file.path)
+                    }
+                  }}
+                >
                   <HStack
                     alignItems="center"
                     bg={Colors.white}

@@ -17,52 +17,45 @@ const ReservoirLevel = ({reservoir, physicalVesselId}: any) => {
   const {gasoilReserviors} = useTechnical()
 
   const totalGasoil = gasoilReserviors?.reduce(
-    (acc: any, reservoir: {volume: any}) =>
-      acc +
-      (reservoir?.lastMeasurement?.value
-        ? reservoir?.lastMeasurement?.value
-        : 0),
+    (acc: number, reservoir: {lastMeasurement: {value?: number}}) =>
+      acc + (reservoir.lastMeasurement?.value ?? 0),
     0
   )
 
   const renderGasoilList = (reservoir: any, index: number) => {
     const gasoilListLength = reservoir.length - 1
-    let fillPct = 0
-    const capacity = reservoir?.capacity === null ? 0 : reservoir?.capacity
-    const value =
-      typeof reservoir?.lastMeasurement?.value === 'undefined'
-        ? 0
-        : reservoir?.lastMeasurement?.value
+    const capacity = reservoir?.capacity ?? 0
+    const value = reservoir?.lastMeasurement?.value ?? 0
     const used = capacity - value
-    fillPct = (used / capacity) * 100 - 100
-    fillPct = fillPct < 0 ? fillPct * -1 : fillPct
+    let fillPct = (used / capacity) * 100 - 100
+    fillPct = fillPct < 0 ? -fillPct : fillPct
+    const formattedValue = formatNumber(value, 2, ' ')
+    const fillPctFloor =
+      Number.isNaN(fillPct) || fillPct === Infinity ? 0 : Math.floor(fillPct)
+    const isLastIndex = index === gasoilListLength
+    const momentDate = moment(reservoir?.lastMeasurement?.date)
+
+    const handlePress = () => {
+      navigation.navigate('Measurements', {
+        data: reservoir,
+        routeFrom: 'reservoir',
+      })
+    }
 
     return (
-      <Box key={index} mb={ms(index === gasoilListLength ? 10 : 0)}>
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={() =>
-            navigation.navigate('Measurements', {
-              data: reservoir,
-              routeFrom: 'reservoir',
-            })
-          }
-        >
+      <Box key={index} mb={ms(isLastIndex ? 10 : 0)}>
+        <TouchableOpacity activeOpacity={0.7} onPress={handlePress}>
           <Box px={ms(16)} py={ms(5)}>
             <HStack alignItems="center">
               <Text color={Colors.azure} flex="1" fontWeight="medium">
                 {reservoir.name}
               </Text>
               <Text bold color={Colors.azure} fontSize={ms(16)}>
-                {formatNumber(value, 2, ' ')} L (
-                {isNaN(fillPct) || fillPct === Infinity
-                  ? 0
-                  : Math.floor(fillPct)}
-                %)
+                {formattedValue} L ({fillPctFloor}%)
               </Text>
             </HStack>
             <Text color={Colors.disabled} flex="1" fontWeight="medium">
-              {moment(reservoir?.lastMeasurement?.date).fromNow()}
+              {momentDate.fromNow()}
             </Text>
             <Progress
               colorScheme={
@@ -70,11 +63,11 @@ const ReservoirLevel = ({reservoir, physicalVesselId}: any) => {
               }
               mt={ms(10)}
               size="md"
-              value={isNaN(fillPct) ? 0 : Math.floor(fillPct)}
+              value={fillPctFloor}
             />
           </Box>
         </TouchableOpacity>
-        {index === gasoilListLength ? null : <Divider mt={ms(10)} />}
+        {!isLastIndex && <Divider mt={ms(10)} />}
       </Box>
     )
   }

@@ -1,5 +1,5 @@
 import React from 'react'
-import {Box, HStack, Pressable, Text, VStack} from 'native-base'
+import {Box, FlatList, HStack, Pressable, Text, VStack} from 'native-base'
 import {useNavigation} from '@react-navigation/native'
 
 import {Colors} from '@bluecentury/styles'
@@ -10,42 +10,43 @@ import {useTranslation} from 'react-i18next'
 import {LoadingAnimated} from '@bluecentury/components'
 import {useTechnical} from '@bluecentury/stores'
 
+// ---- Move this renderBunkeringList function outside the component to prevent re-creation on each render.
+const renderBunkeringList = (bunk: any, navigation: any) => {
+  const formattedDate = moment(bunk.date).format('DD/MM/YYYY - HH:mm')
+
+  return (
+    <Pressable
+      key={bunk.id}
+      onPress={() => navigation.navigate('BunkeringDetails', {bunk})}
+    >
+      <HStack
+        alignItems="center"
+        bg={Colors.white}
+        borderColor={Colors.light}
+        borderRadius={ms(5)}
+        borderWidth={1}
+        mt={ms(10)}
+        p={ms(10)}
+        shadow={2}
+      >
+        <VStack flex="1">
+          <Text color={Colors.text} fontWeight="medium">
+            {bunk.entity.alias}
+          </Text>
+          <Text color={Colors.disabled}>{formattedDate}</Text>
+        </VStack>
+        <Text bold color={Colors.highlighted_text}>
+          {formatNumber(bunk.value, 2, ' ')} L
+        </Text>
+      </HStack>
+    </Pressable>
+  )
+}
+
 const BunkeringList = ({bunkering}: any) => {
   const {t} = useTranslation()
   const navigation = useNavigation()
   const {isBunkeringLoading} = useTechnical()
-
-  const renderBunkeringList = (bunk: any, index: number) => {
-    return (
-      <Pressable
-        key={index}
-        onPress={() => navigation.navigate('BunkeringDetails', {bunk})}
-      >
-        <HStack
-          alignItems="center"
-          bg={Colors.white}
-          borderColor={Colors.light}
-          borderRadius={ms(5)}
-          borderWidth={1}
-          mt={ms(10)}
-          p={ms(10)}
-          shadow={2}
-        >
-          <VStack flex="1">
-            <Text color={Colors.text} fontWeight="medium">
-              {bunk.entity.alias}
-            </Text>
-            <Text color={Colors.disabled}>
-              {moment(bunk.date).format('DD/MM/YYYY - HH:mm')}
-            </Text>
-          </VStack>
-          <Text bold color={Colors.highlighted_text}>
-            {formatNumber(bunk.value, 2, ' ')} L
-          </Text>
-        </HStack>
-      </Pressable>
-    )
-  }
 
   return isBunkeringLoading ? (
     <LoadingAnimated />
@@ -61,9 +62,7 @@ const BunkeringList = ({bunkering}: any) => {
       </HStack>
       {/* Bunkering List */}
       {bunkering?.length > 0 ? (
-        bunkering?.map((bunk: any, index: number) =>
-          renderBunkeringList(bunk, index)
-        )
+        bunkering.map((bunk: any) => renderBunkeringList(bunk, navigation))
       ) : (
         <Box py={ms(10)}>
           <Text
