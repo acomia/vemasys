@@ -28,6 +28,12 @@ const Reservoirs = () => {
     setPullRefresh(false)
   }
 
+  const calculateFillPct = reservoir => {
+    const capacity = reservoir.capacity || 0
+    const value = reservoir.lastMeasurement?.value || 0
+    return (value / capacity) * 100 // Update the calculation
+  }
+
   return (
     <Box flex="1">
       <ScrollView
@@ -44,17 +50,10 @@ const Reservoirs = () => {
           {t('waterTanks')}
         </Text>
         {reservoirs?.length > 0 ? (
-          reservoirs?.map((reservoir: any, index) => {
-            let fillPct = 0
-            const capacity =
-              reservoir?.capacity === null ? 0 : reservoir?.capacity
-            const value =
-              typeof reservoir?.lastMeasurement?.value === 'undefined'
-                ? 0
-                : reservoir?.lastMeasurement?.value
-            const used = capacity - value
-            fillPct = (used / capacity) * 100 - 100
-            fillPct = fillPct < 0 ? fillPct * -1 : fillPct
+          reservoirs?.map((reservoir, index) => {
+            const {name, lastMeasurement, capacity} = reservoir
+            const fillPct = calculateFillPct(reservoir)
+            const value = lastMeasurement?.value ?? 0
 
             return (
               <TouchableOpacity
@@ -82,10 +81,10 @@ const Reservoirs = () => {
                   >
                     <VStack flex="1">
                       <Text color={Colors.text} fontWeight="medium">
-                        {reservoir.name}:
+                        {name}:
                       </Text>
                       <Text color={Colors.azure}>
-                        {moment(reservoir?.lastMeasurement?.date).fromNow()}
+                        {moment(lastMeasurement?.date).fromNow()}
                       </Text>
                     </VStack>
                     <Text bold color={Colors.azure} fontSize={ms(16)}>

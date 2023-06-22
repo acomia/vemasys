@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState, useMemo} from 'react'
 import {RefreshControl, TouchableOpacity} from 'react-native'
-import {Box, Divider, HStack, ScrollView, Text} from 'native-base'
+import {Box, Divider, HStack, Text, ScrollView} from 'native-base'
 import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import _ from 'lodash'
@@ -24,26 +24,28 @@ const Engines = () => {
     /* eslint-disable react-hooks/exhaustive-deps */
   }, [physicalVesselId])
 
-  const vesselZones = Object.values(
-    engines.reduce((acc: any, item) => {
-      const zones = item.vesselZone.title
-      if (!acc[zones]) {
-        acc[zones] = {
-          zones: zones,
-          data: [],
+  const vesselZones = useMemo(() => {
+    return Object.values(
+      engines.reduce((acc: any, item) => {
+        const zones = item.vesselZone.title
+        if (!acc[zones]) {
+          acc[zones] = {
+            zones: zones,
+            data: [],
+          }
         }
-      }
-      acc[zones].data.push(item)
-      return acc
-    }, {})
-  )
+        acc[zones].data.push(item)
+        return acc
+      }, {})
+    )
+  }, [engines])
 
   const renderEngineList = (partType: any, index: number) => {
     const pLength = partType.data.length - 1
     const {type, lastMeasurement} = partType.data[pLength]
 
     return (
-      <Box key={index} mb={ms(index === vesselZones.data?.length - 1 ? 10 : 0)}>
+      <Box key={index} mb={ms(index === partType.data?.length - 1 ? 10 : 0)}>
         <TouchableOpacity
           activeOpacity={0.7}
           onPress={() =>
@@ -84,9 +86,7 @@ const Engines = () => {
             </HStack>
           </Box>
         </TouchableOpacity>
-        {index === vesselZones.data?.length - 1 ? null : (
-          <Divider mt={ms(10)} />
-        )}
+        {index === partType.data?.length - 1 ? null : <Divider mt={ms(10)} />}
       </Box>
     )
   }
@@ -126,6 +126,7 @@ const Engines = () => {
                 return acc
               }, {})
             )
+
             return (
               <Box
                 key={index}
