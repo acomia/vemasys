@@ -223,11 +223,11 @@ export default function Map({navigation}: Props) {
       const init = async () => {
         setMapLoading(true)
         getAllNotifications()
-        await getVesselStatus(vesselId)
-        await getPreviousNavigationLogs(vesselId)
-        await getPlannedNavigationLogs(vesselId)
-        await getCurrentNavigationLogs(vesselId)
-        await getLastCompleteNavigationLogs(vesselId)
+        getVesselStatus(vesselId)
+        getPreviousNavigationLogs(vesselId)
+        getPlannedNavigationLogs(vesselId)
+        getCurrentNavigationLogs(vesselId)
+        getLastCompleteNavigationLogs(vesselId)
 
         getVesselTrack(vesselId, page)
         // setLoadingMap(false)
