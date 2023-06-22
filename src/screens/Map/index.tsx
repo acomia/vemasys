@@ -158,7 +158,9 @@ export default function Map({navigation}: Props) {
   // })
 
   const uniqueVesselTrack = vesselTracks?.filter(element => {
-    const isDuplicate = uniqueTracks.includes(element.latitude)
+    const isDuplicate =
+      uniqueTracks.includes(element.latitude) &&
+      uniqueTracks.includes(element.longtitude)
     if (!isDuplicate) {
       uniqueTracks.push(element.latitude)
       return true
