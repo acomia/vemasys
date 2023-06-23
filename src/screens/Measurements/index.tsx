@@ -412,7 +412,7 @@ const Measurements = ({navigation, route}: Props) => {
               }}
               decimalLength={0}
               errorMessage={'Too match'}
-              initialValue={newMeasurement}
+              initialValue={newMeasurement !== '' ? newMeasurement : 0}
               numberLength={5}
             />
             {inputInvalid && (
