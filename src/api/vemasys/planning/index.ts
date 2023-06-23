@@ -380,6 +380,44 @@ export const createStandardContainer = async (containerCargo: any) => {
     })
 }
 
+const uploadNavigationLogFileWithAccessLevel = async (
+  navLogId: number,
+  file: any,
+  accessLevel: string
+) => {
+  const formData = new FormData()
+  const image = {
+    uri: file.uri,
+    type: file.type,
+    name: file.fileName || `IMG_${Date.now()}`,
+  }
+  formData.append('file', image)
+  formData.append('access-level', accessLevel)
+  const token = useAuth.getState().token
+  const entityUserId = useEntity.getState().entityUserId
+  const API_URL = useSettings.getState().apiUrl
+  const subject = 'NavigationLog'
+  try {
+    const res = await axios.post(
+      `${API_URL}v2/files/${subject}/${navLogId}`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Jwt-Auth': `Bearer ${token}`,
+          'X-active-entity-user-id': `${entityUserId}`,
+        },
+      }
+    )
+    return res.data
+  } catch (error: any) {
+    console.error(
+      'Error: Upload image file data',
+      JSON.stringify(error.response)
+    )
+  }
+}
+
 export {
   reloadNavigationLogDetails,
   reloadNavigationLogActions,
@@ -400,4 +438,5 @@ export {
   createNavigationLogAction,
   updateNavigationLogAction,
   deleteNavigationLogAction,
+  uploadNavigationLogFileWithAccessLevel,
 }

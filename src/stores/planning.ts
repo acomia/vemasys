@@ -103,6 +103,11 @@ type PlanningActions = {
   getNavigationContainers: () => void
   createNavigationContainer: (containerCargo: any) => {}
   resetCreateStandardContainer: () => void
+  uploadNavigationLogFileWithAccessLevel: (
+    navLogId: number,
+    file: any,
+    accessLevel: string
+  ) => void
 }
 
 export type PlanningStore = PlanningState & PlanningActions
@@ -797,6 +802,24 @@ export const usePlanning = create(
       },
       resetCreateStandardContainer: () => {
         set({isCreateContainerSuccess: false, isCreateContainerLoading: false})
+      },
+      uploadNavigationLogFileWithAccessLevel: async (
+        navLogId: number,
+        file: any,
+        accessLevel: string
+      ) => {
+        set({isPlanningDocumentsLoading: true})
+        try {
+          const response = await API.uploadNavigationLogFileWithAccessLevel(
+            navLogId,
+            file,
+            accessLevel
+          )
+          set({isPlanningDocumentsLoading: false})
+          return response
+        } catch (error) {
+          set({isPlanningDocumentsLoading: false})
+        }
       },
     }),
     {

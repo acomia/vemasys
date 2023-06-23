@@ -9,16 +9,15 @@ export const convertToPdfAndUpload = async (
   navlog?: any,
   setScannedImage?: (description: string) => void,
   certificates?: boolean,
-  bunkering?: boolean
+  bunkering?: boolean,
+  accessLevel?: string
 ) => {
   const uploadImgFile = usePlanning.getState().uploadImgFile
   const addFinancialScan = useFinancial.getState().addFinancialScan
   const uploadCertificateScannedDoc =
     useTechnical.getState().uploadCertificateScannedDoc
-  const navigationLogDocuments = usePlanning.getState().navigationLogDocuments
-  const navigationLogDetails = usePlanning.getState().navigationLogDetails
-  const uploadVesselNavigationLogFile =
-    usePlanning.getState().uploadVesselNavigationLogFile
+  const uploadNavigationLogFileWithAccessLevel =
+    usePlanning.getState().uploadNavigationLogFileWithAccessLevel
   const getNavigationLogDocuments =
     usePlanning.getState().getNavigationLogDocuments
   const addBunkeringScan = useTechnical.getState().addBunkeringScan
@@ -63,7 +62,7 @@ export const convertToPdfAndUpload = async (
         showToast('File upload failed.', 'failed')
       }
     }
-    if (typeof upload === 'object' && certificates) {
+    if (typeof upload === 'object' && !planning && certificates) {
       const uploadDocs = await uploadCertificateScannedDoc(upload.path)
       if (uploadDocs === 'SUCCESS') {
         showToast('File upload successfully.', 'success')
@@ -71,7 +70,7 @@ export const convertToPdfAndUpload = async (
         showToast('File upload failed.', 'failed')
       }
     }
-    if (typeof upload === 'object' && bunkering) {
+    if (typeof upload === 'object' && !planning && bunkering) {
       const uploadDocs = await addBunkeringScan(upload.path)
       if (uploadDocs === 'SUCCESS') {
         showToast('File upload successfully.', 'success')
@@ -81,28 +80,13 @@ export const convertToPdfAndUpload = async (
     }
     if (typeof upload === 'object' && planning) {
       const description = `${moment().format('YYYY-MM-DD HH:mm:ss')}.pdf`
+      const uploadDocs = await uploadNavigationLogFileWithAccessLevel(
+        Number(navlog?.id),
+        file,
+        accessLevel
+      )
 
-      const newFile = {
-        path: upload.path,
-        description,
-      }
-
-      // eslint-disable-next-line
-      let body = {
-        fileGroup: {
-          files:
-            navigationLogDocuments?.length > 0
-              ? [...navigationLogDocuments?.map(f => ({id: f.id})), newFile]
-              : [newFile],
-        },
-      }
-
-      if (navigationLogDetails?.fileGroup?.id) {
-        body.fileGroup.id = navigationLogDetails?.fileGroup?.id
-      }
-
-      const uploadDocs = await uploadVesselNavigationLogFile(navlog?.id, body)
-      if (typeof uploadDocs === 'object' && uploadDocs.id) {
+      if (Array.isArray(uploadDocs) && uploadDocs[0]?.id) {
         getNavigationLogDocuments(navlog?.id)
         showToast('File upload successfully.', 'success')
         setScannedImage(description)
