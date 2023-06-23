@@ -67,6 +67,14 @@ export const OTPInput = ({
         Math.trunc(initialValue).toString().padStart(numberLength, '0')
       )
     }
+    if (initialValue === 0) {
+      setNumber(Math.trunc(initialValue).toString().padStart(numberLength, '0'))
+      setDecimal('0'.padEnd(decimalLength, '0'))
+      setInitialDecimal('0'.padEnd(decimalLength, '0'))
+      setInitialNumber(
+        Math.trunc(initialValue).toString().padStart(numberLength, '0')
+      )
+    }
   }, [initialValue])
 
   const handleNumberChange = (value: string, index: number) => {

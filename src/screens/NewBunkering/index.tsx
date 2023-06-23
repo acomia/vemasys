@@ -224,10 +224,10 @@ export default function NewBunkering() {
                 setIsAmountEmpty(false)
               }
             }}
-            decimalLength={3}
+            decimalLength={0}
             errorMessage={'Too match'}
             initialValue={bunkering.amount}
-            numberLength={4}
+            numberLength={5}
           />
           {/* <Input
             bold
