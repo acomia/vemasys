@@ -1,30 +1,35 @@
 import React, {useState, useEffect} from 'react'
+import {RefreshControl, Platform, PermissionsAndroid} from 'react-native'
 import {
-  Actionsheet,
   Box,
   Button,
+  Divider,
+  FormControl,
   HStack,
   Icon,
   Image,
   Modal,
   ScrollView,
+  Select,
   Text,
-  useDisclose,
+  WarningOutlineIcon,
   useToast,
 } from 'native-base'
 import {ms} from 'react-native-size-matters'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import {NavigationProp, useNavigation, useRoute} from '@react-navigation/native'
+import DocumentPicker, {isInProgress, types} from 'react-native-document-picker'
+import {useTranslation} from 'react-i18next'
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
+import DocumentScanner from 'react-native-document-scanner-plugin'
+
+import {convertToPdfAndUpload} from '@bluecentury/utils'
+import {accessLevel} from '@bluecentury/constants'
+import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
 import {usePlanning, useSettings} from '@bluecentury/stores'
 import {IconButton, LoadingAnimated} from '@bluecentury/components'
-import DocumentPicker, {isInProgress, types} from 'react-native-document-picker'
-import {Icons} from '@bluecentury/assets'
-import {RefreshControl, Platform, PermissionsAndroid} from 'react-native'
-import moment from 'moment'
-import DocumentScanner from 'react-native-document-scanner-plugin'
-import {convertToPdfAndUpload} from '@bluecentury/utils'
-import {useTranslation} from 'react-i18next'
+import {RootStackParamList} from '@bluecentury/types/nav.types'
 
 type Document = {
   id: number
@@ -35,22 +40,44 @@ type Document = {
 const Documents = () => {
   const {t} = useTranslation()
   const route = useRoute()
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>()
+  const navigation =
+    useNavigation<NavigationProp<RootStackParamList, 'PlanningDetails'>>()
   const toast = useToast()
   const {navlog}: any = route.params
   const {
     isPlanningDocumentsLoading,
-    navigationLogDetails,
     navigationLogDocuments,
     getNavigationLogDocuments,
-    uploadImgFile,
-    uploadVesselNavigationLogFile,
+    uploadNavigationLogFileWithAccessLevel,
   } = usePlanning()
-  const {isOpen, onOpen, onClose} = useDisclose()
   const [result, setResult] = useState<ImageFile>({})
-  const [selectedImg, setSelectedImg] = useState<ImageFile>({})
+  const [selectedImg, setSelectedImg] = useState('')
+  const [addDocs, setAddDocs] = useState(false)
   const [viewImg, setViewImg] = useState(false)
   const [scannedImage, setScannedImage] = useState()
+  const [levelOfAccess, setLevelOfAccess] = useState(accessLevel[0].value)
+  const [loading, setLoading] = useState(true)
+  const [imageLoaded, setImageLoaded] = useState(false)
+  const [isAccessLevelEmpty, setIsAccessLevelEmpty] = useState(false)
+
+  useEffect(() => {
+    // Preload the image
+    const preloadImage = async () => {
+      if (selectedImg !== '') {
+        setLoading(true)
+        await Image.prefetch(selectedImg)
+        setImageLoaded(true)
+        setLoading(false)
+      }
+    }
+
+    preloadImage()
+  }, [selectedImg])
+
+  const handleImageLoad = () => {
+    setLoading(false)
+    setImageLoaded(false)
+  }
 
   useEffect(() => {
     getNavigationLogDocuments(navlog?.id)
@@ -58,6 +85,10 @@ const Documents = () => {
   }, [])
 
   const scanDocument = async () => {
+    if (levelOfAccess === '') {
+      setIsAccessLevelEmpty(true)
+      return
+    }
     // start the document scanner
     const {scannedImages} = await DocumentScanner.scanDocument()
     if (scannedImages) {
@@ -66,7 +97,10 @@ const Documents = () => {
         showToast,
         true,
         navlog,
-        setScannedImage
+        setScannedImage,
+        false,
+        false,
+        levelOfAccess
       )
     }
   }
@@ -116,12 +150,16 @@ const Documents = () => {
   }
 
   const onScanDocument = async () => {
+    if (levelOfAccess === '') {
+      setIsAccessLevelEmpty(true)
+      return
+    }
     if (Platform.OS === 'android') {
       const permissionCamera = await requestCameraPermission()
 
       if (permissionCamera) scanDocument()
     }
-    onClose()
+    setAddDocs(false)
   }
 
   const onSelectDocument = async () => {
@@ -131,42 +169,51 @@ const Documents = () => {
         copyTo: 'cachesDirectory',
         type: [types.images],
       })
-      onClose()
+      setAddDocs(false)
       setResult({
         uri: pickerResult.uri,
         fileName: pickerResult.name,
         type: pickerResult.type,
       })
-      const upload = await uploadImgFile({
+      const file = {
         uri: pickerResult.uri,
         fileName: pickerResult.name,
         type: pickerResult.type,
-      })
-      if (typeof upload === 'object') {
-        const newFile = {
-          path: upload.path,
-          description: moment().format('YYYY-MM-DD HH:mm:ss'),
-        }
-        const body = {
-          fileGroup: {
-            files:
-              navigationLogDocuments?.length > 0
-                ? [...navigationLogDocuments?.map(f => ({id: f.id})), newFile]
-                : [newFile],
-          },
-        }
+      }
+      // const upload = await uploadImgFile({
+      //   uri: pickerResult.uri,
+      //   fileName: pickerResult.name,
+      //   type: pickerResult.type,
+      // })
+      // if (typeof upload === 'object') {
+      //   const newFile = {
+      //     path: upload.path,
+      //     description: moment().format('YYYY-MM-DD HH:mm:ss'),
+      //   }
+      //   const body = {
+      //     fileGroup: {
+      //       files:
+      //         navigationLogDocuments?.length > 0
+      //           ? [...navigationLogDocuments?.map(f => ({id: f.id})), newFile]
+      //           : [newFile],
+      //     },
+      //   }
 
-        if (navigationLogDetails?.fileGroup?.id) {
-          body.fileGroup.id = navigationLogDetails?.fileGroup?.id
-        }
+      //   if (navigationLogDetails?.fileGroup?.id) {
+      //     body.fileGroup.id = navigationLogDetails?.fileGroup?.id
+      //   }
 
-        const uploadDocs = await uploadVesselNavigationLogFile(navlog?.id, body)
-        if (typeof uploadDocs === 'object' && uploadDocs.id) {
-          getNavigationLogDocuments(navlog?.id)
-          showToast('File upload successfully.', 'success')
-        } else {
-          showToast('File upload failed.', 'failed')
-        }
+      //   const uploadDocs = await uploadVesselNavigationLogFile(navlog?.id, body)
+      const uploadDocs = await uploadNavigationLogFileWithAccessLevel(
+        Number(navlog?.id),
+        file,
+        levelOfAccess
+      )
+      if (Array.isArray(uploadDocs) && uploadDocs[0]?.id) {
+        getNavigationLogDocuments(navlog?.id)
+        showToast('File upload successfully.', 'success')
+      } else {
+        showToast('File upload failed.', 'failed')
       }
     } catch (e) {
       handleError(e)
@@ -193,27 +240,15 @@ const Documents = () => {
         })
         break
       case 'jpeg':
-        setSelectedImg({
-          uri: `${path}`,
-          fileName: 'preview',
-          type: 'image/jpeg',
-        })
+        setSelectedImg(path)
         setViewImg(true)
         break
       case 'jpg':
-        setSelectedImg({
-          uri: `${path}`,
-          fileName: 'preview',
-          type: 'image/jpg',
-        })
+        setSelectedImg(path)
         setViewImg(true)
         break
       default:
-        setSelectedImg({
-          uri: `${path}`,
-          fileName: 'preview',
-          type: 'image/jpeg',
-        })
+        setSelectedImg(path)
         setViewImg(true)
         break
     }
@@ -224,7 +259,6 @@ const Documents = () => {
   }
   const handleOnPressUpload = (document: any) => {
     const env = useSettings.getState().env
-
     switch (env) {
       case 'PROD':
         viewDocument(
@@ -297,31 +331,80 @@ const Documents = () => {
         mb={ms(20)}
         mt={ms(20)}
         mx={ms(12)}
-        onPress={onOpen}
+        onPress={() => setAddDocs(true)}
       >
         {t('addFile')}
       </Button>
-      <Actionsheet isOpen={isOpen} onClose={onClose}>
-        <Actionsheet.Content>
-          <Actionsheet.Item onPress={onScanDocument}>
-            {t('scanDoc')}
-          </Actionsheet.Item>
-          <Actionsheet.Item onPress={onSelectDocument}>
-            {t('selectDoc')}
-          </Actionsheet.Item>
-          <Actionsheet.Item onPress={onClose}>Cancel</Actionsheet.Item>
-        </Actionsheet.Content>
-      </Actionsheet>
+      <Modal isOpen={addDocs} size="full" onClose={() => setAddDocs(false)}>
+        <Modal.Content>
+          <Box bg={Colors.white} p={ms(10)}>
+            <Text bold color={Colors.azure} fontSize={ms(18)}>
+              File upload
+            </Text>
+            <Divider mb={ms(20)} mt={ms(5)} />
+            <Button
+              leftIcon={
+                <Icon as={MaterialIcons} name="upload-file" size="sm" />
+              }
+              bg={Colors.primary}
+              onPress={onScanDocument}
+            >
+              {t('openCamera')}
+            </Button>
+            <Text
+              color={Colors.disabled}
+              fontSize={ms(16)}
+              fontWeight="medium"
+              my={ms(10)}
+              textAlign="center"
+            >
+              {t('or')}
+            </Text>
+            <Button bg={Colors.primary} size="md" onPress={onSelectDocument}>
+              {t('uploadImage')}
+            </Button>
+            <FormControl isRequired isInvalid={isAccessLevelEmpty} my={ms(15)}>
+              <FormControl.Label color={Colors.disabled}>
+                {t('accessLevel')}
+              </FormControl.Label>
+              <Select
+                bg={Colors.light_grey}
+                defaultValue={levelOfAccess}
+                selectedValue={levelOfAccess}
+                onValueChange={value => setLevelOfAccess(value)}
+              >
+                {accessLevel.map((access, idx) => (
+                  <Select.Item
+                    key={`AccessLevel-${idx}`}
+                    label={access.label}
+                    value={access.value}
+                  />
+                ))}
+              </Select>
+              <FormControl.ErrorMessage
+                leftIcon={<WarningOutlineIcon size="xs" />}
+              >
+                {t('selectAccessLevel')}
+              </FormControl.ErrorMessage>
+            </FormControl>
+          </Box>
+        </Modal.Content>
+      </Modal>
       {/* Preview Image Modal */}
       <Modal isOpen={viewImg} size="full" onClose={() => setViewImg(false)}>
         <Modal.Content>
-          <Image
-            alt="file-preview"
-            h="100%"
-            resizeMode="contain"
-            source={{uri: selectedImg.uri}}
-            w="100%"
-          />
+          {loading && !imageLoaded ? (
+            <LoadingAnimated />
+          ) : (
+            <Image
+              alt="file-preview"
+              h="100%"
+              resizeMode="contain"
+              source={{uri: selectedImg}}
+              w="100%"
+              onLoad={handleImageLoad}
+            />
+          )}
         </Modal.Content>
       </Modal>
       {/* End of Image Preview */}
