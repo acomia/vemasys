@@ -301,10 +301,7 @@ const CargoList = () => {
     <Box flex="1">
       <ScrollView
         refreshControl={
-          <RefreshControl
-            refreshing={isPlanningDetailsLoading}
-            onRefresh={onPullToReload}
-          />
+          <RefreshControl refreshing={false} onRefresh={onPullToReload} />
         }
         bg={Colors.white}
         contentContainerStyle={{flexGrow: 1, paddingBottom: 20}}

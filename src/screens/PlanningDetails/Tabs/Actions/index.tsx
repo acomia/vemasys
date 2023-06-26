@@ -133,10 +133,7 @@ const Actions = () => {
     <Box flex="1">
       <ScrollView
         refreshControl={
-          <RefreshControl
-            refreshing={isPlanningActionsLoading}
-            onRefresh={onPullToReload}
-          />
+          <RefreshControl refreshing={false} onRefresh={onPullToReload} />
         }
         bg={Colors.white}
         contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}

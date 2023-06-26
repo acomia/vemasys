@@ -263,13 +263,8 @@ export default () => {
   return (
     <Box flex={1}>
       <PageScroll
-        refreshing={
-          isTonnageCertificationLoading ||
-          isSavingNavBulkLoading ||
-          isDraughtLoading ||
-          isUpdateBulkCargoLoading
-        }
         backgroundColor={Colors.light}
+        refreshing={false}
         onPullToReload={onPullToReload}
       >
         <Box my={ms(10)}>
