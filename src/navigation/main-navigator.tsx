@@ -14,8 +14,7 @@ import BackgroundGeolocation, {
 import BackgroundFetch from 'react-native-background-fetch'
 import {ms} from 'react-native-size-matters'
 import {Icons} from '@bluecentury/assets'
-import {Sidebar, IconButton, GPSTracker} from '@bluecentury/components'
-import {GPSAnimated} from '@bluecentury/components/gps-animated'
+import {Sidebar, IconButton} from '@bluecentury/components'
 import {Screens} from '@bluecentury/constants'
 import {
   Notification,
@@ -152,33 +151,6 @@ export default function MainNavigator({navigation}: Props) {
           headerTitleStyle: {fontSize: 16, fontWeight: 'bold'},
           headerStyle: {backgroundColor: Colors.light},
           headerShadowVisible: false,
-          headerRight: () => (
-            <Box alignItems="center" flexDirection="row" mr={2}>
-              <HStack space="3">
-                {activeFormations.length ? (
-                  <IconButton
-                    size={ms(25)}
-                    source={Icons.formations}
-                    onPress={() => navigation.navigate(Screens.Formations)}
-                  />
-                ) : null}
-                {isQrScanner ? (
-                  <IconButton
-                    size={ms(25)}
-                    source={Icons.qr}
-                    onPress={() => navigation.navigate(Screens.QRScanner)}
-                  />
-                ) : null}
-                <Pressable
-                  size={ms(40)}
-                  // onPress={() => navigation.navigate('GPSTracker')}
-                  onPress={() => setIsGPSOpen(true)}
-                >
-                  <GPSAnimated />
-                </Pressable>
-              </HStack>
-            </Box>
-          ),
           headerLeft: () => (
             <Box ml={ms(20)}>
               <IconButton
@@ -243,7 +215,6 @@ export default function MainNavigator({navigation}: Props) {
         />
         <Screen component={Settings} name={Screens.Settings} />
       </Navigator>
-      <GPSTracker close={() => setIsGPSOpen(false)} isOpen={isGPSOpen} />
     </>
   )
 }

@@ -34,6 +34,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {
   CommonActions,
   CompositeScreenProps,
+  useFocusEffect,
   useIsFocused,
 } from '@react-navigation/native'
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5'
@@ -50,10 +51,18 @@ import {
   NoInternetConnectionMessage,
   LoadingSlide,
   NavigationLogType,
+  GPSTracker,
+  HeaderRight,
 } from '@bluecentury/components'
-import {Icons, Animated} from '@bluecentury/assets'
+import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
-import {useMap, useEntity, useNotif, usePlanning} from '@bluecentury/stores'
+import {
+  useMap,
+  useEntity,
+  useNotif,
+  usePlanning,
+  useSettings,
+} from '@bluecentury/stores'
 import {
   ENTITY_TYPE_EXPLOITATION_GROUP,
   formatLocationLabel,
@@ -152,10 +161,7 @@ export default function Map({navigation}: Props) {
   const [prevNavLog, setPrevNavLog] = useState(null)
   const [isAlertOpen, setIsAlertOpen] = useState(false)
   const [isScreenBlocked, setIsScreenBlocked] = useState(false)
-
-  // useEffect(() => {
-  //   // currentPositionRef?.current?.showCallout()
-  // })
+  const [isGPSOpen, setIsGPSOpen] = useState(false)
 
   const uniqueVesselTrack = vesselTracks?.filter(element => {
     const isDuplicate =
@@ -176,9 +182,28 @@ export default function Map({navigation}: Props) {
   })
   const refreshId = useRef<any>()
 
+  useFocusEffect(
+    useCallback(() => {
+      updateMap()
+
+      startRefreshTimer()
+
+      return () => {
+        stopRefreshTimer()
+        unmountLocations()
+      }
+    }, [])
+  )
+
   useEffect(() => {
-    Keyboard.addListener('keyboardDidShow', handleKeyboardShow)
-    Keyboard.addListener('keyboardDidHide', handleKeyboardHide)
+    const showKeyboard = Keyboard.addListener(
+      'keyboardDidShow',
+      handleKeyboardShow
+    )
+    const hideKeyboard = Keyboard.addListener(
+      'keyboardDidHide',
+      handleKeyboardHide
+    )
 
     const subscription = AppState.addEventListener('change', nextAppState => {
       if (
@@ -191,9 +216,23 @@ export default function Map({navigation}: Props) {
     })
     unmountLocations()
 
+    navigation.setOptions({
+      headerRight: () => (
+        <HeaderRight
+          setIsGPSOpen={(value: any) => {
+            if (value) {
+              console.log('test', value)
+              stopRefreshTimer()
+              setIsGPSOpen(value)
+            }
+          }}
+        />
+      ),
+    })
+
     return () => {
-      Keyboard.removeAllListeners('keyboardDidShow')
-      Keyboard.removeAllListeners('keyboardDidHide')
+      showKeyboard.remove()
+      hideKeyboard.remove()
       subscription.remove()
     }
   }, [])
@@ -218,39 +257,37 @@ export default function Map({navigation}: Props) {
     isLoadingMap,
   ])
 
-  useEffect(() => {
-    if (vesselId) {
-      const init = async () => {
-        setMapLoading(true)
-        getAllNotifications()
-        getVesselStatus(vesselId)
-        getPreviousNavigationLogs(vesselId)
-        getPlannedNavigationLogs(vesselId)
-        getCurrentNavigationLogs(vesselId)
-        getLastCompleteNavigationLogs(vesselId)
+  // removed to use the useFocusEffect. please comment if this needs to be deleted
+  // useEffect(() => {
+  //   if (vesselId) {
+  //     // const init = async () => {
+  //     //   setMapLoading(true)
+  //     //   getAllNotifications()
+  //     //   getVesselStatus(vesselId)
+  //     //   getPreviousNavigationLogs(vesselId)
+  //     //   getPlannedNavigationLogs(vesselId)
+  //     //   getCurrentNavigationLogs(vesselId)
+  //     //   getLastCompleteNavigationLogs(vesselId)
 
-        getVesselTrack(vesselId, page)
-        // setLoadingMap(false)
-      }
+  //     //   getVesselTrack(vesselId, page)
+  //     //   // setLoadingMap(false)
+  //     // }
 
-      init()
-    }
+  //     // init()
+  //     updateMap()
+  //   }
 
-    if (focused) {
-      refreshId.current = setInterval(() => {
-        // Run updated vessel status
-        setVesselUpdated(true)
-        updateMap()
-      }, 30000)
-    }
+  //   if (focused) {
+  //     startRefreshTimer()
+  //   }
 
-    unmountLocations()
+  //   unmountLocations()
 
-    return () => {
-      clearInterval(refreshId.current)
-      unmountLocations()
-    }
-  }, [vesselId, focused])
+  //   return () => {
+  //     stopRefreshTimer()
+  //     unmountLocations()
+  //   }
+  // }, [vesselId, focused])
 
   useEffect(() => {
     if (currentNavLogs && currentNavLogs.length > 0) {
@@ -331,6 +368,24 @@ export default function Map({navigation}: Props) {
       setIsAlertOpen(true)
     }
   }, [updateNavlogDatesFailed])
+
+  useEffect(() => {
+    if (isGPSOpen) {
+      console.log('test')
+    }
+  }, [isGPSOpen])
+
+  const startRefreshTimer = () => {
+    refreshId.current = setInterval(() => {
+      // Run updated vessel status
+      setVesselUpdated(true)
+      updateMap()
+    }, 30000)
+  }
+
+  const stopRefreshTimer = () => {
+    clearInterval(refreshId.current)
+  }
 
   const handleKeyboardShow = () => {
     setKeyboardVisible(true)
@@ -1125,6 +1180,14 @@ export default function Map({navigation}: Props) {
         </AlertDialog.Content>
       </AlertDialog>
       {isScreenBlocked && <Box h="100%" position="absolute" w="100%" />}
+      <GPSTracker
+        close={() => {
+          updateMap()
+          startRefreshTimer()
+          setIsGPSOpen(false)
+        }}
+        isOpen={isGPSOpen}
+      />
     </Box>
   )
 }
