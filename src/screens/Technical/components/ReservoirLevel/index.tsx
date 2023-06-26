@@ -11,6 +11,57 @@ import {formatNumber} from '@bluecentury/constants'
 import {useTechnical} from '@bluecentury/stores'
 import {useTranslation} from 'react-i18next'
 
+// ---- Move this renderGasoilList function outside the component to prevent re-creation on each render.
+const renderGasoilList = (reservoir: any, index: number, navigation: any) => {
+  const gasoilListLength = reservoir.length - 1
+  const capacity = reservoir?.capacity ?? 0
+  const value = reservoir?.lastMeasurement?.value ?? 0
+  const used = capacity - value
+  let fillPct = (used / capacity) * 100 - 100
+  fillPct = fillPct < 0 ? -fillPct : fillPct
+  const formattedValue = formatNumber(value, 2, ' ')
+  const fillPctFloor =
+    Number.isNaN(fillPct) || fillPct === Infinity ? 0 : Math.floor(fillPct)
+  const isLastIndex = index === gasoilListLength
+  const momentDate = moment(reservoir?.lastMeasurement?.date)
+
+  const handlePress = () => {
+    navigation.navigate('Measurements', {
+      data: reservoir,
+      routeFrom: 'reservoir',
+    })
+  }
+
+  return (
+    <Box key={index} mb={ms(isLastIndex ? 10 : 0)}>
+      <TouchableOpacity activeOpacity={0.7} onPress={handlePress}>
+        <Box px={ms(16)} py={ms(5)}>
+          <HStack alignItems="center">
+            <Text color={Colors.azure} flex="1" fontWeight="medium">
+              {reservoir.name}
+            </Text>
+            <Text bold color={Colors.azure} fontSize={ms(16)}>
+              {formattedValue} L ({fillPctFloor}%)
+            </Text>
+          </HStack>
+          <Text color={Colors.disabled} flex="1" fontWeight="medium">
+            {momentDate.fromNow()}
+          </Text>
+          <Progress
+            colorScheme={
+              fillPct <= 25 ? 'danger' : fillPct <= 50 ? 'warning' : 'primary'
+            }
+            mt={ms(10)}
+            size="md"
+            value={fillPctFloor}
+          />
+        </Box>
+      </TouchableOpacity>
+      {!isLastIndex && <Divider mt={ms(10)} />}
+    </Box>
+  )
+}
+
 const ReservoirLevel = ({reservoir, physicalVesselId}: any) => {
   const {t} = useTranslation()
   const navigation = useNavigation()
@@ -21,56 +72,6 @@ const ReservoirLevel = ({reservoir, physicalVesselId}: any) => {
       acc + (reservoir.lastMeasurement?.value ?? 0),
     0
   )
-
-  const renderGasoilList = (reservoir: any, index: number) => {
-    const gasoilListLength = reservoir.length - 1
-    const capacity = reservoir?.capacity ?? 0
-    const value = reservoir?.lastMeasurement?.value ?? 0
-    const used = capacity - value
-    let fillPct = (used / capacity) * 100 - 100
-    fillPct = fillPct < 0 ? -fillPct : fillPct
-    const formattedValue = formatNumber(value, 2, ' ')
-    const fillPctFloor =
-      Number.isNaN(fillPct) || fillPct === Infinity ? 0 : Math.floor(fillPct)
-    const isLastIndex = index === gasoilListLength
-    const momentDate = moment(reservoir?.lastMeasurement?.date)
-
-    const handlePress = () => {
-      navigation.navigate('Measurements', {
-        data: reservoir,
-        routeFrom: 'reservoir',
-      })
-    }
-
-    return (
-      <Box key={index} mb={ms(isLastIndex ? 10 : 0)}>
-        <TouchableOpacity activeOpacity={0.7} onPress={handlePress}>
-          <Box px={ms(16)} py={ms(5)}>
-            <HStack alignItems="center">
-              <Text color={Colors.azure} flex="1" fontWeight="medium">
-                {reservoir.name}
-              </Text>
-              <Text bold color={Colors.azure} fontSize={ms(16)}>
-                {formattedValue} L ({fillPctFloor}%)
-              </Text>
-            </HStack>
-            <Text color={Colors.disabled} flex="1" fontWeight="medium">
-              {momentDate.fromNow()}
-            </Text>
-            <Progress
-              colorScheme={
-                fillPct <= 25 ? 'danger' : fillPct <= 50 ? 'warning' : 'primary'
-              }
-              mt={ms(10)}
-              size="md"
-              value={fillPctFloor}
-            />
-          </Box>
-        </TouchableOpacity>
-        {!isLastIndex && <Divider mt={ms(10)} />}
-      </Box>
-    )
-  }
 
   return (
     <Box
@@ -95,7 +96,7 @@ const ReservoirLevel = ({reservoir, physicalVesselId}: any) => {
       </HStack>
       {reservoir.length > 0 ? (
         reservoir.map((reservoir: any, index: number) =>
-          renderGasoilList(reservoir, index)
+          renderGasoilList(reservoir, index, navigation)
         )
       ) : (
         <Box px={ms(16)} py={ms(10)}>

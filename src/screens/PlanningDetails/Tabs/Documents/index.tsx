@@ -89,6 +89,9 @@ const Documents = () => {
       setIsAccessLevelEmpty(true)
       return
     }
+    if (Platform.OS === 'android') {
+      await requestCameraPermission()
+    }
     // start the document scanner
     const {scannedImages} = await DocumentScanner.scanDocument()
     if (scannedImages) {
@@ -147,19 +150,6 @@ const Documents = () => {
     } catch (err) {
       console.warn(err)
     }
-  }
-
-  const onScanDocument = async () => {
-    if (levelOfAccess === '') {
-      setIsAccessLevelEmpty(true)
-      return
-    }
-    if (Platform.OS === 'android') {
-      const permissionCamera = await requestCameraPermission()
-
-      if (permissionCamera) scanDocument()
-    }
-    setAddDocs(false)
   }
 
   const onSelectDocument = async () => {
@@ -347,7 +337,7 @@ const Documents = () => {
                 <Icon as={MaterialIcons} name="upload-file" size="sm" />
               }
               bg={Colors.primary}
-              onPress={onScanDocument}
+              onPress={scanDocument}
             >
               {t('openCamera')}
             </Button>
