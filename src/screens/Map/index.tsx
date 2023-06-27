@@ -360,7 +360,7 @@ export default function Map({navigation}: Props) {
   useEffect(() => {
     console.log(isGPSOpen)
     if (isGPSOpen) {
-      stopRefreshTimer()
+      clearInterval(refreshId.current)
     }
     if (!isGPSOpen && isModalClosed) {
       resetIsModalOpen()
@@ -370,15 +370,15 @@ export default function Map({navigation}: Props) {
   }, [isGPSOpen, isModalClosed])
 
   const startRefreshTimer = () => {
-    refreshId.current = setInterval(() => {
+    return (refreshId.current = setInterval(() => {
       // Run updated vessel status
       setVesselUpdated(true)
       updateMap()
-    }, 30000)
+    }, 30000))
   }
 
   const stopRefreshTimer = () => {
-    clearInterval(refreshId.current)
+    return clearInterval(refreshId.current)
   }
 
   const handleKeyboardShow = () => {
