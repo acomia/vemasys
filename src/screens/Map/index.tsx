@@ -52,10 +52,18 @@ import {
   NoInternetConnectionMessage,
   LoadingSlide,
   NavigationLogType,
+  GPSTracker,
+  HeaderRight,
 } from '@bluecentury/components'
-import {Icons, Animated} from '@bluecentury/assets'
+import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
-import {useMap, useEntity, useNotif, usePlanning} from '@bluecentury/stores'
+import {
+  useMap,
+  useEntity,
+  useNotif,
+  usePlanning,
+  useSettings,
+} from '@bluecentury/stores'
 import {
   ENTITY_TYPE_EXPLOITATION_GROUP,
   formatLocationLabel,
@@ -109,6 +117,9 @@ export default function Map({navigation}: Props) {
     isLoadingPlannedNavLogs,
     isLoadingCurrentNavLogs,
     isLoadingMap,
+    isGPSOpen,
+    isModalClosed,
+    resetIsModalOpen,
     resetSearchMap,
   } = useMap()
   const {
@@ -156,10 +167,6 @@ export default function Map({navigation}: Props) {
   const [isAlertOpen, setIsAlertOpen] = useState(false)
   const [isScreenBlocked, setIsScreenBlocked] = useState(false)
 
-  // useEffect(() => {
-  //   // currentPositionRef?.current?.showCallout()
-  // })
-
   const uniqueVesselTrack = vesselTracks?.filter(element => {
     const isDuplicate =
       uniqueTracks.includes(element.latitude) &&
@@ -181,15 +188,27 @@ export default function Map({navigation}: Props) {
 
   useFocusEffect(
     useCallback(() => {
+      updateMap()
+
+      startRefreshTimer()
+
       return () => {
+        stopRefreshTimer()
+        unmountLocations()
         resetSearchMap()
       }
     }, [])
   )
 
   useEffect(() => {
-    Keyboard.addListener('keyboardDidShow', handleKeyboardShow)
-    Keyboard.addListener('keyboardDidHide', handleKeyboardHide)
+    const showKeyboard = Keyboard.addListener(
+      'keyboardDidShow',
+      handleKeyboardShow
+    )
+    const hideKeyboard = Keyboard.addListener(
+      'keyboardDidHide',
+      handleKeyboardHide
+    )
 
     const subscription = AppState.addEventListener('change', nextAppState => {
       if (
@@ -203,8 +222,8 @@ export default function Map({navigation}: Props) {
     unmountLocations()
 
     return () => {
-      Keyboard.removeAllListeners('keyboardDidShow')
-      Keyboard.removeAllListeners('keyboardDidHide')
+      showKeyboard.remove()
+      hideKeyboard.remove()
       subscription.remove()
     }
   }, [])
@@ -229,39 +248,37 @@ export default function Map({navigation}: Props) {
     isLoadingMap,
   ])
 
-  useEffect(() => {
-    if (vesselId) {
-      const init = async () => {
-        setMapLoading(true)
-        getAllNotifications()
-        getVesselStatus(vesselId)
-        getPreviousNavigationLogs(vesselId)
-        getPlannedNavigationLogs(vesselId)
-        getCurrentNavigationLogs(vesselId)
-        getLastCompleteNavigationLogs(vesselId)
+  // removed to use the useFocusEffect. please comment if this needs to be deleted
+  // useEffect(() => {
+  //   if (vesselId) {
+  //     // const init = async () => {
+  //     //   setMapLoading(true)
+  //     //   getAllNotifications()
+  //     //   getVesselStatus(vesselId)
+  //     //   getPreviousNavigationLogs(vesselId)
+  //     //   getPlannedNavigationLogs(vesselId)
+  //     //   getCurrentNavigationLogs(vesselId)
+  //     //   getLastCompleteNavigationLogs(vesselId)
 
-        getVesselTrack(vesselId, page)
-        // setLoadingMap(false)
-      }
+  //     //   getVesselTrack(vesselId, page)
+  //     //   // setLoadingMap(false)
+  //     // }
 
-      init()
-    }
+  //     // init()
+  //     updateMap()
+  //   }
 
-    if (focused) {
-      refreshId.current = setInterval(() => {
-        // Run updated vessel status
-        setVesselUpdated(true)
-        updateMap()
-      }, 30000)
-    }
+  //   if (focused) {
+  //     startRefreshTimer()
+  //   }
 
-    unmountLocations()
+  //   unmountLocations()
 
-    return () => {
-      clearInterval(refreshId.current)
-      unmountLocations()
-    }
-  }, [vesselId, focused])
+  //   return () => {
+  //     stopRefreshTimer()
+  //     unmountLocations()
+  //   }
+  // }, [vesselId, focused])
 
   useEffect(() => {
     if (currentNavLogs && currentNavLogs.length > 0) {
@@ -349,6 +366,30 @@ export default function Map({navigation}: Props) {
       setIsAlertOpen(true)
     }
   }, [updateNavlogDatesFailed])
+
+  useEffect(() => {
+    console.log(isGPSOpen)
+    if (isGPSOpen) {
+      clearInterval(refreshId.current)
+    }
+    if (!isGPSOpen && isModalClosed) {
+      resetIsModalOpen()
+      updateMap()
+      startRefreshTimer()
+    }
+  }, [isGPSOpen, isModalClosed])
+
+  const startRefreshTimer = () => {
+    return (refreshId.current = setInterval(() => {
+      // Run updated vessel status
+      setVesselUpdated(true)
+      updateMap()
+    }, 30000))
+  }
+
+  const stopRefreshTimer = () => {
+    return clearInterval(refreshId.current)
+  }
 
   const handleKeyboardShow = () => {
     setKeyboardVisible(true)
