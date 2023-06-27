@@ -20,6 +20,8 @@ import {
   GPSTracker,
   HeaderRight,
 } from '@bluecentury/components'
+import {useTranslation} from 'react-i18next'
+
 import {Screens} from '@bluecentury/constants'
 import {
   Notification,
@@ -42,8 +44,12 @@ import {
 } from '@bluecentury/stores'
 import {Colors} from '@bluecentury/styles'
 import {navigationRef} from './navigationRef'
+import {GPSAnimated} from '@bluecentury/components/gps-animated'
 import {InitializeTrackingService} from '@bluecentury/helpers'
-import {useTranslation} from 'react-i18next'
+import {
+  MainStackParamList,
+  RootStackParamList,
+} from '@bluecentury/types/nav.types'
 
 const {Navigator, Screen} = createDrawerNavigator<MainStackParamList>()
 
@@ -68,27 +74,22 @@ export default function MainNavigator({navigation}: Props) {
   )
 
   useEffect(() => {
-    getCharters()
-  }, [])
+    const initializeTrackingService = async () => {
+      InitializeTrackingService()
+    }
 
-  useEffect(() => {
     if (isMobileTracking) {
-      console.log('START_BG_LOCATION')
       BackgroundGeolocation.start()
       if (Platform.OS === 'android') {
         initBackgroundFetch()
       }
-    }
-    if (!isMobileTracking) {
-      console.log('STOP_BG_LOCATION')
+    } else {
       BackgroundGeolocation.stop()
       BackgroundFetch.stop()
     }
-  }, [isMobileTracking])
 
-  useEffect(() => {
-    InitializeTrackingService()
-  }, [])
+    initializeTrackingService()
+  }, [isMobileTracking])
 
   useEffect(() => {
     if (typeof token === 'undefined') {
@@ -106,23 +107,21 @@ export default function MainNavigator({navigation}: Props) {
   }, [token])
 
   useEffect(() => {
-    console.log('USE_EFFCET_STARTED')
     const id = useEntity.getState().vesselId
     useEntity.getState().getUserInfo()
     useSettings.getState().getDraughtTable(id)
+    getCharters()
   }, [])
 
   const initBackgroundFetch = async () => {
     const entityId = useEntity.getState().entityId as string
     // BackgroundFetch event handler.
     const onEvent = async (taskId: string) => {
-      console.log('[BackgroundFetch] task: ', taskId)
       // Do your background work...
       BackgroundGeolocation.getCurrentPosition({
         samples: 1,
         persist: true,
       }).then((location: Location) => {
-        console.log('[GROUND_FETCH_LOCATION] ', location)
         useMap.getState().sendCurrentPosition(entityId, location.coords)
       })
       // IMPORTANT:  You must signal to the OS that your task is complete.
@@ -132,7 +131,6 @@ export default function MainNavigator({navigation}: Props) {
     // Timeout callback is executed when your Task has exceeded its allowed running-time.
     // You must stop what you're doing immediately BackgroundFetch.finish(taskId)
     const onTimeout = async (taskId: string) => {
-      console.warn('[groundFetch] TIMEOUT task: ', taskId)
       BackgroundFetch.finish(taskId)
     }
 
@@ -171,7 +169,7 @@ export default function MainNavigator({navigation}: Props) {
           ),
         }}
         drawerContent={props => <Sidebar {...props} />}
-        initialRouteName={Screens.MapView}
+        initialRouteName={Screens.Planning}
       >
         <Screen
           component={Map}
