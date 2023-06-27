@@ -39,6 +39,7 @@ import {
   SignupFinish,
   MeasurementTable,
   UserRequests,
+  Search,
 } from '@bluecentury/screens'
 import {Colors} from '@bluecentury/styles'
 import {useTranslation} from 'react-i18next'
@@ -326,6 +327,14 @@ export default function RootNavigator() {
           }}
           component={UserRequests}
           name={'UserRequests'}
+        />
+        <Screen
+          options={{
+            headerShown: true,
+            title: t('search'),
+          }}
+          component={Search}
+          name={'Search'}
         />
       </Group>
       <Group
