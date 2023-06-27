@@ -6,6 +6,7 @@ import {
   Dimensions,
   Keyboard,
   ActivityIndicator,
+  Pressable,
 } from 'react-native'
 import {} from 'react-native'
 import {
@@ -119,6 +120,7 @@ export default function Map({navigation}: Props) {
     isGPSOpen,
     isModalClosed,
     resetIsModalOpen,
+    resetSearchMap,
   } = useMap()
   const {
     notifications,
@@ -193,6 +195,7 @@ export default function Map({navigation}: Props) {
       return () => {
         stopRefreshTimer()
         unmountLocations()
+        resetSearchMap()
       }
     }, [])
   )
@@ -326,7 +329,7 @@ export default function Map({navigation}: Props) {
   }, [plannedNavLogs, focused])
 
   useEffect(() => {
-    if (vesselStatus && !vesselUpdated) {
+    if (vesselStatus && !vesselUpdated && !geographicLocation) {
       centerMapToCurrentLocation()
     }
   }, [vesselStatus])
@@ -348,7 +351,14 @@ export default function Map({navigation}: Props) {
     if (geoGraphicRoutes?.length > 0) {
       fitToAllMarkers(geoGraphicRoutes)
     }
-  }, [geoGraphicRoutes])
+    if (geographicLocation && geoGraphicRoutes?.length <= 0) {
+      setIsSearchPin(true)
+      centerMapToLocation(
+        geographicLocation?.latitude,
+        geographicLocation?.longitude
+      )
+    }
+  }, [geoGraphicRoutes, geographicLocation])
 
   useEffect(() => {
     if (updateNavlogDatesFailed === 'FAILED') {
@@ -911,6 +921,7 @@ export default function Map({navigation}: Props) {
     setPage(page + 1)
     getVesselTrack(vesselId, page + 1)
   }
+
   const renderSearchLocationMarker = useMemo(() => {
     if (isSearchPin && geographicLocation) {
       if (zoomLevel && zoomLevel > 12) {
@@ -1038,25 +1049,7 @@ export default function Map({navigation}: Props) {
           />
         )}
       </Box>
-      {/* search input */}
-      <Box
-        left={0}
-        position="absolute"
-        pt={ms(15)}
-        px={ms(10)}
-        right={0}
-        top={ms(isMapLoading ? 40 : 0)}
-        zIndex={1}
-      >
-        <Search
-          handleItemAction={handleItemAction}
-          isKeyboardVisible={isKeyboardVisible}
-          setIsSearchPin={setIsSearchPin}
-          onBlur={() => setKeyboardVisible(false)}
-          onFocus={() => setKeyboardVisible(true)}
-        />
-      </Box>
-      <Box position="absolute" right="0" top={isMapLoading ? '13%' : '8%'}>
+      <Box position="absolute" right="0" top={'5%'}>
         <VStack justifyContent="flex-start" m="4" space="5">
           {/*<Box bg={Colors.white} borderRadius="full" p="2" shadow={2}>*/}
           {/*  <IconButton*/}
@@ -1065,11 +1058,34 @@ export default function Map({navigation}: Props) {
           {/*    onPress={centerMapToCurrentLocation}*/}
           {/*  />*/}
           {/*</Box>*/}
+          {/**Search Button */}
+          <Box bg={Colors.white} borderRadius="full" p="2" shadow={2}>
+            <Pressable
+              style={{
+                alignItems: 'center',
+                height: ms(30),
+                width: ms(30),
+                justifyContent: 'center',
+              }}
+              onPress={() => {
+                navigation.navigate('Search')
+              }}
+            >
+              <FontAwesome5Icon
+                color={Colors.azure}
+                name="search"
+                size={ms(25)}
+              />
+            </Pressable>
+          </Box>
           <Box bg={Colors.white} borderRadius="full" p="2" shadow={2}>
             <IconButton
               size={ms(30)}
               source={Icons.location}
-              onPress={centerMapToCurrentLocation}
+              onPress={() => {
+                resetSearchMap()
+                centerMapToCurrentLocation()
+              }}
             />
           </Box>
           <Box bg={Colors.white} borderRadius="full" p="2" shadow={2}>

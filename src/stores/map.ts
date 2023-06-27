@@ -64,6 +64,7 @@ type MapActions = {
   getGeographicPoints: (id: string) => void
   setGPSOpen: (isOpen: boolean) => void
   resetIsModalOpen: () => void
+  resetSearchMap: () => void
 }
 type MapStore = MapState & MapActions
 
@@ -436,6 +437,9 @@ export const useMap = create(
       },
       resetIsModalOpen: () => {
         set({isModalClosed: false})
+      },
+      resetSearchMap: () => {
+        set({geographicLocation: null, geoGraphicRoutes: []})
       },
     }),
     {
