@@ -60,6 +60,7 @@ type MapActions = {
   getSearchLocations: (value: string) => void
   getDirections: (id: string) => void
   getGeographicPoints: (id: string) => void
+  resetSearchMap: () => void
 }
 
 type MapStore = MapState & MapActions
@@ -421,6 +422,9 @@ export const useMap = create(
           set({isGeographicLoading: false})
           return null
         }
+      },
+      resetSearchMap: () => {
+        set({geographicLocation: null, geoGraphicRoutes: []})
       },
     }),
     {
