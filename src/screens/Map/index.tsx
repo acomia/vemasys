@@ -117,7 +117,8 @@ export default function Map({navigation}: Props) {
     isLoadingCurrentNavLogs,
     isLoadingMap,
     isGPSOpen,
-    setGPSOpen,
+    isModalClosed,
+    resetIsModalOpen,
   } = useMap()
   const {
     notifications,
@@ -216,19 +217,6 @@ export default function Map({navigation}: Props) {
       appState.current = nextAppState
     })
     unmountLocations()
-
-    navigation.setOptions({
-      headerRight: () => (
-        <HeaderRight
-          setIsGPSOpen={(value: any) => {
-            if (value) {
-              stopRefreshTimer()
-              setGPSOpen(value)
-            }
-          }}
-        />
-      ),
-    })
 
     return () => {
       showKeyboard.remove()
@@ -368,6 +356,18 @@ export default function Map({navigation}: Props) {
       setIsAlertOpen(true)
     }
   }, [updateNavlogDatesFailed])
+
+  useEffect(() => {
+    console.log(isGPSOpen)
+    if (isGPSOpen) {
+      stopRefreshTimer()
+    }
+    if (!isGPSOpen && isModalClosed) {
+      resetIsModalOpen()
+      updateMap()
+      startRefreshTimer()
+    }
+  }, [isGPSOpen, isModalClosed])
 
   const startRefreshTimer = () => {
     refreshId.current = setInterval(() => {
@@ -1174,14 +1174,6 @@ export default function Map({navigation}: Props) {
         </AlertDialog.Content>
       </AlertDialog>
       {isScreenBlocked && <Box h="100%" position="absolute" w="100%" />}
-      <GPSTracker
-        close={() => {
-          updateMap()
-          startRefreshTimer()
-          setGPSOpen(false)
-        }}
-        isOpen={isGPSOpen}
-      />
     </Box>
   )
 }

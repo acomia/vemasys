@@ -8,12 +8,8 @@ import {ms} from 'react-native-size-matters'
 import {Icons} from '@bluecentury/assets'
 import {GPSAnimated} from '@bluecentury/components/gps-animated'
 
-interface Props {
-  setIsGPSOpen: Function
-}
-
-const HeaderRight = ({setIsGPSOpen}: Props) => {
-  const {activeFormations, isGPSOpen} = useMap()
+const HeaderRight = () => {
+  const {activeFormations, isGPSOpen, setGPSOpen} = useMap()
   const navigation = useNavigation()
   const {isQrScanner} = useSettings()
 
@@ -37,7 +33,7 @@ const HeaderRight = ({setIsGPSOpen}: Props) => {
         <Pressable
           size={ms(40)}
           onPress={() => {
-            setIsGPSOpen(true)
+            setGPSOpen(true)
           }}
         >
           <GPSAnimated isOpen={isGPSOpen} />

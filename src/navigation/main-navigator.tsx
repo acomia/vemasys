@@ -14,7 +14,12 @@ import BackgroundGeolocation, {
 import BackgroundFetch from 'react-native-background-fetch'
 import {ms} from 'react-native-size-matters'
 import {Icons} from '@bluecentury/assets'
-import {Sidebar, IconButton} from '@bluecentury/components'
+import {
+  Sidebar,
+  IconButton,
+  GPSTracker,
+  HeaderRight,
+} from '@bluecentury/components'
 import {Screens} from '@bluecentury/constants'
 import {
   Notification,
@@ -49,10 +54,11 @@ export default function MainNavigator({navigation}: Props) {
   const isMobileTracking = useSettings(state => state.isMobileTracking)
   const isQrScanner = useSettings(state => state.isQrScanner)
   const token = useAuth(state => state.token)
-  const activeFormations = useMap(state => state.activeFormations)
-  const getActiveFormations = useMap(state => state.getActiveFormations)
+  // const activeFormations = useMap(state => state.activeFormations)
+  // const getActiveFormations = useMap(state => state.getActiveFormations)
+  const {activeFormations, getActiveFormations, isGPSOpen, setGPSOpen} =
+    useMap()
   const {getCharters} = useCharters()
-  const [isGPSOpen, setIsGPSOpen] = useState(false)
 
   useFocusEffect(
     useCallback(() => {
@@ -151,6 +157,7 @@ export default function MainNavigator({navigation}: Props) {
           headerTitleStyle: {fontSize: 16, fontWeight: 'bold'},
           headerStyle: {backgroundColor: Colors.light},
           headerShadowVisible: false,
+          headerRight: () => <HeaderRight />,
           headerLeft: () => (
             <Box ml={ms(20)}>
               <IconButton
@@ -215,6 +222,7 @@ export default function MainNavigator({navigation}: Props) {
         />
         <Screen component={Settings} name={Screens.Settings} />
       </Navigator>
+      <GPSTracker close={() => setGPSOpen(false)} isOpen={isGPSOpen} />
     </>
   )
 }
