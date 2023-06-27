@@ -116,6 +116,8 @@ export default function Map({navigation}: Props) {
     isLoadingPlannedNavLogs,
     isLoadingCurrentNavLogs,
     isLoadingMap,
+    isGPSOpen,
+    setGPSOpen,
   } = useMap()
   const {
     notifications,
@@ -161,7 +163,6 @@ export default function Map({navigation}: Props) {
   const [prevNavLog, setPrevNavLog] = useState(null)
   const [isAlertOpen, setIsAlertOpen] = useState(false)
   const [isScreenBlocked, setIsScreenBlocked] = useState(false)
-  const [isGPSOpen, setIsGPSOpen] = useState(false)
 
   const uniqueVesselTrack = vesselTracks?.filter(element => {
     const isDuplicate =
@@ -221,9 +222,8 @@ export default function Map({navigation}: Props) {
         <HeaderRight
           setIsGPSOpen={(value: any) => {
             if (value) {
-              console.log('test', value)
               stopRefreshTimer()
-              setIsGPSOpen(value)
+              setGPSOpen(value)
             }
           }}
         />
@@ -368,12 +368,6 @@ export default function Map({navigation}: Props) {
       setIsAlertOpen(true)
     }
   }, [updateNavlogDatesFailed])
-
-  useEffect(() => {
-    if (isGPSOpen) {
-      console.log('test')
-    }
-  }, [isGPSOpen])
 
   const startRefreshTimer = () => {
     refreshId.current = setInterval(() => {
@@ -1184,7 +1178,7 @@ export default function Map({navigation}: Props) {
         close={() => {
           updateMap()
           startRefreshTimer()
-          setIsGPSOpen(false)
+          setGPSOpen(false)
         }}
         isOpen={isGPSOpen}
       />

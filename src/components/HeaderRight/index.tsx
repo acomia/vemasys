@@ -13,7 +13,7 @@ interface Props {
 }
 
 const HeaderRight = ({setIsGPSOpen}: Props) => {
-  const {activeFormations} = useMap()
+  const {activeFormations, isGPSOpen} = useMap()
   const navigation = useNavigation()
   const {isQrScanner} = useSettings()
 
@@ -36,10 +36,11 @@ const HeaderRight = ({setIsGPSOpen}: Props) => {
         ) : null}
         <Pressable
           size={ms(40)}
-          // onPress={() => navigation.navigate('GPSTracker')}
-          onPress={() => setIsGPSOpen(true)}
+          onPress={() => {
+            setIsGPSOpen(true)
+          }}
         >
-          <GPSAnimated />
+          <GPSAnimated isOpen={isGPSOpen} />
         </Pressable>
       </HStack>
     </Box>
