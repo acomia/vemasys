@@ -113,4 +113,6 @@ export const Icons = {
   navlogUnloading: require('./navlog_unloading.png'),
   ruler: require('./ruler.png'),
   userRequest: require('./userRequest.png'),
+  planning: require('./Planning2x.png'),
+  vessel: require('./Vessel.png'),
 }
