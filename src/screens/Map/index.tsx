@@ -816,9 +816,6 @@ export default function Map({navigation}: Props) {
   }
 
   const renderLastCompleteNavLogs = (log: NavigationLog, index: number) => {
-    if (!log?.plannedEta && !log?.arrivalDatetime) {
-      return null
-    }
     return (
       <Marker
         key={`CompletedLogs-${index}-${log.location?.id}`}
@@ -844,20 +841,20 @@ export default function Map({navigation}: Props) {
             width={ms(20)}
             zIndex={0}
           />
-          {zoomLevel && zoomLevel >= 12 ? (
-            <Box
-              backgroundColor={Colors.white}
-              borderRadius={ms(5)}
-              padding={ms(2)}
-              zIndex={0}
-            >
-              <Text fontSize="xs" px={2}>
-                {moment(
-                  log?.arrivalDatetime ? log?.arrivalDatetime : log?.plannedEta
-                ).format('MMM DD, y | HH:mm')}
-              </Text>
-            </Box>
-          ) : null}
+          {/*{zoomLevel && zoomLevel >= 12 ? (*/}
+          <Box
+            backgroundColor={Colors.white}
+            borderRadius={ms(5)}
+            padding={ms(2)}
+            zIndex={0}
+          >
+            <Text fontSize="xs" px={2}>
+              {moment(
+                log?.arrivalDatetime ? log?.arrivalDatetime : log?.plannedEta
+              ).format('MMM DD, y | HH:mm')}
+            </Text>
+          </Box>
+          {/*) : null}*/}
         </HStack>
       </Marker>
     )
@@ -1018,10 +1015,14 @@ export default function Map({navigation}: Props) {
               (plan: NavigationLog) => plan.plannedEta !== null
             ) !== undefined &&
             renderMarkerTo()}
-          {lastCompleteNavLogs.length > 0 &&
-            lastCompleteNavLogs?.map((log: NavigationLog, index: number) =>
-              renderLastCompleteNavLogs(log, index)
-            )}
+          {lastCompleteNavLogs.filter(
+            log => log?.plannedEta || log?.arrivalDatetime
+          ).length > 0 &&
+            lastCompleteNavLogs?.map((log: NavigationLog, index: number) => {
+              if (index < 10) {
+                return renderLastCompleteNavLogs(log, index)
+              }
+            })}
           {trackViewMode && uniqueVesselTracks.length > 0 && (
             <Polyline
               coordinates={uniqueVesselTracks}
@@ -1049,7 +1050,60 @@ export default function Map({navigation}: Props) {
           />
         )}
       </Box>
-      <Box position="absolute" right="0" top={'5%'}>
+      {/*Map bottom banner with navigation to planning*/}
+      <Box
+        alignItems="center"
+        bottom={ms(25)}
+        position="absolute"
+        w={screenWidth}
+      >
+        <Button
+          alignSelf="center"
+          backgroundColor={Colors.white}
+          borderColor={Colors.primary_light}
+          borderWidth="1"
+          w={screenWidth - ms(20)}
+          onPress={() => {
+            navigation.navigate('Planning')
+          }}
+        >
+          <HStack
+            alignItems="center"
+            flex={1}
+            h={ms(42)}
+            justifyContent="space-between"
+            px={ms(10)}
+            w={screenWidth - ms(20)}
+          >
+            <HStack alignItems="center">
+              <Image h={ms(30)} mr={ms(10)} source={Icons.vessel} w={ms(30)} />
+              <Text bold fontSize="16">
+                {selectedVessel?.alias || null}
+              </Text>
+            </HStack>
+            <Image h={ms(30)} source={Icons.planning} w={ms(30)} />
+          </HStack>
+        </Button>
+      </Box>
+      {/* search input */}
+      <Box
+        left={0}
+        position="absolute"
+        pt={ms(15)}
+        px={ms(10)}
+        right={0}
+        top={ms(isMapLoading ? 40 : 0)}
+        zIndex={1}
+      >
+        <Search
+          handleItemAction={handleItemAction}
+          isKeyboardVisible={isKeyboardVisible}
+          setIsSearchPin={setIsSearchPin}
+          onBlur={() => setKeyboardVisible(false)}
+          onFocus={() => setKeyboardVisible(true)}
+        />
+      </Box>
+      <Box position="absolute" right="0" top={isMapLoading ? '13%' : '8%'}>
         <VStack justifyContent="flex-start" m="4" space="5">
           {/*<Box bg={Colors.white} borderRadius="full" p="2" shadow={2}>*/}
           {/*  <IconButton*/}
@@ -1136,37 +1190,37 @@ export default function Map({navigation}: Props) {
         shadow={2}
         top={0}
       />
-      {!isKeyboardVisible && currentNavLog ? (
-        <BottomSheet
-          ref={sheetRef}
-          handleIndicatorStyle={{display: 'none'}}
-          handleStyle={{display: 'none'}}
-          snapPoints={snapPoints}
-          style={{borderRadius: 40, overflow: 'hidden'}}
-          onChange={index => setSnapStatus(index)}
-        >
-          {renderBottomContent()}
-        </BottomSheet>
-      ) : !isKeyboardVisible && !currentNavLog ? (
-        <Box
-          backgroundColor={'#fff'}
-          borderTopRadius={25}
-          bottom={0}
-          h="50"
-          position="absolute"
-          w="100%"
-        >
-          <Text
-            color={Colors.azure}
-            fontSize={ms(18)}
-            fontWeight="700"
-            my={ms(5)}
-            textAlign="center"
-          >
-            {selectedVessel?.alias || null}
-          </Text>
-        </Box>
-      ) : null}
+      {/*{!isKeyboardVisible && currentNavLog ? (*/}
+      {/*  <BottomSheet*/}
+      {/*    ref={sheetRef}*/}
+      {/*    handleIndicatorStyle={{display: 'none'}}*/}
+      {/*    handleStyle={{display: 'none'}}*/}
+      {/*    snapPoints={snapPoints}*/}
+      {/*    style={{borderRadius: 40, overflow: 'hidden'}}*/}
+      {/*    onChange={index => setSnapStatus(index)}*/}
+      {/*  >*/}
+      {/*    {renderBottomContent()}*/}
+      {/*  </BottomSheet>*/}
+      {/*) : !isKeyboardVisible && !currentNavLog ? (*/}
+      {/*  <Box*/}
+      {/*    backgroundColor={'#fff'}*/}
+      {/*    borderTopRadius={25}*/}
+      {/*    bottom={0}*/}
+      {/*    h="50"*/}
+      {/*    position="absolute"*/}
+      {/*    w="100%"*/}
+      {/*  >*/}
+      {/*    <Text*/}
+      {/*      color={Colors.azure}*/}
+      {/*      fontSize={ms(18)}*/}
+      {/*      fontWeight="700"*/}
+      {/*      my={ms(5)}*/}
+      {/*      textAlign="center"*/}
+      {/*    >*/}
+      {/*      {selectedVessel?.alias || null}*/}
+      {/*    </Text>*/}
+      {/*  </Box>*/}
+      {/*) : null}*/}
       <AlertDialog
         isOpen={isAlertOpen}
         leastDestructiveRef={alertRef}
