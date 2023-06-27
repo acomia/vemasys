@@ -1,10 +1,11 @@
-import React, {useEffect, useLayoutEffect, useState} from 'react'
-import {RefreshControl} from 'react-native'
+import React, {useEffect, useState} from 'react'
+import {RefreshControl, useWindowDimensions} from 'react-native'
 import {
   Box,
   Button,
   Center,
   HStack,
+  Image,
   Modal,
   ScrollView,
   Text,
@@ -27,6 +28,7 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack'
 import {RootStackParamList} from '@bluecentury/types/nav.types'
 import {Vemasys} from '@bluecentury/helpers'
 import {titleCase} from '@bluecentury/constants'
+import {Icons} from '@bluecentury/assets'
 
 type Dates = {
   plannedETA: Date | undefined | StringOrNull
@@ -42,6 +44,7 @@ const PlanningLogbook = () => {
     useNavigation<NativeStackNavigationProp<RootStackParamList>>()
   const {t} = useTranslation()
   const focused = useIsFocused()
+  const screenWidth = useWindowDimensions().width
   const {
     isPlanningLoading,
     isHistoryLoading,
@@ -61,7 +64,7 @@ const PlanningLogbook = () => {
     createdNavlogAction,
     reset,
   } = usePlanning()
-  const {vesselId} = useEntity()
+  const {vesselId, selectedVessel} = useEntity()
   const {isOnline} = useSettings()
   const toast = useToast()
   const [display, setDisplay] = useState(null)
@@ -613,6 +616,51 @@ const PlanningLogbook = () => {
           </Modal.Content>
         </Modal>
       </ScrollView>
+      {/*Planning bottom banner with navigation to mapview*/}
+      <Box
+        alignItems="center"
+        bottom={ms(25)}
+        position="absolute"
+        w={screenWidth}
+      >
+        <Button
+          alignSelf="center"
+          backgroundColor={Colors.white}
+          borderColor={Colors.primary_light}
+          borderWidth="1"
+          w={screenWidth - ms(20)}
+          onPress={() => navigation.navigate('MapView')}
+        >
+          <HStack
+            alignItems="center"
+            flex={1}
+            h={ms(42)}
+            justifyContent="space-between"
+            px={ms(10)}
+            w={screenWidth - ms(20)}
+          >
+            <HStack alignItems="center">
+              <Image
+                alt="vesselIcon"
+                h={ms(30)}
+                mr={ms(10)}
+                source={Icons.vessel}
+                w={ms(30)}
+              />
+              <Text bold fontSize="16">
+                {selectedVessel?.alias || null}
+              </Text>
+            </HStack>
+            <Image
+              alt="navigateToMapIcon"
+              h={ms(30)}
+              source={Icons.map}
+              w={ms(30)}
+            />
+          </HStack>
+        </Button>
+      </Box>
+      {/*---------------------------------------------------*/}
     </Box>
   )
 }

@@ -124,6 +124,7 @@ const updateNavigationLogDatetimeFields = async (
 const createNavlogComment = async (
   navlogId: string,
   comment: string,
+  userId: string,
   accessLvl: string
 ) => {
   const subjectName = 'NavigationLog'
