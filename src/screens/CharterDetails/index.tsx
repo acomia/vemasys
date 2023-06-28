@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 import {TouchableOpacity} from 'react-native'
 import {
   Box,
@@ -33,6 +33,7 @@ export default function CharterDetails({navigation, route}: Props) {
   const {t} = useTranslation()
   const {entityType} = useEntity()
   const {viewPdf, signedDocumentsArray, isCharterLoading} = useCharters()
+  const [isNavigatingToPdfView, setIsNavigatingToPdfView] = useState(false)
 
   const {charter, isCreator} = route.params
 
@@ -258,14 +259,16 @@ export default function CharterDetails({navigation, route}: Props) {
   }
 
   const handlePDFView = async () => {
+    setIsNavigatingToPdfView(true)
     const path = await viewPdf(charter.id)
     // const path = signedDocumentsArray.find(
     //   item => item.charter_id === charter.id
     // )
-    console.log('PATH', signedDocumentsArray)
+    // console.log('PATH', signedDocumentsArray)
     navigation.navigate('PDFView', {
       path: `${path}`,
     })
+    setTimeout(() => setIsNavigatingToPdfView(false), 500)
   }
 
   const renderRefNumber = (itemData: any) => {
@@ -293,7 +296,7 @@ export default function CharterDetails({navigation, route}: Props) {
     )
   }
 
-  if (isCharterLoading) return <LoadingAnimated />
+  if (isCharterLoading || isNavigatingToPdfView) return <LoadingAnimated />
 
   return (
     <Flex flex="1">
