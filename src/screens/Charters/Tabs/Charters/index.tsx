@@ -93,6 +93,7 @@ export default function Charters({navigation, route}: any) {
   const source = {uri: path, cache: true}
   const [editReferenceOpen, setEditReferenceOpen] = useState(false)
   const [editCharter, setEditCharter] = useState(0)
+  const [isPdfSaving, setIsPdfSaving] = useState(false)
   const ref = useRef<SignatureViewRef>(null)
 
   const style = `.m-signature-pad--footer {display: none; margin: 0px;}
@@ -447,6 +448,7 @@ export default function Charters({navigation, route}: any) {
   }
 
   const handleSaveDocument = async () => {
+    setIsPdfSaving(true)
     setIsPdfSigned(false)
     const status = {
       status: CHARTER_CONTRACTOR_STATUS_ACCEPTED,
@@ -465,6 +467,7 @@ export default function Charters({navigation, route}: any) {
         showToast('Charter accepted failed.', 'failed')
       }
     })
+    setIsPdfSaving(false)
   }
 
   const handleDiscard = () => {
@@ -487,7 +490,7 @@ export default function Charters({navigation, route}: any) {
     return chrs
   }
 
-  if (isCharterLoading) return <LoadingAnimated />
+  if (isCharterLoading || isPdfSaving) return <LoadingAnimated />
 
   if (isDocumentSigning) {
     return (
