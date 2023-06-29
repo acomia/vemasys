@@ -111,7 +111,7 @@ export default function RootNavigator() {
         <Screen
           component={PDFView}
           name={'PDFView'}
-          options={{headerShown: true, title: t('PDFViewer')}}
+          options={{headerShown: true, title: t('PDFViewer'), animation: 'none'}}
         />
         <Screen
           component={NewBunkering}

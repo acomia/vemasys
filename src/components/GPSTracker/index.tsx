@@ -36,10 +36,14 @@ export const GPSTracker = ({isOpen, close}: Props) => {
   const isExploitationVessel = entityType === 'ExploitationVessel'
 
   useEffect(() => {
-    refreshId.current = setInterval(() => {
-      // Run updated vessel status
+    if (isMobileTracking) {
+      refreshId.current = setInterval(() => {
+        // Run updated vessel status
+        updateVesselDetails()
+      }, 30000)
+    } else {
       updateVesselDetails()
-    }, 30000)
+    }
     return () => clearInterval(refreshId.current)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
