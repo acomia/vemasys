@@ -33,7 +33,6 @@ export default () => {
   useEffect(() => {
     navigation.setOptions({
       headerTitle: () => renderSearchInput(),
-      // headerLeft: null,
       headerLeft: () => {
         return (
           <IconFE
@@ -51,45 +50,52 @@ export default () => {
 
   const renderSearchInput = () => {
     return (
-      <Input
-        InputLeftElement={
-          <IconFA5
-            color={Colors.disabled}
-            name="search"
-            size={ms(15)}
-            style={{paddingLeft: 15}}
-          />
-        }
-        InputRightElement={
-          <Box paddingRight={ms(15)}>
-            {isSearchLoading ? (
-              <ActivityIndicator size={15} />
-            ) : (
-              <Pressable
-                alignItems={'center'}
-                height={ms(20)}
-                justifyContent={'center'}
-                width={ms(20)}
-                onPress={clearInput}
-              >
-                <IconFA5 color={Colors.disabled} name="times" size={ms(15)} />
-              </Pressable>
-            )}
-          </Box>
-        }
-        backgroundColor={Colors.light_blue}
-        borderColor={'trasparent'}
-        borderRadius={25}
-        borderWidth={0}
-        height={ms(40)}
-        placeholder={`${t('searchLocation')}`}
-        value={searchValue}
-        width={'90%'}
-        onChangeText={value => {
-          setSearchValue(value)
-        }}
-        onSubmitEditing={() => getSearchLocations(searchValue)}
-      />
+      <Box
+        alignItems={'flex-end'}
+        flex={1}
+        justifyContent={'flex-end'}
+        px={ms(20)}
+      >
+        <Input
+          InputLeftElement={
+            <IconFA5
+              color={Colors.disabled}
+              name="search"
+              size={ms(15)}
+              style={{paddingLeft: 15}}
+            />
+          }
+          InputRightElement={
+            <Box paddingRight={ms(15)}>
+              {isSearchLoading ? (
+                <ActivityIndicator size={15} />
+              ) : (
+                <Pressable
+                  alignItems={'center'}
+                  height={ms(20)}
+                  justifyContent={'center'}
+                  width={ms(20)}
+                  onPress={clearInput}
+                >
+                  <IconFA5 color={Colors.disabled} name="times" size={ms(15)} />
+                </Pressable>
+              )}
+            </Box>
+          }
+          backgroundColor={Colors.light_blue}
+          borderColor={'trasparent'}
+          borderRadius={25}
+          borderWidth={0}
+          height={ms(40)}
+          placeholder={`${t('searchLocation')}`}
+          value={searchValue}
+          width={'full'}
+          onChangeText={value => {
+            setSearchValue(value)
+          }}
+          onSubmitEditing={() => getSearchLocations(searchValue)}
+        />
+      </Box>
     )
   }
 
