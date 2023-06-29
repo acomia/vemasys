@@ -1086,7 +1086,7 @@ export default function Map({navigation}: Props) {
         </Button>
       </Box>
       {/* search input */}
-      <Box
+      {/* <Box
         left={0}
         position="absolute"
         pt={ms(15)}
@@ -1102,8 +1102,8 @@ export default function Map({navigation}: Props) {
           onBlur={() => setKeyboardVisible(false)}
           onFocus={() => setKeyboardVisible(true)}
         />
-      </Box>
-      <Box position="absolute" right="0" top={isMapLoading ? '13%' : '8%'}>
+      </Box> */}
+      <Box position="absolute" right="0" top={'8%'}>
         <VStack justifyContent="flex-start" m="4" space="5">
           {/*<Box bg={Colors.white} borderRadius="full" p="2" shadow={2}>*/}
           {/*  <IconButton*/}
