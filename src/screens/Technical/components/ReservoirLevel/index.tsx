@@ -26,6 +26,7 @@ const renderGasoilList = (reservoir: any, index: number, navigation: any) => {
   const momentDate = moment(reservoir?.lastMeasurement?.date)
 
   const handlePress = () => {
+    useTechnical.setState({isTechnicalLoading: true})
     navigation.navigate('Measurements', {
       data: reservoir,
       routeFrom: 'reservoir',
