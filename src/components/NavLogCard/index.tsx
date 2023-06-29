@@ -399,7 +399,8 @@ export const NavLogCard = (props: {
       </Box>
       <Box
         style={
-          navigationLog?.isActive ||
+          (navigationLog?.arrivalDatetime &&
+            !navigationLog?.departureDatetime) ||
           (!_.isNull(navigationLog?.startActionDatetime) &&
             _.isNull(navigationLog?.endActionDate))
             ? styles.navLogActiveItem
@@ -487,7 +488,8 @@ export const NavLogCard = (props: {
         props?.lastScreen === 'planning' ? (
           <Box
             borderWidth={
-              navigationLog.isActive ||
+              (navigationLog.arrivalDatetime &&
+                !navigationLog.departureDatetime) ||
               (!_.isNull(navigationLog.startActionDatetime) &&
                 _.isNull(navigationLog.endActionDate))
                 ? null
