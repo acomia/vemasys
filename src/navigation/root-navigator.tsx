@@ -337,6 +337,7 @@ export default function RootNavigator() {
         <Screen
           options={({navigation}) => ({
             headerShown: true,
+            headerBackVisible: false,
             headerLeft: () => {
               return (
                 <IconFE
