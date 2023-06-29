@@ -6,6 +6,7 @@ import {
   Dimensions,
   Keyboard,
   ActivityIndicator,
+  Pressable,
 } from 'react-native'
 import {} from 'react-native'
 import {
@@ -34,6 +35,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {
   CommonActions,
   CompositeScreenProps,
+  useFocusEffect,
   useIsFocused,
 } from '@react-navigation/native'
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5'
@@ -50,10 +52,18 @@ import {
   NoInternetConnectionMessage,
   LoadingSlide,
   NavigationLogType,
+  GPSTracker,
+  HeaderRight,
 } from '@bluecentury/components'
-import {Icons, Animated} from '@bluecentury/assets'
+import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
-import {useMap, useEntity, useNotif, usePlanning} from '@bluecentury/stores'
+import {
+  useMap,
+  useEntity,
+  useNotif,
+  usePlanning,
+  useSettings,
+} from '@bluecentury/stores'
 import {
   ENTITY_TYPE_EXPLOITATION_GROUP,
   formatLocationLabel,
@@ -107,6 +117,10 @@ export default function Map({navigation}: Props) {
     isLoadingPlannedNavLogs,
     isLoadingCurrentNavLogs,
     isLoadingMap,
+    isGPSOpen,
+    isModalClosed,
+    resetIsModalOpen,
+    resetSearchMap,
   } = useMap()
   const {
     notifications,
@@ -153,10 +167,6 @@ export default function Map({navigation}: Props) {
   const [isAlertOpen, setIsAlertOpen] = useState(false)
   const [isScreenBlocked, setIsScreenBlocked] = useState(false)
 
-  // useEffect(() => {
-  //   // currentPositionRef?.current?.showCallout()
-  // })
-
   const uniqueVesselTrack = vesselTracks?.filter(element => {
     const isDuplicate =
       uniqueTracks.includes(element.latitude) &&
@@ -176,9 +186,29 @@ export default function Map({navigation}: Props) {
   })
   const refreshId = useRef<any>()
 
+  useFocusEffect(
+    useCallback(() => {
+      updateMap()
+
+      startRefreshTimer()
+
+      return () => {
+        stopRefreshTimer()
+        unmountLocations()
+        resetSearchMap()
+      }
+    }, [])
+  )
+
   useEffect(() => {
-    Keyboard.addListener('keyboardDidShow', handleKeyboardShow)
-    Keyboard.addListener('keyboardDidHide', handleKeyboardHide)
+    const showKeyboard = Keyboard.addListener(
+      'keyboardDidShow',
+      handleKeyboardShow
+    )
+    const hideKeyboard = Keyboard.addListener(
+      'keyboardDidHide',
+      handleKeyboardHide
+    )
 
     const subscription = AppState.addEventListener('change', nextAppState => {
       if (
@@ -192,8 +222,8 @@ export default function Map({navigation}: Props) {
     unmountLocations()
 
     return () => {
-      Keyboard.removeAllListeners('keyboardDidShow')
-      Keyboard.removeAllListeners('keyboardDidHide')
+      showKeyboard.remove()
+      hideKeyboard.remove()
       subscription.remove()
     }
   }, [])
@@ -218,39 +248,37 @@ export default function Map({navigation}: Props) {
     isLoadingMap,
   ])
 
-  useEffect(() => {
-    if (vesselId) {
-      const init = async () => {
-        setMapLoading(true)
-        getAllNotifications()
-        getVesselStatus(vesselId)
-        getPreviousNavigationLogs(vesselId)
-        getPlannedNavigationLogs(vesselId)
-        getCurrentNavigationLogs(vesselId)
-        getLastCompleteNavigationLogs(vesselId)
+  // removed to use the useFocusEffect. please comment if this needs to be deleted
+  // useEffect(() => {
+  //   if (vesselId) {
+  //     // const init = async () => {
+  //     //   setMapLoading(true)
+  //     //   getAllNotifications()
+  //     //   getVesselStatus(vesselId)
+  //     //   getPreviousNavigationLogs(vesselId)
+  //     //   getPlannedNavigationLogs(vesselId)
+  //     //   getCurrentNavigationLogs(vesselId)
+  //     //   getLastCompleteNavigationLogs(vesselId)
 
-        getVesselTrack(vesselId, page)
-        // setLoadingMap(false)
-      }
+  //     //   getVesselTrack(vesselId, page)
+  //     //   // setLoadingMap(false)
+  //     // }
 
-      init()
-    }
+  //     // init()
+  //     updateMap()
+  //   }
 
-    if (focused) {
-      refreshId.current = setInterval(() => {
-        // Run updated vessel status
-        setVesselUpdated(true)
-        updateMap()
-      }, 30000)
-    }
+  //   if (focused) {
+  //     startRefreshTimer()
+  //   }
 
-    unmountLocations()
+  //   unmountLocations()
 
-    return () => {
-      clearInterval(refreshId.current)
-      unmountLocations()
-    }
-  }, [vesselId, focused])
+  //   return () => {
+  //     stopRefreshTimer()
+  //     unmountLocations()
+  //   }
+  // }, [vesselId, focused])
 
   useEffect(() => {
     if (currentNavLogs && currentNavLogs.length > 0) {
@@ -301,7 +329,7 @@ export default function Map({navigation}: Props) {
   }, [plannedNavLogs, focused])
 
   useEffect(() => {
-    if (vesselStatus && !vesselUpdated) {
+    if (vesselStatus && !vesselUpdated && !geographicLocation) {
       centerMapToCurrentLocation()
     }
   }, [vesselStatus])
@@ -323,7 +351,14 @@ export default function Map({navigation}: Props) {
     if (geoGraphicRoutes?.length > 0) {
       fitToAllMarkers(geoGraphicRoutes)
     }
-  }, [geoGraphicRoutes])
+    if (geographicLocation && geoGraphicRoutes?.length <= 0) {
+      setIsSearchPin(true)
+      centerMapToLocation(
+        geographicLocation?.latitude,
+        geographicLocation?.longitude
+      )
+    }
+  }, [geoGraphicRoutes, geographicLocation])
 
   useEffect(() => {
     if (updateNavlogDatesFailed === 'FAILED') {
@@ -331,6 +366,30 @@ export default function Map({navigation}: Props) {
       setIsAlertOpen(true)
     }
   }, [updateNavlogDatesFailed])
+
+  useEffect(() => {
+    console.log(isGPSOpen)
+    if (isGPSOpen) {
+      clearInterval(refreshId.current)
+    }
+    if (!isGPSOpen && isModalClosed) {
+      resetIsModalOpen()
+      updateMap()
+      startRefreshTimer()
+    }
+  }, [isGPSOpen, isModalClosed])
+
+  const startRefreshTimer = () => {
+    return (refreshId.current = setInterval(() => {
+      // Run updated vessel status
+      setVesselUpdated(true)
+      updateMap()
+    }, 30000))
+  }
+
+  const stopRefreshTimer = () => {
+    return clearInterval(refreshId.current)
+  }
 
   const handleKeyboardShow = () => {
     setKeyboardVisible(true)
@@ -859,6 +918,7 @@ export default function Map({navigation}: Props) {
     setPage(page + 1)
     getVesselTrack(vesselId, page + 1)
   }
+
   const renderSearchLocationMarker = useMemo(() => {
     if (isSearchPin && geographicLocation) {
       if (zoomLevel && zoomLevel > 12) {
@@ -1017,7 +1077,9 @@ export default function Map({navigation}: Props) {
           >
             <HStack alignItems="center">
               <Image h={ms(30)} mr={ms(10)} source={Icons.vessel} w={ms(30)} />
-              <Text bold fontSize="16">{selectedVessel?.alias || null}</Text>
+              <Text bold fontSize="16">
+                {selectedVessel?.alias || null}
+              </Text>
             </HStack>
             <Image h={ms(30)} source={Icons.planning} w={ms(30)} />
           </HStack>
@@ -1050,11 +1112,34 @@ export default function Map({navigation}: Props) {
           {/*    onPress={centerMapToCurrentLocation}*/}
           {/*  />*/}
           {/*</Box>*/}
+          {/**Search Button */}
+          <Box bg={Colors.white} borderRadius="full" p="2" shadow={2}>
+            <Pressable
+              style={{
+                alignItems: 'center',
+                height: ms(30),
+                width: ms(30),
+                justifyContent: 'center',
+              }}
+              onPress={() => {
+                navigation.navigate('Search')
+              }}
+            >
+              <FontAwesome5Icon
+                color={Colors.azure}
+                name="search"
+                size={ms(25)}
+              />
+            </Pressable>
+          </Box>
           <Box bg={Colors.white} borderRadius="full" p="2" shadow={2}>
             <IconButton
               size={ms(30)}
               source={Icons.location}
-              onPress={centerMapToCurrentLocation}
+              onPress={() => {
+                resetSearchMap()
+                centerMapToCurrentLocation()
+              }}
             />
           </Box>
           <Box bg={Colors.white} borderRadius="full" p="2" shadow={2}>

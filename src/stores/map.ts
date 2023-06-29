@@ -39,6 +39,8 @@ type MapState = {
   geographicLocation: GeographicPoint | null
   isGeographicRoutesLoading: boolean
   geoGraphicRoutes: LatLng[]
+  isGPSOpen: boolean
+  isModalClosed: boolean
 }
 
 type MapActions = {
@@ -60,8 +62,10 @@ type MapActions = {
   getSearchLocations: (value: string) => void
   getDirections: (id: string) => void
   getGeographicPoints: (id: string) => void
+  setGPSOpen: (isOpen: boolean) => void
+  resetIsModalOpen: () => void
+  resetSearchMap: () => void
 }
-
 type MapStore = MapState & MapActions
 
 const initialMapState: MapState = {
@@ -93,6 +97,8 @@ const initialMapState: MapState = {
   geographicLocation: null,
   isGeographicRoutesLoading: false,
   geoGraphicRoutes: [],
+  isGPSOpen: false,
+  isModalClosed: false,
 }
 
 export const useMap = create(
@@ -421,6 +427,19 @@ export const useMap = create(
           set({isGeographicLoading: false})
           return null
         }
+      },
+      setGPSOpen: (isOpen: boolean) => {
+        console.log('setGPSOpen', isOpen)
+        if (isOpen) {
+          set({isModalClosed: true})
+        }
+        set({isGPSOpen: isOpen})
+      },
+      resetIsModalOpen: () => {
+        set({isModalClosed: false})
+      },
+      resetSearchMap: () => {
+        set({geographicLocation: null, geoGraphicRoutes: []})
       },
     }),
     {
