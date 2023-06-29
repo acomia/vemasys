@@ -438,11 +438,14 @@ export const useTechnical = create(
           const response = await API.reloadVesselInventory(vesselId)
           if (Array.isArray(response)) {
             set({isTechnicalLoading: false, inventory: response})
+            return response
           } else {
             set({isTechnicalLoading: false, inventory: []})
+            return null
           }
         } catch (error) {
           set({isTechnicalLoading: false})
+          return null
         }
       },
       getConsumableTypes: async () => {
