@@ -462,10 +462,14 @@ const Details = () => {
           }}
         />
         <DatetimePickerList
+          trackView={
+            trackViewMode &&
+            navlog?.arrivalDatetime &&
+            !navlog?.departureDatetime
+          }
           date={dates.arrivalDatetime}
           locked={isUnknownLocation ? true : navigationLogDetails?.locked}
           title="Arrival"
-          trackView={trackViewMode && navlog?.isActive}
           onChangeDate={() => {
             setSelectedType('ARR')
             setIsOpenWarning(true)
@@ -517,7 +521,9 @@ const Details = () => {
         date={dates.departureDatetime}
         locked={isUnknownLocation ? true : navigationLogDetails?.locked}
         title="Departure"
-        trackView={trackViewMode && navlog?.isActive}
+        trackView={
+          trackViewMode && navlog?.arrivalDatetime && !navlog?.departureDatetime
+        }
         onChangeDate={() => {
           setSelectedType('DEP')
           setIsOpenWarning(true)
