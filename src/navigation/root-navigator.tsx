@@ -44,6 +44,8 @@ import {
 import {Colors} from '@bluecentury/styles'
 import {useTranslation} from 'react-i18next'
 import {RootStackParamList} from '@bluecentury/types/nav.types'
+import IconFE from 'react-native-vector-icons/Feather'
+import {ms} from 'react-native-size-matters'
 
 const {Navigator, Screen, Group} =
   createNativeStackNavigator<RootStackParamList>()
@@ -110,9 +112,13 @@ export default function RootNavigator() {
           options={{headerShown: true, title: t('charterInformation')}}
         />
         <Screen
+          options={{
+            headerShown: true,
+            title: t('PDFViewer'),
+            animation: 'none',
+          }}
           component={PDFView}
           name={'PDFView'}
-          options={{headerShown: true, title: t('PDFViewer'), animation: 'none'}}
         />
         <Screen
           component={NewBunkering}
@@ -329,10 +335,21 @@ export default function RootNavigator() {
           name={'UserRequests'}
         />
         <Screen
-          options={{
+          options={({navigation}) => ({
             headerShown: true,
-            title: t('search'),
-          }}
+            headerLeft: () => {
+              return (
+                <IconFE
+                  color={Colors.primary}
+                  name="arrow-left"
+                  size={ms(20)}
+                  onPress={() => {
+                    navigation.goBack()
+                  }}
+                />
+              )
+            },
+          })}
           component={Search}
           name={'Search'}
         />

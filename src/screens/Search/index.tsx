@@ -32,20 +32,8 @@ export default () => {
 
   useEffect(() => {
     navigation.setOptions({
-      headerStyle: {height: 300},
       headerTitle: () => renderSearchInput(),
-      headerLeft: () => {
-        return (
-          <IconFE
-            color={Colors.primary}
-            name="arrow-left"
-            size={ms(20)}
-            onPress={() => {
-              navigation.goBack()
-            }}
-          />
-        )
-      },
+      headerLeft: null,
     })
   }, [navigation, searchValue])
 
