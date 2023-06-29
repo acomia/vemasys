@@ -194,27 +194,22 @@ export const usePlanning = create(
           plannedNavigationLogs: undefined,
           hasErrorLoadingPlannedNavigationLogs: false,
         })
+
         try {
           const response = await API.getPlannedNavLog(vesselId)
           if (Array.isArray(response) && response.length > 0) {
-            set({
-              plannedNavigationLogs: response,
-              isPlanningLoading: false,
-            })
-            response.forEach(async (plan, index) => {
+            const updatedLogs = []
+
+            for (const plan of response) {
               set({isPlanningActionsLoading: true})
+
               const act = await API.reloadNavigationLogActions(plan.id)
+              let activeActions = []
+
               if (act?.length > 0) {
-                const activeActions = act?.filter(
-                  action => action?.end === null
-                )
-                if (activeActions.length) {
-                  plan.navlogActions = activeActions
-                  plan.hasActiveActions = true
-                } else {
-                  plan.navlogActions = act
-                  plan.hasActiveActions = false
-                }
+                activeActions = act.filter(action => action?.end === null)
+                plan.navlogActions = activeActions.length ? activeActions : act
+                plan.hasActiveActions = activeActions.length > 0
                 plan.endActionDate = act[0]?.end
                 plan.actionType = act[0]?.type
               } else {
@@ -222,12 +217,12 @@ export const usePlanning = create(
                 plan.endActionDate = null
                 plan.actionType = ''
               }
-              set({
-                plannedNavigationLogs: response,
-              })
-              if (index === response.length - 1) {
-                set({isPlanningActionsLoading: false})
-              }
+              updatedLogs.push(plan)
+            }
+            set({
+              plannedNavigationLogs: updatedLogs,
+              isPlanningLoading: false,
+              isPlanningActionsLoading: false,
             })
           } else {
             set({

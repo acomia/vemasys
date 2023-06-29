@@ -1,6 +1,6 @@
 export const Icons = {
   notification: require('./bell.png'),
-  map: require('./map-marked-alt.png'),
+  map_marked: require('./map-marked-alt.png'),
   calendar: require('./calendar-alt.png'),
   fileContract: require('./file-contract.png'),
   tools: require('./tools.png'),
@@ -37,7 +37,6 @@ export const Icons = {
   slider: require('./sliders-h.png'),
   ellipsis: require('./ellipsis-h.png'),
   list: require('./list-alt.png'),
-  map_marked: require('./map-marked-alt.png'),
   triple_arrow: require('./triple_arrow.png'),
   navlog_pin: require('./navlog_pin.png'),
   charter_contact: require('./contacts.png'),
@@ -115,4 +114,5 @@ export const Icons = {
   userRequest: require('./userRequest.png'),
   planning: require('./Planning2x.png'),
   vessel: require('./Vessel.png'),
+  map: require('./map.png'),
 }
