@@ -288,7 +288,9 @@ export default function Map({navigation}: Props) {
         longitude: currentNavLogs[0]?.location?.longitude,
       })
       if (focused) {
-        const activeNavLog = plannedNavLogs.find(item => item.isActive)
+        const activeNavLog = plannedNavLogs.find(
+          item => item.arrivalDatetime && !item.departureDatetime
+        )
         const currentNavigationLog = currentNavLogs[currentNavLogs?.length - 1]
         if (currentNavigationLog) {
           getNavigationLogDetails(currentNavigationLog?.id).then(response => {
@@ -314,7 +316,7 @@ export default function Map({navigation}: Props) {
   useEffect(() => {
     if (plannedNavLogs && plannedNavLogs.length > 0 && focused) {
       const plannedNavLogIndex = plannedNavLogs.findIndex(
-        planned => planned.isActive
+        planned => planned.arrivalDatetime && !planned.departureDatetime
       )
       const navLog = plannedNavLogIndex
         ? plannedNavLogs[plannedNavLogIndex - 1]
@@ -638,7 +640,9 @@ export default function Map({navigation}: Props) {
     const {latitude, longitude, speed, heading}: VesselGeolocation =
       vesselStatus
     const rotate = heading >= 0 && Number(speed) > 3 ? `${heading}deg` : null
-    const navigationLog = plannedNavLogs.find(item => item.isActive)
+    const navigationLog = plannedNavLogs.find(
+      item => item.arrivalDatetime && !item.departureDatetime
+    )
     const isFilterLocations = processLocations(navigationLog?.location?.title)
 
     return (
@@ -716,7 +720,9 @@ export default function Map({navigation}: Props) {
     const {latitude, longitude, speed, heading}: VesselGeolocation =
       vesselStatus
     const rotate = heading >= 0 && Number(speed) > 1 ? `${heading}deg` : null
-    const navigationLog = plannedNavLogs.find(item => item.isActive)
+    const navigationLog = plannedNavLogs.find(
+      item => item.arrivalDatetime && !item.departureDatetime
+    )
 
     return (
       <Marker
