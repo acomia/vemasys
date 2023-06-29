@@ -12,7 +12,11 @@ import {
   financialTabs,
 } from '@bluecentury/constants'
 import {useEntity} from '@bluecentury/stores'
-import {FleetHeader, NoInternetConnectionMessage} from '@bluecentury/components'
+import {
+  FleetHeader,
+  LoadingAnimated,
+  NoInternetConnectionMessage,
+} from '@bluecentury/components'
 
 export default function Financial() {
   const {t} = useTranslation()
@@ -30,7 +34,9 @@ export default function Financial() {
 
   const LazyPlaceholder = ({route}) => (
     <Box flex="1" alignItems="center" justifyContent="center">
-      <Text>{t('loading')} {route.title}…</Text>
+      <Text>
+        {t('loading')} {route.title}…
+      </Text>
     </Box>
   )
 
@@ -46,14 +52,14 @@ export default function Financial() {
         width: ms(50),
         marginLeft: 23,
       }}
-      style={{backgroundColor: Colors.primary}}
-      tabStyle={{width: ms(95), height: ms(40)}}
       renderLabel={({route, color}) => (
-        <Text color={color} bold textAlign="justify">
+        <Text bold color={color} textAlign="justify">
           {t(route.title)}
         </Text>
       )}
       scrollEnabled={true}
+      style={{backgroundColor: Colors.primary}}
+      tabStyle={{width: ms(95), height: ms(40)}}
     />
   )
 
@@ -81,12 +87,13 @@ export default function Financial() {
       <NoInternetConnectionMessage />
       <TabView
         lazy
+        initialLayout={{width: layout.width}}
         navigationState={{index, routes}}
+        // renderLazyPlaceholder={renderLazyPlaceholder}
+        renderLazyPlaceholder={() => <LoadingAnimated />}
         renderScene={renderScene}
         renderTabBar={renderTabBar}
-        renderLazyPlaceholder={renderLazyPlaceholder}
         onIndexChange={setIndex}
-        initialLayout={{width: layout.width}}
       />
     </Box>
   )

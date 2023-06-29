@@ -1,4 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react'
+import {Alert, TouchableOpacity, StyleSheet} from 'react-native'
 import {
   Box,
   ScrollView,
@@ -20,20 +21,18 @@ import {ms} from 'react-native-size-matters'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import * as ImagePicker from 'react-native-image-picker'
 import {RNCamera} from 'react-native-camera'
-import {StyleSheet} from 'react-native'
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
+import {useTranslation} from 'react-i18next'
 
 import {Colors} from '@bluecentury/styles'
-import {useEntity, usePlanning, useSettings} from '@bluecentury/stores'
+import {usePlanning, useSettings} from '@bluecentury/stores'
 import {
   IconButton,
   LoadingAnimated,
   NoInternetConnectionMessage,
 } from '@bluecentury/components'
-import {Alert, TouchableOpacity} from 'react-native'
 import {Icons} from '@bluecentury/assets'
 import {PROD_URL, UAT_URL} from '@vemasys/env'
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
-import {useTranslation} from 'react-i18next'
 import {RootStackParamList} from '@bluecentury/types/nav.types'
 import {uploadComment} from '@bluecentury/utils'
 import {accessLevel} from '@bluecentury/constants'
