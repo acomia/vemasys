@@ -337,7 +337,19 @@ export default function RootNavigator() {
         <Screen
           options={({navigation}) => ({
             headerShown: true,
-            headerBackVisible: false,
+            // headerBackVisible: false,
+            headerLeft: () => {
+              return (
+                <IconFE
+                  color={Colors.primary}
+                  name="arrow-left"
+                  size={ms(20)}
+                  onPress={() => {
+                    navigation.goBack()
+                  }}
+                />
+              )
+            },
           })}
           component={Search}
           name={'Search'}

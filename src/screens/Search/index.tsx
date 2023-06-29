@@ -33,18 +33,19 @@ export default () => {
   useEffect(() => {
     navigation.setOptions({
       headerTitle: () => renderSearchInput(),
-      headerLeft: () => {
-        return (
-          <IconFE
-            color={Colors.primary}
-            name="arrow-left"
-            size={ms(20)}
-            onPress={() => {
-              navigation.goBack()
-            }}
-          />
-        )
-      },
+      headerBackVisible: false,
+      // headerLeft: () => {
+      //   return (
+      //     <IconFE
+      //       color={Colors.primary}
+      //       name="arrow-left"
+      //       size={ms(20)}
+      //       onPress={() => {
+      //         navigation.goBack()
+      //       }}
+      //     />
+      //   )
+      // },
     })
   }, [navigation, searchValue])
 
@@ -54,6 +55,7 @@ export default () => {
         alignItems={'flex-end'}
         flex={1}
         justifyContent={'flex-end'}
+        mr={ms(20)}
         px={ms(20)}
       >
         <Input
