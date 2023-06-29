@@ -160,7 +160,8 @@ const HistoryLogbook = () => {
     )
 
     const isOngoing =
-      navigationLog?.isActive &&
+      navigationLog?.arrivalDatetime &&
+      !navigationLog?.departureDatetime &&
       !_.isNull(navigationLog.startActionDatetime) &&
       _.isNull(navigationLog.endActionDatetime)
 
@@ -195,7 +196,8 @@ const HistoryLogbook = () => {
         >
           <Box
             backgroundColor={
-              navigationLog?.isActive
+              navigationLog?.arrivalDatetime &&
+              !navigationLog?.departureDatetime
                 ? Colors.secondary
                 : navigationLog?.departureDatetime ===
                   navigationLog?.arrivalDatetime
@@ -234,7 +236,12 @@ const HistoryLogbook = () => {
                 <VStack w="100%">
                   <Text
                     bold
-                    color={navigationLog?.isActive ? Colors.white : Colors.text}
+                    color={
+                      navigationLog?.arrivalDatetime &&
+                      !navigationLog?.departureDatetime
+                        ? Colors.white
+                        : Colors.text
+                    }
                     flex="1"
                     fontSize={ms(15)}
                   >
@@ -340,7 +347,12 @@ const HistoryLogbook = () => {
               </HStack>
               <HStack justifyContent="space-between" w="100%">
                 <Text
-                  color={navigationLog?.isActive ? Colors.white : Colors.azure}
+                  color={
+                    navigationLog?.arrivalDatetime &&
+                    !navigationLog?.departureDatetime
+                      ? Colors.white
+                      : Colors.azure
+                  }
                   fontWeight="medium"
                 >
                   {itemDurationLabel}
@@ -348,7 +360,6 @@ const HistoryLogbook = () => {
                 {renderDuration(
                   navigationLog?.departureDatetime,
                   navigationLog?.arrivalDatetime,
-                  navigationLog?.isActive
                 )}
               </HStack>
             </Box>
@@ -361,13 +372,14 @@ const HistoryLogbook = () => {
 
   const renderDuration = (
     startDate: StringOrNull | undefined,
-    endDate: StringOrNull | undefined,
-    isActive: boolean
+    endDate: StringOrNull | undefined
   ) => {
     if (startDate === endDate) return
     const navigationDuration = moment.duration(
       moment(startDate).diff(moment(endDate))
     )
+
+    const isActive = endDate && !startDate
 
     return (
       <Text
