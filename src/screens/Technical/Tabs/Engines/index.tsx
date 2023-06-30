@@ -48,12 +48,13 @@ const Engines = () => {
       <Box key={index} mb={ms(index === partType.data?.length - 1 ? 10 : 0)}>
         <TouchableOpacity
           activeOpacity={0.7}
-          onPress={() =>
+          onPress={() => {
+            useTechnical.setState({isTechnicalLoading: true})
             navigation.navigate('Measurements', {
               data: partType,
               routeFrom: 'engine',
             })
-          }
+          }}
         >
           <Box px={ms(12)} py={ms(5)}>
             <HStack alignItems="center" justifyContent="space-around">

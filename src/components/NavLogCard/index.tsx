@@ -503,8 +503,10 @@ export const NavLogCard = (props: {
       </Box>
       <View
         style={
-          !_.isNull(navigationLog?.startActionDatetime) &&
-          _.isNull(navigationLog?.endActionDate)
+          (navigationLog?.arrivalDatetime &&
+            !navigationLog?.departureDatetime) ||
+          (!_.isNull(navigationLog?.startActionDatetime) &&
+            _.isNull(navigationLog?.endActionDate))
             ? [
                 styles.navLogActiveItem,
                 {borderColor: darkenColor(itemColor, 0.2)},
@@ -638,8 +640,10 @@ export const NavLogCard = (props: {
                 : 'dashed'
             }
             borderWidth={
-              !_.isNull(navigationLog.startActionDatetime) &&
-              _.isNull(navigationLog.endActionDate)
+              (navigationLog.arrivalDatetime &&
+                !navigationLog.departureDatetime) ||
+              (!_.isNull(navigationLog.startActionDatetime) &&
+                _.isNull(navigationLog.endActionDate))
                 ? null
                 : 3
             }
