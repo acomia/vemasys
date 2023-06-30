@@ -51,7 +51,11 @@ const BottomBanner = ({isDisabled, setDisable, toScreen}: Props) => {
               {selectedVessel?.alias || null}
             </Text>
           </HStack>
-          <Image h={ms(30)} source={Icons.planning} w={ms(30)} />
+          <Image
+            h={ms(30)}
+            source={toScreen === 'Planning' ? Icons.planning : Icons.map}
+            w={ms(30)}
+          />
         </HStack>
       </Button>
     </Box>
