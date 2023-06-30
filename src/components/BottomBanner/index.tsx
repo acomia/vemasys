@@ -17,7 +17,7 @@ const BottomBanner = ({isDisabled, setDisable, toScreen}: Props) => {
   const navigation = useNavigation()
   const screenWidth = useWindowDimensions().width
   const {selectedVessel} = useEntity()
-  console.log('  toScreen', toScreen)
+
   return (
     <Box
       alignItems="center"
@@ -30,7 +30,7 @@ const BottomBanner = ({isDisabled, setDisable, toScreen}: Props) => {
         backgroundColor={isDisabled ? Colors.disabled : Colors.white}
         borderColor={Colors.primary_light}
         borderWidth="1"
-        // disabled={isDisabled}
+        disabled={isDisabled}
         w={screenWidth - ms(20)}
         onPress={() => {
           setDisable(true)
