@@ -83,11 +83,13 @@ const PlanningLogbook = () => {
   const [selectedNavlogID, setSelectedNavlogID] = useState('')
   const [selectedType, setSelectedType] = useState('')
   const [plannedData, setPlannedData] = useState<Array<NavigationLog>>([])
+  const [planningRefreshing, setPlanningRefreshing] = useState(true)
 
   useEffect(() => {
     if (isOnline) {
       getVesselPlannedNavLogs(vesselId as string)
       getWholeVesselHistoryNavLogs(vesselId as string)
+      setPlanningRefreshing(false)
     }
     /* eslint-disable react-hooks/exhaustive-deps */
     /* eslint-disable react-native/no-inline-styles */
@@ -394,50 +396,6 @@ const PlanningLogbook = () => {
     }
   })
 
-  const onDateButtonPress = (type: string, id: string) => {
-    setSelectedNavlogID(id)
-    setSelectedType(type)
-    setOpenDatePicker(true)
-  }
-
-  const appendCreatedActionToNavlog = () => {
-    const plnIndex = plannedData.findIndex(
-      pln => pln.id.toString() === selectedNavlogID
-    )
-    // Create a new array with the updated object
-    const updatedArray = plannedData.map((pln, index) => {
-      if (index === plnIndex) {
-        // Update the items field of the object
-        return {
-          ...pln,
-          navlogActions: [createdNavlogAction],
-          hasActiveActions: true,
-        }
-      }
-      return pln
-    })
-    setPlannedData(updatedArray)
-  }
-
-  const stopActionFromSelectedNavlog = () => {
-    const plnIndex = plannedData.findIndex(
-      pln => pln.id.toString() === selectedNavlogID
-    )
-    // Create a new array with the updated object
-    const updatedArray = plannedData.map((pln, index) => {
-      if (index === plnIndex) {
-        return {
-          ...pln,
-          navlogActions: [selectedAction],
-          hasActiveActions: false,
-        }
-      }
-      return pln
-    })
-    setPlannedData(updatedArray)
-    setSelectedNavlogID('')
-  }
-
   const navlogsWithLinePositionData = defineFirstAndLastIndex?.map(
     (item, index) => {
       if (defineFirstAndLastIndex.length && item) {
@@ -489,16 +447,59 @@ const PlanningLogbook = () => {
     }
   )
 
-  if (isPlanningLoading || isHistoryLoading) return <LoadingAnimated />
+  const onDateButtonPress = (type: string, id: string) => {
+    setSelectedNavlogID(id)
+    setSelectedType(type)
+    setOpenDatePicker(true)
+  }
+
+  const appendCreatedActionToNavlog = () => {
+    const plnIndex = plannedData.findIndex(
+      pln => pln.id.toString() === selectedNavlogID
+    )
+    // Create a new array with the updated object
+    const updatedArray = plannedData.map((pln, index) => {
+      if (index === plnIndex) {
+        // Update the items field of the object
+        return {
+          ...pln,
+          navlogActions: [createdNavlogAction],
+          hasActiveActions: true,
+        }
+      }
+      return pln
+    })
+    setPlannedData(updatedArray)
+  }
+
+  const stopActionFromSelectedNavlog = () => {
+    const plnIndex = plannedData.findIndex(
+      pln => pln.id.toString() === selectedNavlogID
+    )
+    // Create a new array with the updated object
+    const updatedArray = plannedData.map((pln, index) => {
+      if (index === plnIndex) {
+        return {
+          ...pln,
+          navlogActions: [selectedAction],
+          hasActiveActions: false,
+        }
+      }
+      return pln
+    })
+    setPlannedData(updatedArray)
+    setSelectedNavlogID('')
+  }
+
+  if (planningRefreshing || isPlanningLoading || isHistoryLoading) {
+    return <LoadingAnimated />
+  }
 
   return (
     <Box bgColor={Colors.white} flex="1">
       <ScrollView
         refreshControl={
-          <RefreshControl
-            refreshing={isPlanningLoading || isHistoryLoading}
-            onRefresh={onPullRefresh}
-          />
+          <RefreshControl refreshing={false} onRefresh={onPullRefresh} />
         }
         contentContainerStyle={{flexGrow: 1, paddingBottom: 20}}
         pr={ms(12)}
@@ -514,7 +515,7 @@ const PlanningLogbook = () => {
               </Text>
             </Center>
           </Box>
-        ) : plannedNavigationLogs?.length === 0 && !isPlanningLoading ? (
+        ) : plannedData?.length === 0 && !isPlanningLoading ? (
           <Box bgColor={Colors.white} flex="1" p="2">
             <Center>
               <Text bold color={Colors.azure}>

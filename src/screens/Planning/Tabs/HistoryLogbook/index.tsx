@@ -13,12 +13,7 @@ import TextTicker from 'react-native-text-ticker'
 
 import {Colors} from '@bluecentury/styles'
 import {useEntity, usePlanning} from '@bluecentury/stores'
-import {
-  calculateTotalIn,
-  calculateTotalOut,
-  formatLocationLabel,
-  titleCase,
-} from '@bluecentury/constants'
+import {formatLocationLabel} from '@bluecentury/constants'
 import {
   LoadingAnimated,
   NavigationLogType,
@@ -45,17 +40,17 @@ const HistoryLogbook = () => {
   const vesselId = useEntity(state => state.vesselId)
   const [currentPage, setCurrentPage] = useState(1)
   const [isPageChange, setIsPageChange] = useState(false)
-  const [isRefreshing, setIsRefreshing] = useState(false)
+  const [logbookRefreshing, setLogbookRefreshing] = useState(true)
 
   useEffect(() => {
     if (vesselId) {
       getVesselHistoryNavLogs(vesselId, currentPage)
+      setLogbookRefreshing(false)
     }
   }, [vesselId, currentPage, getVesselHistoryNavLogs])
 
   useEffect(() => {
     setIsPageChange(false)
-    setIsRefreshing(false)
   }, [historyNavigationLogs])
 
   historyNavigationLogs.sort(
@@ -410,20 +405,21 @@ const HistoryLogbook = () => {
   }
 
   const onPullRefresh = () => {
-    setIsRefreshing(true)
     setCurrentPage(1)
     if (vesselId) {
       getVesselHistoryNavLogs(vesselId, 1)
     }
   }
 
-  if (isPlanningLoading && !isPageChange) return <LoadingAnimated />
+  if (logbookRefreshing || (isPlanningLoading && !isPageChange)) {
+    return <LoadingAnimated />
+  }
 
   return (
     <Box bg={Colors.white} flex="1">
       <ScrollView
         refreshControl={
-          <RefreshControl refreshing={isRefreshing} onRefresh={onPullRefresh} />
+          <RefreshControl refreshing={false} onRefresh={onPullRefresh} />
         }
         contentContainerStyle={{flexGrow: 1, paddingBottom: 20}}
         pointerEvents={isPageChange ? 'none' : 'auto'}
@@ -442,7 +438,7 @@ const HistoryLogbook = () => {
               <Text>Failed to load the requested resource.</Text>
             </Center>
           </Box>
-        ) : historyNavigationLogs.length == 0 ? (
+        ) : historyNavigationLogs.length === 0 ? (
           <Box bgColor={Colors.white} flex="1" p="2">
             <Center>
               <Text bold color={Colors.azure}>

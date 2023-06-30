@@ -270,10 +270,7 @@ const Documents = () => {
     <Box flex="1">
       <ScrollView
         refreshControl={
-          <RefreshControl
-            refreshing={isPlanningDocumentsLoading}
-            onRefresh={onPullToReload}
-          />
+          <RefreshControl refreshing={false} onRefresh={onPullToReload} />
         }
         contentContainerStyle={{flexGrow: 1}}
         px={ms(12)}
