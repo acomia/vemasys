@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 import {RefreshControl, useWindowDimensions} from 'react-native'
 import {
   Box,
@@ -16,14 +16,18 @@ import {ms} from 'react-native-size-matters'
 import moment from 'moment'
 import {Colors} from '@bluecentury/styles'
 import {useEntity, usePlanning, useSettings} from '@bluecentury/stores'
-import {LoadingAnimated} from '@bluecentury/components'
+import {BottomBanner, LoadingAnimated} from '@bluecentury/components'
 import {useTranslation} from 'react-i18next'
 import {NavLogCard, NavLogDivider} from '@bluecentury/components'
 import {NavigationLog} from '@bluecentury/models'
 import findLastIndex from 'lodash/findLastIndex'
 import _ from 'lodash'
 import DatePicker from 'react-native-date-picker'
-import {useIsFocused, useNavigation} from '@react-navigation/native'
+import {
+  useFocusEffect,
+  useIsFocused,
+  useNavigation,
+} from '@react-navigation/native'
 import {NativeStackNavigationProp} from '@react-navigation/native-stack'
 import {RootStackParamList} from '@bluecentury/types/nav.types'
 import {Vemasys} from '@bluecentury/helpers'
@@ -84,6 +88,13 @@ const PlanningLogbook = () => {
   const [selectedType, setSelectedType] = useState('')
   const [plannedData, setPlannedData] = useState<Array<NavigationLog>>([])
   const [planningRefreshing, setPlanningRefreshing] = useState(true)
+  const [isBannerDisabled, setBannerDisabled] = useState(false)
+
+  useFocusEffect(
+    useCallback(() => {
+      setBannerDisabled(false)
+    }, [])
+  )
 
   useEffect(() => {
     if (isOnline) {
@@ -616,49 +627,11 @@ const PlanningLogbook = () => {
         </Modal>
       </ScrollView>
       {/*Planning bottom banner with navigation to mapview*/}
-      <Box
-        alignItems="center"
-        bottom={ms(25)}
-        position="absolute"
-        w={screenWidth}
-      >
-        <Button
-          alignSelf="center"
-          backgroundColor={Colors.white}
-          borderColor={Colors.primary_light}
-          borderWidth="1"
-          w={screenWidth - ms(20)}
-          onPress={() => navigation.navigate('MapView')}
-        >
-          <HStack
-            alignItems="center"
-            flex={1}
-            h={ms(42)}
-            justifyContent="space-between"
-            px={ms(10)}
-            w={screenWidth - ms(20)}
-          >
-            <HStack alignItems="center">
-              <Image
-                alt="vesselIcon"
-                h={ms(30)}
-                mr={ms(10)}
-                source={Icons.vessel}
-                w={ms(30)}
-              />
-              <Text bold fontSize="16">
-                {selectedVessel?.alias || null}
-              </Text>
-            </HStack>
-            <Image
-              alt="navigateToMapIcon"
-              h={ms(30)}
-              source={Icons.map}
-              w={ms(30)}
-            />
-          </HStack>
-        </Button>
-      </Box>
+      <BottomBanner
+        isDisabled={isBannerDisabled}
+        setDisable={setBannerDisabled}
+        toScreen="MapView"
+      />
       {/*---------------------------------------------------*/}
     </Box>
   )
