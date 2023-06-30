@@ -54,6 +54,7 @@ import {
   NavigationLogType,
   GPSTracker,
   HeaderRight,
+  BottomBanner,
 } from '@bluecentury/components'
 import {Icons} from '@bluecentury/assets'
 import {Colors} from '@bluecentury/styles'
@@ -166,6 +167,7 @@ export default function Map({navigation}: Props) {
   const [prevNavLog, setPrevNavLog] = useState(null)
   const [isAlertOpen, setIsAlertOpen] = useState(false)
   const [isScreenBlocked, setIsScreenBlocked] = useState(false)
+  const [isBannerDisabled, setBannerDisabled] = useState(false)
 
   const uniqueVesselTrack = vesselTracks?.filter(element => {
     const isDuplicate =
@@ -191,11 +193,11 @@ export default function Map({navigation}: Props) {
       updateMap()
 
       startRefreshTimer()
-
       return () => {
         stopRefreshTimer()
         unmountLocations()
         resetSearchMap()
+        setBannerDisabled(false)
       }
     }, [])
   )
@@ -1057,40 +1059,11 @@ export default function Map({navigation}: Props) {
         )}
       </Box>
       {/*Map bottom banner with navigation to planning*/}
-      <Box
-        alignItems="center"
-        bottom={ms(25)}
-        position="absolute"
-        w={screenWidth}
-      >
-        <Button
-          alignSelf="center"
-          backgroundColor={Colors.white}
-          borderColor={Colors.primary_light}
-          borderWidth="1"
-          w={screenWidth - ms(20)}
-          onPress={() => {
-            navigation.navigate('Planning')
-          }}
-        >
-          <HStack
-            alignItems="center"
-            flex={1}
-            h={ms(42)}
-            justifyContent="space-between"
-            px={ms(10)}
-            w={screenWidth - ms(20)}
-          >
-            <HStack alignItems="center">
-              <Image h={ms(30)} mr={ms(10)} source={Icons.vessel} w={ms(30)} />
-              <Text bold fontSize="16">
-                {selectedVessel?.alias || null}
-              </Text>
-            </HStack>
-            <Image h={ms(30)} source={Icons.planning} w={ms(30)} />
-          </HStack>
-        </Button>
-      </Box>
+      <BottomBanner
+        isDisabled={isBannerDisabled}
+        setDisable={setBannerDisabled}
+        toScreen="Planning"
+      />
       {/* search input */}
       {/* <Box
         left={0}
