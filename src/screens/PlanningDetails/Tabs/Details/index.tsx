@@ -123,6 +123,8 @@ const Details = () => {
   const [leaveTabModal, setLeaveTabModal] = useState(false)
   const [buttonBackLeave, setButtonBackLeave] = useState(false)
   const [isOpenWarning, setIsOpenWarning] = useState(false)
+  const [detailsRefreshing, setDetailsRefreshing] = useState(true)
+
   const hasAddCommentPermission = hasSelectedEntityUserPermission(
     selectedEntity,
     ROLE_PERMISSION_NAVIGATION_LOG_ADD_COMMENT
@@ -192,6 +194,7 @@ const Details = () => {
     getNavigationLogComments(navlog?.id)
     getNavigationLogRoutes(navlog?.id)
     getNavigationLogDocuments(navlog?.id)
+    setDetailsRefreshing(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -732,6 +735,7 @@ const Details = () => {
   }
 
   if (
+    detailsRefreshing ||
     isPlanningLoading ||
     isPlanningDetailsLoading ||
     isPlanningActionsLoading ||
@@ -745,15 +749,7 @@ const Details = () => {
     <Box flex="1">
       <ScrollView
         refreshControl={
-          <RefreshControl
-            refreshing={
-              isPlanningLoading ||
-              isPlanningDetailsLoading ||
-              isPlanningActionsLoading ||
-              isPlanningCommentsLoading
-            }
-            onRefresh={onPullToReload}
-          />
+          <RefreshControl refreshing={false} onRefresh={onPullToReload} />
         }
         bg={Colors.white}
         contentContainerStyle={{flexGrow: 1, paddingBottom: 30}}

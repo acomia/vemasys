@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react'
 import {useWindowDimensions} from 'react-native'
 import {Box, Text} from 'native-base'
@@ -26,14 +27,6 @@ export default function Planning() {
   const [index, setIndex] = useState(0)
   const [routes] = useState(planningTabs)
 
-  const LazyPlaceholder = ({route}) => (
-    <Box flex="1" alignItems="center" justifyContent="center">
-      <Text>Loading {route.title}…</Text>
-    </Box>
-  )
-
-  const renderLazyPlaceholder = ({route}) => <LazyPlaceholder route={route} />
-
   const renderTabBar = props => (
     <TabBar
       {...props}
@@ -44,12 +37,12 @@ export default function Planning() {
         width: ms(50),
         marginHorizontal: layout.width / 6 + 5,
       }}
-      style={{backgroundColor: Colors.primary}}
       renderLabel={({route, color}) => (
-        <Text color={color} bold fontSize={ms(14)}>
+        <Text bold color={color} fontSize={ms(14)}>
           {t(route.title)}
         </Text>
       )}
+      style={{backgroundColor: Colors.primary}}
     />
   )
 
@@ -77,12 +70,11 @@ export default function Planning() {
       <NoInternetConnectionMessage />
       <TabView
         lazy
+        initialLayout={{width: layout.width}}
         navigationState={{index, routes}}
         renderScene={renderScene}
         renderTabBar={renderTabBar}
-        renderLazyPlaceholder={renderLazyPlaceholder}
         onIndexChange={setIndex}
-        initialLayout={{width: layout.width}}
       />
     </Box>
   )
