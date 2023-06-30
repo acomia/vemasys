@@ -77,7 +77,7 @@ const HistoryLogbook = () => {
           if (current && current.isSame(start, 'day')) {
             return `${start.format('HH:mm')}`
           } else {
-            return `${start.format('DD/MM/YYYY HH:mm')}`
+            return `${start.format('DD/MM HH:mm')}`
           }
         } else {
           const currentStartAndEndDayAreEqual =
@@ -92,8 +92,8 @@ const HistoryLogbook = () => {
               ? start.format('HH:mm')
               : `${start.format('HH:mm')} - ${end.format('HH:mm')}`
           } else {
-            return `${start.format('DD/MM/YYYY HH:mm')} - ${end.format(
-              'DD/MM/YYYY HH:mm'
+            return `${start.format('DD/MM HH:mm')} - ${end.format(
+              'DD/MM HH:mm'
             )}`
           }
         }
@@ -101,14 +101,14 @@ const HistoryLogbook = () => {
         if (current && current.isSame(start, 'day')) {
           return `${start.format('HH:mm')} - Present`
         } else {
-          return `${start.format('DD/MM/YYYY HH:mm')} - Present`
+          return `${start.format('DD/MM HH:mm')} - Present`
         }
       }
     }
 
     if (cargoType === 'liquid_bulk') {
       if (bookedETA) {
-        return `Laycan: ${bookedETA.format('DD/MM/YYYY')}`
+        return `Laycan: ${bookedETA.format('DD/MM')}`
       }
 
       return false
@@ -243,12 +243,7 @@ const HistoryLogbook = () => {
                     {formatLocationLabel(navigationLog?.location)}
                   </Text>
                   {navigationLog.bulkCargo.length < 1 ? null : (
-                    <Box
-                      borderColor={Colors.border}
-                      borderStyle="dashed"
-                      borderTopWidth={0}
-                      borderWidth={isOngoing ? null : 3}
-                    >
+                    <Box>
                       <HStack
                         alignItems="center"
                         justifyContent="space-between"
@@ -340,7 +335,7 @@ const HistoryLogbook = () => {
                   </HStack>
                 ) : null}
               </HStack>
-              <HStack justifyContent="space-between" w="100%">
+              <HStack alignItems="center">
                 <Text
                   color={
                     navigationLog?.arrivalDatetime &&
@@ -348,13 +343,14 @@ const HistoryLogbook = () => {
                       ? Colors.white
                       : Colors.azure
                   }
+                  flex="1"
                   fontWeight="medium"
                 >
                   {itemDurationLabel}
                 </Text>
                 {renderDuration(
                   navigationLog?.departureDatetime,
-                  navigationLog?.arrivalDatetime,
+                  navigationLog?.arrivalDatetime
                 )}
               </HStack>
             </Box>
@@ -377,11 +373,7 @@ const HistoryLogbook = () => {
     const isActive = endDate && !startDate
 
     return (
-      <Text
-        color={isActive ? Colors.white : Colors.azure}
-        // fontWeight="bold"
-        textAlign="right"
-      >
+      <Text color={isActive ? Colors.white : Colors.azure}>
         {navigationDuration.days() ? `${navigationDuration.days()}d` : ''}
         {!navigationDuration.days() && !navigationDuration.hours()
           ? ''

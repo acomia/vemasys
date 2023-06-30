@@ -510,7 +510,7 @@ const PlanningLogbook = () => {
         refreshControl={
           <RefreshControl refreshing={false} onRefresh={onPullRefresh} />
         }
-        contentContainerStyle={{flexGrow: 1, paddingBottom: 20}}
+        contentContainerStyle={{flexGrow: 1, paddingBottom: ms(92)}}
         pr={ms(12)}
         py={ms(15)}
         scrollEventThrottle={16}

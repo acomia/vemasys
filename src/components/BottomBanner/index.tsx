@@ -46,12 +46,19 @@ const BottomBanner = ({isDisabled, setDisable, toScreen}: Props) => {
           w={screenWidth - ms(20)}
         >
           <HStack alignItems="center">
-            <Image h={ms(30)} mr={ms(10)} source={Icons.vessel} w={ms(30)} />
+            <Image
+              alt="vessel"
+              h={ms(30)}
+              mr={ms(10)}
+              source={Icons.vessel}
+              w={ms(30)}
+            />
             <Text bold fontSize="16">
               {selectedVessel?.alias || null}
             </Text>
           </HStack>
           <Image
+            alt="planning-map-icon"
             h={ms(30)}
             source={toScreen === 'Planning' ? Icons.planning : Icons.map}
             w={ms(30)}
