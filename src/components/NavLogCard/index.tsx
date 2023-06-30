@@ -187,8 +187,9 @@ export const NavLogCard = (props: {
 
   useEffect(() => {
     if (
-      !_.isNull(navigationLog?.startActionDatetime) &&
-      _.isNull(navigationLog?.endActionDate)
+      (navigationLog?.arrivalDatetime && !navigationLog?.departureDatetime) ||
+      (!_.isNull(navigationLog?.startActionDatetime) &&
+        _.isNull(navigationLog?.endActionDate))
     ) {
       startAnimation()
     }
