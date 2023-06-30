@@ -653,6 +653,7 @@ export default function Map({navigation}: Props) {
           latitude: Number(latitude),
           longitude: Number(longitude),
         }}
+        tracksViewChanges={!!vesselStatus} // make false so no flickering
         onPress={() =>
           navigation.navigate('PlanningDetails', {
             navlog: navigationLog,
@@ -927,11 +928,6 @@ export default function Map({navigation}: Props) {
 
   const renderSearchLocationMarker = useMemo(() => {
     if (isSearchPin && geographicLocation) {
-      if (zoomLevel && zoomLevel > 12) {
-        searchMarkerRef?.current?.showCallout()
-      } else {
-        searchMarkerRef?.current?.hideCallout()
-      }
       return (
         <Marker
           key={`search-${geographicLocation?.id}`}
@@ -940,6 +936,7 @@ export default function Map({navigation}: Props) {
             latitude: Number(geographicLocation?.latitude),
             longitude: Number(geographicLocation?.longitude),
           }}
+          tracksViewChanges={!isSearchPin} // make false so no flickering
           zIndex={1}
           onPress={() => handleGetDirection()}
         >
