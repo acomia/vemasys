@@ -288,7 +288,9 @@ export default function Map({navigation}: Props) {
         longitude: currentNavLogs[0]?.location?.longitude,
       })
       if (focused) {
-        const activeNavLog = plannedNavLogs.find(item => item.isActive)
+        const activeNavLog = plannedNavLogs.find(
+          item => item.arrivalDatetime && !item.departureDatetime
+        )
         const currentNavigationLog = currentNavLogs[currentNavLogs?.length - 1]
         if (currentNavigationLog) {
           getNavigationLogDetails(currentNavigationLog?.id).then(response => {
@@ -314,7 +316,7 @@ export default function Map({navigation}: Props) {
   useEffect(() => {
     if (plannedNavLogs && plannedNavLogs.length > 0 && focused) {
       const plannedNavLogIndex = plannedNavLogs.findIndex(
-        planned => planned.isActive
+        planned => planned.arrivalDatetime && !planned.departureDatetime
       )
       const navLog = plannedNavLogIndex
         ? plannedNavLogs[plannedNavLogIndex - 1]
@@ -638,7 +640,9 @@ export default function Map({navigation}: Props) {
     const {latitude, longitude, speed, heading}: VesselGeolocation =
       vesselStatus
     const rotate = heading >= 0 && Number(speed) > 3 ? `${heading}deg` : null
-    const navigationLog = plannedNavLogs.find(item => item.isActive)
+    const navigationLog = plannedNavLogs.find(
+      item => item.arrivalDatetime && !item.departureDatetime
+    )
     const isFilterLocations = processLocations(navigationLog?.location?.title)
 
     return (
@@ -716,7 +720,9 @@ export default function Map({navigation}: Props) {
     const {latitude, longitude, speed, heading}: VesselGeolocation =
       vesselStatus
     const rotate = heading >= 0 && Number(speed) > 1 ? `${heading}deg` : null
-    const navigationLog = plannedNavLogs.find(item => item.isActive)
+    const navigationLog = plannedNavLogs.find(
+      item => item.arrivalDatetime && !item.departureDatetime
+    )
 
     return (
       <Marker
@@ -1086,7 +1092,7 @@ export default function Map({navigation}: Props) {
         </Button>
       </Box>
       {/* search input */}
-      <Box
+      {/* <Box
         left={0}
         position="absolute"
         pt={ms(15)}
@@ -1102,8 +1108,8 @@ export default function Map({navigation}: Props) {
           onBlur={() => setKeyboardVisible(false)}
           onFocus={() => setKeyboardVisible(true)}
         />
-      </Box>
-      <Box position="absolute" right="0" top={isMapLoading ? '13%' : '8%'}>
+      </Box> */}
+      <Box position="absolute" right="0" top={'8%'}>
         <VStack justifyContent="flex-start" m="4" space="5">
           {/*<Box bg={Colors.white} borderRadius="full" p="2" shadow={2}>*/}
           {/*  <IconButton*/}

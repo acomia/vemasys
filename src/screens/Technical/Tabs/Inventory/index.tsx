@@ -42,9 +42,15 @@ const Inventory = () => {
   const [quantity, setQuantity] = useState('0')
   const [openFilter, setOpenFilter] = useState(false)
   const [openNewStock, setOpenNewStock] = useState(false)
+  const [isLoading, setLoading] = useState(true)
 
   useEffect(() => {
-    getVesselInventory(vesselId)
+    getVesselInventory(vesselId).then((response: any) => {
+      if (response) {
+        setInventoryData(response)
+      }
+      setLoading(false)
+    })
     getConsumableTypes()
   }, [vesselId])
 
@@ -305,14 +311,13 @@ const Inventory = () => {
       showToast('New stock failed.', 'failed')
     }
   }
-
   return (
     <Box flex="1">
       <Box bg={Colors.white} flex="1" px={ms(12)} py={ms(20)}>
         {renderSeachFilterSection()}
         {renderInventoryListHeaderSection()}
         <Divider my={ms(10)} />
-        {isTechnicalLoading ? (
+        {isTechnicalLoading || isLoading ? (
           <LoadingAnimated />
         ) : (
           <FlatList

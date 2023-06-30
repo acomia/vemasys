@@ -59,12 +59,13 @@ const Reservoirs = () => {
               <TouchableOpacity
                 key={index}
                 activeOpacity={0.7}
-                onPress={() =>
+                onPress={() => {
+                  useTechnical.setState({isTechnicalLoading: true})
                   navigation.navigate('Measurements', {
                     data: reservoir,
                     routeFrom: 'reservoir',
                   })
-                }
+                }}
               >
                 <Box
                   borderColor={Colors.border}
