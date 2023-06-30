@@ -1,3 +1,4 @@
+/* eslint-disable no-bitwise */
 import {Charter, Location, NavigationLog} from '@bluecentury/models'
 import {
   CHARTER_CONTRACTOR_STATUS_ARCHIVED,
@@ -210,4 +211,28 @@ export const getCharterStatus = (
     selectedEntityType === ENTITY_TYPE_EXPLOITATION_GROUP
     ? charter.contractorStatus
     : charter.ordererStatus
+}
+
+export const darkenColor = (hexColor: string, amount: number) => {
+  // Remove the '#' symbol from the hexadecimal color
+  const color = hexColor.replace('#', '')
+
+  // Convert the hexadecimal color to RGB values
+  const red = parseInt(color.substring(0, 2), 16)
+  const green = parseInt(color.substring(2, 4), 16)
+  const blue = parseInt(color.substring(4, 6), 16)
+
+  // Calculate the darker RGB values
+  const darkerRed = Math.round(red * (1 - amount))
+  const darkerGreen = Math.round(green * (1 - amount))
+  const darkerBlue = Math.round(blue * (1 - amount))
+
+  // Convert the darker RGB values back to hexadecimal
+  const darkerHexColor =
+    '#' +
+    ((1 << 24) + (darkerRed << 16) + (darkerGreen << 8) + darkerBlue)
+      .toString(16)
+      .slice(1)
+
+  return darkerHexColor
 }

@@ -146,6 +146,7 @@ const PlanningLogbook = () => {
 
   useEffect(() => {
     if (updateNavlogDatesSuccess === 'SUCCESS' && focused) {
+      onSuccess()
       showToast('Updates saved.', 'success')
     }
     if (updateNavlogDatesFailed === 'FAILED') {
@@ -156,7 +157,7 @@ const PlanningLogbook = () => {
       appendCreatedActionToNavlog()
     }
     if (isUpdateNavLogActionSuccess && focused) {
-      showToast('Action ended.', 'end')
+      showToast('Action ended.', 'success')
       stopActionFromSelectedNavlog()
     }
   }, [
@@ -189,9 +190,6 @@ const PlanningLogbook = () => {
             {text}
           </Text>
         )
-      },
-      onCloseComplete() {
-        res === 'success' ? onSuccess() : reset()
       },
     })
   }
