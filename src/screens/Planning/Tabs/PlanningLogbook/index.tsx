@@ -92,9 +92,7 @@ const PlanningLogbook = () => {
 
   useFocusEffect(
     useCallback(() => {
-      return () => {
-        setBannerDisabled(false)
-      }
+      setBannerDisabled(false)
     }, [])
   )
 
@@ -634,49 +632,6 @@ const PlanningLogbook = () => {
         setDisable={setBannerDisabled}
         toScreen="MapView"
       />
-      {/* <Box
-        alignItems="center"
-        bottom={ms(25)}
-        position="absolute"
-        w={screenWidth}
-      >
-        <Button
-          alignSelf="center"
-          backgroundColor={Colors.white}
-          borderColor={Colors.primary_light}
-          borderWidth="1"
-          w={screenWidth - ms(20)}
-          onPress={() => navigation.navigate('MapView')}
-        >
-          <HStack
-            alignItems="center"
-            flex={1}
-            h={ms(42)}
-            justifyContent="space-between"
-            px={ms(10)}
-            w={screenWidth - ms(20)}
-          >
-            <HStack alignItems="center">
-              <Image
-                alt="vesselIcon"
-                h={ms(30)}
-                mr={ms(10)}
-                source={Icons.vessel}
-                w={ms(30)}
-              />
-              <Text bold fontSize="16">
-                {selectedVessel?.alias || null}
-              </Text>
-            </HStack>
-            <Image
-              alt="navigateToMapIcon"
-              h={ms(30)}
-              source={Icons.map}
-              w={ms(30)}
-            />
-          </HStack>
-        </Button>
-      </Box> */}
       {/*---------------------------------------------------*/}
     </Box>
   )

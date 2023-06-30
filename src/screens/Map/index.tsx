@@ -190,6 +190,7 @@ export default function Map({navigation}: Props) {
 
   useFocusEffect(
     useCallback(() => {
+      setBannerDisabled(false)
       updateMap()
 
       startRefreshTimer()
@@ -197,7 +198,6 @@ export default function Map({navigation}: Props) {
         stopRefreshTimer()
         unmountLocations()
         resetSearchMap()
-        setBannerDisabled(false)
       }
     }, [])
   )
